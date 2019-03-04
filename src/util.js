@@ -83,6 +83,6 @@ export function getArgumentNames(method, useFlow=false) {
   }, []).map(pluckParamName);
 }
 
-export function closeClassInstance(instance) {
+export function cloneClassInstance(instance) {
   return Object.assign( Object.create( Object.getPrototypeOf(instance)), instance);
 }

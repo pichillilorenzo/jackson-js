@@ -8,6 +8,7 @@ import {JsonSerialize} from './annotations/JsonSerialize';
 import {JsonCreator} from './annotations/JsonCreator';
 import {JsonManagedReference} from './annotations/JsonManagedReference';
 import {JsonBackReference} from './annotations/JsonBackReference';
+import {JsonAnySetter} from './annotations/JsonAnySetter';
 import {stringify, parse} from './jackson';
 
 class DateSerializer {
@@ -76,7 +77,7 @@ class Example {
   }
 
   //@JsonAnyGetter({enabled: false})
-  test() {
+  testAnyGetter() {
     return {
       "age": this.age,
     }
@@ -104,12 +105,37 @@ let stringified1 = stringify(test, null, "\t");
 let stringified2 = stringify(a, null, "\t");
 //console.log(stringified2)
 
-console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }))
-console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }))
+console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
+console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
 // console.log(parse(`{
 //   "name": "my name",
 //   "age": 45
 // }`, null, { creator: Example }))
+
+
+// class Address {
+// 	@JsonProperty({value: "village"})
+// 	myVillage;
+	
+// 	@JsonProperty({value: "district"})
+//   myDistrict;
+  
+//   addressDetails = {};
+  
+//   @JsonAnySetter
+//   testAnySetter(key, value) {
+//     this.addressDetails[key] = value;
+//   }
+
+// } 
+// let jsonData =   "{"
+// 			+"\"village\" : \"ABCD\","
+// 			+"\"district\" : \"Varanasi\","
+// 			+"\"state\" : \"Uttar Pradesh\","
+// 			+"\"country\" : \"India\""
+// 			+"}";
+
+// console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }))
 
 module.export = {
   JsonAnyGetter,
@@ -121,5 +147,6 @@ module.export = {
   JsonSerialize,
   JsonCreator,
   JsonManagedReference,
-  JsonBackReference
+  JsonBackReference,
+  JsonAnySetter
 }
