@@ -1,0 +1,22 @@
+{
+  "name": "jackson-js",
+  "version": "1.0.0",
+  "scripts": {
+    "build:dev": "./node_modules/.bin/webpack --config webpack.config.js",
+    "start:dev": "node dist/index"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.3.4",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/plugin-proposal-class-properties": "^7.3.3",
+    "@babel/plugin-proposal-decorators": "^7.3.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  }
+}
