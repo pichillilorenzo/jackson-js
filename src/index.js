@@ -90,11 +90,13 @@ class Example {
   }
 }
 
-let test = new Example2("test 2", 20, new Date());
+let test = new Example2("test 1", 20, new Date());
+let test2 = new Example2("test 2", 40, new Date());
 let a = new Example("my name", 45, false);
-a.example2 = test;
+a.example2 = [test, test2];
 //let a = new Example("my name", 45, false);
 test.example = a;
+test2.example = a;
 a.testValue = "{\"test\": 100}";
 
 let stringified1 = stringify(test, null, "\t");

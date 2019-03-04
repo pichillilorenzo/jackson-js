@@ -3,7 +3,7 @@ import { getArgumentNames, closeClassInstance } from './util';
 
 export function stringify(obj, replacer, format) {
   return JSON.stringify(obj, (key, value=null) => {
-    if (value && typeof value === 'object') {
+    if (value && typeof value === 'object' && !(value instanceof Array)) {
       let replacement;
       let jsonValue = stringifyJsonValue(value);
       if (jsonValue)
@@ -44,7 +44,7 @@ export function parse(text, reviver, options) {
 }
 
 function deepParse(value, reviver, options) {
-  if (value && typeof value === 'object') {
+  if (value && typeof value === 'object' && !(value instanceof Array)) {
     let replacement = value;
 
     replacement = parseJsonRootName(replacement, reviver, options);
@@ -61,6 +61,12 @@ function deepParse(value, reviver, options) {
     } 
 
     return (reviver) ? reviver('', replacement) : replacement;
+  }
+  else if (value && value instanceof Array) {
+    let arr = [];
+    for(let obj of value)
+      arr.push(deepParse(obj, reviver, options));
+    return arr;
   }
   return (reviver) ? reviver('', value) : value;
 }
@@ -129,31 +135,76 @@ function stringifyJsonSerialize(replacement, obj, key) {
 
 function stringifyJsonManagedReference(replacement, obj, key) {
   const jsonManagedReference = Reflect.getMetadata("jackson:JsonManagedReference", obj.constructor, key);
-  const referenceConstructor = (replacement[key]) ? replacement[key].constructor : {};
-  if (jsonManagedReference && jsonManagedReference === referenceConstructor.name) {
-    const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
-    for(let k of metadataKeys) {
-      if (k.startsWith("jackson:JsonBackReference:")) {
-        let propertyKey = k.replace("jackson:JsonBackReference:", '');
-        replacement[key] = closeClassInstance(obj[key]);
-        delete replacement[key][propertyKey];
-        break;
+  if (jsonManagedReference) {
+
+    let referenceConstructor;
+    if (replacement[key]) {
+      if (replacement[key] instanceof Array && replacement[key].length > 0)
+        referenceConstructor = replacement[key][0].constructor;
+      else if (replacement[key] instanceof Array && replacement[key].length == 0)
+        referenceConstructor = {};
+      else
+      referenceConstructor = replacement[key].constructor;
+    }
+    else
+      referenceConstructor = {};
+
+    if (jsonManagedReference === referenceConstructor.name) {
+      const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
+      for(let k of metadataKeys) {
+        if (k.startsWith("jackson:JsonBackReference:")) {
+          let propertyKey = k.replace("jackson:JsonBackReference:", '');
+          if (replacement[key] instanceof Array) {
+            for(let index in replacement[key]) {
+              replacement[key][index] = closeClassInstance(obj[key][index]);
+              delete replacement[key][index][propertyKey];
+            }
+          }
+          else {
+            replacement[key] = closeClassInstance(obj[key]);
+            delete replacement[key][propertyKey];
+          }
+          break;
+        }
       }
     }
+    
   }
 }
 
 function stringifyJsonBackReference(replacement, obj, key) {
   const jsonBackReference = Reflect.getMetadata("jackson:JsonBackReference", obj.constructor, key);
-  const referenceConstructor = (replacement[key]) ? replacement[key].constructor : {};
-  if (jsonBackReference && jsonBackReference === referenceConstructor.name) {
-    const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
-    for(let k of metadataKeys) {
-      if (k.startsWith("jackson:JsonManagedReference:")) {
-        let propertyKey = k.replace("jackson:JsonManagedReference:", '');
-        replacement[key] = closeClassInstance(obj[key]);
-        delete replacement[key][propertyKey];
-        break;
+  if (jsonBackReference) {
+    
+    let referenceConstructor;
+    if (replacement[key]) {
+      if (replacement[key] instanceof Array && replacement[key].length > 0)
+        referenceConstructor = replacement[key][0].constructor;
+      else if (replacement[key] instanceof Array && replacement[key].length == 0)
+        referenceConstructor = {};
+      else
+      referenceConstructor = replacement[key].constructor;
+    }
+    else
+      referenceConstructor = {};
+      
+    if (jsonBackReference === referenceConstructor.name) {
+      const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
+      for(let k of metadataKeys) {
+        if (k.startsWith("jackson:JsonManagedReference:")) {
+          let propertyKey = k.replace("jackson:JsonManagedReference:", '');
+          if (replacement[key] instanceof Array) {
+            for(let index in replacement[key]) {
+              replacement[key][index] = closeClassInstance(obj[key][index]);
+              delete replacement[key][index][propertyKey];
+            }
+          }
+          else {
+            replacement[key] = closeClassInstance(obj[key]);
+            delete replacement[key][propertyKey];
+          }
+          break;
+        }
       }
     }
   }
@@ -246,10 +297,11 @@ function parsePrepareMethodArg(reviver, options, obj, key) {
         break;
       }
     }
+
     let newOptions = Object.assign(options);
     newOptions.mainCreator = referenceCreator;
-    return deepParse(obj[key], reviver, options);
 
+    return deepParse(obj[key], reviver, options);
   }
   return obj[key];
 }
@@ -260,15 +312,31 @@ function parseJsonManagedReference(replacement, reviver, options, obj, key) {
     
     if (replacement[key] && jsonManagedReference !== replacement[key].constructor.name)
       replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-
-    const referenceConstructor = (replacement[key]) ? replacement[key].constructor : {};
-
+    
+    let referenceConstructor;
+    if (replacement[key]) {
+      if (replacement[key] instanceof Array && replacement[key].length > 0)
+        referenceConstructor = replacement[key][0].constructor;
+      else if (replacement[key] instanceof Array && replacement[key].length == 0)
+        referenceConstructor = {};
+      else
+      referenceConstructor = replacement[key].constructor;
+    }
+    else
+      referenceConstructor = {};
+    
     if (jsonManagedReference === referenceConstructor.name) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
       for(let k of metadataKeys) {
         if (k.startsWith("jackson:JsonBackReference:")) {
           let propertyKey = k.replace("jackson:JsonBackReference:", '');
-          replacement[key][propertyKey] = replacement;
+          
+          if (replacement[key] instanceof Array)
+            for(let index in replacement[key])
+              replacement[key][index][propertyKey] = replacement;
+          else
+            replacement[key][propertyKey] = replacement;
+
           break;
         }
       }
@@ -282,14 +350,31 @@ function parseJsonBackReference(replacement, reviver, options, obj, key) {
     
     if (replacement[key] && jsonBackReference !== replacement[key].constructor.name)
       replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-    const referenceConstructor = (replacement[key]) ? replacement[key].constructor : {};
+    
+    let referenceConstructor;
+    if (replacement[key]) {
+      if (replacement[key] instanceof Array && replacement[key].length > 0)
+        referenceConstructor = replacement[key][0].constructor;
+      else if (replacement[key] instanceof Array && replacement[key].length == 0)
+        referenceConstructor = {};
+      else
+      referenceConstructor = replacement[key].constructor;
+    }
+    else
+      referenceConstructor = {};
 
     if (jsonBackReference === referenceConstructor.name) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
       for(let k of metadataKeys) {
         if (k.startsWith("jackson:JsonManagedReference:")) {
           let propertyKey = k.replace("jackson:JsonManagedReference:", '');
-          replacement[key][propertyKey] = replacement;
+
+          if (replacement[key] instanceof Array)
+            for(let index in replacement[key])
+              replacement[key][index][propertyKey] = replacement;
+          else
+            replacement[key][propertyKey] = replacement;
+            
           break;
         }
       }
