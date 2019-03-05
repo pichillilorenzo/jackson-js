@@ -6,7 +6,7 @@ export function JsonAnyGetter(optionsOrTarget, propertyKey, descriptor) {
     enabled: true
   }, optionsOrTarget, propertyKey, descriptor, 
   (options, target, propertyKey, descriptor) => {
-    if (descriptor && typeof descriptor.value === "function" && options.enabled)
+    if (descriptor && options.enabled)
       Reflect.defineMetadata("jackson:JsonAnyGetter", propertyKey, target);
     return descriptor;
   })

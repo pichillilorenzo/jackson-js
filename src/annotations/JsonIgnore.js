@@ -1,13 +1,13 @@
 import {makeDecorator} from '../util';
 import "reflect-metadata";
 
-export function JsonAnySetter(optionsOrTarget, propertyKey, descriptor) {
+export function JsonIgnore(optionsOrTarget, propertyKey, descriptor) {
   return makeDecorator({ 
-    enabled: true
+    value: true
   }, optionsOrTarget, propertyKey, descriptor, 
   (options, target, propertyKey, descriptor) => {
-    if (descriptor && options.enabled)
-      Reflect.defineMetadata("jackson:JsonAnySetter", propertyKey, target);
+    if (propertyKey && options.value)
+      Reflect.defineMetadata("jackson:JsonIgnore", null, target.constructor, propertyKey);
     return descriptor;
   })
 }

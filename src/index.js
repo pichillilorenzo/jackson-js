@@ -10,6 +10,7 @@ import {JsonManagedReference} from './annotations/JsonManagedReference';
 import {JsonBackReference} from './annotations/JsonBackReference';
 import {JsonAnySetter} from './annotations/JsonAnySetter';
 import {JsonDeserialize} from './annotations/JsonDeserialize';
+import {JsonIgnore} from './annotations/JsonIgnore';
 import {stringify, parse} from './jackson';
 
 class DateSerializer {
@@ -64,6 +65,7 @@ class Example {
   @JsonProperty({value: "username"})
   name = "";
 
+  @JsonIgnore
   age = 5;
 
   mTest = false;
@@ -107,7 +109,7 @@ test.example = a;
 test2.example = a;
 a.testValue = "{\"test\": 100}";
 
-let stringified1 = stringify(test, null, "\t");
+//let stringified1 = stringify(test, null, "\t");
 //console.log(stringified1)
 let stringified2 = stringify(a, null, "\t");
 console.log(stringified2)
@@ -127,14 +129,30 @@ console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Ex
 // 	@JsonProperty({value: "district"})
 //   myDistrict;
   
-//   addressDetails = {};
-  
+//   @JsonAnyGetter
 //   @JsonAnySetter
+//   addressDetails = {
+//     'state': '',
+//     'country': ''
+//   };
+  
+//   //@JsonAnyGetter
+//   testAnyGetter() {
+//     return this.addressDetails;
+//   }
+
+//   //@JsonAnySetter
 //   testAnySetter(key, value) {
 //     this.addressDetails[key] = value;
 //   }
 
 // } 
+// let address = new Address();
+// address.myVillage = "ABCD";
+// address.myDistrict = "Varanasi";
+// address.addressDetails.state = "Uttar Pradesh";
+// address.addressDetails.country = "India";
+
 // let jsonData =   "{"
 // 			+"\"village\" : \"ABCD\","
 // 			+"\"district\" : \"Varanasi\","
@@ -142,7 +160,10 @@ console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Ex
 // 			+"\"country\" : \"India\""
 // 			+"}";
 
-// console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }))
+// let stringified3 = stringify(address, null, '\t')
+// console.log(stringified3);
+// console.log(parse(stringified3, null, { mainCreator: Address, otherCreators: [] }));
+//console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }));
 
 module.export = {
   JsonAnyGetter,
@@ -156,5 +177,6 @@ module.export = {
   JsonManagedReference,
   JsonBackReference,
   JsonAnySetter,
-  JsonDeserialize
+  JsonDeserialize,
+  JsonIgnore
 }
