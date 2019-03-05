@@ -9,6 +9,7 @@ import {JsonCreator} from './annotations/JsonCreator';
 import {JsonManagedReference} from './annotations/JsonManagedReference';
 import {JsonBackReference} from './annotations/JsonBackReference';
 import {JsonAnySetter} from './annotations/JsonAnySetter';
+import {JsonDeserialize} from './annotations/JsonDeserialize';
 import {stringify, parse} from './jackson';
 
 class DateSerializer {
@@ -20,6 +21,9 @@ class DateSerializer {
       "formatted": date.toLocaleDateString()
     };
   }
+  static deserializeDate(dateObj) {
+    return new Date(dateObj.formatted);
+  }
 }
 
 //@JsonRootName
@@ -27,7 +31,9 @@ class Example2 {
   
   name = "";
   age = 55
+
   @JsonSerialize({using: DateSerializer.serializeDate})
+  @JsonDeserialize({using: DateSerializer.deserializeDate})
   date = new Date();
 
   @JsonBackReference({value: "Example"})
@@ -42,7 +48,7 @@ class Example2 {
 
   @JsonCreator
   static creator(name, age, date) {
-    return new Example2(name, age, new Date(date.formatted))
+    return new Example2(name, age, date)
   }
   //@JsonValue
   getValue() {
@@ -63,6 +69,7 @@ class Example {
   mTest = false;
 
   @JsonRawValue
+  @JsonProperty({value: "property_test"})
   testValue = '{"asd": 5}';
 
   @JsonManagedReference({value: "Example2"})
@@ -103,9 +110,9 @@ a.testValue = "{\"test\": 100}";
 let stringified1 = stringify(test, null, "\t");
 //console.log(stringified1)
 let stringified2 = stringify(a, null, "\t");
-//console.log(stringified2)
+console.log(stringified2)
 
-console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
+//console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
 console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
 // console.log(parse(`{
 //   "name": "my name",
@@ -148,5 +155,6 @@ module.export = {
   JsonCreator,
   JsonManagedReference,
   JsonBackReference,
-  JsonAnySetter
+  JsonAnySetter,
+  JsonDeserialize
 }

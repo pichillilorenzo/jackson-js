@@ -41,41 +41,58 @@ export function stringify(obj, replacer, format) {
 export function parse(text, reviver, options) {
   options.otherCreators = (options.otherCreators) ? options.otherCreators : [];
   let value = JSON.parse(text);
-  return deepParse(value, reviver, options)
+  return deepParse('', value, reviver, options)
 }
 
-function deepParse(value, reviver, options) {
+function deepParse(key, value, reviver, options) {
   if (value && typeof value === 'object' && !(value instanceof Array)) {
     let replacement = value;
-
     replacement = parseJsonRootName(replacement, reviver, options);
+
+    // convert JsonProperty to Class properties
+    const creatorMetadataKeys = Reflect.getMetadataKeys(options.mainCreator);
+    for(const metadataKey of creatorMetadataKeys) {
+      if (metadataKey.startsWith("jackson:JsonProperty:")) {
+        const metadata = Reflect.getMetadata(metadataKey, options.mainCreator);
+        const realKey = metadataKey.replace("jackson:JsonProperty:", "");
+        if (Object.hasOwnProperty.call(replacement, metadata.value)) {
+          replacement[realKey] = replacement[metadata.value];
+          delete replacement[metadata.value];
+        }
+      }
+    }
+    
+    for (let k in replacement) {
+      if (Object.hasOwnProperty.call(replacement, k)) {
+        parseJsonRawValue(options, replacement, k);
+        parseJsonDeserialize(options, replacement,  k);
+      }
+    } 
 
     let jsonJsonCreator = parseJsonCreator(reviver, options, replacement);
     if (jsonJsonCreator)
       replacement = jsonJsonCreator;
     
-    for (let key in value) {
-      if (Object.hasOwnProperty.call(value, key)) {
-        parseJsonAnySetter(replacement, value, key);
+    for (let k in value) {
+      if (Object.hasOwnProperty.call(value, k)) {
+        parseJsonAnySetter(replacement, value, k);
       }
     } 
 
-    for (let key in replacement) {
-      if (Object.hasOwnProperty.call(replacement, key)) {
-        parseJsonRawValue(replacement, replacement, key);
-        replacement[key] = (reviver) ? reviver(key, replacement[key]) : replacement[key];
-      }
-    } 
+    if (reviver)
+      for (let key in replacement)
+        if (Object.hasOwnProperty.call(replacement, key))
+          replacement[key] = reviver(key, replacement[key]);
 
-    return (reviver) ? reviver('', replacement) : replacement;
+    return (reviver) ? reviver(key, replacement) : replacement;
   }
   else if (value && value instanceof Array) {
     let arr = [];
     for(let obj of value)
-      arr.push(deepParse(obj, reviver, options));
-    return arr;
+      arr.push(deepParse(key, obj, reviver, options));
+    return (reviver) ? reviver(key, arr) : arr;
   }
-  return (reviver) ? reviver('', value) : value;
+  return (reviver) ? reviver(key, value) : value;
 }
 
 function stringifyJsonAnyGetter(obj) {
@@ -107,7 +124,7 @@ function stringifyJsonProperty(replacement, obj, key) {
 }
 
 function stringifyJsonRawValue(replacement, obj, key) {
-  const jsonRawValue = Reflect.hasMetadata("jackson:JsonRawValue", obj, key);
+  const jsonRawValue = Reflect.hasMetadata("jackson:JsonRawValue", obj.constructor, key);
   if (jsonRawValue) {
     replacement[key] = JSON.parse(replacement[key]);
     return true;
@@ -235,23 +252,17 @@ function parseJsonCreator(reviver, options, obj) {
           argNames[index] = jsonCreator.properties[key];
       }
     }
-    
-    // property mapping based on JsonProperty
-    let propertyMap = {}
 
     const creatorMetadataKeys = Reflect.getMetadataKeys(options.mainCreator);
     for(const metadataKey of creatorMetadataKeys) {
       if (metadataKey.startsWith("jackson:JsonProperty:")) {
         let key = metadataKey.replace("jackson:JsonProperty:", "")
         // jsonCreator.properties takes precedence
-        if (jsonCreator.properties && Object.hasOwnProperty.call(jsonCreator.properties, key)) {
-          propertyMap[jsonCreator.properties[key]] = key;
+        if (jsonCreator.properties && Object.hasOwnProperty.call(jsonCreator.properties, key))
           continue;
-        }
 
         const metadata = Reflect.getMetadata(metadataKey, options.mainCreator);
-        propertyMap[metadata.value] = key;
-        const index = argNames.indexOf(key)
+        const index = argNames.indexOf(key);
         if (index >= 0) 
           argNames[index] = metadata.value
       }
@@ -268,16 +279,9 @@ function parseJsonCreator(reviver, options, obj) {
 
     // copy remaining properties
     let keys = Object.keys(obj).filter(n => !argNames.includes(n));
-    for (let key of keys) {
-
-      let instanceKey = key;
-      if (propertyMap[key])
-        instanceKey = propertyMap[key];
-
-      if (Object.hasOwnProperty.call(instance, instanceKey)) {
-        instance[instanceKey] = obj[key];
-      }
-    }
+    for (let key of keys)
+      if (Object.hasOwnProperty.call(instance, key))
+        instance[key] = obj[key];
 
     // if there is a reference, convert the reference property to the corresponding Class
     for (let key in instance) {
@@ -291,8 +295,8 @@ function parseJsonCreator(reviver, options, obj) {
   }
 }
 
-function parseJsonRawValue(replacement, obj, key) {
-  const jsonRawValue = Reflect.hasMetadata("jackson:JsonRawValue", replacement, key);
+function parseJsonRawValue(options, replacement, key) {
+  const jsonRawValue = Reflect.hasMetadata("jackson:JsonRawValue", options.mainCreator, key);
   if (jsonRawValue) {
     replacement[key] = JSON.stringify(replacement[key]);
     return true;
@@ -324,7 +328,7 @@ function parsePrepareMethodArg(reviver, options, obj, key) {
     let newOptions = Object.assign(options);
     newOptions.mainCreator = referenceCreator;
 
-    return deepParse(obj[key], reviver, options);
+    return deepParse(key, obj[key], reviver, options);
   }
   return obj[key];
 }
@@ -407,17 +411,16 @@ function parseJsonBackReference(replacement, reviver, options, obj, key) {
 
 function parseJsonAnySetter(replacement, value, key) {
   const jsonAnySetter = Reflect.getMetadata("jackson:JsonAnySetter", replacement);
-  let jsonProperty;
-  const creatorMetadataKeys = Reflect.getMetadataKeys(replacement.constructor);
-  for(const metadataKey of creatorMetadataKeys) {
-    if (metadataKey.startsWith("jackson:JsonProperty:")) {
-      const metadata = Reflect.getMetadata(metadataKey, replacement.constructor);
-      if (metadata.value === key) {
-        jsonProperty = metadata.value;
-        break;
-      }
-    }
-  }
+  let jsonProperty = Reflect.getMetadata("jackson:JsonProperty", replacement, key);
   if (!jsonProperty && jsonAnySetter && replacement[jsonAnySetter])
     replacement[jsonAnySetter](key, value[key]);
+}
+
+function parseJsonDeserialize(options, replacement, key) {
+  const JsonDeserialize = Reflect.getMetadata("jackson:JsonDeserialize", options.mainCreator, key);
+  if (JsonDeserialize) {
+    replacement[key] = JsonDeserialize(replacement[key]);
+    return true;
+  }
+  return false;
 }

@@ -7,7 +7,7 @@ export function JsonRawValue(optionsOrTarget, propertyKey, descriptor) {
   }, optionsOrTarget, propertyKey, descriptor, 
   (options, target, propertyKey, descriptor) => {
     if (propertyKey && options.value)
-      Reflect.defineMetadata("jackson:JsonRawValue", null, target, propertyKey);
+      Reflect.defineMetadata("jackson:JsonRawValue", null, target.constructor, propertyKey);
     return descriptor;
   })
 }
