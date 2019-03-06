@@ -11,6 +11,8 @@ import {JsonBackReference} from './annotations/JsonBackReference';
 import {JsonAnySetter} from './annotations/JsonAnySetter';
 import {JsonDeserialize} from './annotations/JsonDeserialize';
 import {JsonIgnore} from './annotations/JsonIgnore';
+import {JsonIgnoreProperties} from './annotations/JsonIgnoreProperties';
+import {JsonIgnoreType} from './annotations/JsonIgnoreType';
 import {stringify, parse} from './jackson';
 
 class DateSerializer {
@@ -28,6 +30,7 @@ class DateSerializer {
 }
 
 //@JsonRootName
+//@JsonIgnoreType
 class Example2 {
   
   name = "";
@@ -59,16 +62,22 @@ class Example2 {
 }
 
 //@JsonCreator
+//@JsonIgnoreType
 @JsonRootName
 @JsonPropertyOrder({value: ["example2", "test2", "name"]})
+// @JsonIgnoreProperties({
+//   value: ["age", "username"],
+//   allowGetters: true
+// })
 class Example {
+  //@JsonIgnore
   @JsonProperty({value: "username"})
-  name = "";
+  name = "pippo";
 
-  @JsonIgnore
   age = 5;
 
   mTest = false;
+  test2 = false;
 
   @JsonRawValue
   @JsonProperty({value: "property_test"})
@@ -93,10 +102,10 @@ class Example {
   }
   
   @JsonCreator({
-    properties: {"name": "username"}
+    properties: {"name2": "username"}
   })
-  static creator(name, age, test/*, example2*/) {
-    return new Example(name, age, test/*, example2*/);
+  static creator(name2, age, test/*, example2*/) {
+    return new Example(name2, age, test/*, example2*/);
   }
 }
 
@@ -109,18 +118,13 @@ test.example = a;
 test2.example = a;
 a.testValue = "{\"test\": 100}";
 
-//let stringified1 = stringify(test, null, "\t");
-//console.log(stringified1)
+// let stringified1 = stringify(test, null, "\t");
+// console.log(stringified1)
+// console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
+
 let stringified2 = stringify(a, null, "\t");
 console.log(stringified2)
-
-//console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
 console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
-// console.log(parse(`{
-//   "name": "my name",
-//   "age": 45
-// }`, null, { creator: Example }))
-
 
 // class Address {
 // 	@JsonProperty({value: "village"})
@@ -178,5 +182,7 @@ module.export = {
   JsonBackReference,
   JsonAnySetter,
   JsonDeserialize,
-  JsonIgnore
+  JsonIgnore,
+  JsonIgnoreProperties,
+  JsonIgnoreType
 }
