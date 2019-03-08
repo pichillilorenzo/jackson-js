@@ -23,9 +23,6 @@ module.exports = {
                 {
                   "loose": true
                 }
-              ],
-              [
-                "@babel/proposal-object-rest-spread"
               ]
             ]
           }

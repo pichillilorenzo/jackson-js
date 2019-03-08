@@ -86,3 +86,19 @@ export function getArgumentNames(method, useFlow=false) {
 export function cloneClassInstance(instance) {
   return Object.assign( Object.create( Object.getPrototypeOf(instance)), instance);
 }
+
+export function isSameConstructor(ctorOrCtorName, ctor2) {
+  return (typeof ctorOrCtorName === "string" && ctorOrCtorName === ctor2.name) || ctorOrCtorName === ctor2;
+}
+
+export function isExtensionOf(ctor, ctorExtensionOf) {
+  if (typeof ctor === "string") {
+    let parent = Object.getPrototypeOf(ctorExtensionOf);
+    while(parent.name) {
+      if (parent.name == ctor)
+        return true;
+      parent = Object.getPrototypeOf(parent);
+    }
+  }
+  return ctor !== ctorExtensionOf && ctorExtensionOf.prototype instanceof ctor;
+}

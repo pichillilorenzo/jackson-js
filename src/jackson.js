@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { getArgumentNames, cloneClassInstance } from './util';
+import { getArgumentNames, cloneClassInstance, isSameConstructor, isExtensionOf } from './util';
 
 export function stringify(obj, replacer, format) {
   return JSON.stringify(obj, (key, value=null) => {
@@ -16,8 +16,9 @@ export function stringify(obj, replacer, format) {
         replacement = {};
         let keys = stringifyJsonPropertyOrder(value);
         for (let k of keys) {
-          if (!stringifyHasJsonIgnore(value, k) && Object.hasOwnProperty.call(value, k)) {
+          if (!stringifyHasJsonIgnore(value, k) && !stringifyJsonInclude(value, k) && Object.hasOwnProperty.call(value, k)) {
             replacement[k] = value[k];
+            stringifyJsonTypeInfoExternalProperty(replacement, value, k);
             stringifyJsonSerialize(replacement, value, k);
             stringifyJsonRawValue(replacement, value, k);
             stringifyJsonProperty(replacement, value, k);
@@ -28,7 +29,9 @@ export function stringify(obj, replacer, format) {
         }
       }
 
+      replacement = stringifyJsonTypeInfo(replacement, value);
       replacement = stringifyJsonRootName(replacement, value);
+
       return (replacer) ? replacer(key, replacement) : replacement;
     }
     
@@ -38,8 +41,9 @@ export function stringify(obj, replacer, format) {
 
 export function parse(text, reviver, options={mainCreator: null, otherCreators: []}) {
   options.otherCreators = (options.otherCreators) ? options.otherCreators : [];
-
+  
   if (options.mainCreator) {
+    options.otherCreators.push(options.mainCreator);
     let value = JSON.parse(text);
     return deepParse('', value, reviver, options)
   }
@@ -95,6 +99,12 @@ function deepParse(key, value, reviver, options) {
     return (reviver) ? reviver(key, replacement) : replacement;
   }
   else if (value && value instanceof Array) {
+    const jsonTypeInfo = parseJsonTypeInfo(options, value);
+    if (jsonTypeInfo) {
+      options.mainCreator = jsonTypeInfo.creator;
+      return deepParse(key, jsonTypeInfo.newObj, reviver, options);
+    }
+    
     let arr = [];
     for(let obj of value)
       arr.push(deepParse(key, obj, reviver, options));
@@ -190,6 +200,24 @@ function stringifyHasJsonIgnore(obj, key) {
   return hasJsonIgnore && !hasJsonProperty;
 }
 
+function stringifyJsonInclude(obj, key) {
+  const keyJsonInclude = Reflect.getMetadata("jackson:JsonInclude", obj, key);
+  const constructorJsonInclude = Reflect.getMetadata("jackson:JsonInclude", obj.constructor);
+  const jsonInclude = (keyJsonInclude) ? keyJsonInclude : constructorJsonInclude;
+
+  if (jsonInclude && jsonInclude.value >= 0) {
+    const value = obj[key];
+    switch(jsonInclude.value) {
+      case 1:
+        return value == null || ((typeof value === "object" || typeof value === "string") && Object.keys(value).length === 0);
+      case 2:
+        return value == null;
+    }
+  }
+
+  return false;
+}
+
 function stringifyJsonIgnoreType(obj) {
   return Reflect.hasMetadata("jackson:JsonIgnoreType", obj.constructor);
 }
@@ -205,12 +233,12 @@ function stringifyJsonManagedReference(replacement, obj, key) {
       else if (replacement[key] instanceof Array && replacement[key].length == 0)
         referenceConstructor = {};
       else
-      referenceConstructor = replacement[key].constructor;
+        referenceConstructor = replacement[key].constructor;
     }
     else
       referenceConstructor = {};
 
-    if (jsonManagedReference === referenceConstructor.name) {
+    if (isSameConstructor(jsonManagedReference, referenceConstructor)) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
       for(let k of metadataKeys) {
         if (k.startsWith("jackson:JsonBackReference:")) {
@@ -244,18 +272,18 @@ function stringifyJsonBackReference(replacement, obj, key) {
       else if (replacement[key] instanceof Array && replacement[key].length == 0)
         referenceConstructor = {};
       else
-      referenceConstructor = replacement[key].constructor;
+        referenceConstructor = replacement[key].constructor;
     }
     else
       referenceConstructor = {};
-      
-    if (jsonBackReference === referenceConstructor.name) {
+    
+    if (isSameConstructor(jsonBackReference, referenceConstructor)) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
-      for(let k of metadataKeys) {
+      for(const k of metadataKeys) {
         if (k.startsWith("jackson:JsonManagedReference:")) {
-          let propertyKey = k.replace("jackson:JsonManagedReference:", '');
+          const propertyKey = k.replace("jackson:JsonManagedReference:", '');
           if (replacement[key] instanceof Array) {
-            for(let index in replacement[key]) {
+            for(const index in replacement[key]) {
               replacement[key][index] = cloneClassInstance(obj[key][index]);
               delete replacement[key][index][propertyKey];
             }
@@ -271,14 +299,100 @@ function stringifyJsonBackReference(replacement, obj, key) {
   }
 }
 
+function stringifyJsonTypeInfo(replacement, obj) {
+  const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", obj.constructor);
+  if (jsonTypeInfo) {
+    let jsonTypeName;
+
+    const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", obj.constructor);
+    if (jsonSubTypes) {
+      for(const subType of jsonSubTypes) {
+        if(subType.name && isSameConstructor(subType.value, obj.constructor)) {
+          jsonTypeName = subType.name;
+          break;
+        }
+      }
+    }
+    
+    if (!jsonTypeName)
+      jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", obj.constructor);
+
+    switch(jsonTypeInfo.use) {
+      case 0:
+        jsonTypeName = obj.constructor.name;
+        break;
+    }
+
+    let newReplacement;
+    switch(jsonTypeInfo.include) {
+      case 0:
+        replacement[jsonTypeInfo.property] = jsonTypeName;
+        break;
+      case 1:
+        newReplacement = {};
+        newReplacement[jsonTypeName] = replacement;
+        replacement = newReplacement;
+        break;
+      case 2:
+        newReplacement = [jsonTypeName, replacement];
+        replacement = newReplacement;
+        break;
+    }
+
+  }
+  return replacement;
+}
+
+function stringifyJsonTypeInfoExternalProperty(replacement, obj, key) {
+  if (obj[key] && typeof obj[key] === "object") {
+
+    const ctor = (obj[key] instanceof Array && obj[key].length > 0) ? obj[key][0].constructor : ( (obj[key] instanceof Array && obj[key].length === 0) ? null : obj[key].constructor);
+
+    if (ctor) {  
+      const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", ctor);
+
+      if (jsonTypeInfo && jsonTypeInfo.include === 3) {
+        let jsonTypeName;
+    
+        const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", obj.constructor);
+        if (jsonSubTypes) {
+          for(const subType of jsonSubTypes) {
+            if(subType.name && isSameConstructor(subType.value, obj.constructor)) {
+              jsonTypeName = subType.name;
+              break;
+            }
+          }
+        }
+        
+        if (!jsonTypeName)
+          jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", obj.constructor);
+
+        switch(jsonTypeInfo.use) {
+          case 0:
+            jsonTypeName = ctor.name;
+            break;
+        }
+
+        replacement[jsonTypeInfo.property] = jsonTypeName;
+      }
+    }
+  }
+}
+
 function parseJsonCreator(reviver, options, obj) {
   if (obj) {
+    const jsonTypeInfo = parseJsonTypeInfo(options, obj);
+    if (jsonTypeInfo) {
+      options.mainCreator = jsonTypeInfo.creator;
+      obj = jsonTypeInfo.newObj;
+    }
+
     const hasJsonCreator = Reflect.hasMetadata("jackson:JsonCreator", options.mainCreator);
 
     const jsonCreator = (hasJsonCreator) ? Reflect.getMetadata("jackson:JsonCreator", options.mainCreator) : options.mainCreator;
 
     const method = (hasJsonCreator) ? ((jsonCreator.constructor) ? jsonCreator.constructor : jsonCreator.method) : jsonCreator;
-
+    
     let args = [];
     let argNames = getArgumentNames(method, !!jsonCreator.constructor);
 
@@ -302,7 +416,7 @@ function parseJsonCreator(reviver, options, obj) {
     }
     
     let instance = (jsonCreator.constructor) ? new method(...args) : method(...args);
-
+    
     // copy remaining properties and ignore the ones that are not part of "instance"
     let keys = Object.keys(obj).filter(n => !argNames.includes(n));
     for (let key of keys)
@@ -337,16 +451,15 @@ function parseJsonRootName(replacement, reviver, options) {
   return replacement;
 }
 
-function parsePrepareMethodArg(reviver, options, obj, key, aaaa) {
+function parsePrepareMethodArg(reviver, options, obj, key) {
   const jsonManagedReference = Reflect.getMetadata("jackson:JsonManagedReference", options.mainCreator, key);
   const jsonBackReference = Reflect.getMetadata("jackson:JsonBackReference", options.mainCreator, key);
-  const jsonReference = jsonManagedReference || jsonBackReference;
+  const jsonReference = (jsonManagedReference) ? jsonManagedReference : jsonBackReference;
   
   if (jsonReference) {
-    
     let referenceCreator = options.mainCreator;
     for(let constr of options.otherCreators) {
-      if (constr.name === jsonReference) {
+      if (isSameConstructor(jsonReference, constr)) {
         referenceCreator = constr;
         break;
       }
@@ -354,35 +467,41 @@ function parsePrepareMethodArg(reviver, options, obj, key, aaaa) {
     
     let newOptions = Object.assign(options);
     newOptions.mainCreator = referenceCreator;
-
     return deepParse(key, obj[key], reviver, options);
   }
   return obj[key];
+}
+
+function parseJsonReferences(replacement, reviver, options, obj, key) {
+  const jsonManagedReference = Reflect.getMetadata("jackson:JsonManagedReference", replacement.constructor, key);
+  const jsonBackReference = Reflect.getMetadata("jackson:JsonBackReference", replacement.constructor, key);
+  const jsonReference = (jsonManagedReference) ? jsonManagedReference : jsonBackReference;
+  let referenceConstructor = {};
+  
+  if (jsonReference && replacement[key]) {
+    if (replacement[key] instanceof Array && replacement[key].length > 0 && replacement[key][0]) {
+      if (!isSameConstructor(jsonReference, replacement[key][0].constructor) && !isExtensionOf(jsonReference, replacement[key][0].constructor))
+        replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
+      referenceConstructor = replacement[key][0].constructor;
+    }
+    else if (replacement[key] instanceof Array && replacement[key].length == 0)
+      referenceConstructor = {};
+    else {
+      if (!isSameConstructor(jsonReference, replacement[key].constructor) && !isExtensionOf(jsonReference, replacement[key].constructor)) {
+        replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
+      }
+      referenceConstructor = replacement[key].constructor;
+    }
+  }
+  return referenceConstructor;
 }
 
 function parseJsonManagedReference(replacement, reviver, options, obj, key) {
   const jsonManagedReference = Reflect.getMetadata("jackson:JsonManagedReference", replacement.constructor, key);
   if (jsonManagedReference) {
     
-    let referenceConstructor;
-    if (replacement[key]) {
-      if (replacement[key] instanceof Array && replacement[key].length > 0 && replacement[key][0]) {
-        if (jsonManagedReference !== replacement[key][0].constructor.name)
-          replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-        referenceConstructor = replacement[key][0].constructor;
-      }
-      else if (replacement[key] instanceof Array && replacement[key].length == 0)
-        referenceConstructor = {};
-      else {
-        if (jsonManagedReference !== replacement[key].constructor.name)
-          replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-        referenceConstructor = replacement[key].constructor;
-      }
-    }
-    else
-      referenceConstructor = {};
-      
-    if (jsonManagedReference === referenceConstructor.name) {
+    let referenceConstructor = parseJsonReferences(replacement, reviver, options, obj, key);
+    if (isSameConstructor(jsonManagedReference, referenceConstructor)) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
       for(let k of metadataKeys) {
         if (k.startsWith("jackson:JsonBackReference:")) {
@@ -398,6 +517,7 @@ function parseJsonManagedReference(replacement, reviver, options, obj, key) {
         }
       }
     }
+
   }
 }
 
@@ -405,25 +525,8 @@ function parseJsonBackReference(replacement, reviver, options, obj, key) {
   const jsonBackReference = Reflect.getMetadata("jackson:JsonBackReference", replacement.constructor, key);
   if (jsonBackReference) {
     
-    let referenceConstructor;
-    if (replacement[key]) {
-      if (replacement[key] instanceof Array && replacement[key].length > 0) {
-        if (jsonBackReference !== replacement[key][0].constructor.name)
-          replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-        referenceConstructor = replacement[key][0].constructor;
-      }
-      else if (replacement[key] instanceof Array && replacement[key].length == 0)
-        referenceConstructor = {};
-      else {
-        if (jsonBackReference !== replacement[key].constructor.name)
-          replacement[key] = parsePrepareMethodArg(reviver, options, obj, key);
-        referenceConstructor = replacement[key].constructor;
-      }
-    }
-    else
-      referenceConstructor = {};
-
-    if (jsonBackReference === referenceConstructor.name) {
+    let referenceConstructor = parseJsonReferences(replacement, reviver, options, obj, key);
+    if (isSameConstructor(jsonBackReference, referenceConstructor)) {
       const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
       for(let k of metadataKeys) {
         if (k.startsWith("jackson:JsonManagedReference:")) {
@@ -439,6 +542,7 @@ function parseJsonBackReference(replacement, reviver, options, obj, key) {
         }
       }
     }
+
   }
 }
 
@@ -479,4 +583,85 @@ function parseHasJsonIgnore(options, key) {
 
 function parseJsonIgnoreType(options) {
   return Reflect.hasMetadata("jackson:JsonIgnoreType", options.mainCreator);
+}
+
+function parseJsonTypeInfo(options, obj) {
+  const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", options.mainCreator);
+  
+  if (jsonTypeInfo) {
+    let jsonTypeName;
+    let jsonTypeInfoProperty;
+    let newObj = obj;
+    
+    switch(jsonTypeInfo.include) {
+      case 0:
+        jsonTypeInfoProperty = obj[jsonTypeInfo.property];
+        break;
+      case 1:
+        jsonTypeInfoProperty = Object.keys(obj)[0];
+        newObj = obj[jsonTypeInfoProperty];
+        break;
+      case 2:
+        jsonTypeInfoProperty = obj[0];
+        newObj = obj[1];
+        break;
+    }
+    
+    const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", options.mainCreator);
+
+    if (jsonSubTypes) 
+      for(const subType of jsonSubTypes)
+        if(jsonTypeInfoProperty === subType.name)
+          jsonTypeName = subType.value;
+    
+    if (!jsonTypeName) {
+      jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", options.mainCreator);
+      switch(jsonTypeInfo.use) {
+        case 0:
+          jsonTypeName = options.mainCreator.name;
+          break;
+      }
+    }
+
+    for (const creator of options.otherCreators)
+      if (isSameConstructor(jsonTypeName, creator))
+        return {creator, newObj};
+
+  }
+}
+
+function parseJsonTypeInfoExternalProperty(replacement, options, key) {
+  if (obj[key] && typeof obj[key] === "object") {
+
+    const ctor = (obj[key] instanceof Array && obj[key].length > 0) ? obj[key][0].constructor : ( (obj[key] instanceof Array && obj[key].length === 0) ? null : obj[key].constructor);
+
+    if (ctor) {  
+      const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", ctor);
+
+      if (jsonTypeInfo && jsonTypeInfo.include === 3) {
+        let jsonTypeName;
+    
+        const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", options.mainCreator);
+        if (jsonSubTypes) {
+          for(const subType of jsonSubTypes) {
+            if(subType.name && isSameConstructor(subType.value, options.mainCreator)) {
+              jsonTypeName = subType.name;
+              break;
+            }
+          }
+        }
+        
+        if (!jsonTypeName)
+          jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", options.mainCreator);
+
+        switch(jsonTypeInfo.use) {
+          case 0:
+            jsonTypeName = ctor.name;
+            break;
+        }
+
+        replacement[jsonTypeInfo.property] = jsonTypeName;
+      }
+    }
+  }
 }

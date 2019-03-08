@@ -13,6 +13,10 @@ import {JsonDeserialize} from './annotations/JsonDeserialize';
 import {JsonIgnore} from './annotations/JsonIgnore';
 import {JsonIgnoreProperties} from './annotations/JsonIgnoreProperties';
 import {JsonIgnoreType} from './annotations/JsonIgnoreType';
+import {JsonInclude} from './annotations/JsonInclude';
+import {JsonTypeInfo} from './annotations/JsonTypeInfo';
+import {JsonTypeName} from './annotations/JsonTypeName';
+import {JsonSubTypes} from './annotations/JsonSubTypes';
 import {stringify, parse} from './jackson';
 
 class DateSerializer {
@@ -31,6 +35,7 @@ class DateSerializer {
 
 //@JsonRootName
 //@JsonIgnoreType
+@JsonTypeInfo({use: JsonTypeInfo.Id.CLASS, include: JsonTypeInfo.As.PROPERTY, property: 'example2_type'})
 class Example2 {
   
   name = "";
@@ -40,7 +45,7 @@ class Example2 {
   @JsonDeserialize({using: DateSerializer.deserializeDate})
   date = new Date();
 
-  @JsonBackReference({value: "Example"})
+  //@JsonBackReference({value: "Example3"})
   example;
 
   constructor (name, age, date, example) {
@@ -63,17 +68,23 @@ class Example2 {
 
 //@JsonCreator
 //@JsonIgnoreType
-@JsonRootName
+//@JsonRootName
 @JsonPropertyOrder({value: ["example2", "test2", "name"]})
+//@JsonInclude({value: JsonInclude.Include.NON_EMPTY})
 // @JsonIgnoreProperties({
 //   value: ["age", "username"],
 //   allowGetters: true
 // })
+@JsonTypeInfo({use: JsonTypeInfo.Id.NAME, include: JsonTypeInfo.As.PROPERTY})
+@JsonSubTypes({value: [
+  {value: "Example3", name: 'custom_type_name'}
+]})
 class Example {
   //@JsonIgnore
   @JsonProperty({value: "username"})
   name = "pippo";
 
+  //@JsonInclude({value: JsonInclude.Include.NON_NULL})
   age = 5;
 
   mTest = false;
@@ -83,15 +94,15 @@ class Example {
   @JsonProperty({value: "property_test"})
   testValue = '{"asd": 5}';
 
-  @JsonManagedReference({value: "Example2"})
-  example2;
+  @JsonManagedReference({value: Example2})
+  example2_references;
 
-  constructor (name, age, test, example2) {
+  constructor (name, age, test, example2_references) {
     this.name = name;
     this.age = age;
     this.mTest = test;
     this.test2 = !test;
-    this.example2 = example2;
+    this.example2_references = example2_references;
   }
 
   //@JsonAnyGetter({enabled: false})
@@ -104,18 +115,27 @@ class Example {
   @JsonCreator({
     properties: {"name2": "username"}
   })
-  static creator(name2, age, test/*, example2*/) {
-    return new Example(name2, age, test/*, example2*/);
+  static creator(name2, age, test/*, example2_references*/) {
+    return new Example(name2, age, test/*, example2_references*/);
   }
+}
+
+//@JsonRootName
+@JsonCreator
+//@JsonTypeName({value: "example3"})
+class Example3 extends Example {
+  new_property = 344443434
 }
 
 let test = new Example2("test 1", 20, new Date());
 let test2 = new Example2("test 2", 40, new Date());
-let a = new Example("my name", 45, false);
-a.example2 = [test, test2];
+//let a = new Example("my name", 45, '');
+let a = new Example3("my name", null, '');
+//a.example2_references = [test, test2];
+a.example2_references = test;
 //let a = new Example("my name", 45, false);
-test.example = a;
-test2.example = a;
+//test.example = a;
+//test2.example = a;
 a.testValue = "{\"test\": 100}";
 
 // let stringified1 = stringify(test, null, "\t");
@@ -124,7 +144,8 @@ a.testValue = "{\"test\": 100}";
 
 let stringified2 = stringify(a, null, "\t");
 console.log(stringified2)
-console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
+//console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
+console.log(parse(stringified2, null, { mainCreator: Example3, otherCreators: [Example2] }));
 
 // class Address {
 // 	@JsonProperty({value: "village"})
@@ -169,6 +190,53 @@ console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Ex
 // console.log(parse(stringified3, null, { mainCreator: Address, otherCreators: [] }));
 //console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }));
 
+
+
+@JsonTypeInfo({use: JsonTypeInfo.Id.NAME, include: JsonTypeInfo.As.PROPERTY})
+@JsonSubTypes({value: 
+  [
+    {value: "Rectangle", name: "rectangle"},
+    {value: "Circle", name: "circle"}
+  ]
+})
+class Shape {
+
+}
+
+@JsonTypeName("rectangle")
+class Rectangle extends Shape {
+  w;
+  h;
+  constructor(w, h) {
+    super();
+    this.w = w;
+    this.h = h;
+  }
+}
+
+@JsonTypeName("circle")
+class Circle extends Shape {
+  radius;
+  constructor(radius) {
+    super();
+    this.radius = radius;
+  }
+}
+
+class View {
+  @JsonManagedReference({value: Shape})
+  shapes = [];
+  constructor(shapes) {
+    this.shapes = shapes;
+  }
+}
+
+// let view = new View();
+// view.shapes = [new Rectangle(10,20), new Circle(5)];
+// let stringified4 = stringify(view, null, "\t");
+// console.log(stringified4)
+// console.log(parse(stringified4, null, { mainCreator: View, otherCreators: [Circle, Rectangle, Shape] }));
+
 module.export = {
   JsonAnyGetter,
   JsonProperty,
@@ -184,5 +252,9 @@ module.export = {
   JsonDeserialize,
   JsonIgnore,
   JsonIgnoreProperties,
-  JsonIgnoreType
+  JsonIgnoreType,
+  JsonInclude,
+  JsonTypeInfo,
+  JsonTypeName,
+  JsonSubTypes
 }
