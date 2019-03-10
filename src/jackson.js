@@ -7,7 +7,7 @@ dayjs.extend(customParseFormat);
 
 export const day_js = dayjs;
 
-export function stringify(obj, replacer, format) {
+export function stringify(obj, replacer, format, options) {
   return JSON.stringify(obj, (key, value=null) => {
     if (value && typeof value === 'object' && !(value instanceof Array)) {
       if (stringifyJsonIgnoreType(value))
@@ -22,7 +22,7 @@ export function stringify(obj, replacer, format) {
         replacement = {};
         let keys = stringifyJsonPropertyOrder(value);
         for (let k of keys) {
-          if (!stringifyHasJsonIgnore(value, k) && !stringifyJsonInclude(value, k) && Object.hasOwnProperty.call(value, k)) {
+          if (!stringifyHasJsonIgnore(value, k) && !stringifyJsonInclude(value, k) && stringifyHasJsonView(value, k, options) && Object.hasOwnProperty.call(value, k)) {
             replacement[k] = value[k];
             stringifyJsonFormat(replacement, value, k);
             stringifyJsonSerialize(replacement, value, k);
@@ -79,7 +79,7 @@ function deepParse(key, value, reviver, options) {
     
     for (let k in replacement) {
       if (Object.hasOwnProperty.call(replacement, k)) {
-        if (parseHasJsonIgnore(options, k)) {
+        if (parseHasJsonIgnore(options, k) || !parseHasJsonView(options, k)) {
           delete replacement[k];
         }
         else {
@@ -396,6 +396,15 @@ function stringifyJsonFormat(replacement, obj, key) {
   }
 }
 
+function stringifyHasJsonView(obj, key, options) {
+  if (options.view) {
+    const jsonView = Reflect.getMetadata("jackson:JsonView", obj.constructor, key);
+    if (jsonView) {
+      return isSameConstructor(jsonView, options.view) || isExtensionOf(jsonView, options.view);
+    }
+  }
+  return true;
+}
 
 function parseJsonCreator(reviver, options, obj) {
   if (obj) {
@@ -646,4 +655,14 @@ function parseJsonTypeInfo(options, obj) {
         return {creator, newObj};
 
   }
+}
+
+function parseHasJsonView(options, key) {
+  if (options.view) {
+    const jsonView = Reflect.getMetadata("jackson:JsonView", options.mainCreator, key);
+    if (jsonView) {
+      return isSameConstructor(jsonView, options.view) || isExtensionOf(jsonView, options.view);
+    }
+  }
+  return true;
 }

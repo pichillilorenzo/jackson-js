@@ -100,5 +100,7 @@ export function isExtensionOf(ctor, ctorExtensionOf) {
       parent = Object.getPrototypeOf(parent);
     }
   }
-  return ctor !== ctorExtensionOf && ctorExtensionOf.prototype instanceof ctor;
+  else
+    return ctor !== ctorExtensionOf && ctorExtensionOf.prototype instanceof ctor;
+  return false;
 }

@@ -18,6 +18,7 @@ import {JsonTypeInfo} from './annotations/JsonTypeInfo';
 import {JsonTypeName} from './annotations/JsonTypeName';
 import {JsonSubTypes} from './annotations/JsonSubTypes';
 import {JsonFormat} from './annotations/JsonFormat';
+import {JsonView} from './annotations/JsonView';
 import {stringify, parse, day_js} from './jackson';
 
 class DateSerializer {
@@ -265,6 +266,35 @@ class Event {
 // console.log(stringified5)
 // console.log(parse(stringified5, null, { mainCreator: Event }));
 
+class Public {}
+class Internal extends Public {}
+class Views {
+  static public = Public;
+  static internal = Internal;
+}
+
+class Item {
+  
+  @JsonView({value: "Public"})
+  id;
+
+  @JsonView({value: Views.public})
+  itemName;
+
+  @JsonView({value: Views.internal})
+  ownerName;
+
+  constructor(id, itemName, ownerName) {
+    this.id = id;
+    this.itemName = itemName;
+    this.ownerName = ownerName;
+  }
+}
+
+let item = new Item(2, "book", "John");
+let stringified6 = stringify(item, null, "\t", { view: Views.internal });
+console.log(stringified6)
+console.log(parse(stringified6, null, { mainCreator: Item, view: Views.public }));
 
 module.export = {
   JsonAnyGetter,
@@ -286,5 +316,6 @@ module.export = {
   JsonTypeInfo,
   JsonTypeName,
   JsonSubTypes,
-  JsonFormat
+  JsonFormat,
+  JsonView
 }
