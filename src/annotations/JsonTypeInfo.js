@@ -33,7 +33,6 @@ Object.defineProperty(JsonTypeInfo, "As", {
   value: {
     PROPERTY: 0,
     WRAPPER_OBJECT: 1,
-    WRAPPER_ARRAY: 2,
-    EXTERNAL_PROPERTY: 3
+    WRAPPER_ARRAY: 2
   }
 });

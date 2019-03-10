@@ -1,5 +1,11 @@
 import "reflect-metadata";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { getArgumentNames, cloneClassInstance, isSameConstructor, isExtensionOf } from './util';
+
+dayjs.extend(customParseFormat);
+
+export const day_js = dayjs;
 
 export function stringify(obj, replacer, format) {
   return JSON.stringify(obj, (key, value=null) => {
@@ -18,7 +24,7 @@ export function stringify(obj, replacer, format) {
         for (let k of keys) {
           if (!stringifyHasJsonIgnore(value, k) && !stringifyJsonInclude(value, k) && Object.hasOwnProperty.call(value, k)) {
             replacement[k] = value[k];
-            stringifyJsonTypeInfoExternalProperty(replacement, value, k);
+            stringifyJsonFormat(replacement, value, k);
             stringifyJsonSerialize(replacement, value, k);
             stringifyJsonRawValue(replacement, value, k);
             stringifyJsonProperty(replacement, value, k);
@@ -343,41 +349,53 @@ function stringifyJsonTypeInfo(replacement, obj) {
   return replacement;
 }
 
-function stringifyJsonTypeInfoExternalProperty(replacement, obj, key) {
-  if (obj[key] && typeof obj[key] === "object") {
-
-    const ctor = (obj[key] instanceof Array && obj[key].length > 0) ? obj[key][0].constructor : ( (obj[key] instanceof Array && obj[key].length === 0) ? null : obj[key].constructor);
-
-    if (ctor) {  
-      const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", ctor);
-
-      if (jsonTypeInfo && jsonTypeInfo.include === 3) {
-        let jsonTypeName;
-    
-        const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", obj.constructor);
-        if (jsonSubTypes) {
-          for(const subType of jsonSubTypes) {
-            if(subType.name && isSameConstructor(subType.value, obj.constructor)) {
-              jsonTypeName = subType.name;
-              break;
-            }
-          }
+function stringifyJsonFormat(replacement, obj, key) {
+  const jsonFormat = Reflect.getMetadata("jackson:JsonFormat", obj, key);
+  
+  if (jsonFormat) {
+    switch(jsonFormat.shape) {
+      case 1:
+        if (typeof replacement[key] === "object")
+          replacement[key] = Object.values(replacement[key]);
+        else
+          replacement[key] = [replacement[key]];
+        break;
+      case 2:
+        replacement[key] = !!replacement[key];
+        break;
+      case 3:
+        if (replacement[key] instanceof Date)
+          replacement[key] = parseFloat(replacement[key].getTime());
+        else
+          replacement[key] = parseFloat(replacement[key]);
+        break;
+      case 4:
+        if (replacement[key] instanceof Date)
+          replacement[key] = replacement[key].getTime();
+        else
+          replacement[key] = parseInt(replacement[key]);
+        break;
+      case 5:
+        replacement[key] = Object.assign(Object.create(replacement[key]), replacement[key]);
+        break;
+      case 6:
+        if (typeof replacement[key] === "object")
+          replacement[key] = null;
+        break;
+      case 7:
+        if (replacement[key] instanceof Date) {
+          const locale = jsonFormat.locale;
+          require('dayjs/locale/'+locale);
+          const timezone = (jsonFormat.timezone) ? { timeZone: jsonFormat.timezone } : {};
+          replacement[key] = dayjs(replacement[key].toLocaleString('en-US', timezone)).locale(locale).format(jsonFormat.pattern);
         }
-        
-        if (!jsonTypeName)
-          jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", obj.constructor);
-
-        switch(jsonTypeInfo.use) {
-          case 0:
-            jsonTypeName = ctor.name;
-            break;
-        }
-
-        replacement[jsonTypeInfo.property] = jsonTypeName;
-      }
+        else
+          replacement[key] = replacement[key].toString();
+        break;
     }
   }
 }
+
 
 function parseJsonCreator(reviver, options, obj) {
   if (obj) {
@@ -627,41 +645,5 @@ function parseJsonTypeInfo(options, obj) {
       if (isSameConstructor(jsonTypeName, creator))
         return {creator, newObj};
 
-  }
-}
-
-function parseJsonTypeInfoExternalProperty(replacement, options, key) {
-  if (obj[key] && typeof obj[key] === "object") {
-
-    const ctor = (obj[key] instanceof Array && obj[key].length > 0) ? obj[key][0].constructor : ( (obj[key] instanceof Array && obj[key].length === 0) ? null : obj[key].constructor);
-
-    if (ctor) {  
-      const jsonTypeInfo = Reflect.getMetadata("jackson:JsonTypeInfo", ctor);
-
-      if (jsonTypeInfo && jsonTypeInfo.include === 3) {
-        let jsonTypeName;
-    
-        const jsonSubTypes = Reflect.getMetadata("jackson:JsonSubTypes", options.mainCreator);
-        if (jsonSubTypes) {
-          for(const subType of jsonSubTypes) {
-            if(subType.name && isSameConstructor(subType.value, options.mainCreator)) {
-              jsonTypeName = subType.name;
-              break;
-            }
-          }
-        }
-        
-        if (!jsonTypeName)
-          jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", options.mainCreator);
-
-        switch(jsonTypeInfo.use) {
-          case 0:
-            jsonTypeName = ctor.name;
-            break;
-        }
-
-        replacement[jsonTypeInfo.property] = jsonTypeName;
-      }
-    }
   }
 }

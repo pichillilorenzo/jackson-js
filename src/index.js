@@ -17,7 +17,8 @@ import {JsonInclude} from './annotations/JsonInclude';
 import {JsonTypeInfo} from './annotations/JsonTypeInfo';
 import {JsonTypeName} from './annotations/JsonTypeName';
 import {JsonSubTypes} from './annotations/JsonSubTypes';
-import {stringify, parse} from './jackson';
+import {JsonFormat} from './annotations/JsonFormat';
+import {stringify, parse, day_js} from './jackson';
 
 class DateSerializer {
   static serializeDate(date) {
@@ -142,10 +143,10 @@ a.testValue = "{\"test\": 100}";
 // console.log(stringified1)
 // console.log(parse(stringified1, null, { mainCreator: Example2, otherCreators: [Example] }));
 
-let stringified2 = stringify(a, null, "\t");
-console.log(stringified2)
-//console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
-console.log(parse(stringified2, null, { mainCreator: Example3, otherCreators: [Example2] }));
+// let stringified2 = stringify(a, null, "\t");
+// console.log(stringified2)
+// //console.log(parse(stringified2, null, { mainCreator: Example, otherCreators: [Example2] }));
+// console.log(parse(stringified2, null, { mainCreator: Example3, otherCreators: [Example2] }));
 
 // class Address {
 // 	@JsonProperty({value: "village"})
@@ -188,7 +189,7 @@ console.log(parse(stringified2, null, { mainCreator: Example3, otherCreators: [E
 // let stringified3 = stringify(address, null, '\t')
 // console.log(stringified3);
 // console.log(parse(stringified3, null, { mainCreator: Address, otherCreators: [] }));
-//console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }));
+// console.log(parse(jsonData, null, { mainCreator: Address, otherCreators: [] }));
 
 
 
@@ -224,6 +225,13 @@ class Circle extends Shape {
 }
 
 class View {
+
+  @JsonFormat({
+    shape: JsonFormat.Shape.OBJECT
+  })
+  @JsonDeserialize({using: (shapes) => { 
+    return Object.values(shapes); 
+  }})
   @JsonManagedReference({value: Shape})
   shapes = [];
   constructor(shapes) {
@@ -236,6 +244,27 @@ class View {
 // let stringified4 = stringify(view, null, "\t");
 // console.log(stringified4)
 // console.log(parse(stringified4, null, { mainCreator: View, otherCreators: [Circle, Rectangle, Shape] }));
+
+class Event {
+  name;
+
+  @JsonFormat({
+    shape: JsonFormat.Shape.STRING,
+    locale: 'es',
+    pattern: "dddd YYYY-MM-DDTHH:mm:ssZ[Z]",
+    timezone: "America/New_York"
+  })
+  @JsonDeserialize({using: (date) => { return day_js(date, "dddd YYYY-MM-DDTHH:mm:ssZ[Z]").toDate(); }})
+  eventDate;
+}
+
+// let event = new Event();
+// event.name = "Event 1";
+// event.eventDate = new Date();
+// let stringified5 = stringify(event, null, "\t");
+// console.log(stringified5)
+// console.log(parse(stringified5, null, { mainCreator: Event }));
+
 
 module.export = {
   JsonAnyGetter,
@@ -256,5 +285,6 @@ module.export = {
   JsonInclude,
   JsonTypeInfo,
   JsonTypeName,
-  JsonSubTypes
+  JsonSubTypes,
+  JsonFormat
 }
