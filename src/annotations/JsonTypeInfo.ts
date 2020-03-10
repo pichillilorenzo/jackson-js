@@ -3,14 +3,14 @@ import "reflect-metadata";
 import {JsonTypeInfoOptions} from "../@types";
 
 export enum JsonTypeInfoId {
-  CLASS = 0,
-  NAME = 1,
+  CLASS,
+  NAME
 }
 
 export enum JsonTypeInfoAs {
-  PROPERTY = 0,
-  WRAPPER_OBJECT = 1,
-  WRAPPER_ARRAY = 2
+  PROPERTY,
+  WRAPPER_OBJECT,
+  WRAPPER_ARRAY
 }
 
 export const JsonTypeInfo = makeDecorator2(

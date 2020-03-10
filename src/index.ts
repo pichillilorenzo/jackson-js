@@ -1,5 +1,5 @@
 import {JsonAnyGetter} from './annotations/JsonAnyGetter';
-import {JsonProperty} from './annotations/JsonProperty';
+import {JsonProperty, JsonPropertyAccess} from './annotations/JsonProperty';
 import {JsonPropertyOrder} from './annotations/JsonPropertyOrder';
 import {JsonRawValue} from './annotations/JsonRawValue';
 import {JsonValue} from './annotations/JsonValue';
@@ -21,6 +21,7 @@ import {JsonFormat, JsonFormatShape} from './annotations/JsonFormat';
 import {JsonView} from './annotations/JsonView';
 import {stringify, parse, day_js} from './jackson';
 import { throwStatement } from '@babel/types';
+import {JsonAlias} from "./annotations/JsonAlias";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -197,11 +198,11 @@ class View {
   }
 }
 
-let view = new View([]);
-view.shapes = [new Rectangle(10,20), new Circle(5)];
-let stringified4 = stringify(view, null, "\t");
-console.log(stringified4)
-console.log(parse(stringified4, null, { mainCreator: View, otherCreators: [Circle, Rectangle, Shape] }));
+// let view = new View([]);
+// view.shapes = [new Rectangle(10,20), new Circle(5)];
+// let stringified4 = stringify(view, null, "\t");
+// console.log(stringified4)
+// console.log(parse(stringified4, null, { mainCreator: View, otherCreators: [Circle, Rectangle, Shape] }));
 
 class Event {
   name;
@@ -315,7 +316,7 @@ class Item3 {
   }
 }
 
-const user = new User(1, "John 1");
+//const user = new User(1, "John 1");
 // const user2 = new User(2, "John 2");
 // const item2 = new Item2(2, "book 1", user);
 // const item3 = new Item3(3, "book 2", user);
@@ -335,9 +336,24 @@ const user = new User(1, "John 1");
 // `, null, { mainCreator: User});
 //console.log(parse(stringified7, null, { mainCreator: User, otherCreators: [Item3, Item2] }));
 
+class TestJsonProperty {
+  @JsonAlias({values: ['username']})
+  name: string;
+}
+
+const testJsonProperty = new TestJsonProperty();
+testJsonProperty.name = 'test';
+console.log(stringify(testJsonProperty, null, '\t'));
+console.log(parse(`
+{
+        "username": "test"
+}
+`, null, {mainCreator: TestJsonProperty}));
+
 exports = {
   JsonAnyGetter,
   JsonProperty,
+  JsonPropertyAccess,
   JsonPropertyOrder,
   JsonRawValue,
   JsonValue,
@@ -359,5 +375,6 @@ exports = {
   JsonSubTypes,
   JsonFormat,
   JsonFormatShape,
-  JsonView
+  JsonView,
+  JsonAlias
 }

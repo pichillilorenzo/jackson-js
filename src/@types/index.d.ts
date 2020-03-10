@@ -1,6 +1,7 @@
 import {JsonTypeInfoAs, JsonTypeInfoId} from "../annotations/JsonTypeInfo";
 import {JsonIncludeType} from "../annotations/JsonInclude";
 import {JsonFormatShape} from "../annotations/JsonFormat";
+import {JsonPropertyAccess} from "../annotations/JsonProperty";
 
 declare interface JsonAnnotationOptions {
 }
@@ -59,8 +60,11 @@ declare interface JsonManagedReferenceOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonPropertyOptions extends JsonAnnotationOptions {
+  class?: (...args) => Object,
   value?: any,
-  defaultValue?: any
+  defaultValue?: any,
+  access?: JsonPropertyAccess,
+  required?: boolean
 }
 
 declare interface JsonPropertyOrderOptions extends JsonAnnotationOptions {
@@ -105,4 +109,8 @@ declare interface JsonValueOptions extends JsonAnnotationOptions {
 
 declare interface JsonViewOptions extends JsonAnnotationOptions {
   value?: (...args) => Object
+}
+
+declare interface JsonAliasOptions extends JsonAnnotationOptions {
+  values: string[]
 }

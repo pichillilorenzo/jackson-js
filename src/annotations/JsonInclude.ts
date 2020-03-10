@@ -3,9 +3,9 @@ import "reflect-metadata";
 import {JsonIncludeOptions} from "../@types";
 
 export enum JsonIncludeType {
-  ALWAYS = 0,
-  NON_EMPTY = 1,
-  NON_NULL = 2
+  ALWAYS,
+  NON_EMPTY,
+  NON_NULL
 }
 
 export const JsonInclude = makeDecorator2(

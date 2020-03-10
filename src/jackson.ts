@@ -1,17 +1,25 @@
 import "reflect-metadata";
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { getArgumentNames, cloneClassInstance, isSameConstructor, isExtensionOf } from './util';
+import {cloneClassInstance, getArgumentNames, isExtensionOf, isSameConstructor} from './util';
 import {
-  JsonBackReferenceOptions, JsonFormatOptions,
-  JsonIgnorePropertiesOptions, JsonIncludeOptions, JsonManagedReferenceOptions,
-  JsonPropertyOptions, JsonPropertyOrderOptions, JsonSubTypeOptions,
-  JsonTypeInfoOptions, JsonViewOptions
+  JsonAliasOptions,
+  JsonBackReferenceOptions,
+  JsonFormatOptions,
+  JsonIgnorePropertiesOptions,
+  JsonIncludeOptions,
+  JsonManagedReferenceOptions,
+  JsonPropertyOptions,
+  JsonPropertyOrderOptions,
+  JsonSubTypeOptions,
+  JsonTypeInfoOptions,
+  JsonViewOptions
 } from "./@types";
 import {JsonIncludeType} from "./annotations/JsonInclude";
 import {JsonTypeInfoAs, JsonTypeInfoId} from "./annotations/JsonTypeInfo";
-import { JsonFormatShape } from './annotations/JsonFormat';
+import {JsonFormatShape} from './annotations/JsonFormat';
 import {JsonCreatorPrivateOptions} from "./annotations/JsonCreator";
+import {JsonPropertyAccess} from "./annotations/JsonProperty";
 
 dayjs.extend(customParseFormat);
 
@@ -76,18 +84,7 @@ function deepParse(key, value, reviver, options) {
     let replacement = value;
     replacement = parseJsonRootName(replacement, reviver, options);
     
-    // convert JsonProperty to Class properties
-    const creatorMetadataKeys = Reflect.getMetadataKeys(options.mainCreator);
-    for(const metadataKey of creatorMetadataKeys) {
-      if (metadataKey.startsWith("jackson:JsonProperty:")) {
-        const metadata: JsonPropertyOptions = Reflect.getMetadata(metadataKey, options.mainCreator);
-        const realKey = metadataKey.replace("jackson:JsonProperty:", "");
-        if (Object.hasOwnProperty.call(replacement, metadata.value)) {
-          replacement[realKey] = replacement[metadata.value];
-          delete replacement[metadata.value];
-        }
-      }
-    }
+    parseJsonPropertyAndJsonAlias(replacement, options);
     
     for (let k in replacement) {
       if (Object.hasOwnProperty.call(replacement, k)) {
@@ -158,10 +155,16 @@ function stringifyJsonPropertyOrder(obj) {
 function stringifyJsonProperty(replacement, obj, key) {
   const jsonProperty: JsonPropertyOptions = Reflect.getMetadata("jackson:JsonProperty", obj, key);
   const hasJsonIgnore = Reflect.hasMetadata("jackson:JsonIgnore", obj.constructor, key);
-  if (jsonProperty && !hasJsonIgnore && jsonProperty.value !== key) {
-    replacement[jsonProperty.value] = replacement[key];
-    delete replacement[key];
-    return true;
+  if (jsonProperty) {
+    const isIgnored = jsonProperty.access === JsonPropertyAccess.WRITE_ONLY ||
+      (jsonProperty.access === JsonPropertyAccess.AUTO && hasJsonIgnore);
+    if (!isIgnored && jsonProperty.value !== key) {
+      replacement[jsonProperty.value] = replacement[key];
+      delete replacement[key];
+      return true;
+    } else if (isIgnored) {
+      delete replacement[key];
+    }
   }
   return false;
 }
@@ -178,7 +181,7 @@ function stringifyJsonRawValue(replacement, obj, key) {
 function stringifyJsonValue(obj) {
   const jsonValue: string = Reflect.getMetadata("jackson:JsonValue", obj);
   if (jsonValue) 
-    return obj[jsonValue]();
+    return (typeof obj[jsonValue] === "function") ? obj[jsonValue]() : obj[jsonValue];
 }
 
 function stringifyJsonRootName(replacement, obj) {
@@ -464,6 +467,9 @@ function parseJsonCreator(reviver, options, obj) {
       const mappedKey = jsonProperty != null ? jsonProperty.value : null;
       if (mappedKey && Object.hasOwnProperty.call(obj, mappedKey))
         args.push(parsePrepareMethodArg(reviver, options, obj, mappedKey));
+      else if (jsonProperty != null && jsonProperty.required) {
+        throw new Error(`Required property ${mappedKey ? mappedKey : key} not found on @JsonConstructor`);
+      }
       else if (Object.hasOwnProperty.call(obj, key))
         args.push(parsePrepareMethodArg(reviver, options, obj, key));
       else if (argIndex < objValues.length)
@@ -490,6 +496,46 @@ function parseJsonCreator(reviver, options, obj) {
     }
     
     return instance;
+  }
+}
+
+function parseJsonPropertyAndJsonAlias(replacement, options) {
+  // convert JsonProperty to Class properties
+  const creatorMetadataKeys = Reflect.getMetadataKeys(options.mainCreator);
+
+  for(const metadataKey of creatorMetadataKeys) {
+    if (metadataKey.startsWith("jackson:JsonProperty:") || metadataKey.startsWith("jackson:JsonAlias:")) {
+
+      const realKey = metadataKey.replace(metadataKey.startsWith("jackson:JsonProperty:") ? "jackson:JsonProperty:" : "jackson:JsonAlias:", "");
+      const jsonProperty: JsonPropertyOptions = Reflect.getMetadata(metadataKey, options.mainCreator);
+      const jsonAlias: JsonAliasOptions = Reflect.getMetadata(metadataKey, options.mainCreator);
+      const hasJsonIgnore = Reflect.hasMetadata("jackson:JsonIgnore", options.mainCreator, realKey);
+
+      const isIgnored = (jsonProperty && (jsonProperty.access === JsonPropertyAccess.READ_ONLY ||
+        (jsonProperty.access === JsonPropertyAccess.AUTO && hasJsonIgnore))) || hasJsonIgnore;
+
+      if (jsonProperty && !isIgnored && Object.hasOwnProperty.call(replacement, jsonProperty.value)) {
+        replacement[realKey] = replacement[jsonProperty.value];
+        if (realKey !== jsonProperty.value) {
+          delete replacement[jsonProperty.value];
+        }
+      } else if (jsonProperty && jsonProperty.required) {
+        throw new Error(`Required property "${jsonProperty.value}" not found!`);
+      } else if (jsonAlias && !isIgnored) {
+        for (const alias of jsonAlias.values) {
+          if (Object.hasOwnProperty.call(replacement, alias)) {
+            replacement[realKey] = replacement[alias];
+            if (realKey !== alias) {
+              delete replacement[alias];
+            }
+            break;
+          }
+        }
+      }
+      else if (isIgnored) {
+        delete replacement[realKey];
+      }
+    }
   }
 }
 
@@ -641,7 +687,9 @@ function parseJsonDeserialize(options, replacement, key) {
 }
 
 function parseHasJsonIgnore(options, key) {
-  let hasJsonIgnore = Reflect.hasMetadata("jackson:JsonIgnore", options.mainCreator, key);
+  const hasJsonIgnore = Reflect.hasMetadata("jackson:JsonIgnore", options.mainCreator, key);
+  const hasJsonProperty = Reflect.hasMetadata("jackson:JsonProperty:" + key, options.mainCreator);
+
   if (!hasJsonIgnore) {
     let jsonIgnoreProperties: JsonIgnorePropertiesOptions = Reflect.getMetadata("jackson:JsonIgnoreProperties", options.mainCreator);
     if (jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters) {
@@ -652,7 +700,7 @@ function parseHasJsonIgnore(options, key) {
         return true;
     }
   }
-  return hasJsonIgnore;
+  return hasJsonIgnore && !hasJsonProperty;
 }
 
 function parseJsonIgnoreType(options) {
