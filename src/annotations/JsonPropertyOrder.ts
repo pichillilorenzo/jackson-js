@@ -1,8 +1,12 @@
-import {makeDecorator2, isClass} from '../util';
+import {makeDecorator, isClass} from '../util';
 import "reflect-metadata";
 import {JsonPropertyOrderOptions} from "../@types";
 
-export const JsonPropertyOrder = makeDecorator2(
+export interface JsonPropertyOrderDecorator {
+  (options?: JsonPropertyOrderOptions): any;
+}
+
+export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeDecorator(
   (o: JsonPropertyOrderOptions): JsonPropertyOrderOptions => ({alphabetic: false, ...o}),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {

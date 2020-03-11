@@ -1,8 +1,12 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonRawValueOptions} from "../@types";
 
-export const JsonRawValue = makeDecorator2(
+export interface JsonRawValueDecorator {
+  (options?: JsonRawValueOptions): any;
+}
+
+export const JsonRawValue: JsonRawValueDecorator = makeDecorator(
   (o: JsonRawValueOptions): JsonRawValueOptions => ({value: true, ...o}),
   (options: JsonRawValueOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey && options.value)

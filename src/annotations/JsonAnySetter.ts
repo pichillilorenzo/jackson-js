@@ -1,8 +1,12 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonAnySetterOptions} from "../@types";
 
-export const JsonAnySetter = makeDecorator2(
+export interface JsonAnySetterDecorator {
+  (options?: JsonAnySetterOptions): any;
+}
+
+export const JsonAnySetter: JsonAnySetterDecorator = makeDecorator(
   (o: JsonAnySetterOptions): JsonAnySetterOptions => ({enabled: true, ...o}),
   (options: JsonAnySetterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey && options.enabled)

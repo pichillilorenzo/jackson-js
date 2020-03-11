@@ -1,4 +1,4 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonFormatOptions} from "../@types";
 
@@ -13,7 +13,11 @@ export enum JsonFormatShape {
   STRING
 }
 
-export const JsonFormat = makeDecorator2(
+export interface JsonFormatDecorator {
+  (options?: JsonFormatOptions): any;
+}
+
+export const JsonFormat: JsonFormatDecorator = makeDecorator(
   (o: JsonFormatOptions): JsonFormatOptions => (
     {
       shape: JsonFormatShape.ANY,

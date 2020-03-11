@@ -1,4 +1,4 @@
-import {isClass, makeDecorator2} from '../util';
+import {isClass, makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonCreatorOptions} from "../@types";
 
@@ -7,8 +7,11 @@ export interface JsonCreatorPrivateOptions extends JsonCreatorOptions {
   method?: Function
 }
 
+export interface JsonCreatorDecorator {
+  (options?: JsonCreatorOptions): any;
+}
 
-export const JsonCreator = makeDecorator2(
+export const JsonCreator: JsonCreatorDecorator = makeDecorator(
   (o: JsonCreatorOptions = {}): JsonCreatorOptions => o,
   (options: JsonCreatorOptions, target, propertyKey, descriptor) => {
     const additionalOptions: JsonCreatorPrivateOptions = {

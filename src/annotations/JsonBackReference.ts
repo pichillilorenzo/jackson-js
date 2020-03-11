@@ -1,8 +1,12 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonBackReferenceOptions} from "../@types";
 
-export const JsonBackReference = makeDecorator2(
+export interface JsonBackReferenceDecorator {
+  (options?: JsonBackReferenceOptions): any;
+}
+
+export const JsonBackReference: JsonBackReferenceDecorator = makeDecorator(
   (o: JsonBackReferenceOptions = {}): JsonBackReferenceOptions => o,
   (options: JsonBackReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.class != null) {

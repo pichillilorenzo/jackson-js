@@ -1,8 +1,12 @@
-import {isClass, makeDecorator2} from '../util';
+import {isClass, makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonIgnorePropertiesOptions} from "../@types";
 
-export const JsonIgnoreProperties = makeDecorator2(
+export interface JsonIgnorePropertiesDecorator {
+  (options?: JsonIgnorePropertiesOptions): any;
+}
+
+export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeDecorator(
   (o: JsonIgnorePropertiesOptions): JsonIgnorePropertiesOptions => (
     {
       allowGetters: false,

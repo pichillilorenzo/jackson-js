@@ -1,4 +1,4 @@
-import {isClass, makeDecorator2} from '../util';
+import {isClass, makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonTypeInfoOptions} from "../@types";
 
@@ -13,7 +13,11 @@ export enum JsonTypeInfoAs {
   WRAPPER_ARRAY
 }
 
-export const JsonTypeInfo = makeDecorator2(
+export interface JsonTypeInfoDecorator {
+  (options?: JsonTypeInfoOptions): any;
+}
+
+export const JsonTypeInfo: JsonTypeInfoDecorator = makeDecorator(
   (o: JsonTypeInfoOptions): JsonTypeInfoOptions => (
     {
       use: JsonTypeInfoId.CLASS,

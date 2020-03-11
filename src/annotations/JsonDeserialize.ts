@@ -1,8 +1,12 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonDeserializeOptions} from "../@types";
 
-export const JsonDeserialize = makeDecorator2(
+export interface JsonDeserializeDecorator {
+  (options?: JsonDeserializeOptions): any;
+}
+
+export const JsonDeserialize: JsonDeserializeDecorator = makeDecorator(
   (o: JsonDeserializeOptions = {}): JsonDeserializeOptions => o,
   (options: JsonDeserializeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey && options.using)

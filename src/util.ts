@@ -16,21 +16,7 @@ export function isClass(obj): boolean {
   return isCtorClass || isPrototypeCtorClass
 }
 
-export function makeDecorator<T>(defaultOptions: JsonAnnotationOptions, optionsOrTarget: JsonAnnotationOptions | Object, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<T>, decorator?: JsonAnnotationDecorator): any {
-  if (typeof optionsOrTarget === "function" || propertyKey != null || descriptor != null) {
-    const target = optionsOrTarget;
-    return decorator(defaultOptions, target, propertyKey, descriptor);
-  }
-  else {
-    let options = optionsOrTarget;
-    options = Object.assign(defaultOptions, options);
-    return function (target, propertyKey, descriptor) {
-      return decorator(options, target, propertyKey, descriptor);
-    }
-  }
-}
-
-export function makeDecorator2<T>(
+export function makeDecorator<T>(
   options: (...args: any[]) => JsonAnnotationOptions,
   decorator: JsonAnnotationDecorator): any {
   function DecoratorFactory(...args: any[]) {

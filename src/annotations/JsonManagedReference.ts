@@ -1,8 +1,12 @@
-import {makeDecorator2, makeDecorator} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonManagedReferenceOptions} from "../@types";
 
-export const JsonManagedReference = makeDecorator2(
+export interface JsonManagedReferenceDecorator {
+  (options?: JsonManagedReferenceOptions): any;
+}
+
+export const JsonManagedReference: JsonManagedReferenceDecorator = makeDecorator(
   (o: JsonManagedReferenceOptions = {}): JsonManagedReferenceOptions => o,
   (options: JsonManagedReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.class != null) {

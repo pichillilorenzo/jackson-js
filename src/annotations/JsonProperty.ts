@@ -1,4 +1,4 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonPropertyOptions} from "../@types";
 
@@ -9,7 +9,11 @@ export enum JsonPropertyAccess {
   AUTO
 }
 
-export const JsonProperty = makeDecorator2(
+export interface JsonPropertyDecorator {
+  (options?: JsonPropertyOptions): any;
+}
+
+export const JsonProperty: JsonPropertyDecorator = makeDecorator(
   (o: JsonPropertyOptions = {}): JsonPropertyOptions => ({required: false, access: JsonPropertyAccess.AUTO, ...o}),
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
     options.defaultValue = (options.defaultValue) ? options.defaultValue : propertyKey;

@@ -3,6 +3,15 @@ import {JsonIncludeType} from "../annotations/JsonInclude";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 
+declare interface JsonStringifierOptions {
+  withView?: Object
+}
+
+declare interface JsonParserOptions<T> {
+  mainCreator?: { new(): T },
+  withView?: Object
+}
+
 declare interface JsonAnnotationOptions {
 }
 
@@ -33,7 +42,7 @@ declare interface JsonFormatOptions extends JsonAnnotationOptions {
   shape?: JsonFormatShape,
   pattern?: string,
   locale?: string,
-  timezone?: Intl.DateTimeFormatOptions
+  timezone?: string | Intl.DateTimeFormatOptions
 }
 
 declare interface JsonIgnoreOptions extends JsonAnnotationOptions {
@@ -96,7 +105,7 @@ declare interface JsonSubTypesOptions extends JsonAnnotationOptions {
 declare interface JsonTypeInfoOptions extends JsonAnnotationOptions {
   use: JsonTypeInfoId,
   include: JsonTypeInfoAs,
-  property: '@type'
+  property?: string
 }
 
 declare interface JsonTypeNameOptions extends JsonAnnotationOptions {
@@ -113,4 +122,8 @@ declare interface JsonViewOptions extends JsonAnnotationOptions {
 
 declare interface JsonAliasOptions extends JsonAnnotationOptions {
   values: string[]
+}
+
+declare interface JsonClassOptions extends JsonAnnotationOptions {
+  class: (...args) => Object
 }

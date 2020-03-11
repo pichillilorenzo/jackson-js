@@ -1,4 +1,4 @@
-import {makeDecorator2, isClass} from '../util';
+import {makeDecorator, isClass} from '../util';
 import "reflect-metadata";
 import {JsonIncludeOptions} from "../@types";
 
@@ -8,7 +8,11 @@ export enum JsonIncludeType {
   NON_NULL
 }
 
-export const JsonInclude = makeDecorator2(
+export interface JsonIncludeDecorator {
+  (options?: JsonIncludeOptions): any;
+}
+
+export const JsonInclude: JsonIncludeDecorator = makeDecorator(
   (o: JsonIncludeOptions): JsonIncludeOptions => ({value: JsonIncludeType.ALWAYS, ...o}),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.value !== JsonIncludeType.ALWAYS) {

@@ -1,8 +1,12 @@
-import {makeDecorator2} from '../util';
+import {makeDecorator} from '../util';
 import "reflect-metadata";
 import {JsonViewOptions} from "../@types";
 
-export const JsonView = makeDecorator2(
+export interface JsonViewDecorator {
+  (options?: JsonViewOptions): any;
+}
+
+export const JsonView: JsonViewDecorator = makeDecorator(
   (o: JsonViewOptions = {}): JsonViewOptions => o,
   (options: JsonViewOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey && options.value != null)

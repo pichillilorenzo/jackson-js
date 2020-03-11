@@ -1,8 +1,12 @@
-import {makeDecorator2, isClass} from '../util';
+import {makeDecorator, isClass} from '../util';
 import "reflect-metadata";
 import {JsonSubTypesOptions} from "../@types";
 
-export const JsonSubTypes = makeDecorator2(
+export interface JsonSubTypesDecorator {
+  (options?: JsonSubTypesOptions): any;
+}
+
+export const JsonSubTypes: JsonSubTypesDecorator = makeDecorator(
   (o: JsonSubTypesOptions): JsonSubTypesOptions => o,
   (options: JsonSubTypesOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.types && options.types.length > 0 && !descriptorOrParamIndex && isClass(target)) {

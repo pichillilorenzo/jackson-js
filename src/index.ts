@@ -19,9 +19,10 @@ import {JsonTypeName} from './annotations/JsonTypeName';
 import {JsonSubTypes} from './annotations/JsonSubTypes';
 import {JsonFormat, JsonFormatShape} from './annotations/JsonFormat';
 import {JsonView} from './annotations/JsonView';
-import {stringify, parse, day_js} from './jackson';
-import { throwStatement } from '@babel/types';
 import {JsonAlias} from "./annotations/JsonAlias";
+import {JsonClass} from "./annotations/JsonClass";
+import dayjs from "dayjs";
+import {ObjectMapper} from "./databind/ObjectMapper";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -129,10 +130,10 @@ class Example3 extends Example {
   new_property = 344443434
 }
 
-let test = new Example2("test 1", 20, new Date());
-let test2 = new Example2("test 2", 40, new Date());
+let test = new Example2("test 1", 20, new Date(), null);
+let test2 = new Example2("test 2", 40, new Date(), null);
 //let a = new Example("my name", 45, '');
-let a = new Example3("my name", null, '');
+let a = new Example3("my name", null, '', null);
 //a.example2_references = [test, test2];
 a.example2_references = test;
 //let a = new Example("my name", 45, false);
@@ -213,7 +214,7 @@ class Event {
     pattern: "dddd YYYY-MM-DDTHH:mm:ssZ[Z]",
     timezone: "America/New_York"
   })
-  @JsonDeserialize({using: (date) => { return day_js(date, "dddd YYYY-MM-DDTHH:mm:ssZ[Z]").toDate(); }})
+  @JsonDeserialize({using: (date) => { return dayjs(date, "dddd YYYY-MM-DDTHH:mm:ssZ[Z]").toDate(); }})
   eventDate;
 }
 
@@ -341,14 +342,47 @@ class TestJsonProperty {
   name: string;
 }
 
-const testJsonProperty = new TestJsonProperty();
-testJsonProperty.name = 'test';
-console.log(stringify(testJsonProperty, null, '\t'));
-console.log(parse(`
-{
-        "username": "test"
+// const testJsonProperty = new TestJsonProperty();
+// testJsonProperty.name = 'test';
+// console.log(stringify(testJsonProperty, null, '\t'));
+// console.log(parse(`
+// {
+//         "username": "test"
+// }
+// `, null, {mainCreator: TestJsonProperty}));
+
+class TestJsonClassUser {
+  @JsonProperty({value: 'userId'})
+  id: number;
+  email: string;
+  @JsonSerialize({using: DateSerializer.serializeDate})
+  @JsonDeserialize({using: DateSerializer.deserializeDate})
+  date = new Date();
+
+  constructor(id, email) {
+    this.id = id;
+    this.email = email;
+  }
+
+  @JsonCreator()
+  static creator(email, @JsonProperty({value: 'userId'}) id) {
+    return new TestJsonClassUser(id, email);
+  }
 }
-`, null, {mainCreator: TestJsonProperty}));
+
+class TestJsonClass {
+  @JsonClass({class: () => TestJsonClassUser})
+  user: TestJsonClassUser;
+}
+
+const objectMapper = new ObjectMapper();
+
+const tUser = new TestJsonClassUser(1, "pichillilorenzo@gmail.com");
+const testJsonClass = new TestJsonClass();
+testJsonClass.user = tUser;
+const stringified8 = objectMapper.stringify<TestJsonClass>(testJsonClass, null, '\t');
+console.log(stringified8);
+console.log(objectMapper.parse<TestJsonClass>(stringified8, null, {mainCreator: TestJsonClass}));
 
 exports = {
   JsonAnyGetter,
@@ -376,5 +410,7 @@ exports = {
   JsonFormat,
   JsonFormatShape,
   JsonView,
-  JsonAlias
-}
+  JsonAlias,
+  JsonClass,
+  ObjectMapper
+};
