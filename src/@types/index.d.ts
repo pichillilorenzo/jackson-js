@@ -3,13 +3,51 @@ import {JsonIncludeType} from "../annotations/JsonInclude";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 
+declare type ClassType<T> = {new (): T;} | {new (...args: any[]): T;} | {(...args: any[]): T;} | {(...args: any[]): (cls: any) => T;};
+
 declare interface JsonStringifierOptions {
-  withView?: Object
+  withView?: ClassType<any>,
+  format?: string,
+  features?: {
+    [key: number]: boolean
+  },
+  serializers?: ObjectMapperSerializer[]
 }
 
 declare interface JsonParserOptions<T> {
-  mainCreator?: { new(): T },
-  withView?: Object
+  mainCreator?: ClassType<T>,
+  withView?: ClassType<any>,
+  features?: {
+    [key: number]: boolean
+  },
+  deserializers?: ObjectMapperDeserializer[]
+}
+
+declare type Serializer = (key: string, value: any) => any;
+
+declare type Deserializer = (key: string, value: any) => any;
+
+declare type ObjectMapperFeatures = {
+  serialization: {
+    [key: number]: boolean
+  }
+  deserialization: {
+    [key: number]: boolean
+  }
+};
+
+declare interface ObjectMapperCustomMapper<T> {
+  mapper: T,
+  type?: ClassType<any> | "string" | "number" | "object",
+  order?: number
+}
+
+declare interface ObjectMapperSerializer extends ObjectMapperCustomMapper<Serializer> {
+
+}
+
+declare interface ObjectMapperDeserializer extends ObjectMapperCustomMapper<Deserializer> {
+
 }
 
 declare interface JsonAnnotationOptions {
@@ -26,7 +64,7 @@ declare interface JsonAnySetterOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonBackReferenceOptions extends JsonAnnotationOptions {
-  class?: (...args) => Object,
+  class?: (...args) => ClassType<any>,
   value?: string
 }
 
@@ -64,12 +102,12 @@ declare interface JsonIncludeOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonManagedReferenceOptions extends JsonAnnotationOptions {
-  class?: (...args) => Object,
+  class?: (...args) => ClassType<any>,
   value?: string
 }
 
 declare interface JsonPropertyOptions extends JsonAnnotationOptions {
-  class?: (...args) => Object,
+  class?: (...args) => ClassType<any>,
   value?: any,
   defaultValue?: any,
   access?: JsonPropertyAccess,
@@ -94,7 +132,7 @@ declare interface JsonSerializeOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonSubTypeOptions extends JsonAnnotationOptions {
-  class: (...args) => Object,
+  class: (...args) => ClassType<any>,
   name?: string
 }
 
@@ -117,7 +155,7 @@ declare interface JsonValueOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonViewOptions extends JsonAnnotationOptions {
-  value?: (...args) => Object
+  value?: ((...args) => ClassType<any>)[]
 }
 
 declare interface JsonAliasOptions extends JsonAnnotationOptions {
@@ -125,5 +163,5 @@ declare interface JsonAliasOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonClassOptions extends JsonAnnotationOptions {
-  class: (...args) => Object
+  class: (...args) => ClassType<any>
 }

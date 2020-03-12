@@ -23,6 +23,9 @@ import {JsonAlias} from "./annotations/JsonAlias";
 import {JsonClass} from "./annotations/JsonClass";
 import dayjs from "dayjs";
 import {ObjectMapper} from "./databind/ObjectMapper";
+import {ObjectMapperDeserializer, ObjectMapperSerializer} from "./@types";
+import {SerializationFeature} from "./databind/SerializationFeature";
+import {DeserializationFeature} from "./databind/DeserializationFeature";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -225,34 +228,6 @@ class Event {
 // console.log(stringified5)
 // console.log(parse(stringified5, null, { mainCreator: Event }));
 
-class Item {
-
-  @JsonView({value: () => Public})
-  id;
-
-  @JsonView({value: () => Views.public})
-  itemName;
-
-  @JsonView({value: () => Views.internal})
-  ownerName;
-
-  constructor(id, itemName, ownerName) {
-    this.id = id;
-    this.itemName = itemName;
-    this.ownerName = ownerName;
-  }
-}
-class Public {}
-class Internal extends Public {}
-class Views {
-  static public = Public;
-  static internal = Internal;
-}
-
-// let item = new Item(2, "book", "John");
-// let stringified6 = stringify(item, null, "\t", { view: Views.internal });
-// console.log(stringified6)
-// console.log(parse(stringified6, null, { mainCreator: Item, view: Views.public }));
 class User {
   id;
   name;
@@ -375,14 +350,108 @@ class TestJsonClass {
   user: TestJsonClassUser;
 }
 
+// const objectMapper = new ObjectMapper();
+//
+// const tUser = new TestJsonClassUser(1, "pichillilorenzo@gmail.com");
+// const testJsonClass = new TestJsonClass();
+// testJsonClass.user = tUser;
+// const stringified8 = `
+// {
+//         "user": {
+//                 "userId": 1,
+//                 "email": "pichillilorenzo@gmail.com",
+//                 "date": {
+//                         "year": 2020,
+//                         "month": 3,
+//                         "day": 11,
+//                         "formatted": "3/11/2020"
+//                 }
+//         },
+//         "unknown": true
+// }
+//
+// `;
+//
+// objectMapper.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES] = true;
+// objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = true;
+//
+// const serializer1: ObjectMapperSerializer = {
+//   mapper: (key, value) => {
+//     value['asd'] = 4;
+//     return value;
+//   },
+//   order: 1,
+//   type: TestJsonClassUser
+// };
+//
+// objectMapper.serializers.push(serializer1);
+//
+// console.log(
+//   objectMapper.stringify<TestJsonClass>(testJsonClass, {format: '\t'})
+// );
+//
+// const deserializer1: ObjectMapperDeserializer = {
+//   mapper: (key, value) => {
+//     if (key === 'user') {
+//       const user = new TestJsonClassUser(value.userId + 3, value.email + "lol");
+//       user.date = value.date;
+//       return user;
+//     }
+//     return value;
+//   },
+//   order: 1
+// };
+// objectMapper.deserializers.push(deserializer1);
+//
+// console.log(objectMapper.parse<TestJsonClass, TestJsonClass>(stringified8,{mainCreator: TestJsonClass}));
+
+class SpecialItem {
+  id;
+
+  @JsonView({value: [() => Views.special]})
+  ownerName;
+
+  constructor(id, ownerName) {
+    this.id = id;
+    this.ownerName = ownerName;
+  }
+}
+
+class Item {
+
+  @JsonView({value: [() => Views.internal, () => Views.public]})
+  id;
+
+  @JsonView({value: [() => Views.public]})
+  itemName;
+
+  @JsonClass({class: () => Item})
+  relatedItem : Item;
+
+  constructor(id, itemName) {
+    this.id = id;
+    this.itemName = itemName;
+  }
+}
+class Public {}
+class Internal {}
+class Special {}
+class Views {
+  static public = Public;
+  static internal = Internal;
+  static special = Special;
+}
 const objectMapper = new ObjectMapper();
 
-const tUser = new TestJsonClassUser(1, "pichillilorenzo@gmail.com");
-const testJsonClass = new TestJsonClass();
-testJsonClass.user = tUser;
-const stringified8 = objectMapper.stringify<TestJsonClass>(testJsonClass, null, '\t');
-console.log(stringified8);
-console.log(objectMapper.parse<TestJsonClass>(stringified8, null, {mainCreator: TestJsonClass}));
+objectMapper.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES] = true;
+objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = true;
+
+let specialItem = new SpecialItem(1, 'Lorenzo');
+let item = new Item(2, "book");
+item.relatedItem = item;
+let stringified6 = objectMapper.stringify<Item>(item, { format: '\t' });
+console.log(stringified6)
+console.log(objectMapper.parse<Item, Item>(stringified6, { mainCreator: Item }));
 
 exports = {
   JsonAnyGetter,

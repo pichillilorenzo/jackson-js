@@ -3,7 +3,7 @@ import {
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions, JsonManagedReferenceOptions,
   JsonPropertyOptions,
-  JsonPropertyOrderOptions, JsonStringifierOptions, JsonSubTypeOptions, JsonTypeInfoOptions, JsonViewOptions
+  JsonPropertyOrderOptions, JsonStringifierOptions, JsonSubTypeOptions, JsonTypeInfoOptions, JsonViewOptions, Serializer
 } from "../@types";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 import {JsonIncludeType} from "../annotations/JsonInclude";
@@ -12,14 +12,20 @@ import {JsonTypeInfoAs, JsonTypeInfoId} from "../annotations/JsonTypeInfo";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import {DeserializationFeature} from "../databind/DeserializationFeature";
+import {SerializationFeature} from "../databind/SerializationFeature";
 
 dayjs.extend(customParseFormat);
 
 export class JsonStringifier {
 
-  static stringify<T>(obj: T, replacer?: (key: string, value: any) => any, format?: string, options: JsonStringifierOptions = {withView: null}): string {
+  static stringify<T>(obj: T, options: JsonStringifierOptions): string {
     return JSON.stringify(obj, (key, value = null) => {
+
+      value = JsonStringifier.invokeCustomSerializers(key, value, options);
+
       if (value && typeof value === 'object' && !(value instanceof Array)) {
+
         if (JsonStringifier.stringifyJsonIgnoreType(value))
           return null;
 
@@ -33,6 +39,11 @@ export class JsonStringifier {
           let keys = JsonStringifier.stringifyJsonPropertyOrder(value);
           for (let k of keys) {
             if (!JsonStringifier.stringifyHasJsonIgnore(value, k) && !JsonStringifier.stringifyJsonInclude(value, k) && JsonStringifier.stringifyHasJsonView(value, k, options) && Object.hasOwnProperty.call(value, k)) {
+
+              if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
+                throw new Error(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
+              }
+
               replacement[k] = value[k];
               JsonStringifier.stringifyJsonFormat(replacement, value, k);
               JsonStringifier.stringifyJsonSerialize(replacement, value, k);
@@ -47,11 +58,30 @@ export class JsonStringifier {
         replacement = JsonStringifier.stringifyJsonTypeInfo(replacement, value);
         replacement = JsonStringifier.stringifyJsonRootName(replacement, value);
 
-        return (replacer) ? replacer(key, replacement) : replacement;
+        return replacement;
       }
 
-      return (replacer) ? replacer(key, value) : value;
-    }, format);
+      return value;
+    }, options.format);
+  }
+
+  static invokeCustomSerializers(key: string, value: any, options: JsonStringifierOptions): any {
+    if (options.serializers) {
+      for (const serializer of options.serializers) {
+        if (serializer.type != null) {
+          if ( value != null &&
+            (
+              (typeof serializer.type === "string" && serializer.type !== typeof value) ||
+              (typeof serializer.type !== "string" && value.constructor != null && !isSameConstructor(serializer.type, value.constructor))
+            )
+          ) {
+            continue;
+          }
+        }
+        value = serializer.mapper(key, value);
+      }
+    }
+    return value;
   }
 
   static stringifyJsonAnyGetter(replacement: any, obj: any, key: string) {
@@ -314,7 +344,12 @@ export class JsonStringifier {
     if (options.withView) {
       const jsonView: JsonViewOptions = Reflect.getMetadata("jackson:JsonView", obj.constructor, key);
       if (jsonView) {
-        return isSameConstructor(jsonView.value(), options.withView) || isExtensionOf(jsonView.value(), options.withView);
+        for (const view of jsonView.value) {
+          if (isSameConstructor(view(), options.withView) || isExtensionOf(view(), options.withView)) {
+            return true;
+          }
+        }
+        return false;
       }
     }
     return true;
