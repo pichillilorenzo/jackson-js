@@ -3,7 +3,7 @@ import "reflect-metadata";
 import {JsonAliasOptions} from "../@types";
 
 export interface JsonAliasDecorator {
-  (options?: JsonAliasOptions): any;
+  (options: JsonAliasOptions): any;
 }
 
 export const JsonAlias: JsonAliasDecorator = makeDecorator(

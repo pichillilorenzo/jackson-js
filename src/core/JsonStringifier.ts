@@ -1,9 +1,16 @@
 import {
-  JsonBackReferenceOptions, JsonFormatOptions,
+  JsonBackReferenceOptions,
+  JsonFormatOptions, JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
-  JsonIncludeOptions, JsonManagedReferenceOptions,
+  JsonIncludeOptions,
+  JsonManagedReferenceOptions,
   JsonPropertyOptions,
-  JsonPropertyOrderOptions, JsonStringifierOptions, JsonSubTypeOptions, JsonTypeInfoOptions, JsonViewOptions, Serializer
+  JsonPropertyOrderOptions,
+  JsonStringifierOptions,
+  JsonSubTypeOptions,
+  JsonTypeInfoOptions,
+  JsonUnwrappedOptions,
+  JsonViewOptions
 } from "../@types";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 import {JsonIncludeType} from "../annotations/JsonInclude";
@@ -12,17 +19,42 @@ import {JsonTypeInfoAs, JsonTypeInfoId} from "../annotations/JsonTypeInfo";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import {DeserializationFeature} from "../databind/DeserializationFeature";
 import {SerializationFeature} from "../databind/SerializationFeature";
 
 dayjs.extend(customParseFormat);
 
 export class JsonStringifier {
 
-  static stringify<T>(obj: T, options: JsonStringifierOptions): string {
+  static stringify<T>(obj: T, options: JsonStringifierOptions = {}): string {
+
+    const seen = new WeakMap();
+
     return JSON.stringify(obj, (key, value = null) => {
 
       value = JsonStringifier.invokeCustomSerializers(key, value, options);
+
+      if (value != null) {
+        const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata("jackson:JsonIdentityInfo", value.constructor);
+        if (jsonIdentityInfo) {
+          value[jsonIdentityInfo.property] = value.constructor.name;
+          for (let k in value) {
+            if (Object.hasOwnProperty.call(value, k) && typeof value[k] === "object" && !(value[k] instanceof Array)) {
+              const id = seen.get(value[k]);
+              if (id) {
+                value[k] = id;
+              }
+            }
+          }
+        }
+      }
+
+      if (typeof value === "object" && value !== null) {
+        if (seen.has(value)) {
+          throw new Error(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
+        }
+        const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata("jackson:JsonIdentityInfo", value.constructor);
+        seen.set(value, (jsonIdentityInfo) ? value[jsonIdentityInfo.property] : null);
+      }
 
       if (value && typeof value === 'object' && !(value instanceof Array)) {
 
@@ -36,7 +68,14 @@ export class JsonStringifier {
 
         if (!replacement) {
           replacement = {};
-          let keys = JsonStringifier.stringifyJsonPropertyOrder(value);
+          let keys = Object.keys(value);
+          if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
+            keys = keys.sort();
+          }
+          const hasJsonPropertyOrder = Reflect.hasMetadata("jackson:JsonPropertyOrder", obj.constructor);
+          if (hasJsonPropertyOrder) {
+            keys = JsonStringifier.stringifyJsonPropertyOrder(value);
+          }
           for (let k of keys) {
             if (!JsonStringifier.stringifyHasJsonIgnore(value, k) && !JsonStringifier.stringifyJsonInclude(value, k) && JsonStringifier.stringifyHasJsonView(value, k, options) && Object.hasOwnProperty.call(value, k)) {
 
@@ -51,6 +90,7 @@ export class JsonStringifier {
               JsonStringifier.stringifyJsonProperty(replacement, value, k);
               JsonStringifier.stringifyJsonManagedReference(replacement, value, k);
               JsonStringifier.stringifyJsonAnyGetter(replacement, value, k);
+              JsonStringifier.stringifyJsonUnwrapped(replacement, value, k, options);
             }
           }
         }
@@ -268,7 +308,7 @@ export class JsonStringifier {
         jsonTypeName = Reflect.getMetadata("jackson:JsonTypeName", obj.constructor);
 
       switch(jsonTypeInfo.use) {
-        case JsonTypeInfoId.CLASS:
+        case JsonTypeInfoId.NAME:
           jsonTypeName = obj.constructor.name;
           break;
       }
@@ -353,6 +393,29 @@ export class JsonStringifier {
       }
     }
     return true;
+  }
+
+  static stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierOptions) {
+    const jsonUnwrapped: JsonUnwrappedOptions = Reflect.getMetadata("jackson:JsonUnwrapped", obj, key);
+    const hasJsonTypeInfo = (typeof obj[key] === "object") ?
+      Reflect.hasMetadata("jackson:JsonTypeInfo", obj[key].constructor) : false;
+
+    if (jsonUnwrapped) {
+      if (hasJsonTypeInfo && options.features[SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS]) {
+        throw new Error(`Unwrapped property requires use of type information: cannot serialize without disabling "SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS" (through reference chain: ${obj.constructor.name}["${key}"])`);
+      }
+
+      const prefix = (jsonUnwrapped.prefix != null) ? jsonUnwrapped.prefix : '';
+      const suffix = (jsonUnwrapped.suffix != null) ? jsonUnwrapped.suffix : '';
+
+      const keys = Object.keys(obj[key]);
+      for (let oldKey of keys) {
+        const newKey = prefix + oldKey + suffix;
+        replacement[newKey] = obj[key][oldKey];
+      }
+
+      delete replacement[key];
+    }
   }
 
 }

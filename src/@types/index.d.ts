@@ -88,9 +88,10 @@ declare interface JsonIgnoreOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
-  value: string[],
+  value?: string[],
   allowGetters?: boolean,
-  allowSetters?: boolean
+  allowSetters?: boolean,
+  ignoreUnknown?: boolean
 }
 
 declare interface JsonIgnoreTypeOptions extends JsonAnnotationOptions {
@@ -116,7 +117,7 @@ declare interface JsonPropertyOptions extends JsonAnnotationOptions {
 
 declare interface JsonPropertyOrderOptions extends JsonAnnotationOptions {
   alphabetic?: boolean,
-  value: string[]
+  value?: string[]
 }
 
 declare interface JsonRawValueOptions extends JsonAnnotationOptions {
@@ -164,4 +165,14 @@ declare interface JsonAliasOptions extends JsonAnnotationOptions {
 
 declare interface JsonClassOptions extends JsonAnnotationOptions {
   class: (...args) => ClassType<any>
+}
+
+declare interface JsonUnwrappedOptions extends JsonAnnotationOptions {
+  enabled?: boolean,
+  prefix?: string,
+  suffix?: string
+}
+
+declare interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
+  property?: string
 }

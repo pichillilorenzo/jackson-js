@@ -3,7 +3,7 @@ import "reflect-metadata";
 import {JsonClassOptions} from "../@types";
 
 export interface JsonClassDecorator {
-  (options?: JsonClassOptions): any;
+  (options: JsonClassOptions): any;
 }
 
 export const JsonClass: JsonClassDecorator = makeDecorator(

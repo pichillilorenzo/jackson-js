@@ -7,7 +7,7 @@ export interface JsonPropertyOrderDecorator {
 }
 
 export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeDecorator(
-  (o: JsonPropertyOrderOptions): JsonPropertyOrderOptions => ({alphabetic: false, ...o}),
+  (o: JsonPropertyOrderOptions): JsonPropertyOrderOptions => ({alphabetic: false, value: [], ...o}),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata("jackson:JsonPropertyOrder", options, target);

@@ -12,7 +12,9 @@ import {DeserializationFeature} from "./DeserializationFeature";
 export class ObjectMapper {
   features: ObjectMapperFeatures = {
     serialization: {
-      [SerializationFeature.FAIL_ON_SELF_REFERENCES]: true
+      [SerializationFeature.FAIL_ON_SELF_REFERENCES]: true,
+      [SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS]: true,
+      [SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]: false,
     },
     deserialization: {
       [DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]: true
@@ -43,7 +45,7 @@ export class ObjectMapper {
     });
   }
 
-  sortMappersByOrder<T>(mappers: ObjectMapperCustomMapper<T>[]): ObjectMapperCustomMapper<T>[] {
+  private sortMappersByOrder<T>(mappers: ObjectMapperCustomMapper<T>[]): ObjectMapperCustomMapper<T>[] {
     return mappers.sort((a, b) => {
       return a.order - b.order > 0 ? 1 : -1;
     });

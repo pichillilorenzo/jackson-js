@@ -3,7 +3,7 @@ import "reflect-metadata";
 import {JsonSubTypesOptions} from "../@types";
 
 export interface JsonSubTypesDecorator {
-  (options?: JsonSubTypesOptions): any;
+  (options: JsonSubTypesOptions): any;
 }
 
 export const JsonSubTypes: JsonSubTypesDecorator = makeDecorator(

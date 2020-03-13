@@ -23,9 +23,12 @@ import {JsonAlias} from "./annotations/JsonAlias";
 import {JsonClass} from "./annotations/JsonClass";
 import dayjs from "dayjs";
 import {ObjectMapper} from "./databind/ObjectMapper";
-import {ObjectMapperDeserializer, ObjectMapperSerializer} from "./@types";
 import {SerializationFeature} from "./databind/SerializationFeature";
 import {DeserializationFeature} from "./databind/DeserializationFeature";
+import {JsonParser} from "./core/JsonParser";
+import {JsonStringifier} from "./core/JsonStringifier";
+import {JsonUnwrapped} from "./annotations/JsonUnwrapped";
+import {JsonIdentityInfo} from "./annotations/JsonIdentityInfo";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -43,7 +46,7 @@ class DateSerializer {
 
 //@JsonRootName()
 //@JsonIgnoreType()
-@JsonTypeInfo({use: JsonTypeInfoId.CLASS, include: JsonTypeInfoAs.PROPERTY, property: 'example2_type'})
+@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.PROPERTY, property: 'example2_type'})
 class Example2 {
 
   name = "";
@@ -156,7 +159,7 @@ a.testValue = "{\"test\": 100}";
 
 
 
-@JsonTypeInfo({use: JsonTypeInfoId.CLASS, include: JsonTypeInfoAs.PROPERTY})
+@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.PROPERTY})
 @JsonSubTypes({types:
   [
     {class: () => Rectangle},
@@ -441,17 +444,64 @@ class Views {
   static internal = Internal;
   static special = Special;
 }
+// const objectMapper = new ObjectMapper();
+//
+// objectMapper.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES] = true;
+// objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = true;
+//
+// let specialItem = new SpecialItem(1, 'Lorenzo');
+// let item = new Item(2, "book");
+// item.relatedItem = item;
+// let stringified6 = objectMapper.stringify<Item>(item, { format: '\t' });
+// console.log(stringified6)
+// console.log(objectMapper.parse<Item, Item>(stringified6, { mainCreator: Item }));
+
+class Parent {
+
+  @JsonClass({class: () => Name})
+  //@JsonUnwrapped({prefix: 'parent-'})
+  name: Name;
+
+  age: number;
+}
+@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.WRAPPER_ARRAY})
+class Name {
+  last: string;
+  first: string;
+}
+
+// const objectMapper = new ObjectMapper();
+// objectMapper.features.serialization[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS] = true;
+// const parent = new Parent();
+// parent.age = 35;
+// parent.name = new Name();
+// parent.name.first = "Lorenzo";
+// parent.name.last = "Pichilli";
+// let stringified9 = objectMapper.stringify<Parent>(parent, { format: '\t' });
+// console.log(stringified9);
+// console.log(objectMapper.parse<Parent, Parent>(stringified9, {mainCreator: Parent}));
+
+@JsonIdentityInfo({})
+class A {
+  @JsonClass({class: () => B})
+  b: B;
+}
+
+@JsonIdentityInfo({})
+class B {
+  @JsonClass({class: () => A})
+  a: A;
+
+  constructor(a: A) {
+    this.a = a
+  }
+}
+const testA = new A();
+const testB = new B(testA);
+testA.b = testB;
 const objectMapper = new ObjectMapper();
-
-objectMapper.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES] = true;
-objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = true;
-
-let specialItem = new SpecialItem(1, 'Lorenzo');
-let item = new Item(2, "book");
-item.relatedItem = item;
-let stringified6 = objectMapper.stringify<Item>(item, { format: '\t' });
-console.log(stringified6)
-console.log(objectMapper.parse<Item, Item>(stringified6, { mainCreator: Item }));
+let stringified10 = objectMapper.stringify<A>(testA, { format: '\t' });
+console.log(stringified10);
 
 exports = {
   JsonAnyGetter,
@@ -481,5 +531,10 @@ exports = {
   JsonView,
   JsonAlias,
   JsonClass,
-  ObjectMapper
+  JsonUnwrapped,
+  JsonParser,
+  JsonStringifier,
+  ObjectMapper,
+  SerializationFeature,
+  DeserializationFeature
 };

@@ -3,7 +3,6 @@ import "reflect-metadata";
 import {JsonTypeInfoOptions} from "../@types";
 
 export enum JsonTypeInfoId {
-  CLASS,
   NAME
 }
 
@@ -14,13 +13,13 @@ export enum JsonTypeInfoAs {
 }
 
 export interface JsonTypeInfoDecorator {
-  (options?: JsonTypeInfoOptions): any;
+  (options: JsonTypeInfoOptions): any;
 }
 
 export const JsonTypeInfo: JsonTypeInfoDecorator = makeDecorator(
   (o: JsonTypeInfoOptions): JsonTypeInfoOptions => (
     {
-      use: JsonTypeInfoId.CLASS,
+      use: JsonTypeInfoId.NAME,
       include: JsonTypeInfoAs.PROPERTY,
       property: '@type',
       ...o
