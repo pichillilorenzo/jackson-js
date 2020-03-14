@@ -18,7 +18,7 @@ const babelOptions = {
   ]
 };
 
-module.exports = {
+const defaultConfig = {
   watch: true,
   module: {
     rules: [
@@ -57,8 +57,24 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"]
   },
   mode: 'development',
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'index.js',
-  },
 };
+
+const serverConfig = {
+  target: 'node',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.node.js'
+  },
+  ...defaultConfig
+};
+
+const clientConfig = {
+  target: 'web', // <=== can be omitted as default is 'web'
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'lib.js'
+  },
+  ...defaultConfig
+};
+
+module.exports = [ serverConfig, clientConfig ];

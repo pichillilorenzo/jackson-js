@@ -28,7 +28,7 @@ import {DeserializationFeature} from "./databind/DeserializationFeature";
 import {JsonParser} from "./core/JsonParser";
 import {JsonStringifier} from "./core/JsonStringifier";
 import {JsonUnwrapped} from "./annotations/JsonUnwrapped";
-import {JsonIdentityInfo} from "./annotations/JsonIdentityInfo";
+import {JsonIdentityInfo, ObjectIdGenerator} from "./annotations/JsonIdentityInfo";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -481,27 +481,46 @@ class Name {
 // console.log(stringified9);
 // console.log(objectMapper.parse<Parent, Parent>(stringified9, {mainCreator: Parent}));
 
-@JsonIdentityInfo({})
+@JsonIdentityInfo({generator: ObjectIdGenerator.UUIDv1Generator})
 class A {
-  @JsonClass({class: () => B})
-  b: B;
+  id: number;
+  name: string;
+
+  @JsonClass({class: () => B, isArray: true})
+  b: B[] = [];
+
+  constructor(id: number, name: string) {
+    this.id = id;
+    this.name = name;
+  }
+
 }
 
-@JsonIdentityInfo({})
+//@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.WRAPPER_ARRAY})
+@JsonIdentityInfo({generator: ObjectIdGenerator.UUIDv1Generator})
 class B {
+  id: number;
+  name: string;
+
   @JsonClass({class: () => A})
   a: A;
 
-  constructor(a: A) {
-    this.a = a
+  constructor(id: number, name: string, a: A) {
+    this.id = id;
+    this.name = name;
+    this.a = a;
   }
 }
-const testA = new A();
-const testB = new B(testA);
-testA.b = testB;
+
+const testA = new A(1, 'Element A');
+const testB = new B(2, 'Element B1', testA);
+const testB2 = new B(3, 'Element B2', testA);
+testA.b.push(testB, testB2);
 const objectMapper = new ObjectMapper();
 let stringified10 = objectMapper.stringify<A>(testA, { format: '\t' });
 console.log(stringified10);
+//objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = false;
+console.log(objectMapper.parse<A, A>(stringified10, {mainCreator: A}));
 
 exports = {
   JsonAnyGetter,

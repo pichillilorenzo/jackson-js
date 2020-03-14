@@ -2,6 +2,7 @@ import {JsonTypeInfoAs, JsonTypeInfoId} from "../annotations/JsonTypeInfo";
 import {JsonIncludeType} from "../annotations/JsonInclude";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
+import {ObjectIdGenerator} from "../annotations/JsonIdentityInfo";
 
 declare type ClassType<T> = {new (): T;} | {new (...args: any[]): T;} | {(...args: any[]): T;} | {(...args: any[]): (cls: any) => T;};
 
@@ -164,7 +165,8 @@ declare interface JsonAliasOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonClassOptions extends JsonAnnotationOptions {
-  class: (...args) => ClassType<any>
+  class: (...args) => ClassType<any>,
+  isArray?: boolean
 }
 
 declare interface JsonUnwrappedOptions extends JsonAnnotationOptions {
@@ -173,6 +175,56 @@ declare interface JsonUnwrappedOptions extends JsonAnnotationOptions {
   suffix?: string
 }
 
+type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' |  'unshift'
+type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> =
+  Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
+  & {
+  readonly length: L
+  [ I : number ] : T
+  [Symbol.iterator]: () => IterableIterator<T>
+}
+
+declare interface UUIDv5GeneratorOptions {
+  name?: string | Array<any>,
+  namespace?: string | FixedLengthArray<number, 16>,
+  buffer?: Array<any> | Buffer,
+  offset?: number
+}
+
+declare interface UUIDv4GeneratorOptions {
+  options?: {
+    random?: FixedLengthArray<number, 16>,
+    rng?: () => FixedLengthArray<number, 16>,
+  },
+  buffer?: Array<any> | Buffer,
+  offset?: number
+}
+
+declare interface UUIDv3GeneratorOptions {
+  name?: string | Array<any>,
+  namespace?: string | FixedLengthArray<number, 16>,
+  buffer?: Array<any> | Buffer,
+  offset?: number
+}
+
+declare interface UUIDv1GeneratorOptions {
+  options?: {
+    node?: FixedLengthArray<number, 6>,
+    clockseq?: number,
+    msecs?: number,
+    nsecs?: number
+    random?: FixedLengthArray<number, 16>,
+    rng?: () => FixedLengthArray<number, 16>,
+  },
+  buffer?: Array<any> | Buffer,
+  offset?: number
+}
+
 declare interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
-  property?: string
+  generator: ObjectIdGenerator | ((obj: any) => any),
+  property?: string,
+  uuidv5?: UUIDv5GeneratorOptions,
+  uuidv4?: UUIDv4GeneratorOptions,
+  uuidv3?: UUIDv3GeneratorOptions,
+  uuidv1?: UUIDv1GeneratorOptions,
 }

@@ -7,9 +7,10 @@ export interface JsonClassDecorator {
 }
 
 export const JsonClass: JsonClassDecorator = makeDecorator(
-  (o: JsonClassOptions): JsonClassOptions => o,
+  (o: JsonClassOptions): JsonClassOptions => ({isArray: false, ...o}),
   (options: JsonClassOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.class != null) {
+      Reflect.defineMetadata("jackson:JsonClass", options, target, propertyKey);
       Reflect.defineMetadata("jackson:JsonClass", options, target.constructor, propertyKey);
       Reflect.defineMetadata("jackson:JsonClass:" + propertyKey.toString(), options, target.constructor);
     }

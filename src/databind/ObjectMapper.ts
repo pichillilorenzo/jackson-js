@@ -29,7 +29,9 @@ export class ObjectMapper {
 
   stringify<T>(obj: T, options?: JsonStringifierOptions): string {
     this.serializers = this.sortMappersByOrder(this.serializers);
-    return JsonStringifier.stringify<T>(obj, {
+
+    const jsonStringifier = new JsonStringifier<T>();
+    return jsonStringifier.stringify(obj, {
       serializers: this.serializers,
       features: this.features.serialization,
       ...options
@@ -38,7 +40,9 @@ export class ObjectMapper {
 
   parse<T, R>(text: string, options?: JsonParserOptions<R>): T {
     this.deserializers = this.sortMappersByOrder(this.deserializers);
-    return JsonParser.parse<T, R>(text, {
+
+    const jsonParser = new JsonParser<T, R>();
+    return jsonParser.parse(text, {
       deserializers: this.deserializers,
       features: this.features.deserialization,
       ...options
