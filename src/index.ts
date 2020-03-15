@@ -23,12 +23,14 @@ import {JsonAlias} from "./annotations/JsonAlias";
 import {JsonClass} from "./annotations/JsonClass";
 import dayjs from "dayjs";
 import {ObjectMapper} from "./databind/ObjectMapper";
+import {ObjectMapper as ASD} from "./databind/ObjectMapper";
 import {SerializationFeature} from "./databind/SerializationFeature";
 import {DeserializationFeature} from "./databind/DeserializationFeature";
 import {JsonParser} from "./core/JsonParser";
 import {JsonStringifier} from "./core/JsonStringifier";
 import {JsonUnwrapped} from "./annotations/JsonUnwrapped";
 import {JsonIdentityInfo, ObjectIdGenerator} from "./annotations/JsonIdentityInfo";
+import {ObjectMapperDeserializer, ObjectMapperSerializer} from "./@types";
 
 class DateSerializer {
   static serializeDate(date) {
@@ -105,7 +107,7 @@ class Example {
   @JsonProperty({value: "property_test"})
   testValue = '{"asd": 5}';
 
-  @JsonManagedReference({class: () => Example2})
+  //@JsonManagedReference({class: () => Example2})
   example2_references;
 
   constructor (name, age, test, example2_references) {
@@ -198,7 +200,7 @@ class View {
   @JsonDeserialize({using: (shapes) => {
     return Object.values(shapes);
   }})
-  @JsonManagedReference({class: () => Shape})
+  //@JsonManagedReference({class: () => Shape})
   shapes = [];
   constructor(shapes) {
     this.shapes = shapes;
@@ -235,9 +237,9 @@ class User {
   id;
   name;
 
-  @JsonManagedReference({class: () => Item2})
+  //@JsonManagedReference({class: () => Item2})
   userItems2 = [];
-  @JsonManagedReference({class: () => Item3})
+  //@JsonManagedReference({class: () => Item3})
   userItems3 = [];
 
   constructor(id, name) {
@@ -264,10 +266,10 @@ class Item2 {
   id;
   itemName;
 
-  @JsonBackReference({class: () => User})
+  //@JsonBackReference({class: () => User})
   owner;
 
-  @JsonBackReference({class: () => Item3, value: "item3"})
+  //@JsonBackReference({class: () => Item3, value: "item3"})
   item3;
 
   constructor(id, itemName, owner) {
@@ -280,12 +282,12 @@ class Item3 {
   id;
   itemName;
 
-  @JsonBackReference({class: () => User})
+  //@JsonBackReference({class: () => User})
   owner;
-  @JsonBackReference({class: () => User, value: "owner2"})
+  //@JsonBackReference({class: () => User, value: "owner2"})
   owner2;
 
-  @JsonManagedReference({class: () => Item2, value: "item3"})
+  //@JsonManagedReference({class: () => Item2, value: "item3"})
   item2;
 
   constructor(id, itemName, owner) {
@@ -347,7 +349,7 @@ class TestJsonClassUser {
     return new TestJsonClassUser(id, email);
   }
 }
-
+/*
 class TestJsonClass {
   @JsonClass({class: () => TestJsonClassUser})
   user: TestJsonClassUser;
@@ -454,7 +456,7 @@ class Views {
 // item.relatedItem = item;
 // let stringified6 = objectMapper.stringify<Item>(item, { format: '\t' });
 // console.log(stringified6)
-// console.log(objectMapper.parse<Item, Item>(stringified6, { mainCreator: Item }));
+// console.log(objectMapper.parse<Item, Item>(stringified6, { mainCreator: () => Item }));
 
 class Parent {
 
@@ -481,12 +483,12 @@ class Name {
 // console.log(stringified9);
 // console.log(objectMapper.parse<Parent, Parent>(stringified9, {mainCreator: Parent}));
 
-@JsonIdentityInfo({generator: ObjectIdGenerator.UUIDv1Generator})
+@JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: "Scope - A"})
 class A {
   id: number;
   name: string;
 
-  @JsonClass({class: () => B, isArray: true})
+  @JsonClass({class: () => B, isIterable: true})
   b: B[] = [];
 
   constructor(id: number, name: string) {
@@ -497,8 +499,23 @@ class A {
 }
 
 //@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.WRAPPER_ARRAY})
-@JsonIdentityInfo({generator: ObjectIdGenerator.UUIDv1Generator})
+@JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: "Scope - B"})
 class B {
+  id: number;
+  name: string;
+
+  @JsonClass({class: () => C})
+  c: C;
+
+  constructor(id: number, name: string, c: C) {
+    this.id = id;
+    this.name = name;
+    this.c = c;
+  }
+}
+
+@JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: "Scope - C"})
+class C {
   id: number;
   name: string;
 
@@ -511,16 +528,73 @@ class B {
     this.a = a;
   }
 }
+*/
+// const testA = new A(1, 'Element A');
+// const testC = new C(1, 'Element C1', testA);
+// const testB = new B(1, 'Element B1', testC);
+// const testB2 = new B(2, 'Element B2', testC);
+// testA.b.push(testB);
+// testA.b.push(testB2);
+// const objectMapper = new ObjectMapper();
+// let stringified10 = objectMapper.stringify<A>(testA, { format: '\t' });
+// console.log(stringified10);
+// //objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = false;
+// const resultA = objectMapper.parse<A, A>(stringified10, {mainCreator: () => A});
+// console.log(resultA)
+// console.log(resultA.b[0].c === resultA.b[1].c)
 
-const testA = new A(1, 'Element A');
-const testB = new B(2, 'Element B1', testA);
-const testB2 = new B(3, 'Element B2', testA);
-testA.b.push(testB, testB2);
-const objectMapper = new ObjectMapper();
-let stringified10 = objectMapper.stringify<A>(testA, { format: '\t' });
-console.log(stringified10);
-//objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = false;
-console.log(objectMapper.parse<A, A>(stringified10, {mainCreator: A}));
+// const set = new Set<Array<any>>();
+// set.add([1,2]);
+// set.add([2]);
+// set.add([3]);
+// // const objectMapper = new ObjectMapper();
+// // let stringified11 = objectMapper.stringify<Set<Array<any>>>(set, { format: '\t' });
+// // console.log(stringified11);
+// // console.log(objectMapper.parse<Set<Array<any>>>(stringified11, {mainCreator: () => [Set, [Array]]}));
+//
+// const user = new User(1, 'asd');
+//
+// const map = new Map<User, Set<Array<any>>>();
+// map.set(user, set);
+// const objectMapper = new ObjectMapper();
+// let stringified12 = objectMapper.stringify<Map<User, Set<Array<any>>>>(map, { format: '\t' });
+// console.log(stringified12);
+// console.log(objectMapper.parse<Map<User, Set<Array<any>>>>(stringified12, {mainCreator: () => [Map, [User, Set]]}));
+
+class Parent2 {
+  name: string;
+
+  @JsonClass({class: () => [Set, [Array, [Child2]]]})
+  @JsonManagedReference()
+  child: Set<Array<Child2>>;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+class Child2 {
+  name: string;
+
+  @JsonClass({class: () => [Parent2]})
+  @JsonBackReference()
+  parent: Parent2;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+// const objectMapper = new ObjectMapper();
+// const child1 = new Child2('Lorenzo');
+// const child2 = new Child2('Samanta');
+// const parent1 = new Parent2('Dario');
+// //const parent2 = new Parent2('Nadia');
+// parent1.child = new Set();
+// parent1.child.add([child1, child2]);
+//
+// let stringified13 = objectMapper.stringify<Parent2[]>([parent1, parent1], { format: '\t' });
+// console.log(stringified13);
+// console.log(objectMapper.parse<Parent2[]>(stringified13, {mainCreator: () => [Array, [Parent2]]}));
 
 exports = {
   JsonAnyGetter,

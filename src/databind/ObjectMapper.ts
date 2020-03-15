@@ -38,10 +38,10 @@ export class ObjectMapper {
     });
   }
 
-  parse<T, R>(text: string, options?: JsonParserOptions<R>): T {
+  parse<T>(text: string, options?: JsonParserOptions): T {
     this.deserializers = this.sortMappersByOrder(this.deserializers);
 
-    const jsonParser = new JsonParser<T, R>();
+    const jsonParser = new JsonParser<T>();
     return jsonParser.parse(text, {
       deserializers: this.deserializers,
       features: this.features.deserialization,

@@ -1,4 +1,4 @@
-import {isClass, makeDecorator} from '../util';
+import {isClass, makeJacksonDecorator} from '../util';
 import "reflect-metadata";
 import {
   JsonIdentityInfoOptions
@@ -18,9 +18,10 @@ export interface JsonIdentityInfoDecorator {
   (options: JsonIdentityInfoOptions): any;
 }
 
-export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeDecorator(
+export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
   (o: JsonIdentityInfoOptions): JsonIdentityInfoOptions => (
     {
+      enabled: true,
       property: '@id',
       uuidv5: {},
       uuidv4: {},
@@ -33,8 +34,5 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeDecorator(
       Reflect.defineMetadata("jackson:JsonIdentityInfo", options, target);
       Reflect.defineMetadata("jackson:JsonIdentityInfo", options, target.constructor);
       return target;
-    }
-    if (typeof descriptorOrParamIndex !== "number") {
-      return descriptorOrParamIndex;
     }
   });

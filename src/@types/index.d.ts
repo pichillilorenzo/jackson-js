@@ -4,10 +4,24 @@ import {JsonFormatShape} from "../annotations/JsonFormat";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 import {ObjectIdGenerator} from "../annotations/JsonIdentityInfo";
 
-declare type ClassType<T> = {new (): T;} | {new (...args: any[]): T;} | {(...args: any[]): T;} | {(...args: any[]): (cls: any) => T;};
+declare type ClassType<T> = {new (): T;} | {new (...args: any[]): T;};
+
+type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' |  'unshift'
+type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> =
+  Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
+  & {
+  readonly length: L
+  [ I : number ] : T
+  [Symbol.iterator]: () => IterableIterator<T>
+}
+
+interface ClassList<T> extends Array<any> {
+  0: T;
+  [index: number]: T | ClassList<T>;
+}
 
 declare interface JsonStringifierOptions {
-  withView?: ClassType<any>,
+  withView?: (...args) => ClassType<any>,
   format?: string,
   features?: {
     [key: number]: boolean
@@ -15,9 +29,9 @@ declare interface JsonStringifierOptions {
   serializers?: ObjectMapperSerializer[]
 }
 
-declare interface JsonParserOptions<T> {
-  mainCreator?: ClassType<T>,
-  withView?: ClassType<any>,
+declare interface JsonParserOptions {
+  mainCreator?: (...args) => ClassList<ClassType<any>>,
+  withView?: (...args) => ClassType<any>,
   features?: {
     [key: number]: boolean
   },
@@ -52,20 +66,20 @@ declare interface ObjectMapperDeserializer extends ObjectMapperCustomMapper<Dese
 }
 
 declare interface JsonAnnotationOptions {
+  enabled?: boolean
 }
 
 declare type JsonAnnotationDecorator = <T>(options: JsonAnnotationOptions, target: Object, propertyKey: string | symbol, descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
 
 declare interface JsonAnyGetterOptions extends JsonAnnotationOptions {
-  enabled?: boolean
+
 }
 
 declare interface JsonAnySetterOptions extends JsonAnnotationOptions {
-  enabled?: boolean
+
 }
 
 declare interface JsonBackReferenceOptions extends JsonAnnotationOptions {
-  class?: (...args) => ClassType<any>,
   value?: string
 }
 
@@ -85,7 +99,7 @@ declare interface JsonFormatOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonIgnoreOptions extends JsonAnnotationOptions {
-  value?: boolean
+
 }
 
 declare interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
@@ -96,7 +110,7 @@ declare interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonIgnoreTypeOptions extends JsonAnnotationOptions {
-  value?: boolean
+
 }
 
 declare interface JsonIncludeOptions extends JsonAnnotationOptions {
@@ -104,7 +118,6 @@ declare interface JsonIncludeOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonManagedReferenceOptions extends JsonAnnotationOptions {
-  class?: (...args) => ClassType<any>,
   value?: string
 }
 
@@ -122,7 +135,7 @@ declare interface JsonPropertyOrderOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonRawValueOptions extends JsonAnnotationOptions {
-  value?: boolean
+
 }
 
 declare interface JsonRootNameOptions extends JsonAnnotationOptions {
@@ -130,7 +143,7 @@ declare interface JsonRootNameOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonSerializeOptions extends JsonAnnotationOptions {
-  using?: (...args) => any,
+  using: (...args) => any,
 }
 
 declare interface JsonSubTypeOptions extends JsonAnnotationOptions {
@@ -153,7 +166,7 @@ declare interface JsonTypeNameOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonValueOptions extends JsonAnnotationOptions {
-  enabled?: boolean
+
 }
 
 declare interface JsonViewOptions extends JsonAnnotationOptions {
@@ -165,23 +178,12 @@ declare interface JsonAliasOptions extends JsonAnnotationOptions {
 }
 
 declare interface JsonClassOptions extends JsonAnnotationOptions {
-  class: (...args) => ClassType<any>,
-  isArray?: boolean
+  class: (...args) => ClassList<ClassType<any>>
 }
 
 declare interface JsonUnwrappedOptions extends JsonAnnotationOptions {
-  enabled?: boolean,
   prefix?: string,
   suffix?: string
-}
-
-type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' |  'unshift'
-type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> =
-  Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
-  & {
-  readonly length: L
-  [ I : number ] : T
-  [Symbol.iterator]: () => IterableIterator<T>
 }
 
 declare interface UUIDv5GeneratorOptions {
@@ -223,6 +225,7 @@ declare interface UUIDv1GeneratorOptions {
 declare interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
   generator: ObjectIdGenerator | ((obj: any) => any),
   property?: string,
+  scope?: string,
   uuidv5?: UUIDv5GeneratorOptions,
   uuidv4?: UUIDv4GeneratorOptions,
   uuidv3?: UUIDv3GeneratorOptions,

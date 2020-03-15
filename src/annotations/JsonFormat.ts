@@ -1,4 +1,4 @@
-import {makeDecorator} from '../util';
+import {makeJacksonDecorator} from '../util';
 import "reflect-metadata";
 import {JsonFormatOptions} from "../@types";
 
@@ -17,17 +17,16 @@ export interface JsonFormatDecorator {
   (options?: JsonFormatOptions): any;
 }
 
-export const JsonFormat: JsonFormatDecorator = makeDecorator(
+export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
   (o: JsonFormatOptions): JsonFormatOptions => (
     {
+      enabled: true,
       shape: JsonFormatShape.ANY,
       locale: 'en-US',
       ...o
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey)
+    if (propertyKey) {
       Reflect.defineMetadata("jackson:JsonFormat", options, target, propertyKey);
-    if (typeof descriptorOrParamIndex !== "number") {
-      return descriptorOrParamIndex;
     }
   });

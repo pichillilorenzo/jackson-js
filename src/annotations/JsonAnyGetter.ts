@@ -1,4 +1,4 @@
-import {makeDecorator} from '../util';
+import {makeJacksonDecorator} from '../util';
 import "reflect-metadata";
 import {JsonAnyGetterOptions} from "../@types";
 
@@ -6,12 +6,10 @@ export interface JsonAnyGetterDecorator {
   (options?: JsonAnyGetterOptions): any;
 }
 
-export const JsonAnyGetter: JsonAnyGetterDecorator = makeDecorator(
+export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
   (o: JsonAnyGetterOptions): JsonAnyGetterOptions => ({enabled: true, ...o}),
   (options: JsonAnyGetterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey && options.enabled)
+    if (propertyKey) {
       Reflect.defineMetadata("jackson:JsonAnyGetter", propertyKey, target);
-    if (typeof descriptorOrParamIndex !== "number") {
-      return descriptorOrParamIndex;
     }
   });

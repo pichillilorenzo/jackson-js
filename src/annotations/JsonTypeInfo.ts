@@ -1,4 +1,4 @@
-import {isClass, makeDecorator} from '../util';
+import {isClass, makeJacksonDecorator} from '../util';
 import "reflect-metadata";
 import {JsonTypeInfoOptions} from "../@types";
 
@@ -16,9 +16,10 @@ export interface JsonTypeInfoDecorator {
   (options: JsonTypeInfoOptions): any;
 }
 
-export const JsonTypeInfo: JsonTypeInfoDecorator = makeDecorator(
+export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
   (o: JsonTypeInfoOptions): JsonTypeInfoOptions => (
     {
+      enabled: true,
       use: JsonTypeInfoId.NAME,
       include: JsonTypeInfoAs.PROPERTY,
       property: '@type',
@@ -28,8 +29,5 @@ export const JsonTypeInfo: JsonTypeInfoDecorator = makeDecorator(
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata("jackson:JsonTypeInfo", options, target);
       return target;
-    }
-    if (typeof descriptorOrParamIndex !== "number") {
-      return descriptorOrParamIndex;
     }
   });

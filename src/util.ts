@@ -1,5 +1,5 @@
 import {parse, ParserPlugin} from "@babel/parser";
-import {JsonAnnotationDecorator, JsonAnnotationOptions} from "./@types";
+import {JsonAnnotationDecorator, JsonAnnotationOptions, JsonClassOptions} from "./@types";
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
@@ -23,6 +23,7 @@ export function makeDecorator<T>(
     const target: Object = args[0];
     const propertyKey: null | string | symbol = args[1];
     const descriptorOrParamIndex: null | number | TypedPropertyDescriptor<any> = args[2];
+
     if ((typeof target === "function" || propertyKey != null || descriptorOrParamIndex != null) ||
       descriptorOrParamIndex != null && typeof descriptorOrParamIndex === "number") {
       return decorator(options(), target, propertyKey, descriptorOrParamIndex);
@@ -33,6 +34,25 @@ export function makeDecorator<T>(
     }
   }
   return DecoratorFactory;
+}
+
+export function makeJacksonDecorator<T>(
+  options: (...args: any[]) => JsonAnnotationOptions,
+  decorator: JsonAnnotationDecorator): any {
+
+  return makeDecorator<T>(
+    options,
+    (options: JsonAnnotationOptions, target, propertyKey, descriptorOrParamIndex) => {
+      if (options.enabled) {
+        const value = decorator(options, target, propertyKey, descriptorOrParamIndex);
+        if (value != null) {
+          return value;
+        }
+      }
+      if (typeof descriptorOrParamIndex !== "number") {
+        return descriptorOrParamIndex;
+      }
+    });
 }
 
 /** 
@@ -57,6 +77,10 @@ function pluckParamName (param) {
 
 export function getArgumentNames(method, useFlow=false) {
   let code = method.toString().trim();
+
+  if (code.endsWith(" { [native code] }")) {
+    return [];
+  }
 
   if (code.startsWith("class extends"))
     code = "class JacksonClass " + code.substring(6);
@@ -94,6 +118,9 @@ export function getArgumentNames(method, useFlow=false) {
 }
 
 export function cloneClassInstance(instance) {
+  if (typeof instance !== "object") {
+    return instance;
+  }
   return Object.assign( Object.create( Object.getPrototypeOf(instance)), instance);
 }
 
@@ -114,3 +141,17 @@ export function isExtensionOf(ctor, ctorExtensionOf) {
     return ctor !== ctorExtensionOf && ctorExtensionOf.prototype instanceof ctor;
   return false;
 }
+
+export function isSameConstructorOrExtensionOf(ctorOrCtorName, ctor2) {
+  return isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2);
+}
+
+export const hasIterationProtocol = variable =>
+  variable !== null && Symbol.iterator in Object(variable);
+
+export const isIterableNoString = variable =>
+  typeof variable !== "string" && hasIterationProtocol(variable);
+
+export const isClassIterable = ctor =>
+  isSameConstructor(ctor, Set) || isSameConstructor(ctor, Map) || isSameConstructor(ctor, Array) ||
+  isExtensionOf(ctor, Set) || isExtensionOf(ctor, Map) || isExtensionOf(ctor, Array)

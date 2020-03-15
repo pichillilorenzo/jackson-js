@@ -1,5 +1,5 @@
 import {
-  JsonBackReferenceOptions,
+  JsonBackReferenceOptions, JsonClassOptions,
   JsonFormatOptions, JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions,
@@ -14,7 +14,7 @@ import {
 } from "../@types";
 import {JsonPropertyAccess} from "../annotations/JsonProperty";
 import {JsonIncludeType} from "../annotations/JsonInclude";
-import {cloneClassInstance, isExtensionOf, isSameConstructor} from "../util";
+import {cloneClassInstance, isExtensionOf, isIterableNoString, isSameConstructor} from "../util";
 import {JsonTypeInfoAs, JsonTypeInfoId} from "../annotations/JsonTypeInfo";
 import {JsonFormatShape} from "../annotations/JsonFormat";
 import {SerializationFeature} from "../databind/SerializationFeature";
@@ -23,74 +23,89 @@ import {ObjectIdGenerator} from "../annotations/JsonIdentityInfo";
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
+import {type} from "os";
 
 dayjs.extend(customParseFormat);
 
 export class JsonStringifier<T> {
 
   // WeakMap used to manage object circular references
-  private _valueAlreadySeen = new WeakMap();
+  private _globalValueAlreadySeen = new WeakMap();
   private _intSequenceGenerator = 0;
 
   constructor() {
   }
 
   stringify(obj: T, options: JsonStringifierOptions = {}): string {
+    return JSON.stringify(
+      this.deepStringify('', obj, {...options}, new Map()),
+      null,
+      options.format);
+  }
 
-    return JSON.stringify(obj, (key, value = null) => {
+  private deepStringify(key: string, value: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any {
+    value = this.invokeCustomSerializers(key, value, options);
 
-      value = this.invokeCustomSerializers(key, value, options);
+    if (value != null && typeof value === 'object' && !isIterableNoString(value)) {
 
-      if (value && typeof value === 'object' && !(value instanceof Array)) {
+      if (this.stringifyJsonIgnoreType(value))
+        return null;
 
-        if (this.stringifyJsonIgnoreType(value))
-          return null;
+      let replacement;
+      let jsonValue = this.stringifyJsonValue(value);
+      if (jsonValue)
+        replacement = jsonValue;
 
-        this.stringifyJsonIdentityInfo(this._valueAlreadySeen, value, key);
+      if (!replacement) {
+        replacement = {};
 
-        let replacement;
-        let jsonValue = this.stringifyJsonValue(value);
-        if (jsonValue)
-          replacement = jsonValue;
+        let keys = Object.keys(value);
+        if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
+          keys = keys.sort();
+        }
+        const hasJsonPropertyOrder = Reflect.hasMetadata("jackson:JsonPropertyOrder", value.constructor);
+        if (hasJsonPropertyOrder) {
+          keys = this.stringifyJsonPropertyOrder(value);
+        }
+        for (let k of keys) {
+          if (!this.stringifyHasJsonIgnore(value, k) && !this.stringifyJsonInclude(value, k) && this.stringifyHasJsonView(value, k, options) && Object.hasOwnProperty.call(value, k)) {
 
-        if (!replacement) {
-          replacement = {};
-          let keys = Object.keys(value);
-          if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
-            keys = keys.sort();
-          }
-          const hasJsonPropertyOrder = Reflect.hasMetadata("jackson:JsonPropertyOrder", obj.constructor);
-          if (hasJsonPropertyOrder) {
-            keys = this.stringifyJsonPropertyOrder(value);
-          }
-          for (let k of keys) {
-            if (!this.stringifyHasJsonIgnore(value, k) && !this.stringifyJsonInclude(value, k) && this.stringifyHasJsonView(value, k, options) && Object.hasOwnProperty.call(value, k)) {
-
-              if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
-                throw new Error(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
-              }
-
-              replacement[k] = value[k];
-              this.stringifyJsonFormat(replacement, value, k);
-              this.stringifyJsonSerialize(replacement, value, k);
-              this.stringifyJsonRawValue(replacement, value, k);
-              this.stringifyJsonProperty(replacement, value, k);
-              this.stringifyJsonManagedReference(replacement, value, k);
-              this.stringifyJsonAnyGetter(replacement, value, k);
-              this.stringifyJsonUnwrapped(replacement, value, k, options);
+            if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
+              throw new Error(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
             }
+
+            replacement[k] = value[k];
+            this.stringifyJsonFormat(replacement, value, k);
+            this.stringifyJsonSerialize(replacement, value, k);
+            this.stringifyJsonRawValue(replacement, value, k);
+            this.stringifyJsonProperty(replacement, value, k);
+            this.stringifyJsonManagedReference(replacement, value, k);
+            this.stringifyJsonAnyGetter(replacement, value, k);
+            this.stringifyJsonUnwrapped(replacement, value, k, options);
           }
         }
 
-        replacement = this.stringifyJsonTypeInfo(replacement, value);
-        replacement = this.stringifyJsonRootName(replacement, value);
-
-        return replacement;
+        this.stringifyJsonIdentityInfo(replacement, value, key, valueAlreadySeen);
       }
 
-      return value;
-    }, options.format);
+      replacement = this.stringifyJsonTypeInfo(replacement, value);
+      replacement = this.stringifyJsonRootName(replacement, value);
 
+      for (let k in replacement)
+        replacement[k] = this.deepStringify(k, replacement[k], {...options}, new Map(valueAlreadySeen));
+
+      return replacement;
+    } else if (value != null && isIterableNoString(value)) {
+      value = this.stringifyIterable(value);
+
+      const iterable = [];
+      for (let obj of value)
+        (iterable as Array<any>).push(this.deepStringify(key, obj, {...options}, new Map(valueAlreadySeen)));
+
+      return iterable;
+    }
+
+    return value;
   }
 
   invokeCustomSerializers(key: string, value: any, options: JsonStringifierOptions): any {
@@ -229,7 +244,9 @@ export class JsonStringifier<T> {
 
   stringifyJsonManagedReference(replacement: any, obj: any, key: string) {
     const jsonManagedReference: JsonManagedReferenceOptions = Reflect.getMetadata("jackson:JsonManagedReference", obj.constructor, key);
-    if (jsonManagedReference) {
+    const jsonClassManagedReference: JsonClassOptions = Reflect.getMetadata("jackson:JsonClass", obj.constructor, key);
+
+    if (jsonManagedReference && jsonClassManagedReference) {
 
       let referenceConstructor;
       if (replacement[key]) {
@@ -243,13 +260,19 @@ export class JsonStringifier<T> {
       else
         referenceConstructor = {};
 
-      if (isSameConstructor(jsonManagedReference.class(), referenceConstructor)) {
+      if (isSameConstructor(jsonClassManagedReference.class(), referenceConstructor)) {
         const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
         for(let k of metadataKeys) {
           if (k.startsWith("jackson:JsonBackReference:")) {
-            let propertyKey = k.replace("jackson:JsonBackReference:", '');
-            let metadata: JsonBackReferenceOptions = Reflect.getMetadata(k, referenceConstructor);
-            if (isSameConstructor(metadata.class(), obj.constructor)) {
+            const propertyKey = k.replace("jackson:JsonBackReference:", '');
+            const metadata: JsonBackReferenceOptions = Reflect.getMetadata(k, referenceConstructor);
+            const jsonClassBackReference: JsonClassOptions = Reflect.getMetadata("jackson:JsonClass", referenceConstructor, propertyKey);
+
+            if (!jsonClassBackReference) {
+              throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field`);
+            }
+
+            if (isSameConstructor(jsonClassBackReference.class(), obj.constructor)) {
               if (replacement[key] instanceof Array) {
                 for(let index in replacement[key]) {
                   replacement[key][index] = cloneClassInstance(obj[key][index]);
@@ -274,6 +297,8 @@ export class JsonStringifier<T> {
         }
       }
 
+    } else if (jsonManagedReference && !jsonClassManagedReference) {
+      throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${obj.constructor.name}["${key}"] field`);
     }
   }
 
@@ -373,7 +398,7 @@ export class JsonStringifier<T> {
       const jsonView: JsonViewOptions = Reflect.getMetadata("jackson:JsonView", obj.constructor, key);
       if (jsonView) {
         for (const view of jsonView.value) {
-          if (isSameConstructor(view(), options.withView) || isExtensionOf(view(), options.withView)) {
+          if (isSameConstructor(view(), options.withView()) || isExtensionOf(view(), options.withView())) {
             return true;
           }
         }
@@ -406,86 +431,105 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyJsonIdentityInfo(valueAlreadySeen: WeakMap<any, any>, obj: any, key: string) {
+  stringifyJsonIdentityInfo(replacement: any, obj: any, key: string, valueAlreadySeen: Map<any, any>) {
     const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata("jackson:JsonIdentityInfo", obj.constructor);
     if (jsonIdentityInfo) {
 
-      if (typeof jsonIdentityInfo.generator === "function") {
-        obj[jsonIdentityInfo.property] = jsonIdentityInfo.generator(obj);
+      if (this._globalValueAlreadySeen.has(obj)) {
+        replacement[jsonIdentityInfo.property] = this._globalValueAlreadySeen.get(obj);
       } else {
-        switch (jsonIdentityInfo.generator) {
-          case ObjectIdGenerator.IntSequenceGenerator:
-            this._intSequenceGenerator++;
-            obj[jsonIdentityInfo.property] = this._intSequenceGenerator;
-            break;
-          case ObjectIdGenerator.None:
-            obj[jsonIdentityInfo.property] = null;
-            break;
-          case ObjectIdGenerator.PropertyGenerator:
-            // Abstract place-holder class which is used to denote case where Object Identifier
-            // to use comes from a Class property using "JsonIdentityInfoOptions.property"
-            break;
-          case ObjectIdGenerator.UUIDv5Generator:
-            const uuidv5Options = jsonIdentityInfo.uuidv5;
-            const uuidv5Args: any[] = [uuidv5Options.name, uuidv5Options.namespace];
-            if (uuidv5Options.buffer != null) {
-              uuidv5Args.push(uuidv5Options.buffer);
-              if (uuidv5Options.offset != null) {
-                uuidv5Args.push(uuidv5Options.offset);
+        if (typeof jsonIdentityInfo.generator === "function") {
+          replacement[jsonIdentityInfo.property] = jsonIdentityInfo.generator(obj);
+        } else {
+          switch (jsonIdentityInfo.generator) {
+            case ObjectIdGenerator.IntSequenceGenerator:
+              this._intSequenceGenerator++;
+              replacement[jsonIdentityInfo.property] = this._intSequenceGenerator;
+              break;
+            case ObjectIdGenerator.None:
+              replacement[jsonIdentityInfo.property] = null;
+              break;
+            case ObjectIdGenerator.PropertyGenerator:
+              // Abstract place-holder class which is used to denote case where Object Identifier
+              // to use comes from a Class property using "JsonIdentityInfoOptions.property"
+              break;
+            case ObjectIdGenerator.UUIDv5Generator:
+              const uuidv5Options = jsonIdentityInfo.uuidv5;
+              const uuidv5Args: any[] = [uuidv5Options.name, uuidv5Options.namespace];
+              if (uuidv5Options.buffer != null) {
+                uuidv5Args.push(uuidv5Options.buffer);
+                if (uuidv5Options.offset != null) {
+                  uuidv5Args.push(uuidv5Options.offset);
+                }
               }
-            }
-            obj[jsonIdentityInfo.property] = uuidv5(...uuidv5Args);
-            break;
-          case ObjectIdGenerator.UUIDv4Generator:
-            const uuidv4Options = jsonIdentityInfo.uuidv4;
-            const uuidv4Args: any[] = [uuidv4Options.options];
-            if (uuidv4Options.buffer != null) {
-              uuidv4Args.push(uuidv4Options.buffer);
-              if (uuidv4Options.offset != null) {
-                uuidv4Args.push(uuidv4Options.offset);
+              replacement[jsonIdentityInfo.property] = uuidv5(...uuidv5Args);
+              break;
+            case ObjectIdGenerator.UUIDv4Generator:
+              const uuidv4Options = jsonIdentityInfo.uuidv4;
+              const uuidv4Args: any[] = [uuidv4Options.options];
+              if (uuidv4Options.buffer != null) {
+                uuidv4Args.push(uuidv4Options.buffer);
+                if (uuidv4Options.offset != null) {
+                  uuidv4Args.push(uuidv4Options.offset);
+                }
               }
-            }
-            obj[jsonIdentityInfo.property] = uuidv4(...uuidv4Args);
-            break;
-          case ObjectIdGenerator.UUIDv3Generator:
-            const uuidv3Options = jsonIdentityInfo.uuidv3;
-            const uuidv3Args: any[] = [uuidv3Options.name, uuidv3Options.namespace];
-            if (uuidv3Options.buffer != null) {
-              uuidv3Args.push(uuidv3Options.buffer);
-              if (uuidv3Options.offset != null) {
-                uuidv3Args.push(uuidv3Options.offset);
+              replacement[jsonIdentityInfo.property] = uuidv4(...uuidv4Args);
+              break;
+            case ObjectIdGenerator.UUIDv3Generator:
+              const uuidv3Options = jsonIdentityInfo.uuidv3;
+              const uuidv3Args: any[] = [uuidv3Options.name, uuidv3Options.namespace];
+              if (uuidv3Options.buffer != null) {
+                uuidv3Args.push(uuidv3Options.buffer);
+                if (uuidv3Options.offset != null) {
+                  uuidv3Args.push(uuidv3Options.offset);
+                }
               }
-            }
-            obj[jsonIdentityInfo.property] = uuidv3(...uuidv3Args);
-            break;
-          case ObjectIdGenerator.UUIDv1Generator:
-            const uuidv1Options = jsonIdentityInfo.uuidv1;
-            const uuidv1Args: any[] = [uuidv1Options.options];
-            if (uuidv1Options.buffer != null) {
-              uuidv1Args.push(uuidv1Options.buffer);
-              if (uuidv1Options.offset != null) {
-                uuidv1Args.push(uuidv1Options.offset);
+              replacement[jsonIdentityInfo.property] = uuidv3(...uuidv3Args);
+              break;
+            case ObjectIdGenerator.UUIDv1Generator:
+              const uuidv1Options = jsonIdentityInfo.uuidv1;
+              const uuidv1Args: any[] = [uuidv1Options.options];
+              if (uuidv1Options.buffer != null) {
+                uuidv1Args.push(uuidv1Options.buffer);
+                if (uuidv1Options.offset != null) {
+                  uuidv1Args.push(uuidv1Options.offset);
+                }
               }
-            }
-            obj[jsonIdentityInfo.property] = uuidv1(...uuidv1Args);
-            break;
+              replacement[jsonIdentityInfo.property] = uuidv1(...uuidv1Args);
+              break;
+          }
         }
       }
 
-      for (let k in obj) {
-        if (Object.hasOwnProperty.call(obj, k) && typeof obj[k] === "object" && !(obj[k] instanceof Array)) {
+      for (let k in replacement) {
+        if (Object.hasOwnProperty.call(replacement, k) && typeof replacement[k] === "object" && !isIterableNoString(replacement[k])) {
           const id = valueAlreadySeen.get(obj[k]);
           if (id) {
-            obj[k] = id;
+            replacement[k] = id;
           }
         }
       }
     }
 
+    if (!this._globalValueAlreadySeen.has(obj)) {
+      this._globalValueAlreadySeen.set(obj, (jsonIdentityInfo) ? replacement[jsonIdentityInfo.property] : null);
+    }
+
     if (valueAlreadySeen.has(obj)) {
       throw new Error(`Infinite recursion on key "${key}" of type "${obj.constructor.name}"`);
     }
-    valueAlreadySeen.set(obj, (jsonIdentityInfo) ? obj[jsonIdentityInfo.property] : null);
+    valueAlreadySeen.set(obj, (jsonIdentityInfo) ? replacement[jsonIdentityInfo.property] : null);
   }
 
+  stringifyIterable(iterableNoString: any) {
+    /*if (iterableNoString instanceof Array) {
+      return iterableNoString;
+    }
+    return {
+      "@iterable": iterableNoString.constructor.name,
+      "values": [...iterableNoString]
+    };
+    */
+    return [...iterableNoString];
+  }
 }

@@ -1,4 +1,4 @@
-import {makeDecorator, isClass} from '../util';
+import {makeJacksonDecorator, isClass} from '../util';
 import "reflect-metadata";
 import {JsonIncludeOptions} from "../@types";
 
@@ -12,18 +12,16 @@ export interface JsonIncludeDecorator {
   (options?: JsonIncludeOptions): any;
 }
 
-export const JsonInclude: JsonIncludeDecorator = makeDecorator(
-  (o: JsonIncludeOptions): JsonIncludeOptions => ({value: JsonIncludeType.ALWAYS, ...o}),
+export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
+  (o: JsonIncludeOptions): JsonIncludeOptions => ({enabled: true, value: JsonIncludeType.ALWAYS, ...o}),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (options.value !== JsonIncludeType.ALWAYS) {
       if (!descriptorOrParamIndex && isClass(target)) {
         Reflect.defineMetadata("jackson:JsonInclude", options, target);
         return target;
       }
-      else if (propertyKey)
+      else if (propertyKey) {
         Reflect.defineMetadata("jackson:JsonInclude", options, target, propertyKey);
-    }
-    if (typeof descriptorOrParamIndex !== "number") {
-      return descriptorOrParamIndex;
+      }
     }
   });

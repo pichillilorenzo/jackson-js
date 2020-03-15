@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@babel/parser": "^7.8.7",
+    "@babel/runtime": "^7.8.7",
     "@types/node": "^13.9.0",
     "dayjs": "^1.8.21",
     "reflect-metadata": "^0.1.13",
@@ -19,6 +20,7 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.8.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.8.3",
     "babel-loader": "^8.0.6",
     "codelyzer": "^5.1.2",
     "eslint": "^6.8.0",
