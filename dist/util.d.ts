@@ -13,3 +13,7 @@ export declare const isSameConstructorOrExtensionOf: (ctorOrCtorName: any, ctor2
 export declare const hasIterationProtocol: (variable: any) => boolean;
 export declare const isIterableNoString: (variable: any) => boolean;
 export declare const isClassIterable: (ctor: ClassType<any>) => boolean;
+/**
+ * https://stackoverflow.com/a/1482209/4637638
+ */
+export declare const isObjLiteral: (_obj: any) => boolean;

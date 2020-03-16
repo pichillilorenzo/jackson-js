@@ -157,3 +157,23 @@ export const isIterableNoString = (variable): boolean =>
 
 export const isClassIterable = (ctor: ClassType<any>): boolean =>
   hasIterationProtocol(ctor.prototype);
+
+/**
+ * https://stackoverflow.com/a/1482209/4637638
+ */
+export const isObjLiteral = (_obj: any): boolean => {
+  let _test  = _obj;
+  return ( typeof _obj !== 'object' || _obj === null ?
+    false :
+    (
+      (() => {
+        while (!false) {
+          if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
+            break;
+          }
+        }
+        return Object.getPrototypeOf(_obj) === _test;
+      })()
+    )
+  );
+};

@@ -616,12 +616,12 @@ class Child2 {
 // const stringified15 = objectMapper.stringify(re);
 // console.log(stringified15);
 // console.log(objectMapper.parse<RegExp>(stringified15, {mainCreator: () => [RegExp]}));
-
-const objectMapper = new ObjectMapper();
-const date = new Date();
-const stringified16 = objectMapper.stringify(date);
-console.log(stringified16);
-console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
+//
+// const objectMapper = new ObjectMapper();
+// const date = new Date();
+// const stringified16 = objectMapper.stringify(date);
+// console.log(stringified16);
+// console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
 
 export {
   JsonAnyGetter,

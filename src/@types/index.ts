@@ -71,7 +71,9 @@ export type JsonAnnotationDecorator = <T>(options: JsonAnnotationOptions,
   propertyKey: string | symbol,
   descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
 
-export type JsonAnyGetterOptions = JsonAnnotationOptions;
+export interface JsonAnyGetterOptions extends JsonAnnotationOptions {
+  for?: string;
+}
 
 export type JsonAnySetterOptions = JsonAnnotationOptions;
 

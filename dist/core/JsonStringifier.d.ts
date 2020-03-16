@@ -5,7 +5,7 @@ export declare class JsonStringifier<T> {
     constructor();
     stringify(obj: T, options?: JsonStringifierOptions): string;
     invokeCustomSerializers(key: string, value: any, options: JsonStringifierOptions): any;
-    stringifyJsonAnyGetter(replacement: any, obj: any, key: string): void;
+    stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[]): string[];
     stringifyJsonPropertyOrder(obj: any): string[];
     stringifyJsonProperty(replacement: any, obj: any, key: string): void;
     stringifyJsonRawValue(replacement: any, obj: any, key: string): void;

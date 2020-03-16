@@ -31,21 +31,20 @@ class Writer {
 
 test('@JsonAlias', t => {
   const objectMapper = new ObjectMapper();
-  const jsonData = `
-  {
-    "id": 1,
-    "name": "Lorenzo",
-    "books": [
-      {
-        "name": "Learning TypeScript",
-        "bkcat": "Web Development"
-      },
-      {
-        "name": "Learning Spring",
-        "mybkcat": "Java"
-      }
-    ]
-  }
+  const jsonData = `{
+  "id": 1,
+  "name": "Lorenzo",
+  "books": [
+    {
+      "name": "Learning TypeScript",
+      "bkcat": "Web Development"
+    },
+    {
+      "name": "Learning Spring",
+      "mybkcat": "Java"
+    }
+  ]
+}
 `;
 
   const writer = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});

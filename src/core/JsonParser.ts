@@ -25,6 +25,8 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {DeserializationFeature} from '../databind/DeserializationFeature';
+import {JacksonError} from './JacksonError';
+import {JsonAnySetterPrivateOptions} from '../annotations/JsonAnySetter';
 
 export class JsonParser<T> {
 
@@ -61,6 +63,12 @@ export class JsonParser<T> {
 
   parseJsonCreator(options: JsonParserOptions, obj: any): any {
     if (obj) {
+
+      let instance = this.getInstanceAlreadySeen(obj, options);
+      if (instance != null) {
+        return instance;
+      }
+
       const currentMainCreator = options.mainCreator()[0];
 
       const hasJsonCreator = Reflect.hasMetadata('jackson:JsonCreator', currentMainCreator);
@@ -85,7 +93,7 @@ export class JsonParser<T> {
           args.push(this.parseJsonClass(options, obj, mappedKey));
         } else if (mappedKey && jsonProperty.required) {
           // eslint-disable-next-line max-len
-          throw new Error(`Required property ${mappedKey} not found on @JsonCreator() of ${currentMainCreator.name} at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Required property ${mappedKey} not found on @JsonCreator() of ${currentMainCreator.name} at [Source '${JSON.stringify(obj)}']`);
         } else if (Object.hasOwnProperty.call(obj, key)) {
           args.push(this.parseJsonClass(options, obj, key));
         } else {
@@ -94,12 +102,9 @@ export class JsonParser<T> {
         argIndex++;
       }
 
-      let instance = this.getInstanceAlreadySeen(obj, options);
-      if (instance != null) {
-        return instance;
-      }
-
       instance = (jsonCreator.constructor) ? new (method as ObjectConstructor)(...args) : (method as Function)(...args);
+
+      const hasJsonAnySetter = Reflect.hasMetadata('jackson:JsonAnySetter', instance);
 
       this.parseJsonIdentityInfo(instance, obj, options);
 
@@ -109,10 +114,12 @@ export class JsonParser<T> {
         if (Object.hasOwnProperty.call(instance, key) || instance.constructor.name === 'Object') {
           // on TypeScript, set "useDefineForClassFields" option to true on the tsconfig.json file
           instance[key] = this.parseJsonClass(options, obj, key);
+        } else if (hasJsonAnySetter) {
+          this.parseJsonAnySetter(instance, obj, key);
         } else if ((jsonIgnorePropertiesOptions == null && options.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
             (jsonIgnorePropertiesOptions != null && !jsonIgnorePropertiesOptions.ignoreUnknown)) {
           // eslint-disable-next-line max-len
-          throw new Error(`Unknown property "${key}" for ${instance.constructor.name} at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Unknown property "${key}" for ${instance.constructor.name} at [Source '${JSON.stringify(obj)}']`);
         }
       }
 
@@ -150,7 +157,7 @@ export class JsonParser<T> {
             delete replacement[jsonProperty.value];
           }
         } else if (jsonProperty && jsonProperty.required) {
-          throw new Error(`Required property "${jsonProperty.value}" not found at [Source '${JSON.stringify(replacement)}']`);
+          throw new JacksonError(`Required property "${jsonProperty.value}" not found at [Source '${JSON.stringify(replacement)}']`);
         } else if (jsonAlias && jsonAlias.values && !isIgnored) {
           for (const alias of jsonAlias.values) {
             if (Object.hasOwnProperty.call(replacement, alias)) {
@@ -253,14 +260,15 @@ export class JsonParser<T> {
 
             if (!jsonClassBackReference) {
               // eslint-disable-next-line max-len
-              throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field at [Source '${JSON.stringify(obj)}']`);
+              throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field at [Source '${JSON.stringify(obj)}']`);
             }
 
             // check for multiple back-reference properties with same name
             if (metadata.value == null) {
               countBackReferences.defaultReference++;
               if (countBackReferences.defaultReference === 2) {
-                throw new Error(`Multiple back-reference properties with name "defaultReference" at [Source '${JSON.stringify(obj)}']`);
+                // eslint-disable-next-line max-len
+                throw new JacksonError(`Multiple back-reference properties with name "defaultReference" at [Source '${JSON.stringify(obj)}']`);
               }
             } else {
               if (countBackReferences[metadata.value] == null) {
@@ -269,7 +277,8 @@ export class JsonParser<T> {
                 countBackReferences[metadata.value]++;
               }
               if (countBackReferences.defaultReference === 2) {
-                throw new Error(`Multiple back-reference properties with name "${metadata.value}" at [Source '${JSON.stringify(obj)}']`);
+                // eslint-disable-next-line max-len
+                throw new JacksonError(`Multiple back-reference properties with name "${metadata.value}" at [Source '${JSON.stringify(obj)}']`);
               }
             }
 
@@ -290,18 +299,17 @@ export class JsonParser<T> {
 
     } else if (jsonManagedReference && !jsonClassManagedReference) {
       // eslint-disable-next-line max-len
-      throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${replacement.constructor.name}["${key}"] field at [Source '${JSON.stringify(obj)}']`);
+      throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${replacement.constructor.name}["${key}"] field at [Source '${JSON.stringify(obj)}']`);
     }
   }
 
-  parseJsonAnySetter(replacement: any, value: any, key: string): void {
-    const jsonAnySetter: string = Reflect.getMetadata('jackson:JsonAnySetter', replacement);
-    const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonProperty', replacement, key);
-    if (!jsonProperty && jsonAnySetter && replacement[jsonAnySetter]) {
-      if (typeof replacement[jsonAnySetter] === 'function') {
-        replacement[jsonAnySetter](key, value[key]);
+  parseJsonAnySetter(replacement: any, obj: any, key: string): void {
+    const jsonAnySetter: JsonAnySetterPrivateOptions = Reflect.getMetadata('jackson:JsonAnySetter', replacement);
+    if (jsonAnySetter && replacement[jsonAnySetter.propertyKey]) {
+      if (typeof replacement[jsonAnySetter.propertyKey] === 'function') {
+        replacement[jsonAnySetter.propertyKey](key, obj[key]);
       } else {
-        replacement[jsonAnySetter][key] = value[key];
+        replacement[jsonAnySetter.propertyKey][key] = obj[key];
       }
     }
   }
@@ -347,14 +355,14 @@ export class JsonParser<T> {
         jsonTypeInfoProperty = obj[jsonTypeInfo.property];
         if (jsonTypeInfoProperty == null) {
           // eslint-disable-next-line max-len
-          throw new Error(`Missing type id when trying to resolve subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Missing type id when trying to resolve subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(obj)}']`);
         }
         delete obj[jsonTypeInfo.property];
         break;
       case JsonTypeInfoAs.WRAPPER_OBJECT:
         if (!(obj instanceof Object) || obj instanceof Array) {
           // eslint-disable-next-line max-len
-          throw new Error(`Expected "Object", got "${obj.constructor.name}": need JSON Object to contain JsonTypeInfoAs.WRAPPER_OBJECT type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "Object", got "${obj.constructor.name}": need JSON Object to contain JsonTypeInfoAs.WRAPPER_OBJECT type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
         }
         jsonTypeInfoProperty = Object.keys(obj)[0];
         newObj = obj[jsonTypeInfoProperty];
@@ -362,13 +370,13 @@ export class JsonParser<T> {
       case JsonTypeInfoAs.WRAPPER_ARRAY:
         if (!(obj instanceof Array)) {
           // eslint-disable-next-line max-len
-          throw new Error(`Expected "Array", got "${obj.constructor.name}": need JSON Array to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "Array", got "${obj.constructor.name}": need JSON Array to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
         } else if (obj.length > 2 || obj.length === 0) {
           // eslint-disable-next-line max-len
-          throw new Error(`Expected "Array" of length 1 or 2, got "Array" of length ${obj.length}: need JSON Array of length 1 or 2 to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "Array" of length 1 or 2, got "Array" of length ${obj.length}: need JSON Array of length 1 or 2 to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
         } else if (typeof obj[0] !== 'string') {
           // eslint-disable-next-line max-len
-          throw new Error(`Expected "String", got "${obj[0].constructor.name}": need JSON String that contains type id (for subtype of "${currentMainCreator.name}") at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "String", got "${obj[0].constructor.name}": need JSON String that contains type id (for subtype of "${currentMainCreator.name}") at [Source '${JSON.stringify(obj)}']`);
         }
         jsonTypeInfoProperty = obj[0];
         newObj = obj[1];
@@ -407,7 +415,7 @@ export class JsonParser<T> {
             ids.push(...jsonSubTypes.map((subType) => subType.class().name));
           }
           // eslint-disable-next-line max-len
-          throw new Error(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
         }
         break;
       }
@@ -611,10 +619,10 @@ export class JsonParser<T> {
           }
         }
 
-        const jsonJsonCreator = this.parseJsonCreator(options, replacement);
-        if (jsonJsonCreator) {replacement = jsonJsonCreator; }
-
-        for (const k in value) {if (Object.hasOwnProperty.call(value, k)) {this.parseJsonAnySetter(replacement, value, k); } }
+        const instance = this.parseJsonCreator(options, replacement);
+        if (instance) {
+          replacement = instance;
+        }
 
         return replacement;
       } else if (isIterableNoString(value)) {

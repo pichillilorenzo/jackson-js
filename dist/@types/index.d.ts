@@ -52,7 +52,9 @@ export interface JsonAnnotationOptions {
     enabled?: boolean;
 }
 export declare type JsonAnnotationDecorator = <T>(options: JsonAnnotationOptions, target: Record<string, any>, propertyKey: string | symbol, descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
-export declare type JsonAnyGetterOptions = JsonAnnotationOptions;
+export interface JsonAnyGetterOptions extends JsonAnnotationOptions {
+    for?: string;
+}
 export declare type JsonAnySetterOptions = JsonAnnotationOptions;
 export interface JsonBackReferenceOptions extends JsonAnnotationOptions {
     value?: string;

@@ -11,7 +11,7 @@ export declare class JsonParser<T> {
     parseJsonClass(options: JsonParserOptions, obj: any, key: string): any;
     parseJsonReferences(replacement: any, options: JsonParserOptions, obj: any, key: string): any;
     parseJsonManagedReference(replacement: any, options: JsonParserOptions, obj: any, key: string): void;
-    parseJsonAnySetter(replacement: any, value: any, key: string): void;
+    parseJsonAnySetter(replacement: any, obj: any, key: string): void;
     parseJsonDeserialize(options: JsonParserOptions, replacement: any, key: string): void;
     parseHasJsonIgnore(options: JsonParserOptions, key: string): boolean;
     parseJsonIgnoreType(options: JsonParserOptions): boolean;

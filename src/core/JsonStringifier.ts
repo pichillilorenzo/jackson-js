@@ -14,7 +14,7 @@ import {
 } from '../@types';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
-import {cloneClassInstance, isExtensionOf, isIterableNoString, isSameConstructor} from '../util';
+import {cloneClassInstance, isExtensionOf, isIterableNoString, isObjLiteral, isSameConstructor} from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {JsonFormatShape} from '../annotations/JsonFormat';
 import {SerializationFeature} from '../databind/SerializationFeature';
@@ -22,6 +22,8 @@ import {ObjectIdGenerator} from '../annotations/JsonIdentityInfo';
 import * as dayjs from 'dayjs';
 import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
+import {JsonAnyGetterPrivateOptions} from '../annotations/JsonAnyGetter';
+import {JacksonError} from './JacksonError';
 
 dayjs.extend(customParseFormat);
 
@@ -58,14 +60,40 @@ export class JsonStringifier<T> {
     return value;
   }
 
-  stringifyJsonAnyGetter(replacement: any, obj: any, key: string): void {
-    const jsonAnyGetter: string = Reflect.getMetadata('jackson:JsonAnyGetter', obj);
-    const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonProperty', obj, key);
-    if (!jsonProperty && jsonAnyGetter && obj[jsonAnyGetter]) {
-      const value = (typeof obj[jsonAnyGetter] === 'function') ? obj[jsonAnyGetter]() : obj[jsonAnyGetter];
-      for (const k in value) {if (Object.hasOwnProperty.call(value, k)) {replacement[k] = value[k]; } }
-      delete replacement[key];
+  stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[]): string[] {
+    const newKeys = [];
+    const jsonAnyGetter: JsonAnyGetterPrivateOptions = Reflect.getMetadata('jackson:JsonAnyGetter', obj);
+    if (jsonAnyGetter && obj[jsonAnyGetter.propertyKey]) {
+      const map = (typeof obj[jsonAnyGetter.propertyKey] === 'function') ?
+        obj[jsonAnyGetter.propertyKey]() :
+        obj[jsonAnyGetter.propertyKey];
+
+      if (!(map instanceof Map) && !isObjLiteral(map)) {
+        // eslint-disable-next-line max-len
+        throw new JacksonError(`Property ${obj.constructor.name}["${jsonAnyGetter.propertyKey}"] annotated with @JsonAnyGetter() returned a "${map.constructor.name}": expected "Map" or "Object Literal".`);
+      }
+      if (map instanceof Map) {
+        for (const [k, value] of map) {
+          replacement[k] = value;
+          newKeys.push(k);
+        }
+      } else {
+        for (const k in map) {
+          if (Object.hasOwnProperty.call(map, k)) {
+            replacement[k] = map[k];
+            newKeys.push(k);
+          }
+        }
+      }
+
+      if (jsonAnyGetter.for && oldKeys.includes(jsonAnyGetter.for) &&
+        !Reflect.hasMetadata('jackson:JsonProperty', obj, jsonAnyGetter.for)) {
+        oldKeys.splice(oldKeys.indexOf(jsonAnyGetter.for), 1);
+      } else {
+        oldKeys = [];
+      }
     }
+    return [...new Set([...oldKeys, ...newKeys])];
   }
 
   stringifyJsonPropertyOrder(obj: any): string[] {
@@ -192,7 +220,7 @@ export class JsonStringifier<T> {
 
             if (!jsonClassBackReference) {
               // eslint-disable-next-line max-len
-              throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field`);
+              throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field`);
             }
 
             if (isSameConstructor(jsonClassBackReference.class(), obj.constructor)) {
@@ -222,7 +250,7 @@ export class JsonStringifier<T> {
 
     } else if (jsonManagedReference && !jsonClassManagedReference) {
       // eslint-disable-next-line max-len
-      throw new Error(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${obj.constructor.name}["${key}"] field`);
+      throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${obj.constructor.name}["${key}"] field`);
     }
   }
 
@@ -345,7 +373,7 @@ export class JsonStringifier<T> {
     if (jsonUnwrapped) {
       if (hasJsonTypeInfo && options.features[SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS]) {
         // eslint-disable-next-line max-len
-        throw new Error(`Unwrapped property requires use of type information: cannot serialize without disabling "SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS" (through reference chain: ${obj.constructor.name}["${key}"])`);
+        throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize without disabling "SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS" (through reference chain: ${obj.constructor.name}["${key}"])`);
       }
 
       const prefix = (jsonUnwrapped.prefix != null) ? jsonUnwrapped.prefix : '';
@@ -446,7 +474,7 @@ export class JsonStringifier<T> {
     }
 
     if (valueAlreadySeen.has(obj)) {
-      throw new Error(`Infinite recursion on key "${key}" of type "${obj.constructor.name}"`);
+      throw new JacksonError(`Infinite recursion on key "${key}" of type "${obj.constructor.name}"`);
     }
     valueAlreadySeen.set(obj, (jsonIdentityInfo) ? replacement[jsonIdentityInfo.property] : null);
   }
@@ -487,6 +515,7 @@ export class JsonStringifier<T> {
           replacement = {};
 
           let keys = Object.keys(value);
+          keys = this.stringifyJsonAnyGetter(replacement, value, keys);
           if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
             keys = keys.sort();
           }
@@ -501,7 +530,8 @@ export class JsonStringifier<T> {
               Object.hasOwnProperty.call(value, k)) {
 
               if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
-                throw new Error(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
+                // eslint-disable-next-line max-len
+                throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
               }
 
               replacement[k] = value[k];
@@ -510,7 +540,6 @@ export class JsonStringifier<T> {
               this.stringifyJsonRawValue(replacement, value, k);
               this.stringifyJsonProperty(replacement, value, k);
               this.stringifyJsonManagedReference(replacement, value, k);
-              this.stringifyJsonAnyGetter(replacement, value, k);
               this.stringifyJsonUnwrapped(replacement, value, k, options);
             }
           }
