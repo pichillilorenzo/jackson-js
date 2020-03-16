@@ -1,6 +1,6 @@
 import {makeJacksonDecorator} from '../util';
-import "reflect-metadata";
-import {JsonFormatOptions} from "../@types";
+import 'reflect-metadata';
+import {JsonFormatOptions} from '../@types';
 
 export enum JsonFormatShape {
   ANY,
@@ -13,9 +13,7 @@ export enum JsonFormatShape {
   STRING
 }
 
-export interface JsonFormatDecorator {
-  (options?: JsonFormatOptions): any;
-}
+export type JsonFormatDecorator = (options?: JsonFormatOptions) => any;
 
 export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
   (o: JsonFormatOptions): JsonFormatOptions => (
@@ -27,6 +25,6 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
-      Reflect.defineMetadata("jackson:JsonFormat", options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonFormat', options, target, propertyKey);
     }
   });

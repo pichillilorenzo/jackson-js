@@ -1,16 +1,14 @@
 import {makeJacksonDecorator, isClass} from '../util';
-import "reflect-metadata";
-import {JsonIgnoreTypeOptions} from "../@types";
+import 'reflect-metadata';
+import {JsonIgnoreTypeOptions} from '../@types';
 
-export interface JsonIgnoreTypeDecorator {
-  (options?: JsonIgnoreTypeOptions): any;
-}
+export type JsonIgnoreTypeDecorator = (options?: JsonIgnoreTypeOptions) => any;
 
 export const JsonIgnoreType: JsonIgnoreTypeDecorator = makeJacksonDecorator(
   (o: JsonIgnoreTypeOptions): JsonIgnoreTypeOptions => ({enabled: true, ...o}),
   (options: JsonIgnoreTypeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
-      Reflect.defineMetadata("jackson:JsonIgnoreType", null, target);
+      Reflect.defineMetadata('jackson:JsonIgnoreType', null, target);
       return target;
     }
   });

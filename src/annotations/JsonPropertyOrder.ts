@@ -1,10 +1,8 @@
 import {makeJacksonDecorator, isClass} from '../util';
-import "reflect-metadata";
-import {JsonPropertyOrderOptions} from "../@types";
+import 'reflect-metadata';
+import {JsonPropertyOrderOptions} from '../@types';
 
-export interface JsonPropertyOrderDecorator {
-  (options?: JsonPropertyOrderOptions): any;
-}
+export type JsonPropertyOrderDecorator = (options?: JsonPropertyOrderOptions) => any;
 
 export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorator(
   (o: JsonPropertyOrderOptions): JsonPropertyOrderOptions => ({
@@ -15,7 +13,7 @@ export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorato
   }),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
-      Reflect.defineMetadata("jackson:JsonPropertyOrder", options, target);
+      Reflect.defineMetadata('jackson:JsonPropertyOrder', options, target);
       return target;
     }
   });

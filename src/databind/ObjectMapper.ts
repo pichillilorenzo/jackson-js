@@ -1,13 +1,15 @@
-import {JsonStringifier} from "../core/JsonStringifier";
+import {
+  JsonStringifier
+} from '../core/JsonStringifier';
 import {
   JsonParserOptions,
   JsonStringifierOptions,
   ObjectMapperDeserializer,
   ObjectMapperFeatures, ObjectMapperCustomMapper, ObjectMapperSerializer
-} from "../@types";
-import {JsonParser} from "../core/JsonParser";
-import {SerializationFeature} from "./SerializationFeature";
-import {DeserializationFeature} from "./DeserializationFeature";
+} from '../@types';
+import {JsonParser} from '../core/JsonParser';
+import {SerializationFeature} from './SerializationFeature';
+import {DeserializationFeature} from './DeserializationFeature';
 
 export class ObjectMapper {
   features: ObjectMapperFeatures = {
@@ -50,8 +52,6 @@ export class ObjectMapper {
   }
 
   private sortMappersByOrder<T>(mappers: ObjectMapperCustomMapper<T>[]): ObjectMapperCustomMapper<T>[] {
-    return mappers.sort((a, b) => {
-      return a.order - b.order > 0 ? 1 : -1;
-    });
+    return mappers.sort((a, b) => a.order - b.order > 0 ? 1 : -1);
   }
 }

@@ -1,8 +1,8 @@
 import {isClass, makeJacksonDecorator} from '../util';
-import "reflect-metadata";
+import 'reflect-metadata';
 import {
   JsonIdentityInfoOptions
-} from "../@types";
+} from '../@types';
 
 export enum ObjectIdGenerator {
   IntSequenceGenerator,
@@ -14,9 +14,7 @@ export enum ObjectIdGenerator {
   UUIDv1Generator
 }
 
-export interface JsonIdentityInfoDecorator {
-  (options: JsonIdentityInfoOptions): any;
-}
+export type JsonIdentityInfoDecorator = (options: JsonIdentityInfoOptions) => any;
 
 export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
   (o: JsonIdentityInfoOptions): JsonIdentityInfoOptions => (
@@ -31,8 +29,8 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
     }),
   (options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
-      Reflect.defineMetadata("jackson:JsonIdentityInfo", options, target);
-      Reflect.defineMetadata("jackson:JsonIdentityInfo", options, target.constructor);
+      Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target);
+      Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target.constructor);
       return target;
     }
   });

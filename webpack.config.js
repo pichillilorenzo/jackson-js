@@ -2,18 +2,20 @@ const webpack = require('webpack');
 const path = require('path');
 
 const babelOptions = {
+  presets: ['@babel/typescript'],
   plugins: [
-    ["@babel/plugin-transform-runtime"],
+    ['@babel/plugin-transform-runtime'],
+    ['@babel/plugin-syntax-bigint'],
     [
-      "@babel/plugin-proposal-decorators",
+      '@babel/plugin-proposal-decorators',
       {
-        "legacy": true
+        legacy: true
       }
     ],
     [
-      "@babel/plugin-proposal-class-properties",
+      '@babel/plugin-proposal-class-properties',
       {
-        "loose": true
+        loose: true
       }
     ]
   ]
@@ -25,7 +27,7 @@ const defaultConfig = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
+        exclude: [/(node_modules|bower_components)/, /tests/],
         use: [
           {
             loader: 'babel-loader',
@@ -38,14 +40,17 @@ const defaultConfig = {
       },
       {
         test: /\.ts(x?)$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /tests/],
         use: [
           {
             loader: 'babel-loader',
             options: babelOptions
           },
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
+            options: {
+              configFile: path.resolve(__dirname, 'tsconfig.json'),
+            }
           },
           {
             loader: 'eslint-loader'
@@ -55,9 +60,10 @@ const defaultConfig = {
     ]
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: ['.tsx', '.ts', '.js']
   },
   mode: 'development',
+  plugins: []
 };
 
 const serverConfig = {

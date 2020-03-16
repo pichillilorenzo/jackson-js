@@ -1,157 +1,159 @@
-import {parse, ParserPlugin} from "@babel/parser";
-import {JsonAnnotationDecorator, JsonAnnotationOptions, JsonClassOptions} from "./@types";
+import {parse, ParserPlugin} from '@babel/parser';
+import {
+  ClassDeclaration,
+  ClassMethod,
+  ExpressionStatement,
+  FunctionExpression,
+  Node
+} from '@babel/types';
+import {ClassType, JsonAnnotationDecorator, JsonAnnotationOptions} from './@types';
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
  */
-export function isClass(obj): boolean {
+export const isClass = (obj): boolean => {
   const isCtorClass = obj.constructor
       && obj.constructor.toString().substring(0, 5) === 'class';
-  if(obj.prototype === undefined) {
-    return isCtorClass
+  // eslint-disable-next-line id-blacklist
+  if (obj.prototype === undefined) {
+    return isCtorClass;
   }
-  const isPrototypeCtorClass = obj.prototype.constructor 
+  const isPrototypeCtorClass = obj.prototype.constructor
     && obj.prototype.constructor.toString
     && obj.prototype.constructor.toString().substring(0, 5) === 'class';
-  return isCtorClass || isPrototypeCtorClass
-}
+  return isCtorClass || isPrototypeCtorClass;
+};
 
-export function makeDecorator<T>(
+export const makeDecorator = <T>(
   options: (...args: any[]) => JsonAnnotationOptions,
-  decorator: JsonAnnotationDecorator): any {
-  function DecoratorFactory(...args: any[]) {
-    const target: Object = args[0];
+  decorator: JsonAnnotationDecorator): any => {
+  const DecoratorFactory = (...args: any[]): any => {
+    const target: Record<string, any> = args[0];
     const propertyKey: null | string | symbol = args[1];
     const descriptorOrParamIndex: null | number | TypedPropertyDescriptor<any> = args[2];
 
-    if ((typeof target === "function" || propertyKey != null || descriptorOrParamIndex != null) ||
-      descriptorOrParamIndex != null && typeof descriptorOrParamIndex === "number") {
+    if ((typeof target === 'function' || propertyKey != null || descriptorOrParamIndex != null) ||
+      descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       return decorator(options(), target, propertyKey, descriptorOrParamIndex);
     } else {
-      return function <T>(target: Object, propertyKey?: string | symbol, descriptor?: TypedPropertyDescriptor<T>) {
-        return decorator(options(args[0]), target, propertyKey, descriptor);
+      return <T>(targetDecorator: Record<string, any>,
+        propertyKeyDecorator?: string | symbol,
+        descriptor?: TypedPropertyDescriptor<T>): any =>
+        decorator(options(args[0]), targetDecorator, propertyKeyDecorator, descriptor);
+    }
+  };
+  return DecoratorFactory;
+};
+
+export const makeJacksonDecorator = <T>(
+  options: (...args: any[]) => JsonAnnotationOptions,
+  decorator: JsonAnnotationDecorator): any => makeDecorator<T>(
+  options,
+  (o: JsonAnnotationOptions, target, propertyKey, descriptorOrParamIndex) => {
+    if (o.enabled) {
+      const value = decorator(o, target, propertyKey, descriptorOrParamIndex);
+      if (value != null) {
+        return value;
       }
     }
-  }
-  return DecoratorFactory;
-}
+    if (typeof descriptorOrParamIndex !== 'number') {
+      return descriptorOrParamIndex;
+    }
+  });
 
-export function makeJacksonDecorator<T>(
-  options: (...args: any[]) => JsonAnnotationOptions,
-  decorator: JsonAnnotationDecorator): any {
-
-  return makeDecorator<T>(
-    options,
-    (options: JsonAnnotationOptions, target, propertyKey, descriptorOrParamIndex) => {
-      if (options.enabled) {
-        const value = decorator(options, target, propertyKey, descriptorOrParamIndex);
-        if (value != null) {
-          return value;
-        }
-      }
-      if (typeof descriptorOrParamIndex !== "number") {
-        return descriptorOrParamIndex;
-      }
-    });
-}
-
-/** 
+/**
  * https://github.com/rphansen91/es-arguments/blob/master/src/arguments.js#L3
-*/
-function pluckPattern (pattern) {
-  return ['{',
-    pattern.map(({ key }) => key.name).join(', '),
+ */
+const pluckPattern = (pattern): string => ['{',
+  pattern.map(({ key }) => key.name).join(', '),
   '}'].join(' ');
-}
 
-/** 
+/**
  * https://github.com/rphansen91/es-arguments/blob/master/src/arguments.js#L9
-*/
-function pluckParamName (param) {
-  if (param.name) return param.name;
-  if (param.left) return pluckParamName(param.left);
-  if (param.properties) return pluckPattern(param.properties);
-  if (param.type === 'RestElement') return '...' + pluckParamName(param.argument);
+ */
+const pluckParamName = (param): string => {
+  if (param.name) {return param.name; }
+  if (param.left) {return pluckParamName(param.left); }
+  if (param.properties) {return pluckPattern(param.properties); }
+  if (param.type === 'RestElement') {return '...' + pluckParamName(param.argument); }
   return;
-}
+};
 
-export function getArgumentNames(method, useFlow=false) {
+export const getArgumentNames = (method, useFlow = false): string[] => {
   let code = method.toString().trim();
 
-  if (code.endsWith(" { [native code] }")) {
+  if (code.endsWith(' { [native code] }')) {
     return [];
   }
 
-  if (code.startsWith("class extends"))
-    code = "class JacksonClass " + code.substring(6);
-  else if (!code.startsWith("class ") && !code.startsWith("function "))
-    code = "function " + code;
+  if (code.startsWith('class extends')) {
+    code = 'class JacksonClass ' + code.substring(6);
+  } else if (!code.startsWith('class ') && !code.startsWith('function ')) {
+    code = 'function ' + code;
+  }
 
   const ast = parse(code, {
     plugins: [
-      "jsx",
-      (!useFlow) ? "typescript" : "flow"
-    ].concat((useFlow) ? ["flowComments"] : []) as ParserPlugin[]
+      'jsx',
+      (!useFlow) ? 'typescript' : 'flow'
+    ].concat((useFlow) ? ['flowComments'] : []) as ParserPlugin[]
   });
 
-  let { body } = ast.program;
-  if (code.startsWith("class ")) {
-    // @ts-ignore
-    body = body[0].body.body;
+  const { body } = ast.program;
+  let nodes: Node[] = [];
+  if (code.startsWith('class ')) {
+    nodes = (body[0] as ClassDeclaration).body.body;
     // find constructor
-    for (let propertyOrMethod of body) {
-      // @ts-ignore
-      if (propertyOrMethod.kind === "constructor") {
-        body = [propertyOrMethod];
+    for (const propertyOrMethod of nodes) {
+      if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
+        nodes = [propertyOrMethod];
         break;
       }
     }
   }
 
-  return body.reduce((args, exp) => {
-    // @ts-ignore
-    if (exp.params) return args.concat(exp.params)
-    // @ts-ignore
-    if (exp.expression.params) return args.concat(exp.expression.params)
+  return nodes.reduce((args, exp) => {
+    if ((exp as ClassMethod).params) {
+      return args.concat((exp as ClassMethod).params);
+    }
+    if (((exp as ExpressionStatement).expression as FunctionExpression).params) {
+      return args.concat(((exp as ExpressionStatement).expression as FunctionExpression).params);
+    }
     return args;
   }, []).map(pluckParamName);
-}
+};
 
-export function cloneClassInstance(instance) {
-  if (typeof instance !== "object") {
+export const cloneClassInstance = <T>(instance): T => {
+  if (typeof instance !== 'object') {
     return instance;
   }
   return Object.assign( Object.create( Object.getPrototypeOf(instance)), instance);
-}
+};
 
-export function isSameConstructor(ctorOrCtorName, ctor2) {
-  return (typeof ctorOrCtorName === "string" && ctorOrCtorName === ctor2.name) || ctorOrCtorName === ctor2;
-}
+export const isSameConstructor = (ctorOrCtorName, ctor2): boolean =>
+  (typeof ctorOrCtorName === 'string' && ctorOrCtorName === ctor2.name) || ctorOrCtorName === ctor2;
 
-export function isExtensionOf(ctor, ctorExtensionOf) {
-  if (typeof ctor === "string") {
+export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
+  if (typeof ctor === 'string') {
     let parent = Object.getPrototypeOf(ctorExtensionOf);
-    while(parent.name) {
-      if (parent.name === ctor)
-        return true;
+    while (parent.name) {
+      if (parent.name === ctor) {return true; }
       parent = Object.getPrototypeOf(parent);
     }
-  }
-  else
+  } else {
     return ctor !== ctorExtensionOf && ctorExtensionOf.prototype instanceof ctor;
+  }
   return false;
-}
+};
 
-export function isSameConstructorOrExtensionOf(ctorOrCtorName, ctor2) {
-  return isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2);
-}
+export const isSameConstructorOrExtensionOf = (ctorOrCtorName, ctor2): boolean =>
+  isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2);
 
-export const hasIterationProtocol = variable =>
+export const hasIterationProtocol = (variable): boolean =>
   variable !== null && Symbol.iterator in Object(variable);
 
-export const isIterableNoString = variable =>
-  typeof variable !== "string" && hasIterationProtocol(variable);
+export const isIterableNoString = (variable): boolean =>
+  typeof variable !== 'string' && hasIterationProtocol(variable);
 
-export const isClassIterable = ctor =>
-  isSameConstructor(ctor, Set) || isSameConstructor(ctor, Map) || isSameConstructor(ctor, Array) ||
-  isExtensionOf(ctor, Set) || isExtensionOf(ctor, Map) || isExtensionOf(ctor, Array)
+export const isClassIterable = (ctor: ClassType<any>): boolean =>
+  hasIterationProtocol(ctor.prototype);

@@ -19,49 +19,47 @@ import {JsonTypeName} from './annotations/JsonTypeName';
 import {JsonSubTypes} from './annotations/JsonSubTypes';
 import {JsonFormat, JsonFormatShape} from './annotations/JsonFormat';
 import {JsonView} from './annotations/JsonView';
-import {JsonAlias} from "./annotations/JsonAlias";
-import {JsonClass} from "./annotations/JsonClass";
-import dayjs from "dayjs";
-import {ObjectMapper} from "./databind/ObjectMapper";
-import {ObjectMapper as ASD} from "./databind/ObjectMapper";
-import {SerializationFeature} from "./databind/SerializationFeature";
-import {DeserializationFeature} from "./databind/DeserializationFeature";
-import {JsonParser} from "./core/JsonParser";
-import {JsonStringifier} from "./core/JsonStringifier";
-import {JsonUnwrapped} from "./annotations/JsonUnwrapped";
-import {JsonIdentityInfo, ObjectIdGenerator} from "./annotations/JsonIdentityInfo";
-import {ObjectMapperDeserializer, ObjectMapperSerializer} from "./@types";
+import {JsonAlias} from './annotations/JsonAlias';
+import {JsonClass} from './annotations/JsonClass';
+import dayjs from 'dayjs';
+import {ObjectMapper} from './databind/ObjectMapper';
+import {SerializationFeature} from './databind/SerializationFeature';
+import {DeserializationFeature} from './databind/DeserializationFeature';
+import {JsonParser} from './core/JsonParser';
+import {JsonStringifier} from './core/JsonStringifier';
+import {JsonUnwrapped} from './annotations/JsonUnwrapped';
+import {JsonIdentityInfo, ObjectIdGenerator} from './annotations/JsonIdentityInfo';
 
 class DateSerializer {
-  static serializeDate(date) {
+  static serializeDate(date): any {
     return {
-      "year": date.getFullYear(),
-      "month": date.getMonth() + 1,
-      "day": date.getDate(),
-      "formatted": date.toLocaleDateString()
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      formatted: date.toLocaleDateString()
     };
   }
-  static deserializeDate(dateObj) {
+  static deserializeDate(dateObj): Date {
     return new Date(dateObj.formatted);
   }
 }
 
-//@JsonRootName()
-//@JsonIgnoreType()
+// @JsonRootName()
+// @JsonIgnoreType()
 @JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.PROPERTY, property: 'example2_type'})
 class Example2 {
 
-  name = "";
-  age = 55
+  name = '';
+  age = 55;
 
   @JsonSerialize({using: DateSerializer.serializeDate})
   @JsonDeserialize({using: DateSerializer.deserializeDate})
   date = new Date();
 
-  //@JsonBackReference({class: () => Example3})
+  // @JsonBackReference({class: () => Example3})
   example;
 
-  constructor (name, age, date, example) {
+  constructor(name, age, date, example) {
     this.name = name;
     this.age = age;
     this.date = date;
@@ -70,20 +68,20 @@ class Example2 {
 
   @JsonCreator()
   static creator(name, age, date) {
-    return new Example2(name, age, date, null)
+    return new Example2(name, age, date, null);
   }
-  //@JsonValue()
+  // @JsonValue()
   getValue() {
-    return "ciao " + this.name;
+    return 'ciao ' + this.name;
   }
 
 }
 
-//@JsonCreator()
-//@JsonIgnoreType()
-//@JsonRootName()
-@JsonPropertyOrder({value: ["example2", "test2", "name"]})
-//@JsonInclude({value: JsonInclude.Include.NON_EMPTY})
+// @JsonCreator()
+// @JsonIgnoreType()
+// @JsonRootName()
+@JsonPropertyOrder({value: ['example2', 'test2', 'name']})
+// @JsonInclude({value: JsonInclude.Include.NON_EMPTY})
 // @JsonIgnoreProperties({
 //   value: ["age", "username"],
 //   allowGetters: true
@@ -93,61 +91,62 @@ class Example2 {
   {class: () => Example3, name: 'custom_type_name'}
 ]})
 class Example {
-  //@JsonIgnore()
-  @JsonProperty({value: "username"})
-  name = "pippo";
+  // @JsonIgnore()
+  @JsonProperty({value: 'username'})
+  name = 'pippo';
 
-  //@JsonInclude({value: JsonInclude.Include.NON_NULL})
+  // @JsonInclude({value: JsonInclude.Include.NON_NULL})
   age = 5;
 
   mTest = false;
   test2 = false;
 
   @JsonRawValue()
-  @JsonProperty({value: "property_test"})
+  @JsonProperty({value: 'property_test'})
   testValue = '{"asd": 5}';
 
-  //@JsonManagedReference({class: () => Example2})
-  example2_references;
+  // @JsonManagedReference({class: () => Example2})
+  example2References;
 
-  constructor (name, age, test, example2_references) {
+  constructor(name, age, tttest, example2References) {
     this.name = name;
     this.age = age;
-    this.mTest = test;
-    this.test2 = !test;
-    this.example2_references = example2_references;
-  }
-
-  //@JsonAnyGetter({enabled: false})
-  testAnyGetter() {
-    return {
-      "age": this.age,
-    }
+    this.mTest = tttest;
+    this.test2 = !tttest;
+    this.example2References = example2References;
   }
 
   @JsonCreator()
-  static creator(name2, age, test/*, example2_references*/) {
-    return new Example(name2, age, test, null/*, example2_references*/);
+  static creator(name2, age, teeeest/* , example2_references*/) {
+    return new Example(name2, age, teeeest, null/* , example2_references*/);
   }
+
+  // @JsonAnyGetter({enabled: false})
+  testAnyGetter() {
+    return {
+      age: this.age,
+    };
+  }
+
 }
 
-//@JsonRootName()
+// @JsonRootName()
 @JsonCreator()
-//@JsonTypeName({value: "example3"})
+// @JsonTypeName({value: "example3"})
 class Example3 extends Example {
-  new_property = 344443434
+  newProperty = 344443434;
 }
 
-let test = new Example2("test 1", 20, new Date(), null);
-let test2 = new Example2("test 2", 40, new Date(), null);
-//let a = new Example("my name", 45, '');
-let a = new Example3("my name", null, '', null);
-//a.example2_references = [test, test2];
-a.example2_references = test;
-//let a = new Example("my name", 45, false);
-//test.example = a;
-//test2.example = a;
-a.testValue = "{\"test\": 100}";
+const test = new Example2('test 1', 20, new Date(), null);
+const test2 = new Example2('test 2', 40, new Date(), null);
+// let a = new Example("my name", 45, '');
+const a = new Example3('my name', null, '', null);
+// a.example2References = [test, test2];
+a.example2References = test;
+// let a = new Example("my name", 45, false);
+// test.example = a;
+// test2.example = a;
+a.testValue = '{"test": 100}';
 
 // let stringified1 = stringify(test, null, "\t");
 // console.log(stringified1)
@@ -172,7 +171,7 @@ class Shape {
 
 }
 
-@JsonTypeName({value: "rectangle"})
+@JsonTypeName({value: 'rectangle'})
 class Rectangle extends Shape {
   w;
   h;
@@ -183,7 +182,7 @@ class Rectangle extends Shape {
   }
 }
 
-@JsonTypeName({value: "circle"})
+@JsonTypeName({value: 'circle'})
 class Circle extends Shape {
   radius;
   constructor(radius) {
@@ -197,10 +196,8 @@ class View {
   @JsonFormat({
     shape: JsonFormatShape.OBJECT
   })
-  @JsonDeserialize({using: (shapes) => {
-    return Object.values(shapes);
-  }})
-  //@JsonManagedReference({class: () => Shape})
+  @JsonDeserialize({using: (shapes) => Object.values(shapes)})
+  // @JsonManagedReference({class: () => Shape})
   shapes = [];
   constructor(shapes) {
     this.shapes = shapes;
@@ -219,10 +216,10 @@ class Event {
   @JsonFormat({
     shape: JsonFormatShape.STRING,
     locale: 'es',
-    pattern: "dddd YYYY-MM-DDTHH:mm:ssZ[Z]",
-    timezone: "America/New_York"
+    pattern: 'dddd YYYY-MM-DDTHH:mm:ssZ[Z]',
+    timezone: 'America/New_York'
   })
-  @JsonDeserialize({using: (date) => { return dayjs(date, "dddd YYYY-MM-DDTHH:mm:ssZ[Z]").toDate(); }})
+  @JsonDeserialize({using: (date) => dayjs(date, 'dddd YYYY-MM-DDTHH:mm:ssZ[Z]').toDate()})
   eventDate;
 }
 
@@ -237,14 +234,20 @@ class User {
   id;
   name;
 
-  //@JsonManagedReference({class: () => Item2})
+  // @JsonManagedReference({class: () => Item2})
   userItems2 = [];
-  //@JsonManagedReference({class: () => Item3})
+  // @JsonManagedReference({class: () => Item3})
   userItems3 = [];
 
   constructor(id, name) {
     this.id = id;
     this.name = name;
+  }
+
+  @JsonCreator()
+  static creator(@JsonProperty({value: 'username'}) name, @JsonProperty({value: 'userId'}) id) {
+    const user = new User(id, name);
+    return user;
   }
 
   addItem2(item) {
@@ -255,21 +258,15 @@ class User {
     this.userItems3.push(item);
   }
 
-  @JsonCreator()
-  static creator(@JsonProperty({value: "username"}) name, @JsonProperty({value: "userId"}) id) {
-    const user = new User(id, name);
-    return user;
-  }
-
 }
 class Item2 {
   id;
   itemName;
 
-  //@JsonBackReference({class: () => User})
+  // @JsonBackReference({class: () => User})
   owner;
 
-  //@JsonBackReference({class: () => Item3, value: "item3"})
+  // @JsonBackReference({class: () => Item3, value: "item3"})
   item3;
 
   constructor(id, itemName, owner) {
@@ -282,12 +279,12 @@ class Item3 {
   id;
   itemName;
 
-  //@JsonBackReference({class: () => User})
+  // @JsonBackReference({class: () => User})
   owner;
-  //@JsonBackReference({class: () => User, value: "owner2"})
+  // @JsonBackReference({class: () => User, value: "owner2"})
   owner2;
 
-  //@JsonManagedReference({class: () => Item2, value: "item3"})
+  // @JsonManagedReference({class: () => Item2, value: "item3"})
   item2;
 
   constructor(id, itemName, owner) {
@@ -297,7 +294,7 @@ class Item3 {
   }
 }
 
-//const user = new User(1, "John 1");
+// const user = new User(1, "John 1");
 // const user2 = new User(2, "John 2");
 // const item2 = new Item2(2, "book 1", user);
 // const item3 = new Item3(3, "book 2", user);
@@ -306,7 +303,7 @@ class Item3 {
 // //item2.item3 = item3;
 // user.addItem2(item2);
 // user.addItem3(item3);
-//user2.addItem3(item3);
+// user2.addItem3(item3);
 // let stringified7 = stringify(user, null, "\t");
 // console.log(stringified7)
 // console.log(parse(
@@ -315,7 +312,7 @@ class Item3 {
 //   "username": "John 1"
 // }
 // `, null, { mainCreator: User});
-//console.log(parse(stringified7, null, { mainCreator: User, otherCreators: [Item3, Item2] }));
+// console.log(parse(stringified7, null, { mainCreator: User, otherCreators: [Item3, Item2] }));
 
 class TestJsonProperty {
   @JsonAlias({values: ['username']})
@@ -543,15 +540,15 @@ class C {
 // console.log(resultA)
 // console.log(resultA.b[0].c === resultA.b[1].c)
 
-// const set = new Set<Array<any>>();
-// set.add([1,2]);
-// set.add([2]);
-// set.add([3]);
-// // const objectMapper = new ObjectMapper();
-// // let stringified11 = objectMapper.stringify<Set<Array<any>>>(set, { format: '\t' });
-// // console.log(stringified11);
-// // console.log(objectMapper.parse<Set<Array<any>>>(stringified11, {mainCreator: () => [Set, [Array]]}));
-//
+const set = new Set<Array<any>>();
+set.add([1, 2]);
+set.add([2]);
+set.add([3]);
+// const objectMapper = new ObjectMapper();
+// let stringified11 = objectMapper.stringify<Set<Array<any>>>(set, { format: '\t' });
+// console.log(stringified11);
+// console.log(objectMapper.parse<Set<Array<any>>>(stringified11, {mainCreator: () => [Set, [Array]]}));
+
 // const user = new User(1, 'asd');
 //
 // const map = new Map<User, Set<Array<any>>>();
@@ -588,15 +585,45 @@ class Child2 {
 // const child1 = new Child2('Lorenzo');
 // const child2 = new Child2('Samanta');
 // const parent1 = new Parent2('Dario');
-// //const parent2 = new Parent2('Nadia');
+// // const parent2 = new Parent2('Nadia');
 // parent1.child = new Set();
 // parent1.child.add([child1, child2]);
 //
-// let stringified13 = objectMapper.stringify<Parent2[]>([parent1, parent1], { format: '\t' });
+// const stringified13 = objectMapper.stringify<Parent2[]>([parent1, parent1], { format: '\t' });
 // console.log(stringified13);
 // console.log(objectMapper.parse<Parent2[]>(stringified13, {mainCreator: () => [Array, [Parent2]]}));
 
-exports = {
+
+
+// const objectMapper = new ObjectMapper();
+// const arr = new Uint8Array([21, 31]);
+// const stringified14 = objectMapper.stringify(arr);
+// console.log(stringified14);
+// console.log(objectMapper.parse<Uint8Array>(stringified14, {mainCreator: () => [Uint8Array]}));
+
+
+// if (BigInt) {
+//   const objectMapper = new ObjectMapper();
+//   // @ts-ignore
+//   const arr = [45n, 54n];
+//   const stringified14 = objectMapper.stringify(arr, {format: '\t'});
+//   console.log(stringified14);
+//   //console.log(objectMapper.parse<Array<bigint>>(stringified14, {mainCreator: () => [Array, [BigInt]]}));
+// }
+
+// const objectMapper = new ObjectMapper();
+// const re = new RegExp('ab+c');
+// const stringified15 = objectMapper.stringify(re);
+// console.log(stringified15);
+// console.log(objectMapper.parse<RegExp>(stringified15, {mainCreator: () => [RegExp]}));
+
+const objectMapper = new ObjectMapper();
+const date = new Date();
+const stringified16 = objectMapper.stringify(date);
+console.log(stringified16);
+console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
+
+export {
   JsonAnyGetter,
   JsonProperty,
   JsonPropertyAccess,
@@ -625,6 +652,8 @@ exports = {
   JsonAlias,
   JsonClass,
   JsonUnwrapped,
+  JsonIdentityInfo,
+  ObjectIdGenerator,
   JsonParser,
   JsonStringifier,
   ObjectMapper,
