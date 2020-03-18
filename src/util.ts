@@ -146,17 +146,25 @@ export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
   return false;
 };
 
-export const isSameConstructorOrExtensionOf = (ctorOrCtorName, ctor2): boolean =>
-  isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2);
+export const isSameConstructorOrExtensionOfNoObject = (ctorOrCtorName, ctor2): boolean =>
+  ctorOrCtorName !== Object && (isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2));
 
 export const hasIterationProtocol = (variable): boolean =>
   variable !== null && Symbol.iterator in Object(variable);
 
-export const isIterableNoString = (variable): boolean =>
-  typeof variable !== 'string' && hasIterationProtocol(variable);
+export const isIterableNoMapNoString = (variable): boolean =>
+  typeof variable !== 'string' &&
+  !(isSameConstructorOrExtensionOfNoObject(variable.constructor, Map)) &&
+  hasIterationProtocol(variable);
 
-export const isClassIterable = (ctor: ClassType<any>): boolean =>
-  hasIterationProtocol(ctor.prototype);
+export const isIterableNoString = (variable): boolean =>
+  typeof variable !== 'string' &&
+  hasIterationProtocol(variable);
+
+export const isClassIterableNoMap = (ctor: ClassType<any>): boolean =>
+  ctor !== Map && hasIterationProtocol(ctor.prototype);
+
+export const isClassIterable = (ctor: ClassType<any>): boolean => hasIterationProtocol(ctor.prototype);
 
 /**
  * https://stackoverflow.com/a/1482209/4637638

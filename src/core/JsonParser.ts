@@ -1,11 +1,11 @@
 import {JsonCreatorPrivateOptions} from '../annotations/JsonCreator';
 import {
-  getArgumentNames,
-  isClassIterable,
+  getArgumentNames, isClassIterable,
+  isClassIterableNoMap,
   isExtensionOf,
-  isIterableNoString,
+  isIterableNoMapNoString, isIterableNoString,
   isSameConstructor,
-  isSameConstructorOrExtensionOf
+  isSameConstructorOrExtensionOfNoObject
 } from '../util';
 import {
   ClassType,
@@ -27,6 +27,7 @@ import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {DeserializationFeature} from '../databind/DeserializationFeature';
 import {JacksonError} from './JacksonError';
 import {JsonAnySetterPrivateOptions} from '../annotations/JsonAnySetter';
+import {JsonBackReferencePrivateOptions} from '../annotations/JsonBackReference';
 
 export class JsonParser<T> {
 
@@ -196,43 +197,13 @@ export class JsonParser<T> {
       newOptions.mainCreator = () => jsonClass.class();
       const newCreator = newOptions.mainCreator()[0];
 
-      if (isClassIterable(newCreator)) {
+      if (isClassIterableNoMap(newCreator)) {
         return this.parseIterable(obj[key], key, newOptions);
       }
 
       return this.deepParse(key, obj[key], newOptions);
     }
     return obj[key];
-  }
-
-  parseJsonReferences(replacement: any, options: JsonParserOptions, obj: any, key: string): any {
-    const jsonManagedReference: JsonManagedReferenceOptions =
-      Reflect.getMetadata('jackson:JsonManagedReference', replacement.constructor, key);
-    const jsonBackReference: JsonBackReferenceOptions =
-      Reflect.getMetadata('jackson:JsonBackReference', replacement.constructor, key);
-    const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', replacement.constructor, key);
-    const jsonReference = ((jsonManagedReference || jsonBackReference) && jsonClass) ? jsonClass.class()[0] : null;
-    let referenceConstructor = Object;
-
-    if (jsonReference && replacement[key]) {
-      if (replacement[key] instanceof Array && replacement[key].length > 0 && replacement[key][0]) {
-        if (!isSameConstructor(jsonReference, replacement[key][0].constructor) &&
-          !isExtensionOf(jsonReference, replacement[key][0].constructor)) {
-          replacement[key] = this.parseJsonClass(options, obj, key);
-        }
-        referenceConstructor = replacement[key][0].constructor;
-      } else if (replacement[key] instanceof Array && replacement[key].length === 0) {
-        referenceConstructor = Object;
-      } else {
-        if (!isSameConstructor(jsonReference, replacement[key].constructor) &&
-          !isExtensionOf(jsonReference, replacement[key].constructor)) {
-          replacement[key] = this.parseJsonClass(options, obj, key);
-        }
-        referenceConstructor = replacement[key].constructor;
-      }
-    }
-
-    return referenceConstructor;
   }
 
   parseJsonManagedReference(replacement: any, options: JsonParserOptions, obj: any, key: string): void {
@@ -243,63 +214,41 @@ export class JsonParser<T> {
 
     if (jsonManagedReference && jsonClassManagedReference) {
 
-      const referenceConstructor = this.parseJsonReferences(replacement, options, obj, key);
+      const jsonClassConstructors =  jsonClassManagedReference.class();
+      const childConstructor = jsonClassConstructors[0];
+      if (isClassIterable(childConstructor)) {
+        const backReferenceConstructor = (jsonClassConstructors.length === 1) ?
+          Object :
+          (
+            (!isSameConstructorOrExtensionOfNoObject(childConstructor, Map)) ?
+              jsonClassManagedReference.class()[1][0] :
+              jsonClassManagedReference.class()[1][1]
+          );
 
-      if (isSameConstructor(jsonClassManagedReference.class()[0], referenceConstructor)) {
-        const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
+        const jsonBackReference: JsonBackReferencePrivateOptions =
+          Reflect.getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value, backReferenceConstructor);
 
-        const countBackReferences = {
-          defaultReference: 0
-        };
-
-        for (const k of metadataKeys) {
-          if (k.startsWith('jackson:JsonBackReference:')) {
-            const propertyKey = k.replace('jackson:JsonBackReference:', '');
-            const metadata: JsonBackReferenceOptions = Reflect.getMetadata(k, referenceConstructor);
-            const jsonClassBackReference: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', referenceConstructor, propertyKey);
-
-            if (!jsonClassBackReference) {
-              // eslint-disable-next-line max-len
-              throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field at [Source '${JSON.stringify(obj)}']`);
+        if (jsonBackReference) {
+          if (isSameConstructorOrExtensionOfNoObject(childConstructor, Map)) {
+            for (const [k, value] of replacement[key]) {
+              value[jsonBackReference.propertyKey] = replacement;
             }
-
-            // check for multiple back-reference properties with same name
-            if (metadata.value == null) {
-              countBackReferences.defaultReference++;
-              if (countBackReferences.defaultReference === 2) {
-                // eslint-disable-next-line max-len
-                throw new JacksonError(`Multiple back-reference properties with name "defaultReference" at [Source '${JSON.stringify(obj)}']`);
-              }
-            } else {
-              if (countBackReferences[metadata.value] == null) {
-                countBackReferences[metadata.value] = 1;
-              } else {
-                countBackReferences[metadata.value]++;
-              }
-              if (countBackReferences.defaultReference === 2) {
-                // eslint-disable-next-line max-len
-                throw new JacksonError(`Multiple back-reference properties with name "${metadata.value}" at [Source '${JSON.stringify(obj)}']`);
-              }
-            }
-
-            if (metadata.value === jsonManagedReference.value &&
-              isSameConstructor(jsonClassBackReference.class()[0], replacement.constructor)) {
-              if (replacement[key] instanceof Array) {
-                // eslint-disable-next-line guard-for-in
-                for (const index in replacement[key]) {
-                  replacement[key][index][propertyKey] = replacement;
-                }
-              } else {
-                replacement[key][propertyKey] = replacement;
-              }
+          } else {
+            for (const value of replacement[key]) {
+              value[jsonBackReference.propertyKey] = replacement;
             }
           }
         }
+      } else {
+        const jsonBackReference: JsonBackReferencePrivateOptions =
+          Reflect.getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value, childConstructor);
+        if (jsonBackReference) {
+          replacement[key][jsonBackReference.propertyKey] = replacement;
+        }
       }
-
     } else if (jsonManagedReference && !jsonClassManagedReference) {
       // eslint-disable-next-line max-len
-      throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${replacement.constructor.name}["${key}"] field at [Source '${JSON.stringify(obj)}']`);
+      throw new JacksonError(`Missing mandatory @JsonClass() annotation for the @JsonManagedReference() annotated ${replacement.constructor.name}["${key}"] field at [Source '${JSON.stringify(obj)}']`);
     }
   }
 
@@ -522,48 +471,17 @@ export class JsonParser<T> {
       newOptions.mainCreator = null;
     }
 
-    if (isSameConstructorOrExtensionOf(currentCreator, Set)) {
+    if (isSameConstructorOrExtensionOfNoObject(currentCreator, Set)) {
       if (isSameConstructor(currentCreator, Set)) {
         newIterable = new Set();
       } else {
-        // @ts-ignore
-        newIterable = new currentCreator();
+        newIterable = new (currentCreator as ObjectConstructor)() as Set<any>;
       }
-      for (const value of iterable) {
-        if (newOptions.mainCreator == null) {newOptions.mainCreator = () => [(value || Object).constructor]; }
-        (newIterable as Set<any>).add(this.deepParse(key, value, newOptions));
-      }
-    } else if (isSameConstructorOrExtensionOf(currentCreator, Map)) {
-      if (isSameConstructor(currentCreator, Map)) {
-        newIterable = new Map();
-      } else {
-        // @ts-ignore
-        newIterable = new currentCreator();
-      }
-
-      const keyNewOptions = {...newOptions};
-      const valueNewOptions = {...newOptions};
-
-      if (newOptions.mainCreator != null) {
-        const mapCurrentCreators = newOptions.mainCreator();
-        keyNewOptions.mainCreator = () => [mapCurrentCreators[0]];
-        if (mapCurrentCreators.length > 1) {
-          if (mapCurrentCreators[1] instanceof Array) {
-            valueNewOptions.mainCreator = () => mapCurrentCreators[1] as [ClassType<any>];
-          } else {
-            valueNewOptions.mainCreator = () => [mapCurrentCreators[1]] as [ClassType<any>];
-          }
-        } else {
-          valueNewOptions.mainCreator = () => [Array];
-        }
-      }
-
       for (const value of iterable) {
         if (newOptions.mainCreator == null) {
-          keyNewOptions.mainCreator = () => [(value[0] || Object).constructor];
-          valueNewOptions.mainCreator = () => [(value[1] || Object).constructor];
+          newOptions.mainCreator = () => [(value || Object).constructor];
         }
-        (newIterable as Map<any, any>).set(this.deepParse(key, value[0], keyNewOptions), this.deepParse(key, value[1], valueNewOptions));
+        (newIterable as Set<any>).add(this.deepParse(key, value, newOptions));
       }
     } else {
       newIterable = [];
@@ -582,6 +500,54 @@ export class JsonParser<T> {
     return newIterable;
   }
 
+  parseMap(obj: any, options: JsonParserOptions): Map<any, any> {
+    const currentCreators = options.mainCreator();
+    const currentCreator = currentCreators[0];
+
+    let map: Map<any, any>;
+
+    const newOptions = {...options};
+
+    if (currentCreators.length > 1 && currentCreators[1] instanceof Array) {
+      newOptions.mainCreator = () => currentCreators[1] as [ClassType<any>];
+    } else {
+      newOptions.mainCreator = null;
+    }
+
+    if (isSameConstructor(currentCreator, Map)) {
+      map = new Map();
+    } else {
+      map = new (currentCreator as ObjectConstructor)() as Map<any, any>;
+    }
+
+    const keyNewOptions = {...newOptions};
+    const valueNewOptions = {...newOptions};
+
+    if (newOptions.mainCreator != null) {
+      const mapCurrentCreators = newOptions.mainCreator();
+      keyNewOptions.mainCreator = () => [mapCurrentCreators[0]];
+      if (mapCurrentCreators.length > 1) {
+        if (mapCurrentCreators[1] instanceof Array) {
+          valueNewOptions.mainCreator = () => mapCurrentCreators[1] as [ClassType<any>];
+        } else {
+          valueNewOptions.mainCreator = () => [mapCurrentCreators[1]] as [ClassType<any>];
+        }
+      } else {
+        valueNewOptions.mainCreator = () => [Object];
+      }
+    } else {
+      keyNewOptions.mainCreator = () => [Object];
+      valueNewOptions.mainCreator = () => [Object];
+    }
+
+    // eslint-disable-next-line guard-for-in
+    for (const key in obj) {
+      map.set(key, this.deepParse(key, obj[key], valueNewOptions));
+    }
+
+    return map;
+  }
+
   private deepParse(key: string, value: any, options: JsonParserOptions): any {
 
     value = this.invokeCustomDeserializers(key, value, options);
@@ -590,15 +556,17 @@ export class JsonParser<T> {
       value = this.parseJsonTypeInfo(value, options);
 
       const currentConstructor = options.mainCreator()[0];
-      if (BigInt && isSameConstructor(currentConstructor, BigInt)) {
+
+      if (isSameConstructorOrExtensionOfNoObject(currentConstructor, Map)) {
+        value = this.parseMap(value, options);
+      } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentConstructor, BigInt)) {
         return (typeof value === 'string' && value.endsWith('n')) ?
-          BigInt(value.substring(0, value.length - 1)) :
-          BigInt(value);
-      } else if (isSameConstructor(currentConstructor, RegExp)) {
-        return new RegExp(value);
-      } else if (isSameConstructor(currentConstructor, Date)) {
-        return new Date(value);
-      } else if (typeof value === 'object' && !isIterableNoString(value)) {
+          (currentConstructor as ObjectConstructor)(value.substring(0, value.length - 1)) :
+          (currentConstructor as ObjectConstructor)(value);
+      } else if (isSameConstructorOrExtensionOfNoObject(currentConstructor, RegExp) ||
+        isSameConstructorOrExtensionOfNoObject(currentConstructor, Date)) {
+        return new (currentConstructor as ObjectConstructor)(value);
+      } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
         if (this.parseJsonIgnoreType(options)) {return null; }
 
@@ -625,7 +593,7 @@ export class JsonParser<T> {
         }
 
         return replacement;
-      } else if (isIterableNoString(value)) {
+      } else if (isIterableNoMapNoString(value)) {
         const replacement = this.parseIterable(value, key, options);
         return replacement;
       }

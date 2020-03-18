@@ -9,9 +9,11 @@ export declare const getArgumentNames: (method: any, useFlow?: boolean) => strin
 export declare const cloneClassInstance: <T>(instance: any) => T;
 export declare const isSameConstructor: (ctorOrCtorName: any, ctor2: any) => boolean;
 export declare const isExtensionOf: (ctor: any, ctorExtensionOf: any) => boolean;
-export declare const isSameConstructorOrExtensionOf: (ctorOrCtorName: any, ctor2: any) => boolean;
+export declare const isSameConstructorOrExtensionOfNoObject: (ctorOrCtorName: any, ctor2: any) => boolean;
 export declare const hasIterationProtocol: (variable: any) => boolean;
+export declare const isIterableNoMapNoString: (variable: any) => boolean;
 export declare const isIterableNoString: (variable: any) => boolean;
+export declare const isClassIterableNoMap: (ctor: ClassType<any>) => boolean;
 export declare const isClassIterable: (ctor: ClassType<any>) => boolean;
 /**
  * https://stackoverflow.com/a/1482209/4637638

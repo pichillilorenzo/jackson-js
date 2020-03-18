@@ -229,7 +229,7 @@ class Event {
 // let stringified5 = stringify(event, null, "\t");
 // console.log(stringified5)
 // console.log(parse(stringified5, null, { mainCreator: Event }));
-
+/*
 class User {
   id;
   name;
@@ -258,7 +258,7 @@ class User {
     this.userItems3.push(item);
   }
 
-}
+}*/
 class Item2 {
   id;
   itemName;
@@ -558,42 +558,39 @@ set.add([3]);
 // console.log(stringified12);
 // console.log(objectMapper.parse<Map<User, Set<Array<any>>>>(stringified12, {mainCreator: () => [Map, [User, Set]]}));
 
-class Parent2 {
-  name: string;
-
-  @JsonClass({class: () => [Set, [Array, [Child2]]]})
-  @JsonManagedReference()
-  child: Set<Array<Child2>>;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-}
-
-class Child2 {
-  name: string;
-
-  @JsonClass({class: () => [Parent2]})
-  @JsonBackReference()
-  parent: Parent2;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-}
+// class Parent2 {
+//   name: string;
+//
+//   @JsonClass({class: () => [Array, [Child2]]})
+//   @JsonManagedReference()
+//   child: Array<Child2>;
+//
+//   constructor(name: string) {
+//     this.name = name;
+//   }
+// }
+//
+// class Child2 {
+//   name: string;
+//
+//   @JsonClass({class: () => [Parent2]})
+//   @JsonBackReference()
+//   parent: Parent2;
+//
+//   constructor(name: string) {
+//     this.name = name;
+//   }
+// }
 // const objectMapper = new ObjectMapper();
 // const child1 = new Child2('Lorenzo');
 // const child2 = new Child2('Samanta');
 // const parent1 = new Parent2('Dario');
 // // const parent2 = new Parent2('Nadia');
-// parent1.child = new Set();
-// parent1.child.add([child1, child2]);
+// parent1.child.push(...[child1, child2]);
 //
-// const stringified13 = objectMapper.stringify<Parent2[]>([parent1, parent1], { format: '\t' });
+// const stringified13 = objectMapper.stringify<Parent2>(parent1, { format: '\t' });
 // console.log(stringified13);
-// console.log(objectMapper.parse<Parent2[]>(stringified13, {mainCreator: () => [Array, [Parent2]]}));
-
-
+// console.log(objectMapper.parse<Parent2>(stringified13, {mainCreator: () => [Parent2]}));
 
 // const objectMapper = new ObjectMapper();
 // const arr = new Uint8Array([21, 31]);
@@ -622,6 +619,51 @@ class Child2 {
 // const stringified16 = objectMapper.stringify(date);
 // console.log(stringified16);
 // console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
+
+
+// class User {
+//   id: number;
+//   email: string;
+//   firstname: string;
+//   lastname: string;
+//
+//   @JsonClass({class: () => [Array, [Item]]})
+//   @JsonManagedReference()
+//   items: Item[] = [];
+//
+//   constructor(id: number, email: string, firstname: string, lastname: string) {
+//     this.id = id;
+//     this.email = email;
+//     this.firstname = firstname;
+//     this.lastname = lastname;
+//   }
+// }
+//
+// class Item {
+//   id: number;
+//   name: string;
+//
+//   @JsonClass({class: () => [User]})
+//   @JsonBackReference()
+//   owner: User;
+//
+//   constructor(id: number, name: string, owner: User) {
+//     this.id = id;
+//     this.name = name;
+//     this.owner = owner;
+//   }
+// }
+//
+// const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+// const item1 = new Item(1, 'Book', user);
+// const item2 = new Item(2, 'Computer', user);
+// user.items.push(...[item1, item2]);
+//
+// const objectMapper = new ObjectMapper();
+// const jsonData = objectMapper.stringify<User>(user, {format: '\t'});
+// console.log(jsonData);
+// const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+// console.log(userParsed);
 
 export {
   JsonAnyGetter,

@@ -4,7 +4,7 @@
   "scripts": {
     "build:dev": "./node_modules/.bin/webpack --config webpack.config.js",
     "start:node:dev": "node dist/lib.node",
-    "test": "ava"
+    "test": "ava --concurrency=8 --timeout=2m"
   },
   "main": "./dist/lib.node.js",
   "browser": "./dist/lib.js",

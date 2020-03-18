@@ -14,7 +14,14 @@ import {
 } from '../@types';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
-import {cloneClassInstance, isExtensionOf, isIterableNoString, isObjLiteral, isSameConstructor} from '../util';
+import {
+  cloneClassInstance,
+  isExtensionOf,
+  isIterableNoMapNoString,
+  isObjLiteral,
+  isSameConstructor,
+  isSameConstructorOrExtensionOfNoObject
+} from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {JsonFormatShape} from '../annotations/JsonFormat';
 import {SerializationFeature} from '../databind/SerializationFeature';
@@ -24,6 +31,8 @@ import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
 import {JsonAnyGetterPrivateOptions} from '../annotations/JsonAnyGetter';
 import {JacksonError} from './JacksonError';
+import {JsonBackReferencePrivateOptions} from '../annotations/JsonBackReference';
+import {JsonManagedReferencePrivateOptions} from '../annotations/JsonManagedReference';
 
 dayjs.extend(customParseFormat);
 
@@ -193,65 +202,8 @@ export class JsonStringifier<T> {
     return Reflect.hasMetadata('jackson:JsonIgnoreType', obj.constructor);
   }
 
-  stringifyJsonManagedReference(replacement: any, obj: any, key: string): void {
-    const jsonManagedReference: JsonManagedReferenceOptions = Reflect.getMetadata('jackson:JsonManagedReference', obj.constructor, key);
-    const jsonClassManagedReference: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', obj.constructor, key);
-
-    if (jsonManagedReference && jsonClassManagedReference) {
-
-      let referenceConstructor;
-      if (replacement[key]) {
-        if (replacement[key] instanceof Array && replacement[key].length > 0) {
-          referenceConstructor = replacement[key][0].constructor;
-        } else if (replacement[key] instanceof Array && replacement[key].length === 0) {
-          referenceConstructor = {}; } else {referenceConstructor = replacement[key].constructor;
-        }
-      } else {
-        referenceConstructor = {};
-      }
-
-      if (isSameConstructor(jsonClassManagedReference.class(), referenceConstructor)) {
-        const metadataKeys = Reflect.getMetadataKeys(referenceConstructor);
-        for (const k of metadataKeys) {
-          if (k.startsWith('jackson:JsonBackReference:')) {
-            const propertyKey = k.replace('jackson:JsonBackReference:', '');
-            const metadata: JsonBackReferenceOptions = Reflect.getMetadata(k, referenceConstructor);
-            const jsonClassBackReference: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', referenceConstructor, propertyKey);
-
-            if (!jsonClassBackReference) {
-              // eslint-disable-next-line max-len
-              throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonBackReference() annotated ${referenceConstructor.name}["${propertyKey}"] field`);
-            }
-
-            if (isSameConstructor(jsonClassBackReference.class(), obj.constructor)) {
-              if (replacement[key] instanceof Array) {
-                // eslint-disable-next-line guard-for-in
-                for (const index in replacement[key]) {
-                  replacement[key][index] = cloneClassInstance(obj[key][index]);
-                  delete replacement[key][index][propertyKey];
-                }
-              } else {
-                replacement[key] = cloneClassInstance(obj[key]);
-                delete replacement[key][propertyKey];
-              }
-            } else {
-              if (replacement[key] instanceof Array) {
-                // eslint-disable-next-line guard-for-in
-                for (const index in replacement[key]) {
-                  delete replacement[key][index][propertyKey];
-                }
-              } else {
-                delete replacement[key][propertyKey];
-              }
-            }
-          }
-        }
-      }
-
-    } else if (jsonManagedReference && !jsonClassManagedReference) {
-      // eslint-disable-next-line max-len
-      throw new JacksonError(`Missing @JsonClass() mandatory annotation for the @JsonManagedReference() annotated ${obj.constructor.name}["${key}"] field`);
-    }
+  stringifyHasJsonBackReference(obj: any, key: string): boolean {
+    return Reflect.hasMetadata('jackson:JsonBackReference', obj.constructor, key);
   }
 
   stringifyJsonTypeInfo(replacement: any, obj: any): any {
@@ -460,7 +412,7 @@ export class JsonStringifier<T> {
       }
 
       for (const k in replacement) {
-        if (Object.hasOwnProperty.call(replacement, k) && typeof replacement[k] === 'object' && !isIterableNoString(replacement[k])) {
+        if (Object.hasOwnProperty.call(replacement, k) && typeof replacement[k] === 'object' && !isIterableNoMapNoString(replacement[k])) {
           const id = valueAlreadySeen.get(obj[k]);
           if (id) {
             replacement[k] = id;
@@ -488,20 +440,32 @@ export class JsonStringifier<T> {
     return newIterable;
   }
 
+  stringifyMap(map: Map<any, any>): any {
+    const newValue = {};
+    for (const [k, val] of map) {
+      newValue[k.toString()] = val;
+    }
+    return newValue;
+  }
+
   // valueAlreadySeen Map used to manage object circular references
   private deepStringify(key: string, value: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any {
     value = this.invokeCustomSerializers(key, value, options);
 
     if (value != null) {
 
-      if (BigInt && isSameConstructor(value.constructor, BigInt)) {
+      if (isSameConstructorOrExtensionOfNoObject(value.constructor, Map)) {
+        value = this.stringifyMap(value);
+      }
+
+      if (BigInt && isSameConstructorOrExtensionOfNoObject(value.constructor, BigInt)) {
         return value.toString() + 'n';
-      } else if (value instanceof RegExp) {
+      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, RegExp)) {
         const replacement = value.toString();
         return replacement.substring(1, replacement.length - 1);
-      } else if (value instanceof Date) {
+      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, Date)) {
         return value;
-      } else if (typeof value === 'object' && !isIterableNoString(value)) {
+      } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
         if (this.stringifyJsonIgnoreType(value)) {
           return null;
@@ -527,6 +491,7 @@ export class JsonStringifier<T> {
             if (!this.stringifyHasJsonIgnore(value, k) &&
               !this.stringifyJsonInclude(value, k) &&
               this.stringifyHasJsonView(value, k, options) &&
+              !this.stringifyHasJsonBackReference(value, k) &&
               Object.hasOwnProperty.call(value, k)) {
 
               if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
@@ -539,7 +504,6 @@ export class JsonStringifier<T> {
               this.stringifyJsonSerialize(replacement, value, k);
               this.stringifyJsonRawValue(replacement, value, k);
               this.stringifyJsonProperty(replacement, value, k);
-              this.stringifyJsonManagedReference(replacement, value, k);
               this.stringifyJsonUnwrapped(replacement, value, k, options);
             }
           }
@@ -556,7 +520,7 @@ export class JsonStringifier<T> {
         }
 
         return replacement;
-      } else if (isIterableNoString(value)) {
+      } else if (isIterableNoMapNoString(value)) {
         const replacement = this.stringifyIterable(key, value, options, valueAlreadySeen);
         return replacement;
       }

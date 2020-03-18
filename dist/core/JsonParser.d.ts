@@ -9,7 +9,6 @@ export declare class JsonParser<T> {
     parseJsonRawValue(options: JsonParserOptions, replacement: any, key: string): void;
     parseJsonRootName(replacement: any, options: JsonParserOptions): any;
     parseJsonClass(options: JsonParserOptions, obj: any, key: string): any;
-    parseJsonReferences(replacement: any, options: JsonParserOptions, obj: any, key: string): any;
     parseJsonManagedReference(replacement: any, options: JsonParserOptions, obj: any, key: string): void;
     parseJsonAnySetter(replacement: any, obj: any, key: string): void;
     parseJsonDeserialize(options: JsonParserOptions, replacement: any, key: string): void;
@@ -21,5 +20,6 @@ export declare class JsonParser<T> {
     getInstanceAlreadySeen(obj: any, options: JsonParserOptions): null | any;
     parseJsonIdentityInfo(replacement: any, obj: any, options: JsonParserOptions): void;
     parseIterable(iterable: any, key: string, options: JsonParserOptions): any;
+    parseMap(obj: any, options: JsonParserOptions): Map<any, any>;
     private deepParse;
 }

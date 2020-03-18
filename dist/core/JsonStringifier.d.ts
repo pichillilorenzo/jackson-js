@@ -15,12 +15,13 @@ export declare class JsonStringifier<T> {
     stringifyHasJsonIgnore(obj: any, key: string): boolean;
     stringifyJsonInclude(obj: any, key: string): boolean;
     stringifyJsonIgnoreType(obj: any): boolean;
-    stringifyJsonManagedReference(replacement: any, obj: any, key: string): void;
+    stringifyHasJsonBackReference(obj: any, key: string): boolean;
     stringifyJsonTypeInfo(replacement: any, obj: any): any;
     stringifyJsonFormat(replacement: any, obj: any, key: string): void;
     stringifyHasJsonView(obj: any, key: string, options: JsonStringifierOptions): boolean;
     stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierOptions): void;
     stringifyJsonIdentityInfo(replacement: any, obj: any, key: string, valueAlreadySeen: Map<any, any>): void;
     stringifyIterable(key: string, iterableNoString: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any[];
+    stringifyMap(map: Map<any, any>): any;
     private deepStringify;
 }
