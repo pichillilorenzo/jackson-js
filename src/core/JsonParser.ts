@@ -3,14 +3,13 @@ import {
   getArgumentNames, isClassIterable,
   isClassIterableNoMap,
   isExtensionOf,
-  isIterableNoMapNoString, isIterableNoString,
-  isSameConstructor,
+  isIterableNoMapNoString,
+  isSameConstructor, isSameConstructorOrExtensionOf,
   isSameConstructorOrExtensionOfNoObject
 } from '../util';
 import {
   ClassType,
   JsonAliasOptions,
-  JsonBackReferenceOptions,
   JsonClassOptions,
   JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
@@ -65,11 +64,6 @@ export class JsonParser<T> {
   parseJsonCreator(options: JsonParserOptions, obj: any): any {
     if (obj) {
 
-      let instance = this.getInstanceAlreadySeen(obj, options);
-      if (instance != null) {
-        return instance;
-      }
-
       const currentMainCreator = options.mainCreator()[0];
 
       const hasJsonCreator = Reflect.hasMetadata('jackson:JsonCreator', currentMainCreator);
@@ -103,7 +97,7 @@ export class JsonParser<T> {
         argIndex++;
       }
 
-      instance = (jsonCreator.constructor) ? new (method as ObjectConstructor)(...args) : (method as Function)(...args);
+      const instance = (jsonCreator.constructor) ? new (method as ObjectConstructor)(...args) : (method as Function)(...args);
 
       const hasJsonAnySetter = Reflect.hasMetadata('jackson:JsonAnySetter', instance);
 
@@ -380,8 +374,9 @@ export class JsonParser<T> {
     if (options.withView) {
       const jsonView: JsonViewOptions = Reflect.getMetadata('jackson:JsonView', options.mainCreator()[0], key);
       if (jsonView) {
-        for (const view of jsonView.value) {
-          if (isSameConstructor(view(), options.withView()) || isExtensionOf(view(), options.withView())) {
+        const views = jsonView.value();
+        for (const view of views) {
+          if (isSameConstructorOrExtensionOf(view, options.withView())) {
             return true;
           }
         }
@@ -415,17 +410,24 @@ export class JsonParser<T> {
     }
   }
 
-  getInstanceAlreadySeen(obj: any, options: JsonParserOptions): null | any {
-    const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', options.mainCreator()[0]);
+  getInstanceAlreadySeen(key: string, value: any, options: JsonParserOptions): null | any {
+    const currentMainCreator = options.mainCreator()[0];
+    const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', currentMainCreator);
 
     if (jsonIdentityInfo) {
-      const id: string = obj[jsonIdentityInfo.property];
+      const id: string = typeof value === 'object' ? value[jsonIdentityInfo.property] : value;
+
       const scope: string = jsonIdentityInfo.scope || '';
-      const scopedId = scope + ': ' + id;
+      const scopedId = this.generateScopedId(scope, id);
       if (this._globalValueAlreadySeen.has(scopedId)) {
-        return this._globalValueAlreadySeen.get(scopedId);
+        const instance = this._globalValueAlreadySeen.get(scopedId);
+        if (instance.constructor !== currentMainCreator) {
+          throw new JacksonError(`Already had Class "${instance.constructor.name}" for id ${id}.`);
+        }
+        return instance;
       }
     }
+
     return null;
   }
 
@@ -435,22 +437,9 @@ export class JsonParser<T> {
     if (jsonIdentityInfo) {
       const id: string = obj[jsonIdentityInfo.property];
       const scope: string = jsonIdentityInfo.scope || '';
-      const scopedId = scope + ': ' + id;
+      const scopedId = this.generateScopedId(scope, id);
       if (!this._globalValueAlreadySeen.has(scopedId)) {
         this._globalValueAlreadySeen.set(scopedId, replacement);
-      }
-
-      for (const k in replacement) {
-        if (Object.hasOwnProperty.call(replacement, k)) {
-          const hasJsonClass = Reflect.hasMetadata('jackson:JsonClass', replacement, k);
-          if (hasJsonClass) {
-            const objScopedId = scope + ': ' + obj[k];
-            const instance = this._globalValueAlreadySeen.get(objScopedId);
-            if (instance) {
-              replacement[k] = instance;
-            }
-          }
-        }
       }
 
       delete obj[jsonIdentityInfo.property];
@@ -553,6 +542,12 @@ export class JsonParser<T> {
     value = this.invokeCustomDeserializers(key, value, options);
 
     if (value != null) {
+
+      let instance = this.getInstanceAlreadySeen(key, value, options);
+      if (instance != null) {
+        return instance;
+      }
+
       value = this.parseJsonTypeInfo(value, options);
 
       const currentConstructor = options.mainCreator()[0];
@@ -568,7 +563,9 @@ export class JsonParser<T> {
         return new (currentConstructor as ObjectConstructor)(value);
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
-        if (this.parseJsonIgnoreType(options)) {return null; }
+        if (this.parseJsonIgnoreType(options)) {
+          return null;
+        }
 
         let replacement = value;
         replacement = this.parseJsonRootName(replacement, options);
@@ -587,7 +584,7 @@ export class JsonParser<T> {
           }
         }
 
-        const instance = this.parseJsonCreator(options, replacement);
+        instance = this.parseJsonCreator(options, replacement);
         if (instance) {
           replacement = instance;
         }
@@ -600,5 +597,9 @@ export class JsonParser<T> {
     }
 
     return value;
+  }
+
+  private generateScopedId(scope: string, id: string): string {
+    return scope + ': ' + id;
   }
 }

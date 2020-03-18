@@ -160,7 +160,7 @@ export interface JsonTypeNameOptions extends JsonAnnotationOptions {
 export type JsonValueOptions = JsonAnnotationOptions;
 
 export interface JsonViewOptions extends JsonAnnotationOptions {
-  value?: ((...args) => ClassType<any>)[];
+  value?: (...args) => ClassType<any>[];
 }
 
 export interface JsonAliasOptions extends JsonAnnotationOptions {

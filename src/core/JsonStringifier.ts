@@ -1,9 +1,7 @@
 import {
-  JsonBackReferenceOptions, JsonClassOptions,
   JsonFormatOptions, JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions,
-  JsonManagedReferenceOptions,
   JsonPropertyOptions,
   JsonPropertyOrderOptions,
   JsonStringifierOptions,
@@ -15,11 +13,10 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
-  cloneClassInstance,
   isExtensionOf,
   isIterableNoMapNoString,
   isObjLiteral,
-  isSameConstructor,
+  isSameConstructor, isSameConstructorOrExtensionOf,
   isSameConstructorOrExtensionOfNoObject
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
@@ -31,8 +28,6 @@ import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
 import {JsonAnyGetterPrivateOptions} from '../annotations/JsonAnyGetter';
 import {JacksonError} from './JacksonError';
-import {JsonBackReferencePrivateOptions} from '../annotations/JsonBackReference';
-import {JsonManagedReferencePrivateOptions} from '../annotations/JsonManagedReference';
 
 dayjs.extend(customParseFormat);
 
@@ -306,8 +301,9 @@ export class JsonStringifier<T> {
     if (options.withView) {
       const jsonView: JsonViewOptions = Reflect.getMetadata('jackson:JsonView', obj.constructor, key);
       if (jsonView) {
-        for (const view of jsonView.value) {
-          if (isSameConstructor(view(), options.withView()) || isExtensionOf(view(), options.withView())) {
+        const views = jsonView.value();
+        for (const view of views) {
+          if (isSameConstructorOrExtensionOf(view, options.withView())) {
             return true;
           }
         }
@@ -341,8 +337,9 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyJsonIdentityInfo(replacement: any, obj: any, key: string, valueAlreadySeen: Map<any, any>): void {
+  stringifyJsonIdentityInfo(replacement: any, obj: any, key: string): void {
     const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', obj.constructor);
+
     if (jsonIdentityInfo) {
 
       if (this._globalValueAlreadySeen.has(obj)) {
@@ -411,24 +408,10 @@ export class JsonStringifier<T> {
         }
       }
 
-      for (const k in replacement) {
-        if (Object.hasOwnProperty.call(replacement, k) && typeof replacement[k] === 'object' && !isIterableNoMapNoString(replacement[k])) {
-          const id = valueAlreadySeen.get(obj[k]);
-          if (id) {
-            replacement[k] = id;
-          }
-        }
+      if (!this._globalValueAlreadySeen.has(obj)) {
+        this._globalValueAlreadySeen.set(obj, replacement[jsonIdentityInfo.property]);
       }
     }
-
-    if (!this._globalValueAlreadySeen.has(obj)) {
-      this._globalValueAlreadySeen.set(obj, (jsonIdentityInfo) ? replacement[jsonIdentityInfo.property] : null);
-    }
-
-    if (valueAlreadySeen.has(obj)) {
-      throw new JacksonError(`Infinite recursion on key "${key}" of type "${obj.constructor.name}"`);
-    }
-    valueAlreadySeen.set(obj, (jsonIdentityInfo) ? replacement[jsonIdentityInfo.property] : null);
   }
 
   stringifyIterable(key: string, iterableNoString: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any[] {
@@ -454,6 +437,11 @@ export class JsonStringifier<T> {
 
     if (value != null) {
 
+      const identity = this._globalValueAlreadySeen.get(value);
+      if (identity) {
+        return identity;
+      }
+
       if (isSameConstructorOrExtensionOfNoObject(value.constructor, Map)) {
         value = this.stringifyMap(value);
       }
@@ -471,9 +459,16 @@ export class JsonStringifier<T> {
           return null;
         }
 
+        if (valueAlreadySeen.has(value)) {
+          throw new JacksonError(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
+        }
+        valueAlreadySeen.set(value, (identity) ? identity : null);
+
         let replacement;
         const jsonValue = this.stringifyJsonValue(value);
-        if (jsonValue) {replacement = jsonValue; }
+        if (jsonValue) {
+          replacement = jsonValue;
+        }
 
         if (!replacement) {
           replacement = {};
@@ -507,9 +502,9 @@ export class JsonStringifier<T> {
               this.stringifyJsonUnwrapped(replacement, value, k, options);
             }
           }
-
-          this.stringifyJsonIdentityInfo(replacement, value, key, valueAlreadySeen);
         }
+
+        this.stringifyJsonIdentityInfo(replacement, value, key);
 
         replacement = this.stringifyJsonTypeInfo(replacement, value);
         replacement = this.stringifyJsonRootName(replacement, value);

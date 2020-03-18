@@ -146,6 +146,9 @@ export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
   return false;
 };
 
+export const isSameConstructorOrExtensionOf = (ctorOrCtorName, ctor2): boolean =>
+  (isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2));
+
 export const isSameConstructorOrExtensionOfNoObject = (ctorOrCtorName, ctor2): boolean =>
   ctorOrCtorName !== Object && (isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2));
 
@@ -175,7 +178,7 @@ export const isObjLiteral = (_obj: any): boolean => {
     false :
     (
       (() => {
-        while (!false) {
+        while (true) {
           if (  Object.getPrototypeOf( _test = Object.getPrototypeOf(_test)  ) === null) {
             break;
           }

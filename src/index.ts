@@ -27,6 +27,7 @@ import {SerializationFeature} from './databind/SerializationFeature';
 import {DeserializationFeature} from './databind/DeserializationFeature';
 import {JsonParser} from './core/JsonParser';
 import {JsonStringifier} from './core/JsonStringifier';
+import {JacksonError} from './core/JacksonError';
 import {JsonUnwrapped} from './annotations/JsonUnwrapped';
 import {JsonIdentityInfo, ObjectIdGenerator} from './annotations/JsonIdentityInfo';
 
@@ -620,51 +621,6 @@ set.add([3]);
 // console.log(stringified16);
 // console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
 
-
-// class User {
-//   id: number;
-//   email: string;
-//   firstname: string;
-//   lastname: string;
-//
-//   @JsonClass({class: () => [Array, [Item]]})
-//   @JsonManagedReference()
-//   items: Item[] = [];
-//
-//   constructor(id: number, email: string, firstname: string, lastname: string) {
-//     this.id = id;
-//     this.email = email;
-//     this.firstname = firstname;
-//     this.lastname = lastname;
-//   }
-// }
-//
-// class Item {
-//   id: number;
-//   name: string;
-//
-//   @JsonClass({class: () => [User]})
-//   @JsonBackReference()
-//   owner: User;
-//
-//   constructor(id: number, name: string, owner: User) {
-//     this.id = id;
-//     this.name = name;
-//     this.owner = owner;
-//   }
-// }
-//
-// const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
-// const item1 = new Item(1, 'Book', user);
-// const item2 = new Item(2, 'Computer', user);
-// user.items.push(...[item1, item2]);
-//
-// const objectMapper = new ObjectMapper();
-// const jsonData = objectMapper.stringify<User>(user, {format: '\t'});
-// console.log(jsonData);
-// const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
-// console.log(userParsed);
-
 export {
   JsonAnyGetter,
   JsonProperty,
@@ -700,5 +656,6 @@ export {
   JsonStringifier,
   ObjectMapper,
   SerializationFeature,
-  DeserializationFeature
+  DeserializationFeature,
+  JacksonError
 };
