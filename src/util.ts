@@ -14,7 +14,7 @@ import {ClassType, JsonAnnotationDecorator, JsonAnnotationOptions} from './@type
 export const isClass = (obj): boolean => {
   const isCtorClass = obj.constructor
       && obj.constructor.toString().substring(0, 5) === 'class';
-  // eslint-disable-next-line id-blacklist
+
   if (obj.prototype === undefined) {
     return isCtorClass;
   }
@@ -165,7 +165,13 @@ export const isIterableNoString = (variable): boolean =>
   hasIterationProtocol(variable);
 
 export const isClassIterableNoMap = (ctor: ClassType<any>): boolean =>
-  ctor !== Map && hasIterationProtocol(ctor.prototype);
+  !(isSameConstructorOrExtensionOfNoObject(ctor, Map)) &&
+  hasIterationProtocol(ctor.prototype);
+
+export const isClassIterableNoMapNoString = (ctor: ClassType<any>): boolean =>
+  !(isSameConstructorOrExtensionOfNoObject(ctor, String)) &&
+  !(isSameConstructorOrExtensionOfNoObject(ctor, Map)) &&
+  hasIterationProtocol(ctor.prototype);
 
 export const isClassIterable = (ctor: ClassType<any>): boolean => hasIterationProtocol(ctor.prototype);
 
@@ -188,3 +194,9 @@ export const isObjLiteral = (_obj: any): boolean => {
     )
   );
 };
+
+/**
+ * https://stackoverflow.com/a/3886106/4637638
+ */
+export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
+export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;

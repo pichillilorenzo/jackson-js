@@ -15,8 +15,14 @@ export declare const hasIterationProtocol: (variable: any) => boolean;
 export declare const isIterableNoMapNoString: (variable: any) => boolean;
 export declare const isIterableNoString: (variable: any) => boolean;
 export declare const isClassIterableNoMap: (ctor: ClassType<any>) => boolean;
+export declare const isClassIterableNoMapNoString: (ctor: ClassType<any>) => boolean;
 export declare const isClassIterable: (ctor: ClassType<any>) => boolean;
 /**
  * https://stackoverflow.com/a/1482209/4637638
  */
 export declare const isObjLiteral: (_obj: any) => boolean;
+/**
+ * https://stackoverflow.com/a/3886106/4637638
+ */
+export declare const isInt: (n: number) => boolean;
+export declare const isFloat: (n: number) => boolean;

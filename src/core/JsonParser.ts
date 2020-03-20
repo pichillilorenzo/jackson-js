@@ -1,8 +1,7 @@
 import {JsonCreatorPrivateOptions} from '../annotations/JsonCreator';
 import {
   getArgumentNames, isClassIterable,
-  isClassIterableNoMap,
-  isExtensionOf,
+  isClassIterableNoMapNoString, isFloat,
   isIterableNoMapNoString,
   isSameConstructor, isSameConstructorOrExtensionOf,
   isSameConstructorOrExtensionOfNoObject
@@ -10,7 +9,7 @@ import {
 import {
   ClassType,
   JsonAliasOptions,
-  JsonClassOptions,
+  JsonClassOptions, JsonDeserializeOptions,
   JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
   JsonManagedReferenceOptions,
@@ -28,29 +27,41 @@ import {JacksonError} from './JacksonError';
 import {JsonAnySetterPrivateOptions} from '../annotations/JsonAnySetter';
 import {JsonBackReferencePrivateOptions} from '../annotations/JsonBackReference';
 
+/**
+ *
+ */
 export class JsonParser<T> {
 
-  // Map used to restore object circular references defined with @JsonIdentityInfo()
+  /**
+   * Map used to restore object circular references defined with @JsonIdentityInfo()
+   */
   private _globalValueAlreadySeen = new Map();
 
+  /**
+   *
+   */
   constructor() {
   }
 
+  /**
+   *
+   * @param text
+   * @param options
+   */
   parse(text: string, options: JsonParserOptions = {}): T {
     const value = JSON.parse(text);
-    return this.deepParse('', value, {mainCreator: () => [value.constructor], ...options});
+    return this.deepParse('', value, {mainCreator: () => [(value != null) ? value.constructor : Object], ...options});
   }
 
   invokeCustomDeserializers(key: string, value: any, options: JsonParserOptions): any {
     if (options.deserializers) {
+      const currentMainCreator = options.mainCreator()[0];
       for (const deserializer of options.deserializers) {
         if (deserializer.type != null) {
-          if ( value != null &&
-            (
-              (typeof deserializer.type === 'string' && deserializer.type !== typeof value) ||
-              (typeof deserializer.type !== 'string' && value.constructor != null &&
-                !isSameConstructor(deserializer.type, value.constructor))
-            )
+          const classType = deserializer.type();
+          if (
+            (value != null && typeof classType === 'string' && classType !== typeof value) ||
+            (typeof classType !== 'string' && currentMainCreator != null && !isSameConstructor(classType, currentMainCreator))
           ) {
             continue;
           }
@@ -179,25 +190,28 @@ export class JsonParser<T> {
 
   parseJsonRootName(replacement: any, options: JsonParserOptions): any {
     const jsonRootName: string = Reflect.getMetadata('jackson:JsonRootName', options.mainCreator()[0]);
-    if (jsonRootName) {return replacement[jsonRootName]; }
+    if (jsonRootName) {
+      return replacement[jsonRootName];
+    }
     return replacement;
   }
 
   parseJsonClass(options: JsonParserOptions, obj: any, key: string): any {
     const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', options.mainCreator()[0], key);
+    const newOptions = {...options};
 
     if (jsonClass && jsonClass.class) {
-      const newOptions = {...options};
       newOptions.mainCreator = () => jsonClass.class();
       const newCreator = newOptions.mainCreator()[0];
 
-      if (isClassIterableNoMap(newCreator)) {
+      if (isClassIterableNoMapNoString(newCreator)) {
         return this.parseIterable(obj[key], key, newOptions);
       }
-
-      return this.deepParse(key, obj[key], newOptions);
+    } else {
+      const newCreator = (obj[key] != null) ? obj[key].constructor : Object;
+      newOptions.mainCreator = () => [newCreator];
     }
-    return obj[key];
+    return this.deepParse(key, obj[key], newOptions);
   }
 
   parseJsonManagedReference(replacement: any, options: JsonParserOptions, obj: any, key: string): void {
@@ -258,9 +272,9 @@ export class JsonParser<T> {
   }
 
   parseJsonDeserialize(options: JsonParserOptions, replacement: any, key: string): void {
-    const jsonDeserialize: (...args) => any = Reflect.getMetadata('jackson:JsonDeserialize', options.mainCreator()[0], key);
-    if (jsonDeserialize) {
-      replacement[key] = jsonDeserialize(replacement[key]);
+    const jsonDeserialize: JsonDeserializeOptions = Reflect.getMetadata('jackson:JsonDeserialize', options.mainCreator()[0], key);
+    if (jsonDeserialize && jsonDeserialize.using) {
+      replacement[key] = jsonDeserialize.using(replacement[key]);
     }
   }
 
@@ -468,7 +482,7 @@ export class JsonParser<T> {
       }
       for (const value of iterable) {
         if (newOptions.mainCreator == null) {
-          newOptions.mainCreator = () => [(value || Object).constructor];
+          newOptions.mainCreator = () => [(value) ? value.constructor : Object];
         }
         (newIterable as Set<any>).add(this.deepParse(key, value, newOptions));
       }
@@ -476,7 +490,7 @@ export class JsonParser<T> {
       newIterable = [];
       for (const value of iterable) {
         if (newOptions.mainCreator == null) {
-          newOptions.mainCreator = () => [(value || Object).constructor];
+          newOptions.mainCreator = () => [(value) ? value.constructor : Object];
         }
         (newIterable as Array<any>).push(this.deepParse(key, value, newOptions));
       }
@@ -537,7 +551,29 @@ export class JsonParser<T> {
     return map;
   }
 
+  /**
+   *
+   * @param key
+   * @param value
+   * @param options
+   */
   private deepParse(key: string, value: any, options: JsonParserOptions): any {
+
+    if ( (value instanceof Array && value.length === 0 && options.features[DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT]) ||
+      (typeof value === 'string' && value.length === 0 && options.features[DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT]) ) {
+      value = null;
+    }
+
+    const currentConstructor = options.mainCreator()[0];
+    if (value == null && options.features[DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES] &&
+      (currentConstructor === Number || (BigInt && currentConstructor === BigInt) || currentConstructor === String ||
+        currentConstructor === Boolean || currentConstructor === Symbol)) {
+      throw new JacksonError(`Cannot map \`null\` into primitive type ${(currentConstructor as ObjectConstructor).name}`);
+    }
+
+    if (typeof value === 'number' && options.features[DeserializationFeature.ACCEPT_FLOAT_AS_INT] && isFloat(value)) {
+      value = parseInt(value + '', 10);
+    }
 
     value = this.invokeCustomDeserializers(key, value, options);
 
@@ -550,10 +586,8 @@ export class JsonParser<T> {
 
       value = this.parseJsonTypeInfo(value, options);
 
-      const currentConstructor = options.mainCreator()[0];
-
       if (isSameConstructorOrExtensionOfNoObject(currentConstructor, Map)) {
-        value = this.parseMap(value, options);
+        return this.parseMap(value, options);
       } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentConstructor, BigInt)) {
         return (typeof value === 'string' && value.endsWith('n')) ?
           (currentConstructor as ObjectConstructor)(value.substring(0, value.length - 1)) :

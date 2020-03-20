@@ -54,7 +54,7 @@ export interface ObjectMapperFeatures {
 
 export interface ObjectMapperCustomMapper<T> {
   mapper: T;
-  type?: any;
+  type?: (...args) => any;
   order?: number;
 }
 
@@ -86,7 +86,7 @@ export interface JsonCreatorOptions extends JsonAnnotationOptions {
 }
 
 export interface JsonDeserializeOptions extends JsonAnnotationOptions {
-  using?: (...args) => any;
+  using: (...args) => any;
 }
 
 export interface JsonFormatOptions extends JsonAnnotationOptions {

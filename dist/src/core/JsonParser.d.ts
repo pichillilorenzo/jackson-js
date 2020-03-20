@@ -1,7 +1,21 @@
 import { JsonParserOptions } from '../@types';
+/**
+ *
+ */
 export declare class JsonParser<T> {
+    /**
+     * Map used to restore object circular references defined with @JsonIdentityInfo()
+     */
     private _globalValueAlreadySeen;
+    /**
+     *
+     */
     constructor();
+    /**
+     *
+     * @param text
+     * @param options
+     */
     parse(text: string, options?: JsonParserOptions): T;
     invokeCustomDeserializers(key: string, value: any, options: JsonParserOptions): any;
     parseJsonCreator(options: JsonParserOptions, obj: any): any;
@@ -21,6 +35,12 @@ export declare class JsonParser<T> {
     parseJsonIdentityInfo(replacement: any, obj: any, options: JsonParserOptions): void;
     parseIterable(iterable: any, key: string, options: JsonParserOptions): any;
     parseMap(obj: any, options: JsonParserOptions): Map<any, any>;
+    /**
+     *
+     * @param key
+     * @param value
+     * @param options
+     */
     private deepParse;
     private generateScopedId;
 }

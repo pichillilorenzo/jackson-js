@@ -30,53 +30,54 @@ import {JsonStringifier} from './core/JsonStringifier';
 import {JacksonError} from './core/JacksonError';
 import {JsonUnwrapped} from './annotations/JsonUnwrapped';
 import {JsonIdentityInfo, ObjectIdGenerator} from './annotations/JsonIdentityInfo';
+import test from "ava";
 
-class DateSerializer {
-  static serializeDate(date): any {
-    return {
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      formatted: date.toLocaleDateString()
-    };
-  }
-  static deserializeDate(dateObj): Date {
-    return new Date(dateObj.formatted);
-  }
-}
-
-// @JsonRootName()
-// @JsonIgnoreType()
-@JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.PROPERTY, property: 'example2_type'})
-class Example2 {
-
-  name = '';
-  age = 55;
-
-  @JsonSerialize({using: DateSerializer.serializeDate})
-  @JsonDeserialize({using: DateSerializer.deserializeDate})
-  date = new Date();
-
-  // @JsonBackReference({class: () => Example3})
-  example;
-
-  constructor(name, age, date, example) {
-    this.name = name;
-    this.age = age;
-    this.date = date;
-    this.example = example;
-  }
-
-  @JsonCreator()
-  static creator(name, age, date) {
-    return new Example2(name, age, date, null);
-  }
-  // @JsonValue()
-  getValue() {
-    return 'ciao ' + this.name;
-  }
-
-}
+// class DateSerializer {
+//   static serializeDate(date): any {
+//     return {
+//       year: date.getFullYear(),
+//       month: date.getMonth() + 1,
+//       day: date.getDate(),
+//       formatted: date.toLocaleDateString()
+//     };
+//   }
+//   static deserializeDate(dateObj): Date {
+//     return new Date(dateObj.formatted);
+//   }
+// }
+//
+// // @JsonRootName()
+// // @JsonIgnoreType()
+// @JsonTypeInfo({use: JsonTypeInfoId.NAME, include: JsonTypeInfoAs.PROPERTY, property: 'example2_type'})
+// class Example2 {
+//
+//   name = '';
+//   age = 55;
+//
+//   @JsonSerialize({using: DateSerializer.serializeDate})
+//   @JsonDeserialize({using: DateSerializer.deserializeDate})
+//   date = new Date();
+//
+//   // @JsonBackReference({class: () => Example3})
+//   example;
+//
+//   constructor(name, age, date, example) {
+//     this.name = name;
+//     this.age = age;
+//     this.date = date;
+//     this.example = example;
+//   }
+//
+//   @JsonCreator()
+//   static creator(name, age, date) {
+//     return new Example2(name, age, date, null);
+//   }
+//   // @JsonValue()
+//   getValue() {
+//     return 'ciao ' + this.name;
+//   }
+//
+// }
 
 // @JsonCreator()
 // @JsonIgnoreType()
@@ -137,17 +138,17 @@ class Example {
 class Example3 extends Example {
   newProperty = 344443434;
 }
-
-const test = new Example2('test 1', 20, new Date(), null);
-const test2 = new Example2('test 2', 40, new Date(), null);
-// let a = new Example("my name", 45, '');
-const a = new Example3('my name', null, '', null);
-// a.example2References = [test, test2];
-a.example2References = test;
-// let a = new Example("my name", 45, false);
-// test.example = a;
-// test2.example = a;
-a.testValue = '{"test": 100}';
+//
+// const test = new Example2('test 1', 20, new Date(), null);
+// const test2 = new Example2('test 2', 40, new Date(), null);
+// // let a = new Example("my name", 45, '');
+// const a = new Example3('my name', null, '', null);
+// // a.example2References = [test, test2];
+// a.example2References = test;
+// // let a = new Example("my name", 45, false);
+// // test.example = a;
+// // test2.example = a;
+// a.testValue = '{"test": 100}';
 
 // let stringified1 = stringify(test, null, "\t");
 // console.log(stringified1)
@@ -328,25 +329,25 @@ class TestJsonProperty {
 //         "username": "test"
 // }
 // `, null, {mainCreator: TestJsonProperty}));
-
-class TestJsonClassUser {
-  @JsonProperty({value: 'userId'})
-  id: number;
-  email: string;
-  @JsonSerialize({using: DateSerializer.serializeDate})
-  @JsonDeserialize({using: DateSerializer.deserializeDate})
-  date = new Date();
-
-  constructor(id, email) {
-    this.id = id;
-    this.email = email;
-  }
-
-  @JsonCreator()
-  static creator(email, @JsonProperty({value: 'userId'}) id) {
-    return new TestJsonClassUser(id, email);
-  }
-}
+//
+// class TestJsonClassUser {
+//   @JsonProperty({value: 'userId'})
+//   id: number;
+//   email: string;
+//   @JsonSerialize({using: DateSerializer.serializeDate})
+//   @JsonDeserialize({using: DateSerializer.deserializeDate})
+//   date = new Date();
+//
+//   constructor(id, email) {
+//     this.id = id;
+//     this.email = email;
+//   }
+//
+//   @JsonCreator()
+//   static creator(email, @JsonProperty({value: 'userId'}) id) {
+//     return new TestJsonClassUser(id, email);
+//   }
+// }
 /*
 class TestJsonClass {
   @JsonClass({class: () => TestJsonClassUser})
@@ -620,6 +621,7 @@ set.add([3]);
 // const stringified16 = objectMapper.stringify(date);
 // console.log(stringified16);
 // console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
+
 
 export {
   JsonAnyGetter,

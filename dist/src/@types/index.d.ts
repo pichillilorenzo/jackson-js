@@ -43,7 +43,7 @@ export interface ObjectMapperFeatures {
 }
 export interface ObjectMapperCustomMapper<T> {
     mapper: T;
-    type?: any;
+    type?: (...args: any[]) => any;
     order?: number;
 }
 export declare type ObjectMapperSerializer = ObjectMapperCustomMapper<Serializer>;
@@ -63,7 +63,7 @@ export interface JsonCreatorOptions extends JsonAnnotationOptions {
     properties?: {};
 }
 export interface JsonDeserializeOptions extends JsonAnnotationOptions {
-    using?: (...args: any[]) => any;
+    using: (...args: any[]) => any;
 }
 export interface JsonFormatOptions extends JsonAnnotationOptions {
     shape?: JsonFormatShape;

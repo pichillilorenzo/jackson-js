@@ -1,9 +1,11 @@
 import {
+  ClassList,
+  ClassType, JsonClassOptions,
   JsonFormatOptions, JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions,
   JsonPropertyOptions,
-  JsonPropertyOrderOptions,
+  JsonPropertyOrderOptions, JsonSerializeOptions,
   JsonStringifierOptions,
   JsonSubTypeOptions,
   JsonTypeInfoOptions,
@@ -13,7 +15,6 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
-  isExtensionOf,
   isIterableNoMapNoString,
   isObjLiteral,
   isSameConstructor, isSameConstructorOrExtensionOf,
@@ -31,29 +32,54 @@ import {JacksonError} from './JacksonError';
 
 dayjs.extend(customParseFormat);
 
+export interface JsonStringifierPrivateOptions extends JsonStringifierOptions {
+  mainCreator: ClassList<ClassType<any>>;
+}
+
+/**
+ *
+ */
 export class JsonStringifier<T> {
 
-  // WeakMap used to track all objects about @JsonIdentityInfo()
+  /**
+   * WeakMap used to track all objects about @JsonIdentityInfo()
+   */
   private _globalValueAlreadySeen = new WeakMap();
+
+  /**
+   *
+   */
   private _intSequenceGenerator = 0;
 
+  /**
+   *
+   */
   constructor() {
   }
 
+  /**
+   *
+   * @param obj
+   * @param options
+   */
   stringify(obj: T, options: JsonStringifierOptions = {}): string {
-    const preProcessedObj = this.deepStringify('', obj, {...options}, new Map());
-    return JSON.stringify(preProcessedObj, null, options.format);
+    const newOptions: JsonStringifierPrivateOptions = {
+      mainCreator: [(obj != null) ? (obj.constructor as ObjectConstructor) : Object],
+      ...options
+    };
+    const preProcessedObj = this.deepStringify('', obj, newOptions, new Map());
+    return JSON.stringify(preProcessedObj, null, newOptions.format);
   }
 
-  invokeCustomSerializers(key: string, value: any, options: JsonStringifierOptions): any {
+  invokeCustomSerializers(key: string, value: any, options: JsonStringifierPrivateOptions): any {
     if (options.serializers) {
+      const currentMainCreator = options.mainCreator[0];
       for (const serializer of options.serializers) {
         if (serializer.type != null) {
-          if ( value != null &&
-            (
-              (typeof serializer.type === 'string' && serializer.type !== typeof value) ||
-              (typeof serializer.type !== 'string' && value.constructor != null && !isSameConstructor(serializer.type, value.constructor))
-            )
+          const classType = serializer.type();
+          if (
+            (value != null && typeof classType === 'string' && classType !== typeof value) ||
+            (typeof classType !== 'string' && currentMainCreator != null && !isSameConstructor(classType, currentMainCreator))
           ) {
             continue;
           }
@@ -153,9 +179,9 @@ export class JsonStringifier<T> {
   }
 
   stringifyJsonSerialize(replacement: any, obj: any, key: string): void {
-    const jsonSerialize: (...args) => any = Reflect.getMetadata('jackson:JsonSerialize', obj, key);
-    if (jsonSerialize) {
-      replacement[key] = jsonSerialize(replacement[key]);
+    const jsonSerialize: JsonSerializeOptions = Reflect.getMetadata('jackson:JsonSerialize', obj, key);
+    if (jsonSerialize && jsonSerialize.using) {
+      replacement[key] = jsonSerialize.using(replacement[key]);
     }
   }
 
@@ -297,7 +323,7 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyHasJsonView(obj: any, key: string, options: JsonStringifierOptions): boolean {
+  stringifyHasJsonView(obj: any, key: string, options: JsonStringifierPrivateOptions): boolean {
     if (options.withView) {
       const jsonView: JsonViewOptions = Reflect.getMetadata('jackson:JsonView', obj.constructor, key);
       if (jsonView) {
@@ -313,7 +339,7 @@ export class JsonStringifier<T> {
     return true;
   }
 
-  stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierOptions): void {
+  stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierPrivateOptions): void {
     const jsonUnwrapped: JsonUnwrappedOptions = Reflect.getMetadata('jackson:JsonUnwrapped', obj, key);
     const hasJsonTypeInfo = (typeof obj[key] === 'object') ?
       Reflect.hasMetadata('jackson:JsonTypeInfo', obj[key].constructor) : false;
@@ -414,11 +440,21 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyIterable(key: string, iterableNoString: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any[] {
+  stringifyIterable(key: string, iterableNoString: any, options: JsonStringifierPrivateOptions, valueAlreadySeen: Map<any, any>): any[] {
     const iterable = [...iterableNoString];
     const newIterable = [];
     for (const value of iterable) {
-      (newIterable).push(this.deepStringify(key, value, {...options}, new Map(valueAlreadySeen)));
+      const newOptions = {...options};
+      let newMainCreator;
+      if (options.mainCreator.length > 1) {
+        newMainCreator = options.mainCreator[1];
+      } else if (value != null) {
+        newMainCreator = [value.constructor];
+      } else {
+        newMainCreator = [Object];
+      }
+      newOptions.mainCreator = newMainCreator;
+      (newIterable).push(this.deepStringify(key, value, newOptions, new Map(valueAlreadySeen)));
     }
     return newIterable;
   }
@@ -431,8 +467,32 @@ export class JsonStringifier<T> {
     return newValue;
   }
 
-  // valueAlreadySeen Map used to manage object circular references
-  private deepStringify(key: string, value: any, options: JsonStringifierOptions, valueAlreadySeen: Map<any, any>): any {
+  /**
+   *
+   * @param key
+   * @param value
+   * @param options
+   * @param valueAlreadySeen: Map used to manage object circular references
+   */
+  private deepStringify(key: string, value: any, options: JsonStringifierPrivateOptions, valueAlreadySeen: Map<any, any>): any {
+
+    if (value === Infinity) {
+      if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
+        value = Number.MAX_SAFE_INTEGER;
+      } else if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
+        value = Number.MAX_VALUE;
+      }
+    } else if (value === -Infinity) {
+      if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
+        value = Number.MIN_SAFE_INTEGER;
+      } else if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
+        value = Number.MIN_VALUE;
+      }
+    } else if (value != null && isSameConstructorOrExtensionOfNoObject(value.constructor, Date) &&
+      options.features[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
+      value = value.getTime();
+    }
+
     value = this.invokeCustomSerializers(key, value, options);
 
     if (value != null) {
@@ -495,11 +555,13 @@ export class JsonStringifier<T> {
               }
 
               replacement[k] = value[k];
-              this.stringifyJsonFormat(replacement, value, k);
-              this.stringifyJsonSerialize(replacement, value, k);
-              this.stringifyJsonRawValue(replacement, value, k);
-              this.stringifyJsonProperty(replacement, value, k);
-              this.stringifyJsonUnwrapped(replacement, value, k, options);
+              if (replacement[k] != null) {
+                this.stringifyJsonFormat(replacement, value, k);
+                this.stringifyJsonSerialize(replacement, value, k);
+                this.stringifyJsonRawValue(replacement, value, k);
+                this.stringifyJsonProperty(replacement, value, k);
+                this.stringifyJsonUnwrapped(replacement, value, k, options);
+              }
             }
           }
         }
@@ -511,7 +573,18 @@ export class JsonStringifier<T> {
 
         // eslint-disable-next-line guard-for-in
         for (const k in replacement) {
-          replacement[k] = this.deepStringify(k, replacement[k], {...options}, new Map(valueAlreadySeen));
+          const newOptions = {...options};
+          let newMainCreator;
+          const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', value.constructor, k);
+          if (jsonClass && jsonClass.class) {
+            newMainCreator = jsonClass.class();
+          } else if (replacement[k] != null) {
+            newMainCreator = [replacement[k].constructor];
+          } else {
+            newMainCreator = [Object];
+          }
+          newOptions.mainCreator = newMainCreator;
+          replacement[k] = this.deepStringify(k, replacement[k], newOptions, new Map(valueAlreadySeen));
         }
 
         return replacement;

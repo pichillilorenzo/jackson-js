@@ -94,7 +94,9 @@ test('@JsonManagedReference And @JsonBackReference', t => {
   t.assert(jsonData.includes('Computer'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
   t.assert(userParsed.items.length === 2);
+  t.assert(userParsed.items[0] instanceof Item);
   t.assert(userParsed.items[0].owner === userParsed);
   t.assert(userParsed.items[1].owner === userParsed);
 });
@@ -199,7 +201,9 @@ test('@JsonIdentityInfo One To Many', t => {
   t.assert(jsonData.includes('Computer'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
   t.assert(userParsed.items.length === 2);
+  t.assert(userParsed.items[0] instanceof Item);
   t.assert(userParsed.items[0].owner === userParsed);
   t.assert(userParsed.items[1].owner === userParsed);
 });
@@ -257,7 +261,9 @@ test('@JsonIdentityInfo Many To Many', t => {
   t.assert(jsonData.includes('Computer'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
   t.assert(userParsed.items.length === 2);
+  t.assert(userParsed.items[0] instanceof Item);
   t.assert(userParsed.items[0].owners.includes(userParsed));
   t.assert(userParsed.items[0].owners.find((owner) => owner.id === user2.id));
 });

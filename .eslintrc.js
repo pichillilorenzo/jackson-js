@@ -105,18 +105,6 @@ module.exports = {
       "smart"
     ],
     "guard-for-in": "error",
-    "id-blacklist": [
-      "error",
-      "any",
-      "Number",
-      "number",
-      "String",
-      "string",
-      "Boolean",
-      "boolean",
-      "Undefined",
-      "undefined"
-    ],
     "id-match": "error",
     "import/no-deprecated": "warn",
     "import/order": "off",
