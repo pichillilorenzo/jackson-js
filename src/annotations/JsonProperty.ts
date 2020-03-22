@@ -1,4 +1,4 @@
-import {makeJacksonDecorator} from '../util';
+import {getArgumentNames, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonPropertyOptions} from '../@types';
 
@@ -19,12 +19,22 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
-    options.defaultValue = (options.defaultValue) ? options.defaultValue : propertyKey;
+    if (!options.value && !options.defaultValue && propertyKey != null) {
+      options.defaultValue = propertyKey.toString();
+    }
     options.value = (options.value) ? options.value : options.defaultValue;
-    Reflect.defineMetadata('jackson:JsonProperty', options, target, propertyKey);
-    Reflect.defineMetadata('jackson:JsonProperty:' + propertyKey.toString(), options, target.constructor);
-    Reflect.defineMetadata('jackson:JsonProperty:reverse:' + options.value, propertyKey, target.constructor);
+
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
+      if (!options.value && !options.defaultValue) {
+        const argNames = getArgumentNames(target, !!target.constructor);
+        options.defaultValue = argNames[descriptorOrParamIndex];
+      }
+      options.value = (options.value) ? options.value : options.defaultValue;
       Reflect.defineMetadata('jackson:JsonPropertyParam:' + descriptorOrParamIndex.toString(), options, target);
+    }
+
+    if (propertyKey != null) {
+      Reflect.defineMetadata('jackson:JsonProperty', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonProperty:' + propertyKey.toString(), options, target.constructor);
     }
   });

@@ -27,6 +27,7 @@ test('@JsonAnySetter', t => {
 
   const screenInfo = objectMapper.parse<ScreenInfo>(jsonData, {mainCreator: () => [ScreenInfo]});
 
+  t.assert(screenInfo instanceof ScreenInfo);
   t.is(screenInfo.id, 'TradeDetails');
   t.is(screenInfo.title, 'Trade Details');
   t.is(screenInfo.width, 500);

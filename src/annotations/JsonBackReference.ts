@@ -2,10 +2,7 @@ import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonBackReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-
-export interface JsonBackReferencePrivateOptions extends JsonBackReferenceOptions {
-  propertyKey: string;
-}
+import {JsonBackReferencePrivateOptions} from '../@types/private';
 
 export type JsonBackReferenceDecorator = (options?: JsonBackReferenceOptions) => any;
 

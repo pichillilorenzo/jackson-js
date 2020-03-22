@@ -4,6 +4,11 @@ import { JsonIncludeType } from '../annotations/JsonInclude';
 import { JsonFormatShape } from '../annotations/JsonFormat';
 import { JsonPropertyAccess } from '../annotations/JsonProperty';
 import { ObjectIdGenerator } from '../annotations/JsonIdentityInfo';
+import { JsonFilterType } from "../annotations/JsonFilter";
+/**
+ * https://stackoverflow.com/a/55032655/4637638
+ */
+export declare type Modify<T, R> = Omit<T, keyof R> & R;
 export declare type ClassType<T> = (new () => T) | (new (...args: any[]) => T) | ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 export declare type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' | 'unshift';
 export declare type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> = Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>> & {
@@ -15,6 +20,10 @@ export interface ClassList<T> extends Array<any> {
     [index: number]: T | ClassList<T>;
     0: T;
 }
+export interface JsonStringifierFilterOptions {
+    type: JsonFilterType;
+    values: string[];
+}
 export interface JsonStringifierOptions {
     withView?: (...args: any[]) => ClassType<any>;
     format?: string;
@@ -22,6 +31,9 @@ export interface JsonStringifierOptions {
         [key: number]: boolean;
     };
     serializers?: ObjectMapperSerializer[];
+    filters?: {
+        [key: string]: JsonStringifierFilterOptions;
+    };
 }
 export interface JsonParserOptions {
     mainCreator?: (...args: any[]) => ClassList<ClassType<any>>;
@@ -30,6 +42,7 @@ export interface JsonParserOptions {
         [key: number]: boolean;
     };
     deserializers?: ObjectMapperDeserializer[];
+    injectableValues?: {};
 }
 export declare type Serializer = (key: string, value: any) => any;
 export declare type Deserializer = (key: string, value: any) => any;
@@ -172,4 +185,17 @@ export interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
     uuidv4?: UUIDv4GeneratorOptions;
     uuidv3?: UUIDv3GeneratorOptions;
     uuidv1?: UUIDv1GeneratorOptions;
+}
+export interface JsonStringifierTransformerOptions extends JsonStringifierOptions {
+    mainCreator: ClassList<ClassType<any>>;
+}
+export declare type JsonParserTransformerOptions = Modify<JsonParserOptions, {
+    mainCreator: ClassList<ClassType<any>>;
+}>;
+export interface JsonInjectOptions extends JsonAnnotationOptions {
+    value?: string;
+    useInput?: boolean;
+}
+export interface JsonFilterOptions extends JsonAnnotationOptions {
+    name: string;
 }

@@ -20,6 +20,7 @@ export class ObjectMapper {
       [SerializationFeature.FAIL_ON_SELF_REFERENCES]: true,
       [SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS]: true,
       [SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]: false,
+      [SerializationFeature.WRITE_NAN_AS_ZERO]: false,
       [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]: false,
       [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]: false,
       [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]: false,

@@ -30,7 +30,8 @@ import {JsonStringifier} from './core/JsonStringifier';
 import {JacksonError} from './core/JacksonError';
 import {JsonUnwrapped} from './annotations/JsonUnwrapped';
 import {JsonIdentityInfo, ObjectIdGenerator} from './annotations/JsonIdentityInfo';
-import test from "ava";
+import {JsonInject} from './annotations/JsonInject';
+import {JsonFilter, JsonFilterType} from './annotations/JsonFilter';
 
 // class DateSerializer {
 //   static serializeDate(date): any {
@@ -623,6 +624,7 @@ set.add([3]);
 // console.log(objectMapper.parse<Date>(stringified16, {mainCreator: () => [Date]}));
 
 
+
 export {
   JsonAnyGetter,
   JsonProperty,
@@ -653,6 +655,9 @@ export {
   JsonClass,
   JsonUnwrapped,
   JsonIdentityInfo,
+  JsonInject,
+  JsonFilter,
+  JsonFilterType,
   ObjectIdGenerator,
   JsonParser,
   JsonStringifier,

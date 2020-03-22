@@ -2,10 +2,7 @@ import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonAnySetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-
-export interface JsonAnySetterPrivateOptions extends JsonAnySetterOptions {
-  propertyKey: string;
-}
+import {JsonAnySetterPrivateOptions} from '../@types/private';
 
 export type JsonAnySetterDecorator = (options?: JsonAnySetterOptions) => any;
 

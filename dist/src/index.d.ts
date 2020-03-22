@@ -29,4 +29,6 @@ import { JsonStringifier } from './core/JsonStringifier';
 import { JacksonError } from './core/JacksonError';
 import { JsonUnwrapped } from './annotations/JsonUnwrapped';
 import { JsonIdentityInfo, ObjectIdGenerator } from './annotations/JsonIdentityInfo';
-export { JsonAnyGetter, JsonProperty, JsonPropertyAccess, JsonPropertyOrder, JsonRawValue, JsonValue, JsonRootName, JsonSerialize, JsonCreator, JsonManagedReference, JsonBackReference, JsonAnySetter, JsonDeserialize, JsonIgnore, JsonIgnoreProperties, JsonIgnoreType, JsonInclude, JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId, JsonTypeName, JsonSubTypes, JsonFormat, JsonFormatShape, JsonView, JsonAlias, JsonClass, JsonUnwrapped, JsonIdentityInfo, ObjectIdGenerator, JsonParser, JsonStringifier, ObjectMapper, SerializationFeature, DeserializationFeature, JacksonError };
+import { JsonInject } from './annotations/JsonInject';
+import { JsonFilter, JsonFilterType } from './annotations/JsonFilter';
+export { JsonAnyGetter, JsonProperty, JsonPropertyAccess, JsonPropertyOrder, JsonRawValue, JsonValue, JsonRootName, JsonSerialize, JsonCreator, JsonManagedReference, JsonBackReference, JsonAnySetter, JsonDeserialize, JsonIgnore, JsonIgnoreProperties, JsonIgnoreType, JsonInclude, JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId, JsonTypeName, JsonSubTypes, JsonFormat, JsonFormatShape, JsonView, JsonAlias, JsonClass, JsonUnwrapped, JsonIdentityInfo, JsonInject, JsonFilter, JsonFilterType, ObjectIdGenerator, JsonParser, JsonStringifier, ObjectMapper, SerializationFeature, DeserializationFeature, JacksonError };

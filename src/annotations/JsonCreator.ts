@@ -1,11 +1,7 @@
 import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonCreatorOptions} from '../@types';
-
-export interface JsonCreatorPrivateOptions extends JsonCreatorOptions {
-  constructor?: Record<string, any> | ObjectConstructor;
-  method?: Function;
-}
+import {JsonCreatorPrivateOptions} from '../@types/private';
 
 export type JsonCreatorDecorator = (options?: JsonCreatorOptions) => any;
 

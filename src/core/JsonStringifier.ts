@@ -1,12 +1,11 @@
 import {
-  ClassList,
-  ClassType, JsonClassOptions,
+  JsonClassOptions, JsonFilterOptions,
   JsonFormatOptions, JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions,
   JsonPropertyOptions,
-  JsonPropertyOrderOptions, JsonSerializeOptions,
-  JsonStringifierOptions,
+  JsonPropertyOrderOptions, JsonSerializeOptions, JsonStringifierFilterOptions,
+  JsonStringifierOptions, JsonStringifierTransformerOptions,
   JsonSubTypeOptions,
   JsonTypeInfoOptions,
   JsonUnwrappedOptions,
@@ -15,6 +14,7 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
+  cloneClassInstance,
   isIterableNoMapNoString,
   isObjLiteral,
   isSameConstructor, isSameConstructorOrExtensionOf,
@@ -27,14 +27,11 @@ import {ObjectIdGenerator} from '../annotations/JsonIdentityInfo';
 import * as dayjs from 'dayjs';
 import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
-import {JsonAnyGetterPrivateOptions} from '../annotations/JsonAnyGetter';
 import {JacksonError} from './JacksonError';
+import {JsonAnyGetterPrivateOptions} from '../@types/private';
+import {JsonFilterType} from '..';
 
 dayjs.extend(customParseFormat);
-
-export interface JsonStringifierPrivateOptions extends JsonStringifierOptions {
-  mainCreator: ClassList<ClassType<any>>;
-}
 
 /**
  *
@@ -63,15 +60,149 @@ export class JsonStringifier<T> {
    * @param options
    */
   stringify(obj: T, options: JsonStringifierOptions = {}): string {
-    const newOptions: JsonStringifierPrivateOptions = {
+    const newOptions: JsonStringifierTransformerOptions = {
       mainCreator: [(obj != null) ? (obj.constructor as ObjectConstructor) : Object],
       ...options
     };
-    const preProcessedObj = this.deepStringify('', obj, newOptions, new Map());
+    const preProcessedObj = this.transform('', obj, newOptions, new Map());
     return JSON.stringify(preProcessedObj, null, newOptions.format);
   }
 
-  invokeCustomSerializers(key: string, value: any, options: JsonStringifierPrivateOptions): any {
+  /**
+   *
+   * @param key
+   * @param value
+   * @param options
+   * @param valueAlreadySeen: Map used to manage object circular references
+   */
+  transform(key: string, value: any, options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): any {
+
+    if (typeof value === 'number' && isNaN(value) && options.features[SerializationFeature.WRITE_NAN_AS_ZERO]) {
+      value = 0;
+    } else if (value === Infinity) {
+      if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
+        value = Number.MAX_SAFE_INTEGER;
+      } else if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
+        value = Number.MAX_VALUE;
+      }
+    } else if (value === -Infinity) {
+      if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
+        value = Number.MIN_SAFE_INTEGER;
+      } else if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
+        value = Number.MIN_VALUE;
+      }
+    } else if (value != null && isSameConstructorOrExtensionOfNoObject(value.constructor, Date) &&
+      options.features[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
+      value = value.getTime();
+    }
+
+    value = this.invokeCustomSerializers(key, value, options);
+
+    if (value != null) {
+
+      const identity = this._globalValueAlreadySeen.get(value);
+      if (identity) {
+        return identity;
+      }
+
+      if (isSameConstructorOrExtensionOfNoObject(value.constructor, Map)) {
+        value = this.stringifyMap(value);
+      }
+
+      if (BigInt && isSameConstructorOrExtensionOfNoObject(value.constructor, BigInt)) {
+        return value.toString() + 'n';
+      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, RegExp)) {
+        const replacement = value.toString();
+        return replacement.substring(1, replacement.length - 1);
+      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, Date)) {
+        return value;
+      } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
+
+        if (this.stringifyJsonIgnoreType(value)) {
+          return null;
+        }
+
+        if (valueAlreadySeen.has(value)) {
+          throw new JacksonError(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
+        }
+        valueAlreadySeen.set(value, (identity) ? identity : null);
+
+        let replacement;
+        const jsonValue = this.stringifyJsonValue(value);
+        if (jsonValue) {
+          replacement = jsonValue;
+        }
+
+        if (!replacement) {
+          replacement = {};
+
+          let keys = Object.keys(value);
+          keys = this.stringifyJsonAnyGetter(replacement, value, keys);
+          if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
+            keys = keys.sort();
+          }
+          const hasJsonPropertyOrder = Reflect.hasMetadata('jackson:JsonPropertyOrder', value.constructor);
+          if (hasJsonPropertyOrder) {
+            keys = this.stringifyJsonPropertyOrder(value);
+          }
+          for (const k of keys) {
+            if (!this.stringifyHasJsonIgnore(value, k) &&
+              !this.stringifyJsonInclude(value, k) &&
+              this.stringifyHasJsonView(value, k, options) &&
+              !this.stringifyHasJsonBackReference(value, k) &&
+              !this.stringifyIsPropertyKeyExcludedByJsonFilter(value, k, options) &&
+              Object.hasOwnProperty.call(value, k)) {
+
+              if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
+                // eslint-disable-next-line max-len
+                throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
+              }
+
+              replacement[k] = value[k];
+              if (replacement[k] != null) {
+                this.stringifyJsonFormat(replacement, value, k);
+                this.stringifyJsonSerialize(replacement, value, k);
+                this.stringifyJsonRawValue(replacement, value, k);
+                this.stringifyJsonFilter(replacement, value, k, options);
+                this.stringifyJsonProperty(replacement, value, k);
+                this.stringifyJsonUnwrapped(replacement, value, k, options);
+              }
+            }
+          }
+        }
+
+        this.stringifyJsonIdentityInfo(replacement, value, key);
+
+        replacement = this.stringifyJsonTypeInfo(replacement, value);
+        replacement = this.stringifyJsonRootName(replacement, value);
+
+        // eslint-disable-next-line guard-for-in
+        for (const k in replacement) {
+          const newOptions = {...options};
+          let newMainCreator;
+          const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', value.constructor, k);
+          if (jsonClass && jsonClass.class) {
+            newMainCreator = jsonClass.class();
+          } else if (replacement[k] != null) {
+            newMainCreator = [replacement[k].constructor];
+          } else {
+            newMainCreator = [Object];
+          }
+          newOptions.mainCreator = newMainCreator;
+          replacement[k] = this.transform(k, replacement[k], newOptions, new Map(valueAlreadySeen));
+        }
+
+        return replacement;
+      } else if (isIterableNoMapNoString(value)) {
+        const replacement = this.stringifyIterable(key, value, options, valueAlreadySeen);
+        return replacement;
+      }
+    }
+
+    return value;
+  }
+
+  private invokeCustomSerializers(key: string, value: any, options: JsonStringifierTransformerOptions): any {
     if (options.serializers) {
       const currentMainCreator = options.mainCreator[0];
       for (const serializer of options.serializers) {
@@ -90,7 +221,7 @@ export class JsonStringifier<T> {
     return value;
   }
 
-  stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[]): string[] {
+  private stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[]): string[] {
     const newKeys = [];
     const jsonAnyGetter: JsonAnyGetterPrivateOptions = Reflect.getMetadata('jackson:JsonAnyGetter', obj);
     if (jsonAnyGetter && obj[jsonAnyGetter.propertyKey]) {
@@ -126,7 +257,7 @@ export class JsonStringifier<T> {
     return [...new Set([...oldKeys, ...newKeys])];
   }
 
-  stringifyJsonPropertyOrder(obj: any): string[] {
+  private stringifyJsonPropertyOrder(obj: any): string[] {
     let keys = Object.keys(obj);
     const jsonPropertyOrder: JsonPropertyOrderOptions = Reflect.getMetadata('jackson:JsonPropertyOrder', obj.constructor);
     if (jsonPropertyOrder) {
@@ -139,7 +270,7 @@ export class JsonStringifier<T> {
     return keys;
   }
 
-  stringifyJsonProperty(replacement: any, obj: any, key: string): void {
+  private stringifyJsonProperty(replacement: any, obj: any, key: string): void {
     const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonProperty', obj, key);
     const hasJsonIgnore = Reflect.hasMetadata('jackson:JsonIgnore', obj.constructor, key);
     if (jsonProperty) {
@@ -154,21 +285,21 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyJsonRawValue(replacement: any, obj: any, key: string): void {
+  private stringifyJsonRawValue(replacement: any, obj: any, key: string): void {
     const jsonRawValue = Reflect.hasMetadata('jackson:JsonRawValue', obj.constructor, key);
     if (jsonRawValue) {
       replacement[key] = JSON.parse(replacement[key]);
     }
   }
 
-  stringifyJsonValue(obj: any): null | any  {
+  private stringifyJsonValue(obj: any): null | any  {
     const jsonValue: string = Reflect.getMetadata('jackson:JsonValue', obj);
     if (jsonValue) {
       return (typeof obj[jsonValue] === 'function') ? obj[jsonValue]() : obj[jsonValue];
     }
   }
 
-  stringifyJsonRootName(replacement: any, obj: any): any {
+  private stringifyJsonRootName(replacement: any, obj: any): any {
     const jsonRootName: string = Reflect.getMetadata('jackson:JsonRootName', obj.constructor);
     if (jsonRootName) {
       const newReplacement = {};
@@ -178,14 +309,14 @@ export class JsonStringifier<T> {
     return replacement;
   }
 
-  stringifyJsonSerialize(replacement: any, obj: any, key: string): void {
+  private stringifyJsonSerialize(replacement: any, obj: any, key: string): void {
     const jsonSerialize: JsonSerializeOptions = Reflect.getMetadata('jackson:JsonSerialize', obj, key);
     if (jsonSerialize && jsonSerialize.using) {
       replacement[key] = jsonSerialize.using(replacement[key]);
     }
   }
 
-  stringifyHasJsonIgnore(obj: any, key: string): boolean {
+  private stringifyHasJsonIgnore(obj: any, key: string): boolean {
     const hasJsonIgnore = Reflect.hasMetadata('jackson:JsonIgnore', obj.constructor, key);
     const hasJsonProperty = Reflect.hasMetadata('jackson:JsonProperty', obj, key);
 
@@ -201,7 +332,7 @@ export class JsonStringifier<T> {
     return hasJsonIgnore && !hasJsonProperty;
   }
 
-  stringifyJsonInclude(obj: any, key: string): boolean {
+  private stringifyJsonInclude(obj: any, key: string): boolean {
     const keyJsonInclude: JsonIncludeOptions = Reflect.getMetadata('jackson:JsonInclude', obj, key);
     const constructorJsonInclude: JsonIncludeOptions = Reflect.getMetadata('jackson:JsonInclude', obj.constructor);
     const jsonInclude = (keyJsonInclude) ? keyJsonInclude : constructorJsonInclude;
@@ -219,15 +350,15 @@ export class JsonStringifier<T> {
     return false;
   }
 
-  stringifyJsonIgnoreType(obj: any): boolean {
+  private stringifyJsonIgnoreType(obj: any): boolean {
     return Reflect.hasMetadata('jackson:JsonIgnoreType', obj.constructor);
   }
 
-  stringifyHasJsonBackReference(obj: any, key: string): boolean {
+  private stringifyHasJsonBackReference(obj: any, key: string): boolean {
     return Reflect.hasMetadata('jackson:JsonBackReference', obj.constructor, key);
   }
 
-  stringifyJsonTypeInfo(replacement: any, obj: any): any {
+  private stringifyJsonTypeInfo(replacement: any, obj: any): any {
     const jsonTypeInfo: JsonTypeInfoOptions = Reflect.getMetadata('jackson:JsonTypeInfo', obj.constructor);
     if (jsonTypeInfo) {
       let jsonTypeName: string;
@@ -272,7 +403,7 @@ export class JsonStringifier<T> {
     return replacement;
   }
 
-  stringifyJsonFormat(replacement: any, obj: any, key: string): void {
+  private stringifyJsonFormat(replacement: any, obj: any, key: string): void {
     const jsonFormat: JsonFormatOptions = Reflect.getMetadata('jackson:JsonFormat', obj, key);
 
     if (jsonFormat) {
@@ -323,7 +454,7 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyHasJsonView(obj: any, key: string, options: JsonStringifierPrivateOptions): boolean {
+  private stringifyHasJsonView(obj: any, key: string, options: JsonStringifierTransformerOptions): boolean {
     if (options.withView) {
       const jsonView: JsonViewOptions = Reflect.getMetadata('jackson:JsonView', obj.constructor, key);
       if (jsonView) {
@@ -339,7 +470,7 @@ export class JsonStringifier<T> {
     return true;
   }
 
-  stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierPrivateOptions): void {
+  private stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
     const jsonUnwrapped: JsonUnwrappedOptions = Reflect.getMetadata('jackson:JsonUnwrapped', obj, key);
     const hasJsonTypeInfo = (typeof obj[key] === 'object') ?
       Reflect.hasMetadata('jackson:JsonTypeInfo', obj[key].constructor) : false;
@@ -363,7 +494,7 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyJsonIdentityInfo(replacement: any, obj: any, key: string): void {
+  private stringifyJsonIdentityInfo(replacement: any, obj: any, key: string): void {
     const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', obj.constructor);
 
     if (jsonIdentityInfo) {
@@ -440,7 +571,8 @@ export class JsonStringifier<T> {
     }
   }
 
-  stringifyIterable(key: string, iterableNoString: any, options: JsonStringifierPrivateOptions, valueAlreadySeen: Map<any, any>): any[] {
+  private stringifyIterable(key: string, iterableNoString: any,
+                            options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): any[] {
     const iterable = [...iterableNoString];
     const newIterable = [];
     for (const value of iterable) {
@@ -454,12 +586,12 @@ export class JsonStringifier<T> {
         newMainCreator = [Object];
       }
       newOptions.mainCreator = newMainCreator;
-      (newIterable).push(this.deepStringify(key, value, newOptions, new Map(valueAlreadySeen)));
+      (newIterable).push(this.transform(key, value, newOptions, new Map(valueAlreadySeen)));
     }
     return newIterable;
   }
 
-  stringifyMap(map: Map<any, any>): any {
+  private stringifyMap(map: Map<any, any>): any {
     const newValue = {};
     for (const [k, val] of map) {
       newValue[k.toString()] = val;
@@ -467,133 +599,47 @@ export class JsonStringifier<T> {
     return newValue;
   }
 
-  /**
-   *
-   * @param key
-   * @param value
-   * @param options
-   * @param valueAlreadySeen: Map used to manage object circular references
-   */
-  private deepStringify(key: string, value: any, options: JsonStringifierPrivateOptions, valueAlreadySeen: Map<any, any>): any {
-
-    if (value === Infinity) {
-      if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
-        value = Number.MAX_SAFE_INTEGER;
-      } else if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
-        value = Number.MAX_VALUE;
-      }
-    } else if (value === -Infinity) {
-      if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
-        value = Number.MIN_SAFE_INTEGER;
-      } else if (options.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
-        value = Number.MIN_VALUE;
-      }
-    } else if (value != null && isSameConstructorOrExtensionOfNoObject(value.constructor, Date) &&
-      options.features[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
-      value = value.getTime();
+  private isPropertyKeyExcludedByJsonFilter(filter: JsonStringifierFilterOptions,
+                                            obj: any, key: string): boolean {
+    if (filter.values == null) {
+      return false;
     }
+    const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonProperty', obj, key);
+    switch (filter.type) {
+    case JsonFilterType.FILTER_OUT_ALL_EXCEPT:
+      return !filter.values.includes(key) && !(jsonProperty && filter.values.includes(jsonProperty.value));
+    case JsonFilterType.SERIALIZE_ALL:
+      return false;
+    case JsonFilterType.SERIALIZE_ALL_EXCEPT:
+      return filter.values.includes(key) || (jsonProperty && filter.values.includes(jsonProperty.value));
+    }
+  }
 
-    value = this.invokeCustomSerializers(key, value, options);
-
-    if (value != null) {
-
-      const identity = this._globalValueAlreadySeen.get(value);
-      if (identity) {
-        return identity;
+  private stringifyIsPropertyKeyExcludedByJsonFilter(obj: any, key: string, options: JsonStringifierTransformerOptions): boolean {
+    const jsonFilter: JsonFilterOptions = Reflect.getMetadata('jackson:JsonFilter', obj.constructor);
+    if (jsonFilter) {
+      const filter = options.filters[jsonFilter.name];
+      if (filter) {
+        return this.isPropertyKeyExcludedByJsonFilter(filter, obj, key);
       }
+    }
+    return false;
+  }
 
-      if (isSameConstructorOrExtensionOfNoObject(value.constructor, Map)) {
-        value = this.stringifyMap(value);
-      }
-
-      if (BigInt && isSameConstructorOrExtensionOfNoObject(value.constructor, BigInt)) {
-        return value.toString() + 'n';
-      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, RegExp)) {
-        const replacement = value.toString();
-        return replacement.substring(1, replacement.length - 1);
-      } else if (isSameConstructorOrExtensionOfNoObject(value.constructor, Date)) {
-        return value;
-      } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
-
-        if (this.stringifyJsonIgnoreType(value)) {
-          return null;
-        }
-
-        if (valueAlreadySeen.has(value)) {
-          throw new JacksonError(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
-        }
-        valueAlreadySeen.set(value, (identity) ? identity : null);
-
-        let replacement;
-        const jsonValue = this.stringifyJsonValue(value);
-        if (jsonValue) {
-          replacement = jsonValue;
-        }
-
-        if (!replacement) {
-          replacement = {};
-
-          let keys = Object.keys(value);
-          keys = this.stringifyJsonAnyGetter(replacement, value, keys);
-          if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
-            keys = keys.sort();
-          }
-          const hasJsonPropertyOrder = Reflect.hasMetadata('jackson:JsonPropertyOrder', value.constructor);
-          if (hasJsonPropertyOrder) {
-            keys = this.stringifyJsonPropertyOrder(value);
-          }
-          for (const k of keys) {
-            if (!this.stringifyHasJsonIgnore(value, k) &&
-              !this.stringifyJsonInclude(value, k) &&
-              this.stringifyHasJsonView(value, k, options) &&
-              !this.stringifyHasJsonBackReference(value, k) &&
-              Object.hasOwnProperty.call(value, k)) {
-
-              if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
-                // eslint-disable-next-line max-len
-                throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
-              }
-
-              replacement[k] = value[k];
-              if (replacement[k] != null) {
-                this.stringifyJsonFormat(replacement, value, k);
-                this.stringifyJsonSerialize(replacement, value, k);
-                this.stringifyJsonRawValue(replacement, value, k);
-                this.stringifyJsonProperty(replacement, value, k);
-                this.stringifyJsonUnwrapped(replacement, value, k, options);
-              }
-            }
-          }
-        }
-
-        this.stringifyJsonIdentityInfo(replacement, value, key);
-
-        replacement = this.stringifyJsonTypeInfo(replacement, value);
-        replacement = this.stringifyJsonRootName(replacement, value);
-
+  private stringifyJsonFilter(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions) {
+    const jsonFilter: JsonFilterOptions = Reflect.getMetadata('jackson:JsonFilter', obj, key);
+    if (jsonFilter) {
+      const filter = options.filters[jsonFilter.name];
+      if (filter) {
+        replacement[key] = cloneClassInstance(obj[key]);
         // eslint-disable-next-line guard-for-in
-        for (const k in replacement) {
-          const newOptions = {...options};
-          let newMainCreator;
-          const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', value.constructor, k);
-          if (jsonClass && jsonClass.class) {
-            newMainCreator = jsonClass.class();
-          } else if (replacement[k] != null) {
-            newMainCreator = [replacement[k].constructor];
-          } else {
-            newMainCreator = [Object];
+        for (const propertyKey in obj[key]) {
+          const isExluded = this.isPropertyKeyExcludedByJsonFilter(filter, obj[key], propertyKey);
+          if (isExluded) {
+            delete replacement[key][propertyKey];
           }
-          newOptions.mainCreator = newMainCreator;
-          replacement[k] = this.deepStringify(k, replacement[k], newOptions, new Map(valueAlreadySeen));
         }
-
-        return replacement;
-      } else if (isIterableNoMapNoString(value)) {
-        const replacement = this.stringifyIterable(key, value, options, valueAlreadySeen);
-        return replacement;
       }
     }
-
-    return value;
   }
 }

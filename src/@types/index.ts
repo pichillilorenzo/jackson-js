@@ -3,6 +3,14 @@ import {JsonIncludeType} from '../annotations/JsonInclude';
 import {JsonFormatShape} from '../annotations/JsonFormat';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {ObjectIdGenerator} from '../annotations/JsonIdentityInfo';
+import {JsonFilterType} from "../annotations/JsonFilter";
+
+/**
+ * https://stackoverflow.com/a/55032655/4637638
+ */
+export type Modify<T, R> = Omit<T, keyof R> & R;
+// before typescript@3.5
+// type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
 
 export type ClassType<T> = (new () => T) | (new (...args: any[]) => T) |
 ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
@@ -21,6 +29,11 @@ export interface ClassList<T> extends Array<any> {
   0: T;
 }
 
+export interface JsonStringifierFilterOptions {
+  type: JsonFilterType;
+  values?: string[];
+}
+
 export interface JsonStringifierOptions {
   withView?: (...args) => ClassType<any>;
   format?: string;
@@ -28,6 +41,9 @@ export interface JsonStringifierOptions {
     [key: number]: boolean;
   };
   serializers?: ObjectMapperSerializer[];
+  filters?: {
+    [key: string]: JsonStringifierFilterOptions;
+  };
 }
 
 export interface JsonParserOptions {
@@ -37,6 +53,7 @@ export interface JsonParserOptions {
     [key: number]: boolean;
   };
   deserializers?: ObjectMapperDeserializer[];
+  injectableValues?: {};
 }
 
 export type Serializer = (key: string, value: any) => any;
@@ -220,4 +237,21 @@ export interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
   uuidv4?: UUIDv4GeneratorOptions;
   uuidv3?: UUIDv3GeneratorOptions;
   uuidv1?: UUIDv1GeneratorOptions;
+}
+
+export interface JsonStringifierTransformerOptions extends JsonStringifierOptions {
+  mainCreator: ClassList<ClassType<any>>;
+}
+
+export type JsonParserTransformerOptions = Modify<JsonParserOptions, {
+  mainCreator: ClassList<ClassType<any>>;
+}>;
+
+export interface JsonInjectOptions extends JsonAnnotationOptions {
+  value?: string;
+  useInput?: boolean;
+}
+
+export interface JsonFilterOptions extends JsonAnnotationOptions {
+  name: string;
 }
