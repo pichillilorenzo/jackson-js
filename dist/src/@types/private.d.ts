@@ -1,4 +1,4 @@
-import { JsonAnyGetterOptions, JsonAnySetterOptions, JsonBackReferenceOptions, JsonCreatorOptions, JsonManagedReferenceOptions } from './index';
+import { JsonAnyGetterOptions, JsonAnySetterOptions, JsonBackReferenceOptions, JsonCreatorOptions, JsonManagedReferenceOptions, JsonTypeNameOptions, JsonValueOptions } from './index';
 export interface JsonAnyGetterPrivateOptions extends JsonAnyGetterOptions {
     propertyKey: string;
 }
@@ -12,6 +12,12 @@ export interface JsonManagedReferencePrivateOptions extends JsonManagedReference
     propertyKey: string;
 }
 export interface JsonCreatorPrivateOptions extends JsonCreatorOptions {
-    constructor?: Record<string, any> | ObjectConstructor;
+    ctor?: Record<string, any> | ObjectConstructor;
     method?: Function;
+}
+export interface JsonValuePrivateOptions extends JsonValueOptions {
+    propertyKey: string;
+}
+export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
+    ctor?: Record<string, any> | ObjectConstructor;
 }

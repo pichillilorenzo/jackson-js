@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonInjectOptions } from '../@types';
-export declare type JsonInjectDecorator = (options?: JsonInjectOptions) => any;
+import { JsonInjectDecorator } from '../@types';
 export declare const JsonInject: JsonInjectDecorator;

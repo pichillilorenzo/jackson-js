@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonUnwrappedOptions } from '../@types';
-export declare type JsonUnwrappedDecorator = (options?: JsonUnwrappedOptions) => any;
+import { JsonUnwrappedDecorator } from '../@types';
 export declare const JsonUnwrapped: JsonUnwrappedDecorator;

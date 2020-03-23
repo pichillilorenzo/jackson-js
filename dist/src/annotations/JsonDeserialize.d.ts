@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonDeserializeOptions } from '../@types';
-export declare type JsonDeserializeDecorator = (options: JsonDeserializeOptions) => any;
+import { JsonDeserializeDecorator } from '../@types';
 export declare const JsonDeserialize: JsonDeserializeDecorator;

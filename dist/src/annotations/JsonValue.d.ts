@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonValueOptions } from '../@types';
-export declare type JsonValueDecorator = (options?: JsonValueOptions) => any;
+import { JsonValueDecorator } from '../@types';
 export declare const JsonValue: JsonValueDecorator;

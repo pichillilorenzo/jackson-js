@@ -11,30 +11,18 @@
   "types": "./dist/index.d.ts",
   "dependencies": {
     "@babel/parser": "^7.8.7",
-    "@babel/runtime": "^7.8.7",
     "@types/node": "^13.9.0",
     "dayjs": "^1.8.21",
     "reflect-metadata": "^0.1.13",
     "uuid": "^7.0.2"
   },
   "devDependencies": {
-    "@ava/babel": "^1.0.1",
     "@ava/typescript": "^1.1.1",
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.7",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-decorators": "^7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
-    "@babel/plugin-syntax-bigint": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.8.3",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-typescript": "^7.8.3",
-    "@babel/types": "^7.8.7",
     "@typescript-eslint/eslint-plugin": "^2.23.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.23.0",
     "@typescript-eslint/parser": "^2.23.0",
     "ava": "^3.5.0",
-    "babel-loader": "^8.0.6",
+    "@babel/types": "^7.8.7",
     "codelyzer": "^5.1.2",
     "eslint": "^6.8.0",
     "eslint-loader": "^3.0.3",
@@ -49,9 +37,6 @@
     "webpack-cli": "^3.3.11"
   },
   "ava": {
-    "babel": {
-      "compileEnhancements": false
-    },
     "extensions": [
       "ts"
     ],

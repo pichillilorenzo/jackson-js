@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonSubTypesOptions } from '../@types';
-export declare type JsonSubTypesDecorator = (options: JsonSubTypesOptions) => any;
+import { JsonSubTypesDecorator } from '../@types';
 export declare const JsonSubTypes: JsonSubTypesDecorator;

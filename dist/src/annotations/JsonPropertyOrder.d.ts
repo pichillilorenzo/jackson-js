@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonPropertyOrderOptions } from '../@types';
-export declare type JsonPropertyOrderDecorator = (options?: JsonPropertyOrderOptions) => any;
+import { JsonPropertyOrderDecorator } from '../@types';
 export declare const JsonPropertyOrder: JsonPropertyOrderDecorator;

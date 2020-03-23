@@ -44,4 +44,5 @@ export declare class JsonParser<T> {
     private parseIterable;
     private parseMap;
     private generateScopedId;
+    private parseJsonNaming;
 }

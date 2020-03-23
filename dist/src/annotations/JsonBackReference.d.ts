@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonBackReferenceOptions } from '../@types';
-export declare type JsonBackReferenceDecorator = (options?: JsonBackReferenceOptions) => any;
+import { JsonBackReferenceDecorator } from '../@types';
 export declare const JsonBackReference: JsonBackReferenceDecorator;

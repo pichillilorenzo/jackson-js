@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonRootNameOptions } from '../@types';
-export declare type JsonRootNameDecorator = (options?: JsonRootNameOptions) => any;
+import { JsonRootNameDecorator } from '../@types';
 export declare const JsonRootName: JsonRootNameDecorator;

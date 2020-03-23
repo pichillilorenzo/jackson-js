@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonAliasOptions } from '../@types';
-export declare type JsonAliasDecorator = (options: JsonAliasOptions) => any;
+import { JsonAliasDecorator } from '../@types';
 export declare const JsonAlias: JsonAliasDecorator;

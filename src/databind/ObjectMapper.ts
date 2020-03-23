@@ -57,6 +57,8 @@ export class ObjectMapper {
     return jsonStringifier.stringify(obj, {
       serializers: this.serializers,
       features: this.features.serialization,
+      filters: {},
+      attributes: {},
       ...options
     });
   }
@@ -73,6 +75,7 @@ export class ObjectMapper {
     return jsonParser.parse(text, {
       deserializers: this.deserializers,
       features: this.features.deserialization,
+      injectableValues: {},
       ...options
     });
   }

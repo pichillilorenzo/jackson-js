@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { JsonIdentityInfoOptions } from '../@types';
+import { JsonIdentityInfoDecorator } from '../@types';
 export declare enum ObjectIdGenerator {
     IntSequenceGenerator = 0,
     None = 1,
@@ -9,5 +9,4 @@ export declare enum ObjectIdGenerator {
     UUIDv3Generator = 5,
     UUIDv1Generator = 6
 }
-export declare type JsonIdentityInfoDecorator = (options: JsonIdentityInfoOptions) => any;
 export declare const JsonIdentityInfo: JsonIdentityInfoDecorator;

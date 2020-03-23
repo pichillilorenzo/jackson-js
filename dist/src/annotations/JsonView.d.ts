@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonViewOptions } from '../@types';
-export declare type JsonViewDecorator = (options?: JsonViewOptions) => any;
+import { JsonViewDecorator } from '../@types';
 export declare const JsonView: JsonViewDecorator;

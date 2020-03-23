@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonRawValueOptions } from '../@types';
-export declare type JsonRawValueDecorator = (options?: JsonRawValueOptions) => any;
+import { JsonRawValueDecorator } from '../@types';
 export declare const JsonRawValue: JsonRawValueDecorator;

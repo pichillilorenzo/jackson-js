@@ -1,10 +1,8 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonManagedReferenceOptions} from '../@types';
+import {JsonManagedReferenceDecorator, JsonManagedReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonManagedReferencePrivateOptions} from '../@types/private';
-
-export type JsonManagedReferenceDecorator = (options?: JsonManagedReferenceOptions) => any;
 
 export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDecorator(
   (o: JsonManagedReferenceOptions = {}): JsonManagedReferenceOptions => ({

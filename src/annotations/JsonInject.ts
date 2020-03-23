@@ -1,8 +1,6 @@
 import {getArgumentNames, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonInjectOptions} from '../@types';
-
-export type JsonInjectDecorator = (options?: JsonInjectOptions) => any;
+import {JsonInjectDecorator, JsonInjectOptions} from '../@types';
 
 export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
   (o: JsonInjectOptions = {}): JsonInjectOptions => ({
@@ -17,7 +15,7 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
 
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       if (!options.value) {
-        const argNames = getArgumentNames(target, !!target.constructor);
+        const argNames = getArgumentNames(target);
         options.value = argNames[descriptorOrParamIndex];
       }
       Reflect.defineMetadata('jackson:JsonInjectParam:' + descriptorOrParamIndex.toString(), options, target);

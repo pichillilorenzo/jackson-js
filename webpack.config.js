@@ -1,51 +1,14 @@
 const webpack = require('webpack');
 const path = require('path');
 
-const babelOptions = {
-  presets: ['@babel/typescript'],
-  plugins: [
-    ['@babel/plugin-transform-runtime'],
-    ['@babel/plugin-syntax-bigint'],
-    [
-      '@babel/plugin-proposal-decorators',
-      {
-        legacy: true
-      }
-    ],
-    [
-      '@babel/plugin-proposal-class-properties',
-      {
-        loose: true
-      }
-    ]
-  ]
-};
-
 const defaultConfig = {
   watch: true,
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: [/(node_modules|bower_components)/, /tests/],
-        use: [
-          {
-            loader: 'babel-loader',
-            options: babelOptions
-          },
-          {
-            loader: 'eslint-loader'
-          }
-        ]
-      },
-      {
         test: /\.ts(x?)$/,
         exclude: [/node_modules/, /tests/],
         use: [
-          {
-            loader: 'babel-loader',
-            options: babelOptions
-          },
           {
             loader: 'ts-loader',
             options: {

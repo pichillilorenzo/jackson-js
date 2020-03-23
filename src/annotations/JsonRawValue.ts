@@ -1,8 +1,6 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonRawValueOptions} from '../@types';
-
-export type JsonRawValueDecorator = (options?: JsonRawValueOptions) => any;
+import {JsonRawValueDecorator, JsonRawValueOptions} from '../@types';
 
 export const JsonRawValue: JsonRawValueDecorator = makeJacksonDecorator(
   (o: JsonRawValueOptions): JsonRawValueOptions => ({enabled: true, ...o}),

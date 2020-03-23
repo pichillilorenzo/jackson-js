@@ -1,5 +1,14 @@
 import test from 'ava';
-import {ObjectMapper, JacksonError, JsonBackReference, JsonClass, JsonIdentityInfo, JsonManagedReference, ObjectIdGenerator} from '../src';
+import {
+  ObjectMapper,
+  JacksonError,
+  JsonBackReference,
+  JsonClass,
+  JsonIdentityInfo,
+  JsonManagedReference,
+  ObjectIdGenerator,
+  JsonIdentityReference
+} from '../src';
 
 test('Fail Infinite recursion', t => {
   class User {
@@ -266,4 +275,54 @@ test('@JsonIdentityInfo Many To Many', t => {
   t.assert(userParsed.items[0] instanceof Item);
   t.assert(userParsed.items[0].owners.includes(userParsed));
   t.assert(userParsed.items[0].owners.find((owner) => owner.id === user2.id));
+});
+
+test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
+  class User {
+    id: number;
+    email: string;
+    firstname: string;
+    lastname: string;
+
+    @JsonClass({class: () => [Array, [Item]]})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
+  @JsonIdentityReference({alwaysAsId: true})
+  class Item {
+    id: number;
+    name: string;
+
+    @JsonClass({class: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, owner: User) {
+      this.id = id;
+      this.name = name;
+      this.owner = owner;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const item1 = new Item(2, 'Book', user);
+  const item2 = new Item(3, 'Computer', user);
+  user.items.push(...[item1, item2]);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.assert(jsonData.includes('john.alfa@gmail.com'));
+  t.assert(!jsonData.includes('Book'));
+  t.assert(!jsonData.includes('Computer'));
+  t.assert(jsonData.includes('2'));
+  t.assert(jsonData.includes('3'));
 });

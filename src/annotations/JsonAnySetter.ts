@@ -1,10 +1,8 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonAnySetterOptions} from '../@types';
+import {JsonAnySetterDecorator, JsonAnySetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonAnySetterPrivateOptions} from '../@types/private';
-
-export type JsonAnySetterDecorator = (options?: JsonAnySetterOptions) => any;
 
 export const JsonAnySetter: JsonAnySetterDecorator = makeJacksonDecorator(
   (o: JsonAnySetterOptions): JsonAnySetterOptions => ({enabled: true, ...o}),

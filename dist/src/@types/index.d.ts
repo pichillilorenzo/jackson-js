@@ -4,7 +4,8 @@ import { JsonIncludeType } from '../annotations/JsonInclude';
 import { JsonFormatShape } from '../annotations/JsonFormat';
 import { JsonPropertyAccess } from '../annotations/JsonProperty';
 import { ObjectIdGenerator } from '../annotations/JsonIdentityInfo';
-import { JsonFilterType } from "../annotations/JsonFilter";
+import { JsonFilterType } from '../annotations/JsonFilter';
+import { JsonNamingStrategy } from '../annotations/JsonNaming';
 /**
  * https://stackoverflow.com/a/55032655/4637638
  */
@@ -20,12 +21,45 @@ export interface ClassList<T> extends Array<any> {
     [index: number]: T | ClassList<T>;
     0: T;
 }
+export declare type JacksonDecoratorWithOptions<T extends JsonAnnotationOptions> = (options: T) => any;
+export declare type JacksonDecoratorWithOptionalOptions<T extends JsonAnnotationOptions> = (options?: T) => any;
+export declare type JacksonDecorator<T extends JsonAnnotationOptions> = JacksonDecoratorWithOptions<T> | JacksonDecoratorWithOptionalOptions<T>;
+export declare type JsonAliasDecorator = JacksonDecoratorWithOptions<JsonAliasOptions>;
+export declare type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppendOptions>;
+export declare type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions>;
+export declare type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions>;
+export declare type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions>;
+export declare type JsonIdentityInfoDecorator = JacksonDecoratorWithOptions<JsonIdentityInfoOptions>;
+export declare type JsonIdentityReferenceDecorator = JacksonDecoratorWithOptions<JsonIdentityReferenceOptions>;
+export declare type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions>;
+export declare type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions>;
+export declare type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions>;
+export declare type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions>;
+export declare type JsonAnyGetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnyGetterOptions>;
+export declare type JsonAnySetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnySetterOptions>;
+export declare type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonBackReferenceOptions>;
+export declare type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreatorOptions>;
+export declare type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions>;
+export declare type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions>;
+export declare type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnorePropertiesOptions>;
+export declare type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreTypeOptions>;
+export declare type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions>;
+export declare type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions>;
+export declare type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions>;
+export declare type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions>;
+export declare type JsonPropertyOrderDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOrderOptions>;
+export declare type JsonRawValueDecorator = JacksonDecoratorWithOptionalOptions<JsonRawValueOptions>;
+export declare type JsonRootNameDecorator = JacksonDecoratorWithOptionalOptions<JsonRootNameOptions>;
+export declare type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeNameOptions>;
+export declare type JsonUnwrappedDecorator = JacksonDecoratorWithOptionalOptions<JsonUnwrappedOptions>;
+export declare type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOptions>;
+export declare type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions>;
 export interface JsonStringifierFilterOptions {
     type: JsonFilterType;
-    values: string[];
+    values?: string[];
 }
 export interface JsonStringifierOptions {
-    withView?: (...args: any[]) => ClassType<any>;
+    withViews?: (...args: any[]) => ClassType<any>[];
     format?: string;
     features?: {
         [key: number]: boolean;
@@ -34,15 +68,31 @@ export interface JsonStringifierOptions {
     filters?: {
         [key: string]: JsonStringifierFilterOptions;
     };
+    attributes?: {
+        [key: string]: any;
+    };
+    annotationsEnabled?: {
+        [key: string]: boolean;
+    };
+    forType?: WeakMap<ClassType<any>, JsonStringifierOptions>;
 }
-export interface JsonParserOptions {
-    mainCreator?: (...args: any[]) => ClassList<ClassType<any>>;
-    withView?: (...args: any[]) => ClassType<any>;
+export interface JsonParserBaseWithoutMainCreatorOptions {
+    withViews?: (...args: any[]) => ClassType<any>[];
+    withCreatorName?: string;
     features?: {
         [key: number]: boolean;
     };
     deserializers?: ObjectMapperDeserializer[];
-    injectableValues?: {};
+    injectableValues?: {
+        [key: string]: any;
+    };
+    annotationsEnabled?: {
+        [key: string]: boolean;
+    };
+    forType?: WeakMap<ClassType<any>, JsonParserBaseWithoutMainCreatorOptions>;
+}
+export interface JsonParserOptions extends JsonParserBaseWithoutMainCreatorOptions {
+    mainCreator?: (...args: any[]) => ClassList<ClassType<any>>;
 }
 export declare type Serializer = (key: string, value: any) => any;
 export declare type Deserializer = (key: string, value: any) => any;
@@ -73,17 +123,46 @@ export interface JsonBackReferenceOptions extends JsonAnnotationOptions {
     value?: string;
 }
 export interface JsonCreatorOptions extends JsonAnnotationOptions {
-    properties?: {};
+    name?: string;
 }
 export interface JsonDeserializeOptions extends JsonAnnotationOptions {
     using: (...args: any[]) => any;
 }
-export interface JsonFormatOptions extends JsonAnnotationOptions {
+export interface JsonFormatBaseOptions extends JsonAnnotationOptions {
     shape?: JsonFormatShape;
+}
+export interface JsonFormatAny extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.ANY;
+}
+export interface JsonFormatArray extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.ARRAY;
+}
+export interface JsonFormatBoolean extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.BOOLEAN;
+}
+export interface JsonFormatNumberFloat extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.NUMBER_FLOAT;
+}
+export interface JsonFormatNumberInt extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.NUMBER_INT;
+}
+export interface JsonFormatObject extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.OBJECT;
+}
+export interface JsonFormatScalar extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.SCALAR;
+}
+export interface JsonFormatString extends JsonFormatBaseOptions {
+    shape: JsonFormatShape.STRING;
     pattern?: string;
     locale?: string;
-    timezone?: string | Intl.DateTimeFormatOptions;
+    timezone?: string;
+    radix?: number;
+    toExponential?: number;
+    toFixed?: number;
+    toPrecision?: number;
 }
+export declare type JsonFormatOptions = JsonFormatAny | JsonFormatArray | JsonFormatBoolean | JsonFormatNumberFloat | JsonFormatNumberInt | JsonFormatObject | JsonFormatScalar | JsonFormatString;
 export declare type JsonIgnoreOptions = JsonAnnotationOptions;
 export interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
     value?: string[];
@@ -186,6 +265,9 @@ export interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
     uuidv3?: UUIDv3GeneratorOptions;
     uuidv1?: UUIDv1GeneratorOptions;
 }
+export interface JsonIdentityReferenceOptions extends JsonAnnotationOptions {
+    alwaysAsId: boolean;
+}
 export interface JsonStringifierTransformerOptions extends JsonStringifierOptions {
     mainCreator: ClassList<ClassType<any>>;
 }
@@ -198,4 +280,17 @@ export interface JsonInjectOptions extends JsonAnnotationOptions {
 }
 export interface JsonFilterOptions extends JsonAnnotationOptions {
     name: string;
+}
+export interface JsonAppendOptionsAttribute {
+    value: string;
+    propName?: string;
+    required?: boolean;
+    include?: JsonIncludeType;
+}
+export interface JsonAppendOptions extends JsonAnnotationOptions {
+    prepend?: boolean;
+    attrs?: JsonAppendOptionsAttribute[];
+}
+export interface JsonNamingOptions extends JsonAnnotationOptions {
+    strategy: JsonNamingStrategy;
 }

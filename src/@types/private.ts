@@ -3,7 +3,7 @@ import {
   JsonAnySetterOptions,
   JsonBackReferenceOptions,
   JsonCreatorOptions,
-  JsonManagedReferenceOptions
+  JsonManagedReferenceOptions, JsonTypeNameOptions, JsonValueOptions
 } from './index';
 
 export interface JsonAnyGetterPrivateOptions extends JsonAnyGetterOptions {
@@ -23,6 +23,14 @@ export interface JsonManagedReferencePrivateOptions extends JsonManagedReference
 }
 
 export interface JsonCreatorPrivateOptions extends JsonCreatorOptions {
-  constructor?: Record<string, any> | ObjectConstructor;
+  ctor?: Record<string, any> | ObjectConstructor;
   method?: Function;
+}
+
+export interface JsonValuePrivateOptions extends JsonValueOptions {
+  propertyKey: string;
+}
+
+export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
+  ctor?: Record<string, any> | ObjectConstructor;
 }

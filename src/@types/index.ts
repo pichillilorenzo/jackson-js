@@ -3,7 +3,8 @@ import {JsonIncludeType} from '../annotations/JsonInclude';
 import {JsonFormatShape} from '../annotations/JsonFormat';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {ObjectIdGenerator} from '../annotations/JsonIdentityInfo';
-import {JsonFilterType} from "../annotations/JsonFilter";
+import {JsonFilterType} from '../annotations/JsonFilter';
+import {JsonNamingStrategy} from '../annotations/JsonNaming';
 
 /**
  * https://stackoverflow.com/a/55032655/4637638
@@ -29,13 +30,51 @@ export interface ClassList<T> extends Array<any> {
   0: T;
 }
 
+export type JacksonDecoratorWithOptions<T extends JsonAnnotationOptions> = (options: T) => any;
+export type JacksonDecoratorWithOptionalOptions<T extends JsonAnnotationOptions> = (options?: T) => any;
+export type JacksonDecorator<T extends JsonAnnotationOptions> = JacksonDecoratorWithOptions<T> | JacksonDecoratorWithOptionalOptions<T>;
+
+// with options
+export type JsonAliasDecorator = JacksonDecoratorWithOptions<JsonAliasOptions>;
+export type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppendOptions>;
+export type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions>;
+export type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions>;
+export type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions>;
+export type JsonIdentityInfoDecorator = JacksonDecoratorWithOptions<JsonIdentityInfoOptions>;
+export type JsonIdentityReferenceDecorator = JacksonDecoratorWithOptions<JsonIdentityReferenceOptions>;
+export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions>;
+export type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions>;
+export type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions>;
+export type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions>;
+
+// with optional options
+export type JsonAnyGetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnyGetterOptions>;
+export type JsonAnySetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnySetterOptions>;
+export type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonBackReferenceOptions>;
+export type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreatorOptions>;
+export type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions>;
+export type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions>;
+export type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnorePropertiesOptions>;
+export type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreTypeOptions>;
+export type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions>;
+export type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions>;
+export type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions>;
+export type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions>;
+export type JsonPropertyOrderDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOrderOptions>;
+export type JsonRawValueDecorator = JacksonDecoratorWithOptionalOptions<JsonRawValueOptions>;
+export type JsonRootNameDecorator = JacksonDecoratorWithOptionalOptions<JsonRootNameOptions>;
+export type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeNameOptions>;
+export type JsonUnwrappedDecorator = JacksonDecoratorWithOptionalOptions<JsonUnwrappedOptions>;
+export type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOptions>;
+export type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions>;
+
 export interface JsonStringifierFilterOptions {
   type: JsonFilterType;
   values?: string[];
 }
 
 export interface JsonStringifierOptions {
-  withView?: (...args) => ClassType<any>;
+  withViews?: (...args) => ClassType<any>[];
   format?: string;
   features?: {
     [key: number]: boolean;
@@ -44,16 +83,33 @@ export interface JsonStringifierOptions {
   filters?: {
     [key: string]: JsonStringifierFilterOptions;
   };
+  attributes?: {
+    [key: string]: any;
+  };
+  annotationsEnabled?: {
+    [key: string]: boolean;
+  };
+  forType?: WeakMap<ClassType<any>, JsonStringifierOptions>;
 }
 
-export interface JsonParserOptions {
-  mainCreator?: (...args) => ClassList<ClassType<any>>;
-  withView?: (...args) => ClassType<any>;
+export interface JsonParserBaseWithoutMainCreatorOptions {
+  withViews?: (...args) => ClassType<any>[];
+  withCreatorName?: string;
   features?: {
     [key: number]: boolean;
   };
   deserializers?: ObjectMapperDeserializer[];
-  injectableValues?: {};
+  injectableValues?: {
+    [key: string]: any;
+  };
+  annotationsEnabled?: {
+    [key: string]: boolean;
+  };
+  forType?: WeakMap<ClassType<any>, JsonParserBaseWithoutMainCreatorOptions>;
+}
+
+export interface JsonParserOptions extends JsonParserBaseWithoutMainCreatorOptions {
+  mainCreator?: (...args) => ClassList<ClassType<any>>;
 }
 
 export type Serializer = (key: string, value: any) => any;
@@ -99,19 +155,60 @@ export interface JsonBackReferenceOptions extends JsonAnnotationOptions {
 }
 
 export interface JsonCreatorOptions extends JsonAnnotationOptions {
-  properties?: {};
+  name?: string;
 }
 
 export interface JsonDeserializeOptions extends JsonAnnotationOptions {
   using: (...args) => any;
 }
 
-export interface JsonFormatOptions extends JsonAnnotationOptions {
+export interface JsonFormatBaseOptions extends JsonAnnotationOptions {
   shape?: JsonFormatShape;
+}
+
+export interface JsonFormatAny extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.ANY;
+}
+
+export interface JsonFormatArray extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.ARRAY;
+}
+
+export interface JsonFormatBoolean extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.BOOLEAN;
+}
+
+export interface JsonFormatNumberFloat extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.NUMBER_FLOAT;
+}
+
+export interface JsonFormatNumberInt extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.NUMBER_INT;
+}
+
+export interface JsonFormatObject extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.OBJECT;
+}
+
+export interface JsonFormatScalar extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.SCALAR;
+}
+
+export interface JsonFormatString extends JsonFormatBaseOptions {
+  shape: JsonFormatShape.STRING;
+  // for Date
   pattern?: string;
   locale?: string;
-  timezone?: string | Intl.DateTimeFormatOptions;
+  timezone?: string;
+  // for Number
+  radix?: number;
+  toExponential?: number;
+  toFixed?: number;
+  toPrecision?: number;
 }
+
+export type JsonFormatOptions = JsonFormatAny | JsonFormatArray | JsonFormatBoolean | JsonFormatNumberFloat |
+JsonFormatNumberInt | JsonFormatObject | JsonFormatScalar | JsonFormatString;
 
 export type JsonIgnoreOptions = JsonAnnotationOptions;
 
@@ -239,6 +336,10 @@ export interface JsonIdentityInfoOptions extends JsonAnnotationOptions {
   uuidv1?: UUIDv1GeneratorOptions;
 }
 
+export interface JsonIdentityReferenceOptions extends JsonAnnotationOptions {
+  alwaysAsId: boolean;
+}
+
 export interface JsonStringifierTransformerOptions extends JsonStringifierOptions {
   mainCreator: ClassList<ClassType<any>>;
 }
@@ -254,4 +355,19 @@ export interface JsonInjectOptions extends JsonAnnotationOptions {
 
 export interface JsonFilterOptions extends JsonAnnotationOptions {
   name: string;
+}
+export interface JsonAppendOptionsAttribute {
+  value: string;
+  propName?: string;
+  required?: boolean;
+  include?: JsonIncludeType;
+}
+
+export interface JsonAppendOptions extends JsonAnnotationOptions {
+  prepend?: boolean;
+  attrs?: JsonAppendOptionsAttribute[];
+}
+
+export interface JsonNamingOptions extends JsonAnnotationOptions {
+  strategy: JsonNamingStrategy;
 }

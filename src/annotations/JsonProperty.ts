@@ -1,6 +1,6 @@
 import {getArgumentNames, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonPropertyOptions} from '../@types';
+import {JsonPropertyDecorator, JsonPropertyOptions} from '../@types';
 
 export enum JsonPropertyAccess {
   WRITE_ONLY,
@@ -8,8 +8,6 @@ export enum JsonPropertyAccess {
   READ_WRITE,
   AUTO
 }
-
-export type JsonPropertyDecorator = (options?: JsonPropertyOptions) => any;
 
 export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
   (o: JsonPropertyOptions = {}): JsonPropertyOptions => ({
@@ -26,7 +24,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
 
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       if (!options.value && !options.defaultValue) {
-        const argNames = getArgumentNames(target, !!target.constructor);
+        const argNames = getArgumentNames(target);
         options.defaultValue = argNames[descriptorOrParamIndex];
       }
       options.value = (options.value) ? options.value : options.defaultValue;

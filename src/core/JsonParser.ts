@@ -1,21 +1,22 @@
 import {
-  getArgumentNames, isClassIterable,
+  getArgumentNames, getClassProperties, getMetadata, hasMetadata, isClassIterable,
   isClassIterableNoMapNoString, isFloat,
   isIterableNoMapNoString,
   isSameConstructor, isSameConstructorOrExtensionOf,
   isSameConstructorOrExtensionOfNoObject
 } from '../util';
 import {
+  ClassList,
   ClassType,
-  JsonAliasOptions,
+  JsonAliasOptions, JsonAppendOptions,
   JsonClassOptions, JsonDeserializeOptions,
   JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions, JsonInjectOptions,
-  JsonManagedReferenceOptions,
+  JsonManagedReferenceOptions, JsonNamingOptions,
   JsonParserOptions, JsonParserTransformerOptions,
-  JsonPropertyOptions,
-  JsonSubTypeOptions,
-  JsonTypeInfoOptions,
+  JsonPropertyOptions, JsonRootNameOptions,
+  JsonSubTypeOptions, JsonSubTypesOptions,
+  JsonTypeInfoOptions, JsonTypeNameOptions,
   JsonUnwrappedOptions,
   JsonViewOptions
 } from '../@types';
@@ -26,8 +27,10 @@ import {JacksonError} from './JacksonError';
 import {
   JsonAnySetterPrivateOptions,
   JsonBackReferencePrivateOptions,
-  JsonCreatorPrivateOptions
+  JsonCreatorPrivateOptions, JsonTypeNamePrivateOptions
 } from '../@types/private';
+import {JsonNamingStrategy} from '../annotations/JsonNaming';
+import {defaultCreatorName} from '../annotations/JsonCreator';
 
 /**
  *
@@ -65,6 +68,21 @@ export class JsonParser<T> {
    * @param options
    */
   transform(key: string, value: any, options: JsonParserTransformerOptions): any {
+
+    options = {
+      features: [],
+      deserializers: [],
+      injectableValues: {},
+      ...options
+    };
+
+    if (options.forType && options.forType.has(options.mainCreator[0])) {
+      options = {
+        mainCreator: options.mainCreator,
+        ...options,
+        ...options.forType.get(options.mainCreator[0])
+      };
+    }
 
     if ( (value instanceof Array && value.length === 0 && options.features[DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT]) ||
       (typeof value === 'string' && value.length === 0 && options.features[DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT]) ) {
@@ -108,6 +126,8 @@ export class JsonParser<T> {
           return null;
         }
 
+        this.parseJsonNaming(value, options);
+
         let replacement = value;
         replacement = this.parseJsonRootName(replacement, options);
 
@@ -142,7 +162,7 @@ export class JsonParser<T> {
 
   private convertParserOptionsToTransformerOptions(options: JsonParserOptions): JsonParserTransformerOptions {
     const newOptions: JsonParserTransformerOptions = {
-      mainCreator: options.mainCreator ? options.mainCreator() : null
+      mainCreator: options.mainCreator ? options.mainCreator() : [Object]
     };
     for (const key in options) {
       if (key !== 'mainCreator') {
@@ -173,7 +193,8 @@ export class JsonParser<T> {
 
   private getInstanceAlreadySeen(key: string, value: any, options: JsonParserTransformerOptions): null | any {
     const currentMainCreator = options.mainCreator[0];
-    const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', currentMainCreator);
+    const jsonIdentityInfo: JsonIdentityInfoOptions =
+      getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, options.annotationsEnabled);
 
     if (jsonIdentityInfo) {
       const id: string = typeof value === 'object' ? value[jsonIdentityInfo.property] : value;
@@ -196,34 +217,45 @@ export class JsonParser<T> {
     if (obj) {
 
       const currentMainCreator = options.mainCreator[0];
+      const withCreatorName = options.withCreatorName;
 
-      const hasJsonCreator = Reflect.hasMetadata('jackson:JsonCreator', currentMainCreator);
+      const jsonCreatorMetadataKey = 'jackson:JsonCreator:' + ((withCreatorName) ? withCreatorName : defaultCreatorName);
 
-      const jsonCreator: JsonCreatorPrivateOptions = (hasJsonCreator) ?
-        Reflect.getMetadata('jackson:JsonCreator', currentMainCreator) :
+      const hasJsonCreator =
+        hasMetadata(jsonCreatorMetadataKey, currentMainCreator, null, options.annotationsEnabled);
+
+      const jsonCreator: JsonCreatorPrivateOptions | ClassType<any> = (hasJsonCreator) ?
+        getMetadata(jsonCreatorMetadataKey, currentMainCreator, null, options.annotationsEnabled) :
         currentMainCreator;
 
       const jsonIgnorePropertiesOptions: JsonIgnorePropertiesOptions =
-        Reflect.getMetadata('jackson:JsonIgnoreProperties', currentMainCreator);
+        getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, options.annotationsEnabled);
 
-      const method = (hasJsonCreator) ? ((jsonCreator.constructor) ? jsonCreator.constructor : jsonCreator.method) : jsonCreator;
+      const method = (hasJsonCreator) ?
+        (((jsonCreator as JsonCreatorPrivateOptions).ctor) ?
+          (jsonCreator as JsonCreatorPrivateOptions).ctor :
+          (jsonCreator as JsonCreatorPrivateOptions).method)
+        : jsonCreator;
 
       const args = [];
-      const argNames = getArgumentNames(method, !!jsonCreator.constructor);
+      const argNames = getArgumentNames(method);
 
       let argIndex = 0;
       const argNamesAliasToBeExcluded = [];
 
       for (const key of argNames) {
-        const jsonInject: JsonInjectOptions = Reflect.getMetadata('jackson:JsonInjectParam:' + argIndex, currentMainCreator);
+        const jsonInject: JsonInjectOptions =
+          getMetadata('jackson:JsonInjectParam:' + argIndex, currentMainCreator, null, options.annotationsEnabled);
 
         if (!jsonInject || (jsonInject && jsonInject.useInput)) {
 
-          const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator);
+          const jsonProperty: JsonPropertyOptions =
+            getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator, null, options.annotationsEnabled);
           let mappedKey: string = jsonProperty != null ? jsonProperty.value : null;
           if (!mappedKey) {
-            const jsonAlias: JsonAliasOptions = Reflect.getMetadata('jackson:JsonAliasParam:' + argIndex, currentMainCreator);
-            if (jsonAlias) {
+            const jsonAlias: JsonAliasOptions =
+              getMetadata('jackson:JsonAliasParam:' + argIndex, currentMainCreator, null, options.annotationsEnabled);
+            if (jsonAlias && jsonAlias.values) {
               mappedKey = jsonAlias.values.find((alias) => Object.hasOwnProperty.call(obj, alias));
             }
           }
@@ -247,20 +279,38 @@ export class JsonParser<T> {
         argIndex++;
       }
 
-      const instance = (jsonCreator.constructor) ? new (method as ObjectConstructor)(...args) : (method as Function)(...args);
+      const instance = ('method' in jsonCreator && jsonCreator.method) ?
+        (method as Function)(...args) : new (method as ObjectConstructor)(...args);
 
-      const hasJsonAnySetter = Reflect.hasMetadata('jackson:JsonAnySetter', instance);
+      const hasJsonAnySetter =
+        hasMetadata('jackson:JsonAnySetter', instance, null, options.annotationsEnabled);
 
       this.parseJsonIdentityInfo(instance, obj, options);
 
+      const jsonAppendAttributesToBeExcluded = [];
+      const jsonAppend: JsonAppendOptions =
+        getMetadata('jackson:JsonAppend', instance.constructor, null, options.annotationsEnabled);
+      if (jsonAppend && jsonAppend.attrs && jsonAppend.attrs.length > 0) {
+        for (const attr of jsonAppend.attrs) {
+          if (attr.value) {
+            jsonAppendAttributesToBeExcluded.push(attr.value);
+          }
+          if (attr.propName) {
+            jsonAppendAttributesToBeExcluded.push(attr.propName);
+          }
+        }
+      }
+
+      const keysToBeExcluded = [...new Set([...argNames, ...argNamesAliasToBeExcluded, ...jsonAppendAttributesToBeExcluded])];
       // copy remaining properties and ignore the ones that are not part of "instance", except for instances of Object class
-      const keys = Object.keys(obj).filter(n => !argNames.includes(n) && !argNamesAliasToBeExcluded.includes(n));
+      const keys = Object.keys(obj).filter(n => !keysToBeExcluded.includes(n));
+
       for (const key of keys) {
         // on TypeScript, set "useDefineForClassFields" option to true on the tsconfig.json file
         if (Object.hasOwnProperty.call(instance, key) || instance.constructor.name === 'Object') {
           instance[key] = this.parseJsonClass(options, obj, key);
         } else if (hasJsonAnySetter) {
-          this.parseJsonAnySetter(instance, obj, key);
+          this.parseJsonAnySetter(instance, obj, key, options);
         } else if ((jsonIgnorePropertiesOptions == null && options.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
             (jsonIgnorePropertiesOptions != null && !jsonIgnorePropertiesOptions.ignoreUnknown)) {
           // eslint-disable-next-line max-len
@@ -270,7 +320,8 @@ export class JsonParser<T> {
 
       for (const key in instance) {
         if (Object.hasOwnProperty.call(instance, key)) {
-          const jsonInject: JsonInjectOptions = Reflect.getMetadata('jackson:JsonInject', instance, key);
+          const jsonInject: JsonInjectOptions =
+            getMetadata('jackson:JsonInject', instance, key, options.annotationsEnabled);
           if (jsonInject) {
             instance[key] = (!jsonInject.useInput || (jsonInject.useInput && instance[key] == null)) ?
               options.injectableValues[jsonInject.value] : instance[key];
@@ -295,9 +346,12 @@ export class JsonParser<T> {
 
         const realKey = metadataKey.replace(
           metadataKey.startsWith('jackson:JsonProperty:') ? 'jackson:JsonProperty:' : 'jackson:JsonAlias:', '');
-        const jsonProperty: JsonPropertyOptions = Reflect.getMetadata(metadataKey, currentMainCreator);
-        const jsonAlias: JsonAliasOptions = Reflect.getMetadata(metadataKey, currentMainCreator);
-        const hasJsonIgnore = Reflect.hasMetadata('jackson:JsonIgnore', currentMainCreator, realKey);
+        const jsonProperty: JsonPropertyOptions =
+          getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
+        const jsonAlias: JsonAliasOptions =
+          getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
+        const hasJsonIgnore =
+          hasMetadata('jackson:JsonIgnore', currentMainCreator, realKey, options.annotationsEnabled);
 
         const isIgnored = (jsonProperty && (jsonProperty.access === JsonPropertyAccess.READ_ONLY ||
           (jsonProperty.access === JsonPropertyAccess.AUTO && hasJsonIgnore))) || hasJsonIgnore;
@@ -327,22 +381,25 @@ export class JsonParser<T> {
   }
 
   private parseJsonRawValue(options: JsonParserTransformerOptions, replacement: any, key: string): void {
-    const jsonRawValue = Reflect.hasMetadata('jackson:JsonRawValue', options.mainCreator[0], key);
+    const jsonRawValue =
+      hasMetadata('jackson:JsonRawValue', options.mainCreator[0], key, options.annotationsEnabled);
     if (jsonRawValue) {
       replacement[key] = JSON.stringify(replacement[key]);
     }
   }
 
   private parseJsonRootName(replacement: any, options: JsonParserTransformerOptions): any {
-    const jsonRootName: string = Reflect.getMetadata('jackson:JsonRootName', options.mainCreator[0]);
-    if (jsonRootName) {
-      return replacement[jsonRootName];
+    const jsonRootName: JsonRootNameOptions =
+      getMetadata('jackson:JsonRootName', options.mainCreator[0], null, options.annotationsEnabled);
+    if (jsonRootName && jsonRootName.value) {
+      return replacement[jsonRootName.value];
     }
     return replacement;
   }
 
   private parseJsonClass(options: JsonParserTransformerOptions, obj: any, key: string): any {
-    const jsonClass: JsonClassOptions = Reflect.getMetadata('jackson:JsonClass', options.mainCreator[0], key);
+    const jsonClass: JsonClassOptions =
+      getMetadata('jackson:JsonClass', options.mainCreator[0], key, options.annotationsEnabled);
     const newOptions = {...options};
 
     if (jsonClass && jsonClass.class) {
@@ -361,9 +418,9 @@ export class JsonParser<T> {
 
   private parseJsonManagedReference(replacement: any, options: JsonParserTransformerOptions, obj: any, key: string): void {
     const jsonManagedReference: JsonManagedReferenceOptions =
-      Reflect.getMetadata('jackson:JsonManagedReference', replacement.constructor, key);
+      getMetadata('jackson:JsonManagedReference', replacement.constructor, key, options.annotationsEnabled);
     const jsonClassManagedReference: JsonClassOptions =
-      Reflect.getMetadata('jackson:JsonClass', replacement.constructor, key);
+      getMetadata('jackson:JsonClass', replacement.constructor, key, options.annotationsEnabled);
 
     if (jsonManagedReference && jsonClassManagedReference) {
 
@@ -379,7 +436,8 @@ export class JsonParser<T> {
           );
 
         const jsonBackReference: JsonBackReferencePrivateOptions =
-          Reflect.getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value, backReferenceConstructor);
+          getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value,
+            backReferenceConstructor, null, options.annotationsEnabled);
 
         if (jsonBackReference) {
           if (isSameConstructorOrExtensionOfNoObject(childConstructor, Map)) {
@@ -394,7 +452,8 @@ export class JsonParser<T> {
         }
       } else {
         const jsonBackReference: JsonBackReferencePrivateOptions =
-          Reflect.getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value, childConstructor);
+          getMetadata('jackson:JsonBackReference:' + jsonManagedReference.value,
+            childConstructor, null, options.annotationsEnabled);
         if (jsonBackReference) {
           replacement[key][jsonBackReference.propertyKey] = replacement;
         }
@@ -405,8 +464,9 @@ export class JsonParser<T> {
     }
   }
 
-  private parseJsonAnySetter(replacement: any, obj: any, key: string): void {
-    const jsonAnySetter: JsonAnySetterPrivateOptions = Reflect.getMetadata('jackson:JsonAnySetter', replacement);
+  private parseJsonAnySetter(replacement: any, obj: any, key: string, options: JsonParserTransformerOptions): void {
+    const jsonAnySetter: JsonAnySetterPrivateOptions =
+      getMetadata('jackson:JsonAnySetter', replacement, null, options.annotationsEnabled);
     if (jsonAnySetter && replacement[jsonAnySetter.propertyKey]) {
       if (typeof replacement[jsonAnySetter.propertyKey] === 'function') {
         replacement[jsonAnySetter.propertyKey](key, obj[key]);
@@ -417,7 +477,8 @@ export class JsonParser<T> {
   }
 
   private parseJsonDeserialize(options: JsonParserTransformerOptions, replacement: any, key: string): void {
-    const jsonDeserialize: JsonDeserializeOptions = Reflect.getMetadata('jackson:JsonDeserialize', options.mainCreator[0], key);
+    const jsonDeserialize: JsonDeserializeOptions =
+      getMetadata('jackson:JsonDeserialize', options.mainCreator[0], key, options.annotationsEnabled);
     if (jsonDeserialize && jsonDeserialize.using) {
       replacement[key] = jsonDeserialize.using(replacement[key]);
     }
@@ -425,14 +486,18 @@ export class JsonParser<T> {
 
   private parseHasJsonIgnore(options: JsonParserTransformerOptions, key: string): boolean {
     const currentMainCreator = options.mainCreator[0];
-    const hasJsonIgnore = Reflect.hasMetadata('jackson:JsonIgnore', currentMainCreator, key);
-    const hasJsonProperty = Reflect.hasMetadata('jackson:JsonProperty:' + key, currentMainCreator);
+    const hasJsonIgnore =
+      hasMetadata('jackson:JsonIgnore', currentMainCreator, key, options.annotationsEnabled);
+    const hasJsonProperty =
+      hasMetadata('jackson:JsonProperty:' + key, currentMainCreator, null, options.annotationsEnabled);
 
     if (!hasJsonIgnore) {
-      const jsonIgnoreProperties: JsonIgnorePropertiesOptions = Reflect.getMetadata('jackson:JsonIgnoreProperties', currentMainCreator);
+      const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
+        getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, options.annotationsEnabled);
       if (jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters) {
         if (jsonIgnoreProperties.value.includes(key)) {return true; }
-        const jsonProperty: JsonPropertyOptions = Reflect.getMetadata('jackson:JsonProperty:' + key, currentMainCreator);
+        const jsonProperty: JsonPropertyOptions =
+          getMetadata('jackson:JsonProperty:' + key, currentMainCreator, null, options.annotationsEnabled);
         if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {return true; }
       }
     }
@@ -440,12 +505,13 @@ export class JsonParser<T> {
   }
 
   private parseJsonIgnoreType(options: JsonParserTransformerOptions): boolean {
-    return Reflect.hasMetadata('jackson:JsonIgnoreType', options.mainCreator[0]);
+    return hasMetadata('jackson:JsonIgnoreType', options.mainCreator[0], null, options.annotationsEnabled);
   }
 
   private parseJsonTypeInfo(obj: any, options: JsonParserTransformerOptions): any {
     const currentMainCreator = options.mainCreator[0];
-    const jsonTypeInfo: JsonTypeInfoOptions = Reflect.getMetadata('jackson:JsonTypeInfo', currentMainCreator);
+    const jsonTypeInfo: JsonTypeInfoOptions =
+      getMetadata('jackson:JsonTypeInfo', currentMainCreator, null, options.annotationsEnabled);
 
     if (jsonTypeInfo) {
       let jsonTypeCtor: ClassType<any>;
@@ -485,16 +551,18 @@ export class JsonParser<T> {
         break;
       }
 
-      const jsonSubTypes: JsonSubTypeOptions[] = Reflect.getMetadata('jackson:JsonSubTypes', currentMainCreator);
+      const jsonSubTypes: JsonSubTypesOptions =
+        getMetadata('jackson:JsonSubTypes', currentMainCreator, null, options.annotationsEnabled);
 
-      if (jsonSubTypes) {
-        for (const subType of jsonSubTypes) {
+      if (jsonSubTypes && jsonSubTypes.types) {
+        for (const subType of jsonSubTypes.types) {
           if (subType.name != null && jsonTypeInfoProperty === subType.name) {
             jsonTypeCtor = subType.class();
           } else {
-            const ctor = Reflect.getMetadata('jackson:JsonTypeName:' + jsonTypeInfoProperty, subType.class());
-            if (ctor) {
-              jsonTypeCtor = ctor;
+            const jsonTypeNameOptions: JsonTypeNamePrivateOptions =
+              getMetadata('jackson:JsonTypeName:' + jsonTypeInfoProperty, subType.class(), null, options.annotationsEnabled);
+            if (jsonTypeNameOptions && jsonTypeNameOptions.ctor) {
+              jsonTypeCtor = jsonTypeNameOptions.ctor as ClassType<any>;
             }
           }
         }
@@ -513,8 +581,8 @@ export class JsonParser<T> {
       case JsonTypeInfoAs.WRAPPER_OBJECT:
         if (!isSameConstructor(jsonTypeInfoProperty, jsonTypeCtor)) {
           const ids = [(currentMainCreator).name];
-          if (jsonSubTypes) {
-            ids.push(...jsonSubTypes.map((subType) => subType.class().name));
+          if (jsonSubTypes && jsonSubTypes.types) {
+            ids.push(...jsonSubTypes.types.map((subType) => subType.class().name));
           }
           // eslint-disable-next-line max-len
           throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
@@ -530,13 +598,17 @@ export class JsonParser<T> {
   }
 
   private parseHasJsonView(options: JsonParserTransformerOptions, key: string): boolean {
-    if (options.withView) {
-      const jsonView: JsonViewOptions = Reflect.getMetadata('jackson:JsonView', options.mainCreator[0], key);
-      if (jsonView) {
+    if (options.withViews) {
+      const jsonView: JsonViewOptions =
+        getMetadata('jackson:JsonView', options.mainCreator[0], key, options.annotationsEnabled);
+      if (jsonView && jsonView.value) {
         const views = jsonView.value();
+        const withViews = options.withViews();
         for (const view of views) {
-          if (isSameConstructorOrExtensionOf(view, options.withView())) {
-            return true;
+          for (const withView of withViews) {
+            if (isSameConstructorOrExtensionOf(view, withView)) {
+              return true;
+            }
           }
         }
         return false;
@@ -551,7 +623,8 @@ export class JsonParser<T> {
     for (const metadataKey of metadataKeys) {
       if (metadataKey.startsWith('jackson:JsonUnwrapped:')) {
         const realKey = metadataKey.replace('jackson:JsonUnwrapped:', '');
-        const jsonUnwrapped: JsonUnwrappedOptions = Reflect.getMetadata(metadataKey, currentMainCreator);
+        const jsonUnwrapped: JsonUnwrappedOptions =
+          getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
 
         const prefix = (jsonUnwrapped.prefix != null) ? jsonUnwrapped.prefix : '';
         const suffix = (jsonUnwrapped.suffix != null) ? jsonUnwrapped.suffix : '';
@@ -570,7 +643,8 @@ export class JsonParser<T> {
   }
 
   private parseJsonIdentityInfo(replacement: any, obj: any, options: JsonParserTransformerOptions): void {
-    const jsonIdentityInfo: JsonIdentityInfoOptions = Reflect.getMetadata('jackson:JsonIdentityInfo', options.mainCreator[0]);
+    const jsonIdentityInfo: JsonIdentityInfoOptions =
+      getMetadata('jackson:JsonIdentityInfo', options.mainCreator[0], null, options.annotationsEnabled);
 
     if (jsonIdentityInfo) {
       const id: string = obj[jsonIdentityInfo.property];
@@ -672,5 +746,63 @@ export class JsonParser<T> {
 
   private generateScopedId(scope: string, id: string): string {
     return scope + ': ' + id;
+  }
+
+  private parseJsonNaming(obj: any, options: JsonParserTransformerOptions): void {
+    const jsonNamingOptions: JsonNamingOptions =
+      getMetadata('jackson:JsonNaming', options.mainCreator[0], null, options.annotationsEnabled);
+    if (jsonNamingOptions && jsonNamingOptions.strategy != null) {
+      const keys = Object.keys(obj);
+      const classProperties = new Set<string>(getClassProperties(options.mainCreator[0]));
+      const keysLength = keys.length;
+      for (let i = 0; i < keysLength; i++) {
+        const key = keys[i];
+        let oldKey = key;
+        switch (jsonNamingOptions.strategy) {
+        case JsonNamingStrategy.KEBAB_CASE:
+          oldKey = key.replace(/-/g, '');
+          break;
+        case JsonNamingStrategy.LOWER_DOT_CASE:
+          oldKey = key.replace(/\./g, '');
+          break;
+        case JsonNamingStrategy.LOWER_CAMEL_CASE:
+        case JsonNamingStrategy.LOWER_CASE:
+        case JsonNamingStrategy.UPPER_CAMEL_CASE:
+          break;
+        }
+
+        let propertyFound = false;
+        classProperties.forEach((propertyKey) => {
+          if (propertyKey.toLowerCase() === oldKey.toLowerCase()) {
+            oldKey = propertyKey;
+            propertyFound = true;
+            return;
+          }
+        });
+        if (!propertyFound && jsonNamingOptions.strategy === JsonNamingStrategy.SNAKE_CASE) {
+          classProperties.forEach((propertyKey) => {
+            const tokens = propertyKey.split(/(?=[A-Z])/);
+            const tokensLength = tokens.length;
+            let reconstructedKey  = '';
+            for (let j = 0; j < tokensLength; j++) {
+              const token = tokens[j].toLowerCase();
+              const separator = (j > 0 && tokens[j - 1].endsWith('_')) ? '' : '_';
+              reconstructedKey += (reconstructedKey !== '' && token.length > 1) ? separator + token : token;
+            }
+            if (key === reconstructedKey) {
+              oldKey = propertyKey;
+              return;
+            }
+          });
+        }
+
+        classProperties.delete(oldKey);
+
+        if (oldKey != null && oldKey !== key) {
+          obj[oldKey] = obj[key];
+          delete obj[key];
+        }
+      }
+    }
   }
 }

@@ -38,12 +38,12 @@ test('@JsonView', t => {
   t.assert(jsonDataWithoutView.includes(password));
   t.assert(jsonDataWithoutView.includes(activationCode));
 
-  const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {withView: () => Views.public});
+  const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
   t.assert(jsonDataWithViewPublic.includes('john.alfa@gmail.com'));
   t.assert(!jsonDataWithViewPublic.includes(password));
   t.assert(!jsonDataWithViewPublic.includes(activationCode));
 
-  const jsonDataWithViewInternal = objectMapper.stringify<User>(user, {withView: () => Views.internal});
+  const jsonDataWithViewInternal = objectMapper.stringify<User>(user, {withViews: () => [Views.internal]});
   t.assert(jsonDataWithViewInternal.includes('john.alfa@gmail.com'));
   t.assert(jsonDataWithViewInternal.includes(password));
   t.assert(jsonDataWithViewInternal.includes(activationCode));

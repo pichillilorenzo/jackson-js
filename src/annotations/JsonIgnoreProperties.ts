@@ -1,8 +1,6 @@
 import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonIgnorePropertiesOptions} from '../@types';
-
-export type JsonIgnorePropertiesDecorator = (options?: JsonIgnorePropertiesOptions) => any;
+import {JsonIgnorePropertiesDecorator, JsonIgnorePropertiesOptions} from '../@types';
 
 export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeJacksonDecorator(
   (o: JsonIgnorePropertiesOptions): JsonIgnorePropertiesOptions => (

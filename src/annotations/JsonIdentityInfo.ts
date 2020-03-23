@@ -1,6 +1,7 @@
 import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {
+  JsonIdentityInfoDecorator,
   JsonIdentityInfoOptions
 } from '../@types';
 
@@ -13,8 +14,6 @@ export enum ObjectIdGenerator {
   UUIDv3Generator,
   UUIDv1Generator
 }
-
-export type JsonIdentityInfoDecorator = (options: JsonIdentityInfoOptions) => any;
 
 export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
   (o: JsonIdentityInfoOptions): JsonIdentityInfoOptions => (

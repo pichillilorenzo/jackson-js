@@ -1,13 +1,11 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonViewOptions} from '../@types';
-
-export type JsonViewDecorator = (options?: JsonViewOptions) => any;
+import {JsonViewDecorator, JsonViewOptions} from '../@types';
 
 export const JsonView: JsonViewDecorator = makeJacksonDecorator(
   (o: JsonViewOptions = {}): JsonViewOptions => ({enabled: true, ...o}),
   (options: JsonViewOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey && options.value != null) {
+    if (propertyKey) {
       Reflect.defineMetadata('jackson:JsonView', options, target.constructor, propertyKey);
     }
   });

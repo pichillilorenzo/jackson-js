@@ -1,10 +1,8 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonBackReferenceOptions} from '../@types';
+import {JsonBackReferenceDecorator, JsonBackReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonBackReferencePrivateOptions} from '../@types/private';
-
-export type JsonBackReferenceDecorator = (options?: JsonBackReferenceOptions) => any;
 
 export const JsonBackReference: JsonBackReferenceDecorator = makeJacksonDecorator(
   (o: JsonBackReferenceOptions = {}): JsonBackReferenceOptions => ({

@@ -1,4 +1,4 @@
 import 'reflect-metadata';
-import { JsonCreatorOptions } from '../@types';
-export declare type JsonCreatorDecorator = (options?: JsonCreatorOptions) => any;
+import { JsonCreatorDecorator } from '../@types';
+export declare const defaultCreatorName = "defaultCreatorName";
 export declare const JsonCreator: JsonCreatorDecorator;

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { JsonFormatOptions } from '../@types';
+import { JsonFormatDecorator } from '../@types';
 export declare enum JsonFormatShape {
     ANY = 0,
     ARRAY = 1,
@@ -10,5 +10,4 @@ export declare enum JsonFormatShape {
     SCALAR = 6,
     STRING = 7
 }
-export declare type JsonFormatDecorator = (options?: JsonFormatOptions) => any;
 export declare const JsonFormat: JsonFormatDecorator;

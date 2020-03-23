@@ -42,13 +42,20 @@ export declare class JsonStringifier<T> {
     private stringifyJsonIgnoreType;
     private stringifyHasJsonBackReference;
     private stringifyJsonTypeInfo;
+    private stringifyPropertyJsonFormat;
+    private stringifyClassJsonFormat;
     private stringifyJsonFormat;
     private stringifyHasJsonView;
     private stringifyJsonUnwrapped;
     private stringifyJsonIdentityInfo;
+    private hasJsonIdentityReferenceAlwaysAsId;
+    private stringifyJsonIdentityReference;
     private stringifyIterable;
     private stringifyMap;
     private isPropertyKeyExcludedByJsonFilter;
     private stringifyIsPropertyKeyExcludedByJsonFilter;
     private stringifyJsonFilter;
+    private isPrependJsonAppend;
+    private stringifyJsonAppend;
+    private stringifyJsonNaming;
 }

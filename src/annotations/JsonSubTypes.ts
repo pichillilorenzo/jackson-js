@@ -1,14 +1,12 @@
 import {makeJacksonDecorator, isClass} from '../util';
 import 'reflect-metadata';
-import {JsonSubTypesOptions} from '../@types';
-
-export type JsonSubTypesDecorator = (options: JsonSubTypesOptions) => any;
+import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
 
 export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
   (o: JsonSubTypesOptions): JsonSubTypesOptions => ({enabled: true, ...o}),
   (options: JsonSubTypesOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (options.types && options.types.length > 0 && !descriptorOrParamIndex && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonSubTypes', options.types, target);
+    if (!descriptorOrParamIndex && isClass(target)) {
+      Reflect.defineMetadata('jackson:JsonSubTypes', options, target);
       return target;
     }
   });

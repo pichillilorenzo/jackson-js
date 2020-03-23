@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonAnyGetterOptions } from '../@types';
-export declare type JsonAnyGetterDecorator = (options?: JsonAnyGetterOptions) => any;
+import { JsonAnyGetterDecorator } from '../@types';
 export declare const JsonAnyGetter: JsonAnyGetterDecorator;

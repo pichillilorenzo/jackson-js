@@ -1,8 +1,6 @@
 import {makeJacksonDecorator, isClass} from '../util';
 import 'reflect-metadata';
-import {JsonPropertyOrderOptions} from '../@types';
-
-export type JsonPropertyOrderDecorator = (options?: JsonPropertyOrderOptions) => any;
+import {JsonPropertyOrderDecorator, JsonPropertyOrderOptions} from '../@types';
 
 export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorator(
   (o: JsonPropertyOrderOptions): JsonPropertyOrderOptions => ({

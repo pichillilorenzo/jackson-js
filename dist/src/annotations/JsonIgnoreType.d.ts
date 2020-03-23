@@ -1,4 +1,3 @@
 import 'reflect-metadata';
-import { JsonIgnoreTypeOptions } from '../@types';
-export declare type JsonIgnoreTypeDecorator = (options?: JsonIgnoreTypeOptions) => any;
+import { JsonIgnoreTypeDecorator } from '../@types';
 export declare const JsonIgnoreType: JsonIgnoreTypeDecorator;

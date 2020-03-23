@@ -1,6 +1,7 @@
 import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {
+  JsonFilterDecorator,
   JsonFilterOptions
 } from '../@types';
 
@@ -9,8 +10,6 @@ export enum JsonFilterType {
   SERIALIZE_ALL_EXCEPT,
   FILTER_OUT_ALL_EXCEPT
 }
-
-export type JsonFilterDecorator = (options: JsonFilterOptions) => any;
 
 export const JsonFilter: JsonFilterDecorator = makeJacksonDecorator(
   (o: JsonFilterOptions): JsonFilterOptions => ({enabled: true, ...o }),

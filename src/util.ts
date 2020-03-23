@@ -1,12 +1,14 @@
 import {parse, ParserPlugin} from '@babel/parser';
 import {
+  CallExpression,
   ClassDeclaration,
   ClassMethod,
-  ExpressionStatement,
-  FunctionExpression,
+  ExpressionStatement, FunctionDeclaration,
+  FunctionExpression, Identifier, MemberExpression,
   Node
 } from '@babel/types';
 import {ClassType, JsonAnnotationDecorator, JsonAnnotationOptions} from './@types';
+import 'reflect-metadata';
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
@@ -16,12 +18,20 @@ export const isClass = (obj): boolean => {
       && obj.constructor.toString().substring(0, 5) === 'class';
 
   if (obj.prototype === undefined) {
-    return isCtorClass;
+    return isCtorClass || !isFunction(obj);
   }
   const isPrototypeCtorClass = obj.prototype.constructor
     && obj.prototype.constructor.toString
     && obj.prototype.constructor.toString().substring(0, 5) === 'class';
-  return isCtorClass || isPrototypeCtorClass;
+  return isCtorClass || isPrototypeCtorClass || !isFunction(obj);
+};
+
+/**
+ * https://stackoverflow.com/a/56035104/4637638
+ */
+export const isFunction = (funcOrClass: any): boolean => {
+  const propertyNames = Object.getOwnPropertyNames(funcOrClass);
+  return (!propertyNames.includes('prototype') || propertyNames.includes('arguments'));
 };
 
 export const makeDecorator = <T>(
@@ -50,11 +60,9 @@ export const makeJacksonDecorator = <T>(
   decorator: JsonAnnotationDecorator): any => makeDecorator<T>(
   options,
   (o: JsonAnnotationOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (o.enabled) {
-      const value = decorator(o, target, propertyKey, descriptorOrParamIndex);
-      if (value != null) {
-        return value;
-      }
+    const value = decorator(o, target, propertyKey, descriptorOrParamIndex);
+    if (value != null) {
+      return value;
     }
     if (typeof descriptorOrParamIndex !== 'number') {
       return descriptorOrParamIndex;
@@ -79,7 +87,58 @@ const pluckParamName = (param): string => {
   return;
 };
 
-export const getArgumentNames = (method, useFlow = false): string[] => {
+export const getClassProperties = (clazz: ObjectConstructor | ClassType<any>): string[] => {
+  const classCode = clazz.toString().trim();
+  const classProperties = [];
+
+  if (!classCode.startsWith('class ') &&
+    !classCode.startsWith('function ' + clazz.name) &&
+    !classCode.endsWith(' { [native code] }')) {
+    return classProperties;
+  }
+
+  const ast = parse(classCode);
+
+  const { body } = ast.program;
+  let expressionStatements: ExpressionStatement[] = [];
+  if (classCode.startsWith('class ')) {
+    const nodes: Node[] = (body[0] as ClassDeclaration).body.body;
+    // find constructor
+    for (const propertyOrMethod of nodes) {
+      if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
+        const ctor = propertyOrMethod as ClassMethod;
+        expressionStatements = ctor.body.body as ExpressionStatement[];
+        break;
+      }
+    }
+  } else {
+    expressionStatements = (body[0] as FunctionDeclaration).body.body as ExpressionStatement[];
+  }
+
+  for (const expressionStatement of expressionStatements) {
+    if (expressionStatement.type && expressionStatement.type === 'ExpressionStatement') {
+      const callExpression = (expressionStatement.expression as CallExpression);
+      if (callExpression.type === 'CallExpression') {
+        const callee = (callExpression.callee as MemberExpression);
+        const calleeObject = (callee.object as Identifier);
+        const calleeProperty = (callee.property as Identifier);
+        if (calleeObject && calleeProperty &&
+          calleeObject.name && calleeProperty.name &&
+          calleeObject.name === 'Object' && calleeProperty.name === 'defineProperty') {
+          const expressionArguments = callExpression.arguments;
+          if (expressionArguments.length > 1 &&
+            expressionArguments[0].type === 'ThisExpression' && expressionArguments[1].type === 'StringLiteral') {
+            classProperties.push(expressionArguments[1].value);
+          }
+        }
+      }
+    }
+  }
+
+  return classProperties;
+};
+
+export const getArgumentNames = (method): string[] => {
   let code = method.toString().trim();
 
   if (code.endsWith(' { [native code] }')) {
@@ -92,28 +151,26 @@ export const getArgumentNames = (method, useFlow = false): string[] => {
     code = 'function ' + code;
   }
 
-  const ast = parse(code, {
-    plugins: [
-      'jsx',
-      (!useFlow) ? 'typescript' : 'flow'
-    ].concat((useFlow) ? ['flowComments'] : []) as ParserPlugin[]
-  });
+  const ast = parse(code);
 
   const { body } = ast.program;
+
   let nodes: Node[] = [];
   if (code.startsWith('class ')) {
     nodes = (body[0] as ClassDeclaration).body.body;
     // find constructor
     for (const propertyOrMethod of nodes) {
       if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
-        nodes = [propertyOrMethod];
+        nodes = [propertyOrMethod as ClassMethod];
         break;
       }
     }
+  } else {
+    nodes = [body[0] as FunctionDeclaration];
   }
 
   return nodes.reduce((args, exp) => {
-    if ((exp as ClassMethod).params) {
+    if ((exp as ClassMethod | FunctionDeclaration).params) {
       return args.concat((exp as ClassMethod).params);
     }
     if (((exp as ExpressionStatement).expression as FunctionExpression).params) {
@@ -200,3 +257,29 @@ export const isObjLiteral = (_obj: any): boolean => {
  */
 export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
 export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
+
+export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+  target: Record<string, any>,
+  propertyKey?: string | symbol | null,
+  annotationsEnabled?: { [key: string]: any }): T => {
+  const option: JsonAnnotationOptions = (propertyKey) ?
+    Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
+
+  if (option != null && annotationsEnabled != null) {
+    const annotationKeys = Object.keys(annotationsEnabled);
+    const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
+    if (annotationKey && typeof annotationsEnabled[annotationKey] === 'boolean') {
+      option.enabled = annotationsEnabled[annotationKey];
+    }
+  }
+
+  return option != null && option.enabled ? option as T : null;
+};
+
+export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+  target: Record<string, any>,
+  propertyKey?: string | symbol | null,
+  annotationsEnabled?: { [key: string]: any }): boolean => {
+  const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, annotationsEnabled);
+  return option != null;
+};

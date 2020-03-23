@@ -1,6 +1,6 @@
 import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonTypeInfoOptions} from '../@types';
+import {JsonTypeInfoDecorator, JsonTypeInfoOptions} from '../@types';
 
 export enum JsonTypeInfoId {
   NAME
@@ -11,8 +11,6 @@ export enum JsonTypeInfoAs {
   WRAPPER_OBJECT,
   WRAPPER_ARRAY
 }
-
-export type JsonTypeInfoDecorator = (options: JsonTypeInfoOptions) => any;
 
 export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
   (o: JsonTypeInfoOptions): JsonTypeInfoOptions => (

@@ -1,8 +1,6 @@
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
-import {JsonUnwrappedOptions} from '../@types';
-
-export type JsonUnwrappedDecorator = (options?: JsonUnwrappedOptions) => any;
+import {JsonUnwrappedDecorator, JsonUnwrappedOptions} from '../@types';
 
 export const JsonUnwrapped: JsonUnwrappedDecorator = makeJacksonDecorator(
   (o: JsonUnwrappedOptions): JsonUnwrappedOptions => ({enabled: true, ...o}),
