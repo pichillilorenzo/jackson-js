@@ -15,10 +15,10 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
-  cloneClassInstance, getMetadata, hasMetadata,
+  cloneClassInstance, getDefaultPrimitiveTypeValue, getMetadata, hasMetadata, isConstructorPrimitiveType,
   isIterableNoMapNoString,
   isObjLiteral,
-  isSameConstructor, isSameConstructorOrExtensionOf
+  isSameConstructor, isSameConstructorOrExtensionOf, isVariablePrimitiveType
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {JsonFormatShape} from '../annotations/JsonFormat';
@@ -97,7 +97,11 @@ export class JsonStringifier<T> {
       };
     }
 
-    if (typeof value === 'number' && isNaN(value) && options.features[SerializationFeature.WRITE_NAN_AS_ZERO]) {
+    if (value == null && isConstructorPrimitiveType(options.mainCreator[0])) {
+      value = this.getDefaultValue(options);
+    }
+
+    if (value != null && value.constructor === Number && isNaN(value) && options.features[SerializationFeature.WRITE_NAN_AS_ZERO]) {
       value = 0;
     } else if (value === Infinity) {
       if (options.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
@@ -258,6 +262,29 @@ export class JsonStringifier<T> {
       }
     }
     return value;
+  }
+
+  private getDefaultValue(options: JsonStringifierTransformerOptions): any | null {
+    let defaultValue = null;
+    const currentMainCreator = options.mainCreator[0];
+    if (currentMainCreator === String &&
+      (options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]) ) {
+      defaultValue = getDefaultPrimitiveTypeValue(String);
+    } else if (currentMainCreator === Number &&
+      (options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]) ) {
+      defaultValue = getDefaultPrimitiveTypeValue(Number);
+    } else if (currentMainCreator === Boolean &&
+      (options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]) ) {
+      defaultValue = getDefaultPrimitiveTypeValue(Boolean);
+    } else if (BigInt && currentMainCreator === BigInt &&
+      (options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        options.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]) ) {
+      defaultValue = getDefaultPrimitiveTypeValue(BigInt);
+    }
+    return defaultValue;
   }
 
   private stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[], options: JsonStringifierTransformerOptions): string[] {
@@ -513,7 +540,7 @@ export class JsonStringifier<T> {
       }
       break;
     case JsonFormatShape.SCALAR:
-      if (typeof value === 'object') {
+      if (!isVariablePrimitiveType(value)) {
         formattedValue = null;
       }
       break;
@@ -524,14 +551,14 @@ export class JsonStringifier<T> {
         const timezone = (jsonFormat.timezone) ? { timeZone: jsonFormat.timezone } : {};
         formattedValue = dayjs(value.toLocaleString('en-US', timezone)).locale(locale).format(jsonFormat.pattern);
       } else {
-        if (typeof value === 'number') {
-          if (typeof jsonFormat.radix === 'number') {
+        if (value != null && value.constructor === Number) {
+          if (jsonFormat.radix != null && jsonFormat.radix.constructor === Number) {
             formattedValue = value.toString(jsonFormat.radix);
-          } else if (typeof jsonFormat.toExponential === 'number') {
+          } else if (jsonFormat.toExponential != null && jsonFormat.toExponential.constructor === Number) {
             formattedValue = value.toExponential(jsonFormat.toExponential);
-          } else if (typeof jsonFormat.toFixed === 'number') {
+          } else if (jsonFormat.toFixed != null && jsonFormat.toFixed.constructor === Number) {
             formattedValue = value.toFixed(jsonFormat.toFixed);
-          } else if (typeof jsonFormat.toPrecision === 'number') {
+          } else if (jsonFormat.toPrecision != null && jsonFormat.toPrecision.constructor === Number) {
             formattedValue = value.toPrecision(jsonFormat.toPrecision);
           } else {
             formattedValue = value.toString();

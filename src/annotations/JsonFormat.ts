@@ -19,7 +19,7 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
       enabled: true,
       shape: JsonFormatShape.ANY,
       // @ts-ignore
-      locale: 'en-US',
+      locale: 'en',
       ...o
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {

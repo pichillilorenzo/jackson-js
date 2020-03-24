@@ -10,6 +10,7 @@ export const JsonAlias: JsonAliasDecorator = makeJacksonDecorator(
       Reflect.defineMetadata('jackson:JsonAlias:' + propertyKey.toString(), options, target.constructor);
     }
     if (typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata('jackson:JsonAliasParam:' + descriptorOrParamIndex.toString(), options, target);
+      Reflect.defineMetadata('jackson:JsonAliasParam:' + descriptorOrParamIndex.toString(), options, target,
+        (propertyKey) ? propertyKey : 'constructor');
     }
   });

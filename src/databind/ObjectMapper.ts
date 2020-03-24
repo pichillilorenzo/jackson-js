@@ -25,14 +25,28 @@ export class ObjectMapper {
       [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]: false,
       [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]: false,
       [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]: false,
-      [SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]: true
+      [SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]: true,
+      [SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
+      [SerializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
+      [SerializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
+      [SerializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
+      [SerializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
     },
     deserialization: {
       [DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]: true,
       [DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES]: false,
+      [DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES]: false,
+      [DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES]: false,
+      [DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS]: true,
       [DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT]: false,
       [DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT]: false,
-      [DeserializationFeature.ACCEPT_FLOAT_AS_INT]: false
+      [DeserializationFeature.ACCEPT_FLOAT_AS_INT]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false,
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_SYMBOL_ON_NULL]: false
     }
   };
   serializers: ObjectMapperSerializer[] = [];

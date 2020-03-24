@@ -34,7 +34,7 @@ import {JsonFilter, JsonFilterType} from './annotations/JsonFilter';
 import {JsonIdentityReference} from './annotations/JsonIdentityReference';
 import {JsonAppend} from './annotations/JsonAppend';
 import {JsonNaming, JsonNamingStrategy} from './annotations/JsonNaming';
-import {JacksonDecorator} from './@types';
+import {main} from "ts-node/dist/bin";
 //
 // // class DateSerializer {
 // //   static serializeDate(date): any {
@@ -731,6 +731,24 @@ import {JacksonDecorator} from './@types';
 // const namingBeanParsed = objectMapper.parse<NamingBean>(jsonData, {mainCreator: () => [NamingBean]});
 // console.log(namingBeanParsed);
 
+// class Item {
+//   @JsonClass({class: () => [Number]})
+//   id: number;
+//   @JsonClass({class: () => [String]})
+//   name: string;
+//   @JsonClass({class: () => [Boolean]})
+//   hidden: boolean;
+//
+//   constructor(id, name, hidden) {
+//     this.id = id;
+//     this.name = name;
+//     this.hidden = hidden;
+//   }
+// }
+// const item = new Item(null, null, null);
+// const objectMapper = new ObjectMapper();
+// objectMapper.features.serialization[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] = true;
+// console.log(objectMapper.stringify(item));
 
 export {
   JsonAnyGetter,

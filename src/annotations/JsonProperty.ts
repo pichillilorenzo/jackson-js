@@ -28,7 +28,9 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
         options.defaultValue = argNames[descriptorOrParamIndex];
       }
       options.value = (options.value) ? options.value : options.defaultValue;
-      Reflect.defineMetadata('jackson:JsonPropertyParam:' + descriptorOrParamIndex.toString(), options, target);
+      Reflect.defineMetadata(
+        'jackson:JsonPropertyParam:' + descriptorOrParamIndex.toString(),
+        options, target, (propertyKey) ? propertyKey : 'constructor');
     }
 
     if (propertyKey != null) {

@@ -30,6 +30,7 @@ export declare class JsonStringifier<T> {
      */
     transform(key: string, value: any, options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): any;
     private invokeCustomSerializers;
+    private getDefaultValue;
     private stringifyJsonAnyGetter;
     private stringifyJsonPropertyOrder;
     private stringifyJsonProperty;

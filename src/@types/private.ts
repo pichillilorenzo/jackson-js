@@ -25,6 +25,7 @@ export interface JsonManagedReferencePrivateOptions extends JsonManagedReference
 export interface JsonCreatorPrivateOptions extends JsonCreatorOptions {
   ctor?: Record<string, any> | ObjectConstructor;
   method?: Function;
+  propertyKey?: string;
 }
 
 export interface JsonValuePrivateOptions extends JsonValueOptions {

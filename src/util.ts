@@ -147,6 +147,8 @@ export const getArgumentNames = (method): string[] => {
 
   if (code.startsWith('class extends')) {
     code = 'class JacksonClass ' + code.substring(6);
+  } else if (code.startsWith('function (')) {
+    code = 'function JacksonFunction ' + code.substring(9);
   } else if (!code.startsWith('class ') && !code.startsWith('function ')) {
     code = 'function ' + code;
   }
@@ -282,4 +284,28 @@ export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string
   annotationsEnabled?: { [key: string]: any }): boolean => {
   const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, annotationsEnabled);
   return option != null;
+};
+
+export const isVariablePrimitiveType = (value: any): boolean => value != null && isConstructorPrimitiveType(value.constructor);
+
+export const isConstructorPrimitiveType = (ctor: any): boolean => ctor === Number ||
+  (BigInt && ctor === BigInt) || ctor === String ||
+  ctor === Boolean || (Symbol && ctor === Symbol);
+
+export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null => {
+  switch (ctor) {
+  case Number:
+    return 0;
+  case Boolean:
+    return false;
+  case String:
+    return '';
+  default:
+    if (BigInt && ctor === BigInt) {
+      return BigInt(0);
+    } else if (Symbol && ctor === Symbol) {
+      return Symbol();
+    }
+  }
+  return null;
 };

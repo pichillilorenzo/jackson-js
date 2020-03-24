@@ -7,6 +7,7 @@ export declare class JsonParser<T> {
      * Map used to restore object circular references defined with @JsonIdentityInfo()
      */
     private _globalValueAlreadySeen;
+    private _globalUnresolvedValueAlreadySeen;
     /**
      *
      */
@@ -25,6 +26,7 @@ export declare class JsonParser<T> {
      */
     transform(key: string, value: any, options: JsonParserTransformerOptions): any;
     private convertParserOptionsToTransformerOptions;
+    private getDefaultValue;
     private invokeCustomDeserializers;
     private getInstanceAlreadySeen;
     private parseJsonCreator;

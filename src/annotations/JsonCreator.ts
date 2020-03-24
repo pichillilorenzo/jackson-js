@@ -16,14 +16,16 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
     const privateOptions: JsonCreatorPrivateOptions = {
       ctor: null,
       method: null,
+      propertyKey: (propertyKey) ? propertyKey.toString() : 'constructor',
       ...options
     };
+
     if (descriptorOrParamIndex && typeof descriptorOrParamIndex !== 'number' && typeof descriptorOrParamIndex.value === 'function') {
       privateOptions.method = descriptorOrParamIndex.value;
-      if (options.name && Reflect.hasMetadata('jackson:JsonCreator:' + options.name, target)) {
-        throw new JacksonError(`Already had a @JsonCreator with name "${options.name}" for Class "${target.constructor.name}".`);
+      if (privateOptions.name && Reflect.hasMetadata('jackson:JsonCreator:' + privateOptions.name, target)) {
+        throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.constructor.name}".`);
       }
-      Reflect.defineMetadata('jackson:JsonCreator:' + options.name, privateOptions, target);
+      Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
     } else if (!descriptorOrParamIndex && isClass(target)) {
       privateOptions.ctor = target;
       // get original constructor
@@ -31,7 +33,7 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
         privateOptions.ctor = Object.getPrototypeOf(privateOptions.ctor);
       }
 
-      Reflect.defineMetadata('jackson:JsonCreator:' + options.name, privateOptions, target);
+      Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
       return target;
     }
   });

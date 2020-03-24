@@ -18,7 +18,8 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
         const argNames = getArgumentNames(target);
         options.value = argNames[descriptorOrParamIndex];
       }
-      Reflect.defineMetadata('jackson:JsonInjectParam:' + descriptorOrParamIndex.toString(), options, target);
+      Reflect.defineMetadata('jackson:JsonInjectParam:' + descriptorOrParamIndex.toString(), options, target,
+        (propertyKey) ? propertyKey : 'constructor');
     }
 
     if (propertyKey != null) {
