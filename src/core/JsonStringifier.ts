@@ -1,7 +1,7 @@
 import {
   JsonAppendOptions,
   JsonClassOptions, JsonFilterOptions,
-  JsonFormatOptions, JsonIdentityInfoOptions, JsonIdentityReferenceOptions,
+  JsonFormatOptions, JsonGetterOptions, JsonIdentityInfoOptions, JsonIdentityReferenceOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions, JsonNamingOptions,
   JsonPropertyOptions,
@@ -28,8 +28,13 @@ import * as dayjs from 'dayjs';
 import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { v4 as uuidv4, v1 as uuidv1, v5 as uuidv5, v3 as uuidv3 } from 'uuid';
 import {JacksonError} from './JacksonError';
-import {JsonAnyGetterPrivateOptions, JsonTypeNamePrivateOptions, JsonValuePrivateOptions} from '../@types/private';
-import {JsonFilterType} from '..';
+import {
+  JsonAnyGetterPrivateOptions,
+  JsonGetterPrivateOptions,
+  JsonTypeNamePrivateOptions,
+  JsonValuePrivateOptions
+} from '../@types/private';
+import {JsonFilterType, JsonIgnoreProperties} from '..';
 import {JsonNamingStrategy} from '../annotations/JsonNaming';
 
 dayjs.extend(customParseFormat);
@@ -97,6 +102,9 @@ export class JsonStringifier<T> {
       };
     }
 
+    value = this.invokeCustomSerializers(key, value, options);
+    value = this.stringifyJsonSerializeClass(value, options);
+
     if (value == null && isConstructorPrimitiveType(options.mainCreator[0])) {
       value = this.getDefaultValue(options);
     }
@@ -119,8 +127,6 @@ export class JsonStringifier<T> {
       options.features[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
       value = value.getTime();
     }
-
-    value = this.invokeCustomSerializers(key, value, options);
 
     if (value != null) {
 
@@ -181,25 +187,26 @@ export class JsonStringifier<T> {
             !this.stringifyIsPropertyKeyExcludedByJsonFilter(value, k, options) &&
             Object.hasOwnProperty.call(value, k)) {
 
-            replacement[k] = value[k];
-
             // if it has a JsonIdentityReference, then we can skip all these methods because
             // the entire object will be replaced later by the identity value
             if (!this.hasJsonIdentityReferenceAlwaysAsId(value, options)) {
+
               if (value === value[k] && options.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
                 // eslint-disable-next-line max-len
                 throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${value.constructor.name}["${k}"])`);
               }
 
-              replacement[k] = value[k];
+              replacement[k] = this.stringifyJsonGetter(value, k, options);
               if (replacement[k] != null) {
                 replacement[k] = this.stringifyPropertyJsonFormat(replacement, value, k, options);
-                this.stringifyJsonSerialize(replacement, value, k, options);
+                this.stringifyJsonSerializeProperty(replacement, value, k, options);
                 this.stringifyJsonRawValue(replacement, value, k, options);
                 this.stringifyJsonFilter(replacement, value, k, options);
                 this.stringifyJsonProperty(replacement, value, k, options);
                 this.stringifyJsonUnwrapped(replacement, value, k, options);
               }
+            } else {
+              replacement[k] = this.stringifyJsonGetter(value, k, options);
             }
           }
         }
@@ -285,6 +292,18 @@ export class JsonStringifier<T> {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);
     }
     return defaultValue;
+  }
+
+
+  private stringifyJsonGetter(obj: any, key: string, options: JsonStringifierTransformerOptions): any {
+    const jsonGetter: JsonGetterPrivateOptions = getMetadata('jackson:JsonGetter', obj, key, options.annotationsEnabled);
+    const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
+      getMetadata('jackson:JsonIgnoreProperties', obj.constructor, null, options.annotationsEnabled);
+    if (jsonGetter &&
+      !(jsonIgnoreProperties && !jsonIgnoreProperties.allowGetters && jsonIgnoreProperties.value.includes(key)) ) {
+      return obj[jsonGetter.propertyKey]();
+    }
+    return obj[key];
   }
 
   private stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[], options: JsonStringifierTransformerOptions): string[] {
@@ -377,7 +396,16 @@ export class JsonStringifier<T> {
     return replacement;
   }
 
-  private stringifyJsonSerialize(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
+  private stringifyJsonSerializeClass(obj: any, options: JsonStringifierTransformerOptions): any {
+    const jsonSerialize: JsonSerializeOptions =
+      getMetadata('jackson:JsonSerialize', (obj != null) ? obj.constructor : options.mainCreator[0], null, options.annotationsEnabled);
+    if (jsonSerialize && jsonSerialize.using) {
+      return jsonSerialize.using(obj);
+    }
+    return obj;
+  }
+
+  private stringifyJsonSerializeProperty(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
     const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', obj, key, options.annotationsEnabled);
     if (jsonSerialize && jsonSerialize.using) {
       replacement[key] = jsonSerialize.using(replacement[key]);
@@ -391,11 +419,19 @@ export class JsonStringifier<T> {
     if (!hasJsonIgnore) {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
         getMetadata('jackson:JsonIgnoreProperties', obj.constructor, null, options.annotationsEnabled);
-      if (jsonIgnoreProperties && !jsonIgnoreProperties.allowGetters) {
-        if (jsonIgnoreProperties.value.includes(key)) {return true; }
+      if (jsonIgnoreProperties) {
+        if (jsonIgnoreProperties.value.includes(key)) {
+          const hasJsonGetter = hasMetadata('jackson:JsonGetter', obj.constructor, key, options.annotationsEnabled);
+          if (jsonIgnoreProperties.allowGetters && hasJsonGetter) {
+            return false;
+          }
+          return true;
+        }
         const jsonProperty: JsonPropertyOptions =
           getMetadata('jackson:JsonProperty', obj, key, options.annotationsEnabled);
-        if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {return true; }
+        if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {
+          return true;
+        }
       }
     }
 

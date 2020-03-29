@@ -34,7 +34,9 @@ import {JsonFilter, JsonFilterType} from './annotations/JsonFilter';
 import {JsonIdentityReference} from './annotations/JsonIdentityReference';
 import {JsonAppend} from './annotations/JsonAppend';
 import {JsonNaming, JsonNamingStrategy} from './annotations/JsonNaming';
-import {main} from "ts-node/dist/bin";
+import {JsonGetter} from './annotations/JsonGetter';
+import {JsonSetter} from './annotations/JsonSetter';
+
 //
 // // class DateSerializer {
 // //   static serializeDate(date): any {
@@ -786,6 +788,8 @@ export {
   JsonFilterType,
   JsonAppend,
   JsonNaming,
+  JsonGetter,
+  JsonSetter,
   JsonNamingStrategy,
   ObjectIdGenerator,
   JsonParser,

@@ -1,7 +1,51 @@
 import test from 'ava';
 import {JsonClass, JsonDeserialize, JsonSerialize, ObjectMapper} from '../src';
 
-test('@JsonSerialize and @JsonDeserialize', t => {
+test('@JsonSerialize and @JsonDeserialize on class', t => {
+  @JsonSerialize({using: (user: User) => ({
+    otherInfo: 'other info',
+    ...user
+  })})
+  @JsonDeserialize({using: (user: any) => {
+    delete user.otherInfo;
+    return user;
+  }})
+  class User {
+    id: number;
+    email: string;
+    firstname: string;
+    lastname: string;
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.assert(jsonData.includes('1'));
+  t.assert(jsonData.includes('john.alfa@gmail.com'));
+  t.assert(jsonData.includes('John'));
+  t.assert(jsonData.includes('Alfa'));
+  t.assert(jsonData.includes('otherInfo'));
+  t.assert(jsonData.includes('other info'));
+
+  const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.email, 'john.alfa@gmail.com');
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
+  t.assert(!Object.hasOwnProperty.call(userParsed, 'otherInfo'));
+});
+
+test('@JsonSerialize and @JsonDeserialize on properties', t => {
   const customBookListSerializer = (books: Book[]) =>
     books.map((book) => new Book(book.id, book.name, book.date, null));
 

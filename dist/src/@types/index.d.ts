@@ -35,13 +35,15 @@ export declare type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNaming
 export declare type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions>;
 export declare type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions>;
 export declare type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions>;
+export declare type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptions<JsonIgnorePropertiesOptions>;
+export declare type JsonGetterDecorator = JacksonDecoratorWithOptions<JsonGetterOptions>;
+export declare type JsonSetterDecorator = JacksonDecoratorWithOptions<JsonSetterOptions>;
 export declare type JsonAnyGetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnyGetterOptions>;
 export declare type JsonAnySetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnySetterOptions>;
 export declare type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonBackReferenceOptions>;
 export declare type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreatorOptions>;
 export declare type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions>;
 export declare type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions>;
-export declare type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnorePropertiesOptions>;
 export declare type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreTypeOptions>;
 export declare type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions>;
 export declare type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions>;
@@ -165,7 +167,7 @@ export interface JsonFormatString extends JsonFormatBaseOptions {
 export declare type JsonFormatOptions = JsonFormatAny | JsonFormatArray | JsonFormatBoolean | JsonFormatNumberFloat | JsonFormatNumberInt | JsonFormatObject | JsonFormatScalar | JsonFormatString;
 export declare type JsonIgnoreOptions = JsonAnnotationOptions;
 export interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
-    value?: string[];
+    value: string[];
     allowGetters?: boolean;
     allowSetters?: boolean;
     ignoreUnknown?: boolean;
@@ -293,4 +295,10 @@ export interface JsonAppendOptions extends JsonAnnotationOptions {
 }
 export interface JsonNamingOptions extends JsonAnnotationOptions {
     strategy: JsonNamingStrategy;
+}
+export interface JsonGetterOptions extends JsonAnnotationOptions {
+    value: string;
+}
+export interface JsonSetterOptions extends JsonAnnotationOptions {
+    value: string;
 }

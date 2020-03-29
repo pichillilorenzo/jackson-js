@@ -36,7 +36,8 @@ export declare class JsonParser<T> {
     private parseJsonClass;
     private parseJsonManagedReference;
     private parseJsonAnySetter;
-    private parseJsonDeserialize;
+    private parseJsonDeserializeClass;
+    private parseJsonDeserializeProperty;
     private parseHasJsonIgnore;
     private parseJsonIgnoreType;
     private parseJsonTypeInfo;

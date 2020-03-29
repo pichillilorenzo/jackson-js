@@ -46,6 +46,9 @@ export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions>
 export type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions>;
 export type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions>;
 export type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions>;
+export type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptions<JsonIgnorePropertiesOptions>;
+export type JsonGetterDecorator = JacksonDecoratorWithOptions<JsonGetterOptions>;
+export type JsonSetterDecorator = JacksonDecoratorWithOptions<JsonSetterOptions>;
 
 // with optional options
 export type JsonAnyGetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAnyGetterOptions>;
@@ -54,7 +57,6 @@ export type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<Jso
 export type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreatorOptions>;
 export type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions>;
 export type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions>;
-export type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnorePropertiesOptions>;
 export type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreTypeOptions>;
 export type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions>;
 export type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions>;
@@ -213,7 +215,7 @@ JsonFormatNumberInt | JsonFormatObject | JsonFormatScalar | JsonFormatString;
 export type JsonIgnoreOptions = JsonAnnotationOptions;
 
 export interface JsonIgnorePropertiesOptions extends JsonAnnotationOptions {
-  value?: string[];
+  value: string[];
   allowGetters?: boolean;
   allowSetters?: boolean;
   ignoreUnknown?: boolean;
@@ -356,6 +358,7 @@ export interface JsonInjectOptions extends JsonAnnotationOptions {
 export interface JsonFilterOptions extends JsonAnnotationOptions {
   name: string;
 }
+
 export interface JsonAppendOptionsAttribute {
   value: string;
   propName?: string;
@@ -370,4 +373,12 @@ export interface JsonAppendOptions extends JsonAnnotationOptions {
 
 export interface JsonNamingOptions extends JsonAnnotationOptions {
   strategy: JsonNamingStrategy;
+}
+
+export interface JsonGetterOptions extends JsonAnnotationOptions {
+  value: string;
+}
+
+export interface JsonSetterOptions extends JsonAnnotationOptions {
+  value: string;
 }

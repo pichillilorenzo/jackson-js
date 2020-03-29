@@ -14,7 +14,7 @@ import {
   JsonIgnorePropertiesOptions, JsonInjectOptions,
   JsonManagedReferenceOptions, JsonNamingOptions,
   JsonParserOptions, JsonParserTransformerOptions,
-  JsonPropertyOptions, JsonRootNameOptions, JsonStringifierTransformerOptions,
+  JsonPropertyOptions, JsonRootNameOptions, JsonSetterOptions, JsonStringifierTransformerOptions,
   JsonSubTypeOptions, JsonSubTypesOptions,
   JsonTypeInfoOptions, JsonTypeNameOptions,
   JsonUnwrappedOptions,
@@ -27,7 +27,7 @@ import {JacksonError} from './JacksonError';
 import {
   JsonAnySetterPrivateOptions,
   JsonBackReferencePrivateOptions,
-  JsonCreatorPrivateOptions, JsonTypeNamePrivateOptions
+  JsonCreatorPrivateOptions, JsonSetterPrivateOptions, JsonTypeNamePrivateOptions
 } from '../@types/private';
 import {JsonNamingStrategy} from '../annotations/JsonNaming';
 import {defaultCreatorName} from '../annotations/JsonCreator';
@@ -93,6 +93,9 @@ export class JsonParser<T> {
       };
     }
 
+    value = this.invokeCustomDeserializers(key, value, options);
+    value = this.parseJsonDeserializeClass(options, value);
+
     if (value == null && isConstructorPrimitiveType(options.mainCreator[0])) {
       value = this.getDefaultValue(options);
     }
@@ -112,8 +115,6 @@ export class JsonParser<T> {
     if (value != null && value.constructor === Number && options.features[DeserializationFeature.ACCEPT_FLOAT_AS_INT] && isFloat(value)) {
       value = parseInt(value + '', 10);
     }
-
-    value = this.invokeCustomDeserializers(key, value, options);
 
     if (value != null) {
 
@@ -153,7 +154,7 @@ export class JsonParser<T> {
               delete replacement[k];
             } else {
               this.parseJsonRawValue(options, replacement, k);
-              this.parseJsonDeserialize(options, replacement,  k);
+              this.parseJsonDeserializeProperty(options, replacement,  k);
             }
           }
         }
@@ -271,7 +272,7 @@ export class JsonParser<T> {
         getMetadata(jsonCreatorMetadataKey, currentMainCreator, null, options.annotationsEnabled) :
         currentMainCreator;
 
-      const jsonIgnorePropertiesOptions: JsonIgnorePropertiesOptions =
+      const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
         getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, options.annotationsEnabled);
 
       const method = (hasJsonCreator) ?
@@ -371,13 +372,18 @@ export class JsonParser<T> {
       const keys = Object.keys(obj).filter(n => !keysToBeExcluded.includes(n));
 
       for (const key of keys) {
-        // on TypeScript, set "useDefineForClassFields" option to true on the tsconfig.json file
-        if (Object.hasOwnProperty.call(instance, key) || instance.constructor.name === 'Object') {
+        const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', instance, key, options.annotationsEnabled);
+        if (jsonSetter &&
+          !(jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters && jsonIgnoreProperties.value.includes(key))) {
+          instance[key] = instance[jsonSetter.propertyKey](obj[key]);
+        } else if (Object.hasOwnProperty.call(instance, key) || instance.constructor.name === 'Object') {
+          // on TypeScript, set "useDefineForClassFields" option to true on the tsconfig.json file
           instance[key] = this.parseJsonClass(options, obj, key);
         } else if (hasJsonAnySetter) {
+          // for any other unrecognized properties found
           this.parseJsonAnySetter(instance, obj, key, options);
-        } else if ((jsonIgnorePropertiesOptions == null && options.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
-            (jsonIgnorePropertiesOptions != null && !jsonIgnorePropertiesOptions.ignoreUnknown)) {
+        } else if ((jsonIgnoreProperties == null && options.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
+            (jsonIgnoreProperties != null && !jsonIgnoreProperties.ignoreUnknown)) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Unknown property "${key}" for ${instance.constructor.name} at [Source '${JSON.stringify(obj)}']`);
         }
@@ -541,7 +547,16 @@ export class JsonParser<T> {
     }
   }
 
-  private parseJsonDeserialize(options: JsonParserTransformerOptions, replacement: any, key: string): void {
+  private parseJsonDeserializeClass(options: JsonParserTransformerOptions, replacement: any): any {
+    const jsonDeserialize: JsonDeserializeOptions =
+      getMetadata('jackson:JsonDeserialize', options.mainCreator[0], null, options.annotationsEnabled);
+    if (jsonDeserialize && jsonDeserialize.using) {
+      return jsonDeserialize.using(replacement);
+    }
+    return replacement;
+  }
+
+  private parseJsonDeserializeProperty(options: JsonParserTransformerOptions, replacement: any, key: string): void {
     const jsonDeserialize: JsonDeserializeOptions =
       getMetadata('jackson:JsonDeserialize', options.mainCreator[0], key, options.annotationsEnabled);
     if (jsonDeserialize && jsonDeserialize.using) {
@@ -559,11 +574,19 @@ export class JsonParser<T> {
     if (!hasJsonIgnore) {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
         getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, options.annotationsEnabled);
-      if (jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters) {
-        if (jsonIgnoreProperties.value.includes(key)) {return true; }
+      if (jsonIgnoreProperties) {
+        if (jsonIgnoreProperties.value.includes(key)) {
+          const hasJsonSetter = hasMetadata('jackson:JsonSetter', currentMainCreator, key, options.annotationsEnabled);
+          if (jsonIgnoreProperties.allowSetters && hasJsonSetter) {
+            return false;
+          }
+          return true;
+        }
         const jsonProperty: JsonPropertyOptions =
           getMetadata('jackson:JsonProperty:' + key, currentMainCreator, null, options.annotationsEnabled);
-        if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {return true; }
+        if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {
+          return true;
+        }
       }
     }
     return hasJsonIgnore && !hasJsonProperty;
