@@ -1,0 +1,97 @@
+import test from 'ava';
+import {JacksonError, JsonProperty, JsonPropertyAccess, ObjectMapper} from '../src';
+
+test('@JsonProperty with value', t => {
+  class Employee {
+    id: number;
+    @JsonProperty({value: 'empName'})
+    name: string;
+
+    constructor(id: number, name: string) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+
+  const employee = new Employee(1, 'John');
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.assert(jsonData.includes('1'));
+  t.assert(jsonData.includes('empName'));
+  t.assert(!jsonData.includes('name'));
+  t.assert(jsonData.includes('John'));
+});
+
+test('Fail @JsonProperty with required', t => {
+  class Employee {
+    id: number;
+    @JsonProperty({required: true})
+    name: string;
+
+    constructor(id: number, name: string) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = '{"id":1}';
+
+  const err = t.throws<JacksonError>(() => {
+    objectMapper.parse<Employee>(jsonData, {mainCreator: () => [Employee]});
+  });
+
+  t.assert(err instanceof JacksonError);
+});
+
+test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
+  class Employee {
+    id: number;
+    @JsonProperty({value: 'empName', access: JsonPropertyAccess.WRITE_ONLY})
+    name: string;
+  }
+
+  const employee = new Employee();
+  employee.id = 1;
+  employee.name = 'John';
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.assert(jsonData.includes('1'));
+  t.assert(!jsonData.includes('empName'));
+  t.assert(!jsonData.includes('name'));
+  t.assert(!jsonData.includes('John'));
+
+  const employeeParsed = objectMapper.parse<Employee>('{"id":1,"empName":"John"}', {mainCreator: () => [Employee]});
+  t.assert(employeeParsed instanceof Employee);
+  t.is(employeeParsed.id, 1);
+  t.is(employeeParsed.name, 'John');
+});
+
+test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
+  class Employee {
+    id: number;
+    @JsonProperty({value: 'empName', access: JsonPropertyAccess.READ_ONLY})
+    name: string;
+  }
+
+  const employee = new Employee();
+  employee.id = 1;
+  employee.name = 'John';
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.assert(jsonData.includes('1'));
+  t.assert(jsonData.includes('empName'));
+  t.assert(!jsonData.includes('name'));
+  t.assert(jsonData.includes('John'));
+
+  const err = t.throws<JacksonError>(() => {
+    objectMapper.parse<Employee>('{"id":1,"empName":"John"}', {mainCreator: () => [Employee]});
+  });
+
+  t.assert(err instanceof JacksonError);
+});

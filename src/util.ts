@@ -309,3 +309,15 @@ export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null =
   }
   return null;
 };
+
+export const getDefaultValue = (value: any): any | null => {
+  if (value != null) {
+    return getDefaultPrimitiveTypeValue(value.constructor);
+  }
+  return null;
+};
+
+export const isValueEmpty = (value: any): boolean => value == null ||
+  ( (value instanceof Set || value instanceof Map) && value.size === 0 ) ||
+  ( !(value instanceof Set || value instanceof Map) &&
+    (typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0 );

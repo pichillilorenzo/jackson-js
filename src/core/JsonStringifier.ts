@@ -15,10 +15,17 @@ import {
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
-  cloneClassInstance, getDefaultPrimitiveTypeValue, getMetadata, hasMetadata, isConstructorPrimitiveType,
+  cloneClassInstance,
+  getDefaultPrimitiveTypeValue,
+  getDefaultValue,
+  getMetadata,
+  hasMetadata,
+  isConstructorPrimitiveType,
   isIterableNoMapNoString,
   isObjLiteral,
-  isSameConstructor, isSameConstructorOrExtensionOf, isVariablePrimitiveType
+  isSameConstructor,
+  isSameConstructorOrExtensionOf, isValueEmpty,
+  isVariablePrimitiveType
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {JsonFormatShape} from '../annotations/JsonFormat';
@@ -358,10 +365,8 @@ export class JsonStringifier<T> {
 
   private stringifyJsonProperty(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
     const jsonProperty: JsonPropertyOptions = getMetadata('jackson:JsonProperty', obj, key, options.annotationsEnabled);
-    const hasJsonIgnore = hasMetadata('jackson:JsonIgnore', obj.constructor, key, options.annotationsEnabled);
     if (jsonProperty) {
-      const isIgnored = jsonProperty.access === JsonPropertyAccess.WRITE_ONLY ||
-        (jsonProperty.access === JsonPropertyAccess.AUTO && hasJsonIgnore);
+      const isIgnored = jsonProperty.access === JsonPropertyAccess.WRITE_ONLY;
       if (!isIgnored && jsonProperty.value !== key) {
         replacement[jsonProperty.value] = replacement[key];
         delete replacement[key];
@@ -414,7 +419,6 @@ export class JsonStringifier<T> {
 
   private stringifyHasJsonIgnore(obj: any, key: string, options: JsonStringifierTransformerOptions): boolean {
     const hasJsonIgnore = hasMetadata('jackson:JsonIgnore', obj.constructor, key, options.annotationsEnabled);
-    const hasJsonProperty = hasMetadata('jackson:JsonProperty', obj, key, options.annotationsEnabled);
 
     if (!hasJsonIgnore) {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
@@ -435,7 +439,7 @@ export class JsonStringifier<T> {
       }
     }
 
-    return hasJsonIgnore && !hasJsonProperty;
+    return hasJsonIgnore;
   }
 
   private stringifyJsonInclude(obj: any, key: string, options: JsonStringifierTransformerOptions): boolean {
@@ -449,9 +453,11 @@ export class JsonStringifier<T> {
       const value = obj[key];
       switch (jsonInclude.value) {
       case JsonIncludeType.NON_EMPTY:
-        return value == null || ((typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0);
+        return isValueEmpty(value);
       case JsonIncludeType.NON_NULL:
         return value == null;
+      case JsonIncludeType.NON_DEFAULT:
+        return value === getDefaultValue(value) || isValueEmpty(value);
       }
     }
 
@@ -845,12 +851,17 @@ export class JsonStringifier<T> {
 
           switch (attr.include) {
           case JsonIncludeType.NON_EMPTY:
-            if (value == null || ((typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0)) {
+            if (isValueEmpty(value)) {
               continue;
             }
             break;
           case JsonIncludeType.NON_NULL:
             if (value == null) {
+              continue;
+            }
+            break;
+          case JsonIncludeType.NON_DEFAULT:
+            if (value === getDefaultValue(value) || isValueEmpty(value)) {
               continue;
             }
             break;

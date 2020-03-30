@@ -421,11 +421,8 @@ export class JsonParser<T> {
           getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
         const jsonAlias: JsonAliasOptions =
           getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
-        const hasJsonIgnore =
-          hasMetadata('jackson:JsonIgnore', currentMainCreator, realKey, options.annotationsEnabled);
 
-        const isIgnored = (jsonProperty && (jsonProperty.access === JsonPropertyAccess.READ_ONLY ||
-          (jsonProperty.access === JsonPropertyAccess.AUTO && hasJsonIgnore))) || hasJsonIgnore;
+        const isIgnored = jsonProperty && jsonProperty.access === JsonPropertyAccess.READ_ONLY;
 
         if (jsonProperty && !isIgnored && Object.hasOwnProperty.call(replacement, jsonProperty.value)) {
           replacement[realKey] = replacement[jsonProperty.value];
@@ -568,8 +565,6 @@ export class JsonParser<T> {
     const currentMainCreator = options.mainCreator[0];
     const hasJsonIgnore =
       hasMetadata('jackson:JsonIgnore', currentMainCreator, key, options.annotationsEnabled);
-    const hasJsonProperty =
-      hasMetadata('jackson:JsonProperty:' + key, currentMainCreator, null, options.annotationsEnabled);
 
     if (!hasJsonIgnore) {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
@@ -589,7 +584,7 @@ export class JsonParser<T> {
         }
       }
     }
-    return hasJsonIgnore && !hasJsonProperty;
+    return hasJsonIgnore;
   }
 
   private parseJsonIgnoreType(options: JsonParserTransformerOptions): boolean {

@@ -5,7 +5,8 @@ import {JsonIncludeDecorator, JsonIncludeOptions} from '../@types';
 export enum JsonIncludeType {
   ALWAYS,
   NON_EMPTY,
-  NON_NULL
+  NON_NULL,
+  NON_DEFAULT
 }
 
 export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(

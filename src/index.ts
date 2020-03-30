@@ -13,7 +13,7 @@ import {JsonDeserialize} from './annotations/JsonDeserialize';
 import {JsonIgnore} from './annotations/JsonIgnore';
 import {JsonIgnoreProperties} from './annotations/JsonIgnoreProperties';
 import {JsonIgnoreType} from './annotations/JsonIgnoreType';
-import {JsonInclude} from './annotations/JsonInclude';
+import {JsonInclude, JsonIncludeType} from './annotations/JsonInclude';
 import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from './annotations/JsonTypeInfo';
 import {JsonTypeName} from './annotations/JsonTypeName';
 import {JsonSubTypes} from './annotations/JsonSubTypes';
@@ -752,6 +752,7 @@ import {JsonSetter} from './annotations/JsonSetter';
 // objectMapper.features.serialization[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] = true;
 // console.log(objectMapper.stringify(item));
 
+
 export {
   JsonAnyGetter,
   JsonProperty,
@@ -770,6 +771,7 @@ export {
   JsonIgnoreProperties,
   JsonIgnoreType,
   JsonInclude,
+  JsonIncludeType,
   JsonTypeInfo,
   JsonTypeInfoAs,
   JsonTypeInfoId,

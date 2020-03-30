@@ -17,17 +17,15 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!options.value && !options.defaultValue && propertyKey != null) {
-      options.defaultValue = propertyKey.toString();
+    if (propertyKey != null) {
+      options.value = (options.value) ? options.value : propertyKey.toString();
     }
-    options.value = (options.value) ? options.value : options.defaultValue;
 
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      if (!options.value && !options.defaultValue) {
+      if (!options.value) {
         const argNames = getArgumentNames(target);
-        options.defaultValue = argNames[descriptorOrParamIndex];
+        options.value = argNames[descriptorOrParamIndex];
       }
-      options.value = (options.value) ? options.value : options.defaultValue;
       Reflect.defineMetadata(
         'jackson:JsonPropertyParam:' + descriptorOrParamIndex.toString(),
         options, target, (propertyKey) ? propertyKey : 'constructor');

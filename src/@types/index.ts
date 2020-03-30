@@ -232,9 +232,7 @@ export interface JsonManagedReferenceOptions extends JsonAnnotationOptions {
 }
 
 export interface JsonPropertyOptions extends JsonAnnotationOptions {
-  class?: (...args) => ClassType<any>;
   value?: any;
-  defaultValue?: any;
   access?: JsonPropertyAccess;
   required?: boolean;
 }
