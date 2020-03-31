@@ -6,6 +6,7 @@ export const JsonRawValue: JsonRawValueDecorator = makeJacksonDecorator(
   (o: JsonRawValueOptions): JsonRawValueOptions => ({enabled: true, ...o}),
   (options: JsonRawValueOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
-      Reflect.defineMetadata('jackson:JsonRawValue', null, target.constructor, propertyKey);
+      Reflect.defineMetadata('jackson:JsonRawValue', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonRawValue', options, target.constructor, propertyKey);
     }
   });

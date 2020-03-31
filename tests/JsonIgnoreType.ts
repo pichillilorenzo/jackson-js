@@ -42,17 +42,7 @@ test('@JsonIgnoreType serialize', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('1'));
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('Alfa'));
-  t.assert(jsonData.includes('items'));
-  t.assert(jsonData.includes('items'));
-  t.assert(jsonData.includes('[null,null]'));
-  t.assert(!jsonData.includes('NVIDIA'));
-  t.assert(!jsonData.includes('Book'));
-  t.assert(!jsonData.includes('Computer'));
-  t.assert(!jsonData.includes('owner'));
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[null,null]}');
 });
 
 test('@JsonIgnoreType deserialize', t => {

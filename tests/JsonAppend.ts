@@ -18,7 +18,7 @@ test('@JsonAppend with value', t => {
     }
   }
 
-  const user = new User(1, 'pichillilorenzo@gmail.com');
+  const user = new User(1, 'john.alfa@gmail.com');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user, {
@@ -26,8 +26,7 @@ test('@JsonAppend with value', t => {
       version: 1.2
     }
   });
-
-  t.assert(jsonData.endsWith('"version":1.2}'));
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","version":1.2}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -50,7 +49,7 @@ test('@JsonAppend with prepend', t => {
     }
   }
 
-  const user = new User(1, 'pichillilorenzo@gmail.com');
+  const user = new User(1, 'john.alfa@gmail.com');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user, {
@@ -58,8 +57,7 @@ test('@JsonAppend with prepend', t => {
       version: 1.2
     }
   });
-
-  t.assert(jsonData.startsWith('{"version":1.2,'));
+  t.is(jsonData, '{"version":1.2,"id":1,"email":"john.alfa@gmail.com"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -83,7 +81,7 @@ test('@JsonAppend with userVersion', t => {
     }
   }
 
-  const user = new User(1, 'pichillilorenzo@gmail.com');
+  const user = new User(1, 'john.alfa@gmail.com');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify(user, {
@@ -91,8 +89,7 @@ test('@JsonAppend with userVersion', t => {
       version: 1.2
     }
   });
-
-  t.assert(jsonData.endsWith('"userVersion":1.2}'));
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","userVersion":1.2}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -117,7 +114,7 @@ test('@JsonAppend fail with value required', t => {
     }
   }
 
-  const user = new User(1, 'pichillilorenzo@gmail.com');
+  const user = new User(1, 'john.alfa@gmail.com');
   const objectMapper = new ObjectMapper();
 
   const err = t.throws<JacksonError>(() => {
@@ -144,7 +141,7 @@ test('@JsonAppend include only if value is non null', t => {
     }
   }
 
-  const user = new User(1, 'pichillilorenzo@gmail.com');
+  const user = new User(1, 'john.alfa@gmail.com');
   const objectMapper = new ObjectMapper();
 
   const jsonDataWithNull = objectMapper.stringify<User>(user, {
@@ -152,9 +149,7 @@ test('@JsonAppend include only if value is non null', t => {
       version: null
     }
   });
-
-  t.assert(!jsonDataWithNull.includes('version'));
-  t.assert(!jsonDataWithNull.includes('1.2'));
+  t.is(jsonDataWithNull, '{"id":1,"email":"john.alfa@gmail.com"}');
 
   const userParsedWithNull = objectMapper.parse<User>(jsonDataWithNull, {mainCreator: () => [User]});
   t.assert(userParsedWithNull instanceof User);
@@ -166,8 +161,7 @@ test('@JsonAppend include only if value is non null', t => {
       version: 1.2
     }
   });
-
-  t.assert(jsonDataWithValue.endsWith('"version":1.2}'));
+  t.is(jsonDataWithValue, '{"id":1,"email":"john.alfa@gmail.com","version":1.2}');
 
   const userParsedWithValue = objectMapper.parse<User>(jsonDataWithNull, {mainCreator: () => [User]});
   t.assert(userParsedWithValue instanceof User);

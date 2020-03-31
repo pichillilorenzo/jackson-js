@@ -4,7 +4,7 @@ import {
   ObjectMapper,
   JsonFormatShape,
   JsonClass,
-  JsonDeserialize, JsonIgnore
+  JsonDeserialize
 } from '../src';
 
 test('@JsonFormat on properties', t => {
@@ -59,11 +59,8 @@ test('@JsonFormat on properties', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Event>(event);
-  t.assert(jsonData.includes('Event 1'));
-  t.assert(jsonData.includes('2020-03-24 10:00:00'));
-  t.assert(jsonData.includes('14.50'));
-  t.assert(jsonData.includes('false'));
-  t.assert(jsonData.includes('["123 Main Street, New York, NY 10030","+393333111999"]'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"name":"Event 1","startDate":"2020-03-24 10:00:00","price":"14.50","canceled":false,"info":["123 Main Street, New York, NY 10030","+393333111999"]}');
 
   const eventParsed = objectMapper.parse<Event>(jsonData, {mainCreator: () => [Event]});
   t.assert(eventParsed instanceof Event);
@@ -96,9 +93,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on property', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Example>(example);
-  t.assert(jsonData.includes('numbers'));
-  t.assert(jsonData.includes('wrapper'));
-  t.assert(jsonData.includes('[12,13,15]'));
+  t.is(jsonData, '{"numbers":{"wrapper":[12,13,15]}}');
 
   const exampleParsed = objectMapper.parse<Example>(jsonData, {mainCreator: () => [Example]});
   t.assert(exampleParsed instanceof Example);
@@ -131,9 +126,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on class', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Example>(example);
-  t.assert(jsonData.includes('numbers'));
-  t.assert(jsonData.includes('wrapper'));
-  t.assert(jsonData.includes('[12,13,15]'));
+  t.is(jsonData, '{"numbers":{"wrapper":[12,13,15]}}');
 
   const exampleParsed = objectMapper.parse<Example>(jsonData, {mainCreator: () => [Example]});
   t.assert(exampleParsed instanceof Example);

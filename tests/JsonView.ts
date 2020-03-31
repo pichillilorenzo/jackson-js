@@ -34,17 +34,13 @@ test('@JsonView', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonDataWithoutView = objectMapper.stringify<User>(user);
-  t.assert(jsonDataWithoutView.includes('john.alfa@gmail.com'));
-  t.assert(jsonDataWithoutView.includes(password));
-  t.assert(jsonDataWithoutView.includes(activationCode));
+  // eslint-disable-next-line max-len
+  t.is(jsonDataWithoutView, '{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}');
 
   const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
-  t.assert(jsonDataWithViewPublic.includes('john.alfa@gmail.com'));
-  t.assert(!jsonDataWithViewPublic.includes(password));
-  t.assert(!jsonDataWithViewPublic.includes(activationCode));
+  t.is(jsonDataWithViewPublic, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const jsonDataWithViewInternal = objectMapper.stringify<User>(user, {withViews: () => [Views.internal]});
-  t.assert(jsonDataWithViewInternal.includes('john.alfa@gmail.com'));
-  t.assert(jsonDataWithViewInternal.includes(password));
-  t.assert(jsonDataWithViewInternal.includes(activationCode));
+  // eslint-disable-next-line max-len
+  t.is(jsonDataWithViewInternal, '{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}');
 });

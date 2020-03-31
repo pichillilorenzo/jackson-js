@@ -25,14 +25,14 @@ class User {
 }
 
 test('@JsonGetter and @JsonSetter', t => {
-  const user = new User(1, 'Lorenzo', 'Pichilli');
+  const user = new User(1, 'John', 'Alfa');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('Lorenzo Pichilli'));
+  t.is(jsonData, '{"id":1,"firstname":"John","lastname":"Alfa","fullname":"John Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.assert(userParsed.fullname instanceof Array);
-  t.deepEqual(userParsed.fullname, ['Lorenzo', 'Pichilli']);
+  t.deepEqual(userParsed.fullname, ['John', 'Alfa']);
 });

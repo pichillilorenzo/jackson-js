@@ -31,7 +31,7 @@ test('@JsonAlias on field', t => {
   const objectMapper = new ObjectMapper();
   const jsonData = `{
   "id": 1,
-  "name": "Lorenzo",
+  "name": "John",
   "books": [
     {
       "name": "Learning TypeScript",
@@ -85,7 +85,7 @@ test('@JsonAlias on constructor parameter', t => {
   const objectMapper = new ObjectMapper();
   const jsonData = `{
   "id": 1,
-  "name": "Lorenzo",
+  "name": "John",
   "books": [
     {
       "name": "Learning TypeScript",

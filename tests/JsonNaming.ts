@@ -19,9 +19,7 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('id'));
-  t.assert(jsonData.includes('book_name'));
-  t.assert(jsonData.includes('book_category'));
+  t.is(jsonData, '{"id":1,"book_name":"Learning TypeScript","book_category":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);
@@ -48,9 +46,7 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('id'));
-  t.assert(jsonData.includes('bookname'));
-  t.assert(jsonData.includes('bookcategory'));
+  t.is(jsonData, '{"id":1,"bookname":"Learning TypeScript","bookcategory":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);
@@ -77,9 +73,7 @@ test('@JsonNaming with JsonNamingStrategy.KEBAB_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('id'));
-  t.assert(jsonData.includes('book-name'));
-  t.assert(jsonData.includes('book-category'));
+  t.is(jsonData, '{"id":1,"book-name":"Learning TypeScript","book-category":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);
@@ -106,9 +100,7 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CAMEL_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('id'));
-  t.assert(jsonData.includes('bookName'));
-  t.assert(jsonData.includes('bookCategory'));
+  t.is(jsonData, '{"id":1,"bookName":"Learning TypeScript","bookCategory":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);
@@ -135,9 +127,7 @@ test('@JsonNaming with JsonNamingStrategy.UPPER_CAMEL_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('Id'));
-  t.assert(jsonData.includes('BookName'));
-  t.assert(jsonData.includes('BookCategory'));
+  t.is(jsonData, '{"Id":1,"BookName":"Learning TypeScript","BookCategory":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);
@@ -164,9 +154,7 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_DOT_CASE', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Book>(book);
-  t.assert(jsonData.includes('id'));
-  t.assert(jsonData.includes('book.name'));
-  t.assert(jsonData.includes('book.category'));
+  t.is(jsonData, '{"id":1,"book.name":"Learning TypeScript","book.category":"Web Development"}');
 
   const bookParsed = objectMapper.parse<Book>(jsonData, {mainCreator: () => [Book]});
   t.assert(bookParsed instanceof Book);

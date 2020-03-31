@@ -362,14 +362,14 @@ import {JsonSetter} from './annotations/JsonSetter';
 //
 // // const objectMapper = new ObjectMapper();
 // //
-// // const tUser = new TestJsonClassUser(1, "pichillilorenzo@gmail.com");
+// // const tUser = new TestJsonClassUser(1, "john.alfa@gmail.com");
 // // const testJsonClass = new TestJsonClass();
 // // testJsonClass.user = tUser;
 // // const stringified8 = `
 // // {
 // //         "user": {
 // //                 "userId": 1,
-// //                 "email": "pichillilorenzo@gmail.com",
+// //                 "email": "john.alfa@gmail.com",
 // //                 "date": {
 // //                         "year": 2020,
 // //                         "month": 3,
@@ -456,7 +456,7 @@ import {JsonSetter} from './annotations/JsonSetter';
 // // objectMapper.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES] = true;
 // // objectMapper.features.deserialization[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES] = true;
 // //
-// // let specialItem = new SpecialItem(1, 'Lorenzo');
+// // let specialItem = new SpecialItem(1, 'John');
 // // let item = new Item(2, "book");
 // // item.relatedItem = item;
 // // let stringified6 = objectMapper.stringify<Item>(item, { format: '\t' });
@@ -482,8 +482,8 @@ import {JsonSetter} from './annotations/JsonSetter';
 // // const parent = new Parent();
 // // parent.age = 35;
 // // parent.name = new Name();
-// // parent.name.first = "Lorenzo";
-// // parent.name.last = "Pichilli";
+// // parent.name.first = "John";
+// // parent.name.last = "Alfa";
 // // let stringified9 = objectMapper.stringify<Parent>(parent, { format: '\t' });
 // // console.log(stringified9);
 // // console.log(objectMapper.parse<Parent, Parent>(stringified9, {mainCreator: Parent}));
@@ -590,7 +590,7 @@ import {JsonSetter} from './annotations/JsonSetter';
 // //   }
 // // }
 // // const objectMapper = new ObjectMapper();
-// // const child1 = new Child2('Lorenzo');
+// // const child1 = new Child2('John');
 // // const child2 = new Child2('Samanta');
 // // const parent1 = new Parent2('Dario');
 // // // const parent2 = new Parent2('Nadia');
@@ -658,7 +658,7 @@ import {JsonSetter} from './annotations/JsonSetter';
 // // item2.name = 'Item 2';
 // // const user = new User();
 // // user.id = NaN;
-// // user.email = 'pichillilorenzo@gmail.com';
+// // user.email = 'john.alfa@gmail.com';
 // // user.password = '43jn53rsad';
 // // user.items = [item1, item2];
 // // const objectMapper = new ObjectMapper();
@@ -751,6 +751,7 @@ import {JsonSetter} from './annotations/JsonSetter';
 // const objectMapper = new ObjectMapper();
 // objectMapper.features.serialization[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] = true;
 // console.log(objectMapper.stringify(item));
+
 
 
 export {

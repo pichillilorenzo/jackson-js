@@ -30,11 +30,7 @@ test('@JsonFilter on class', t => {
       }
     }
   });
-
-  t.assert(!jsonData.includes('Mohit'));
-  t.assert(jsonData.includes('30'));
-  t.assert(jsonData.includes('ABCD'));
-  t.assert(!jsonData.includes('Varanasi'));
+  t.is(jsonData, '{"age":30,"college":"ABCD"}');
 
   jsonData = objectMapper.stringify<Student>(student, {
     filters: {
@@ -44,11 +40,7 @@ test('@JsonFilter on class', t => {
       }
     }
   });
-
-  t.assert(jsonData.includes('Mohit'));
-  t.assert(!jsonData.includes('30'));
-  t.assert(!jsonData.includes('ABCD'));
-  t.assert(jsonData.includes('Varanasi'));
+  t.is(jsonData, '{"stdName":"Mohit","city":"Varanasi"}');
 
   jsonData = objectMapper.stringify<Student>(student, {
     filters: {
@@ -57,11 +49,7 @@ test('@JsonFilter on class', t => {
       }
     }
   });
-
-  t.assert(jsonData.includes('Mohit'));
-  t.assert(jsonData.includes('30'));
-  t.assert(jsonData.includes('ABCD'));
-  t.assert(jsonData.includes('Varanasi'));
+  t.is(jsonData, '{"stdName":"Mohit","age":30,"college":"ABCD","city":"Varanasi"}');
 });
 
 test('@JsonFilter on class property', t => {
@@ -102,10 +90,7 @@ test('@JsonFilter on class property', t => {
       }
     }
   });
-
-  t.assert(jsonData.includes('Apple'));
-  t.assert(jsonData.includes('Tim Cook'));
-  t.assert(!jsonData.includes('50'));
+  t.is(jsonData, '{"name":"Apple","ceo":{"name":"Tim Cook"}}');
 
   jsonData = objectMapper.stringify<Company>(company, {
     filters: {
@@ -115,10 +100,7 @@ test('@JsonFilter on class property', t => {
       }
     }
   });
-
-  t.assert(jsonData.includes('Apple'));
-  t.assert(!jsonData.includes('Tim Cook'));
-  t.assert(jsonData.includes('50'));
+  t.is(jsonData, '{"name":"Apple","ceo":{"empAge":50}}');
 
   jsonData = objectMapper.stringify<Company>(company, {
     filters: {
@@ -127,8 +109,5 @@ test('@JsonFilter on class property', t => {
       }
     }
   });
-
-  t.assert(jsonData.includes('Apple'));
-  t.assert(jsonData.includes('Tim Cook'));
-  t.assert(jsonData.includes('50'));
+  t.is(jsonData, '{"name":"Apple","ceo":{"name":"Tim Cook","empAge":50}}');
 });

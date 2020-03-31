@@ -17,10 +17,7 @@ test('@JsonProperty with value', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('1'));
-  t.assert(jsonData.includes('empName'));
-  t.assert(!jsonData.includes('name'));
-  t.assert(jsonData.includes('John'));
+  t.is(jsonData, '{"id":1,"empName":"John"}');
 });
 
 test('Fail @JsonProperty with required', t => {
@@ -59,10 +56,7 @@ test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('1'));
-  t.assert(!jsonData.includes('empName'));
-  t.assert(!jsonData.includes('name'));
-  t.assert(!jsonData.includes('John'));
+  t.is(jsonData, '{"id":1}');
 
   const employeeParsed = objectMapper.parse<Employee>('{"id":1,"empName":"John"}', {mainCreator: () => [Employee]});
   t.assert(employeeParsed instanceof Employee);
@@ -84,13 +78,10 @@ test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('1'));
-  t.assert(jsonData.includes('empName'));
-  t.assert(!jsonData.includes('name'));
-  t.assert(jsonData.includes('John'));
+  t.is(jsonData, '{"id":1,"empName":"John"}');
 
   const err = t.throws<JacksonError>(() => {
-    objectMapper.parse<Employee>('{"id":1,"empName":"John"}', {mainCreator: () => [Employee]});
+    objectMapper.parse<Employee>(jsonData, {mainCreator: () => [Employee]});
   });
 
   t.assert(err instanceof JacksonError);

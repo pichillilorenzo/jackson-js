@@ -23,13 +23,9 @@ test('@JsonInclude on class with JsonIncludeType.NON_EMPTY', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(!jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(!jsonData.includes('phones'));
-  t.assert(!jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John"}');
 });
 
 test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
@@ -54,13 +50,9 @@ test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(jsonData.includes('phones'));
-  t.assert(jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}');
 });
 
 test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
@@ -85,13 +77,9 @@ test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(!jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(!jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(!jsonData.includes('phones'));
-  t.assert(!jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"name":"John"}');
 });
 
 test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
@@ -116,13 +104,9 @@ test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('dept'));
-  t.assert(jsonData.includes('address'));
-  t.assert(jsonData.includes('phones'));
-  t.assert(jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_EMPTY', t => {
@@ -152,13 +136,9 @@ test('@JsonInclude on property with JsonIncludeType.NON_EMPTY', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(!jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(!jsonData.includes('phones'));
-  t.assert(!jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John"}');
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_NULL', t => {
@@ -188,13 +168,9 @@ test('@JsonInclude on property with JsonIncludeType.NON_NULL', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(jsonData.includes('phones'));
-  t.assert(jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}');
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_DEFAULT', t => {
@@ -224,13 +200,9 @@ test('@JsonInclude on property with JsonIncludeType.NON_DEFAULT', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(!jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(!jsonData.includes('dept'));
-  t.assert(!jsonData.includes('address'));
-  t.assert(!jsonData.includes('phones'));
-  t.assert(!jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"name":"John"}');
 });
 
 test('@JsonInclude on property with JsonIncludeType.ALWAYS', t => {
@@ -260,11 +232,7 @@ test('@JsonInclude on property with JsonIncludeType.ALWAYS', t => {
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
+
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.assert(jsonData.includes('0'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('dept'));
-  t.assert(jsonData.includes('address'));
-  t.assert(jsonData.includes('phones'));
-  t.assert(jsonData.includes('otherInfo'));
+  t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
 });

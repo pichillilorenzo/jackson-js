@@ -673,7 +673,7 @@ export class JsonParser<T> {
         break;
       }
 
-      options.mainCreator = [jsonTypeCtor[0]];
+      options.mainCreator = [jsonTypeCtor];
       return newObj;
     }
 

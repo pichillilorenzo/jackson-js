@@ -180,9 +180,7 @@ export interface JsonManagedReferenceOptions extends JsonAnnotationOptions {
     value?: string;
 }
 export interface JsonPropertyOptions extends JsonAnnotationOptions {
-    class?: (...args: any[]) => ClassType<any>;
     value?: any;
-    defaultValue?: any;
     access?: JsonPropertyAccess;
     required?: boolean;
 }

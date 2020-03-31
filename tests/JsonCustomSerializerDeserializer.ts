@@ -29,12 +29,7 @@ test('@JsonSerialize and @JsonDeserialize on class', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('1'));
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('John'));
-  t.assert(jsonData.includes('Alfa'));
-  t.assert(jsonData.includes('otherInfo'));
-  t.assert(jsonData.includes('other info'));
+  t.is(jsonData, '{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -104,11 +99,8 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Writer>(writer);
-  t.assert(jsonData.includes('George R. R. Martin'));
-  t.assert(jsonData.includes('Game Of Thrones'));
-  t.assert(jsonData.includes('2012'));
-  t.assert(jsonData.includes('formatted'));
-  t.assert(jsonData.includes('null'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"name":"George R. R. Martin","books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null}]}');
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);
@@ -186,12 +178,8 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   });
 
   const jsonData = objectMapper.stringify<Writer>(writer);
-
-  t.assert(jsonData.includes('George R. R. Martin'));
-  t.assert(jsonData.includes('Game Of Thrones'));
-  t.assert(jsonData.includes('2012'));
-  t.assert(jsonData.includes('formatted'));
-  t.assert((jsonData.split('null').length - 1) === 3);
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"name":"George R. R. Martin","books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null},null,null]}');
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);

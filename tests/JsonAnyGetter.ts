@@ -26,13 +26,7 @@ test('@JsonAnyGetter', t => {
   screenInfo.otherInfo.set('yLocation', 200);
 
   const jsonData = objectMapper.stringify<ScreenInfo>(screenInfo);
-
-  t.assert(jsonData.includes('"xLocation":400'));
-  t.assert(jsonData.includes('"yLocation":200'));
-  t.assert(jsonData.includes('"id":"TradeDetails"'));
-  t.assert(jsonData.includes('"title":"Trade Details"'));
-  t.assert(jsonData.includes('"width":500'));
-  t.assert(jsonData.includes('"height":300'));
+  t.is(jsonData, '{"xLocation":400,"yLocation":200,"id":"TradeDetails","title":"Trade Details","width":500,"height":300}');
 });
 
 test('Fail multi @JsonAnyGetter annotations', t => {

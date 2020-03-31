@@ -45,10 +45,6 @@ test('@JsonIgnore', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('Game Of Thrones'));
-  t.assert(jsonData.includes('NVIDIA'));
-  t.assert(!jsonData.includes('Book'));
-  t.assert(!jsonData.includes('Computer'));
-  t.assert(!jsonData.includes('owner'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones"},{"id":2,"name":"NVIDIA"}]}');
 });

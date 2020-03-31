@@ -98,9 +98,8 @@ test('@JsonManagedReference And @JsonBackReference', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('Book'));
-  t.assert(jsonData.includes('Computer'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book"},{"id":2,"name":"Computer"}]}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -152,9 +151,8 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('Book'));
-  t.assert(jsonData.includes('Computer'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}]}');
 
   const err = t.throws<JacksonError>(() => {
     objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
@@ -205,9 +203,8 @@ test('@JsonIdentityInfo One To Many', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('Book'));
-  t.assert(jsonData.includes('Computer'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}]}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -264,10 +261,8 @@ test('@JsonIdentityInfo Many To Many', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user1);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('alex.beta@gmail.com'));
-  t.assert(jsonData.includes('Book'));
-  t.assert(jsonData.includes('Computer'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owners":[1,{"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta","items":[1]}]},{"id":2,"name":"Computer","owners":[1]}]}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -320,9 +315,5 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(!jsonData.includes('Book'));
-  t.assert(!jsonData.includes('Computer'));
-  t.assert(jsonData.includes('2'));
-  t.assert(jsonData.includes('3'));
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[2,3]}');
 });

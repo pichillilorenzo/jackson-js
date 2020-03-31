@@ -46,10 +46,8 @@ test('@JsonIgnoreProperties', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('john.alfa@gmail.com'));
-  t.assert(jsonData.includes('Game Of Thrones'));
-  t.assert(jsonData.includes('NVIDIA'));
-  t.assert(!jsonData.includes('owner'));
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}');
 });
 
 test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
@@ -77,21 +75,17 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
     }
   }
 
-  const user = new User(1, 'Lorenzo', 'Pichilli');
+  const user = new User(1, 'John', 'Alfa');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('1'));
-  t.assert(jsonData.includes('Lorenzo'));
-  t.assert(jsonData.includes('Pichilli'));
-  t.assert(!jsonData.includes('fullname'));
-  t.assert(!jsonData.includes('Lorenzo Pichilli'));
+  t.is(jsonData, '{"id":1,"firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.is(userParsed.id, 1);
-  t.is(userParsed.firstname, 'Lorenzo');
-  t.is(userParsed.lastname, 'Pichilli');
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
   t.is(userParsed.fullname, undefined);
 });
 
@@ -120,21 +114,17 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
     }
   }
 
-  const user = new User(1, 'Lorenzo', 'Pichilli');
+  const user = new User(1, 'John', 'Alfa');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('1'));
-  t.assert(!jsonData.includes('firstname'));
-  t.assert(jsonData.includes('lastname'));
-  t.assert(jsonData.includes('fullname'));
-  t.assert(jsonData.includes('Lorenzo Pichilli'));
+  t.is(jsonData, '{"id":1,"lastname":"Alfa","fullname":"John Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.is(userParsed.id, 1);
   t.is(userParsed.firstname, null);
-  t.is(userParsed.lastname, 'Pichilli');
+  t.is(userParsed.lastname, 'Alfa');
   t.is(userParsed.fullname, undefined);
 });
 
@@ -163,22 +153,18 @@ test('@JsonIgnoreProperties with allowSetters "true"', t => {
     }
   }
 
-  const user = new User(1, 'Lorenzo', 'Pichilli');
+  const user = new User(1, 'John', 'Alfa');
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.assert(jsonData.includes('1'));
-  t.assert(!jsonData.includes('firstname'));
-  t.assert(jsonData.includes('lastname'));
-  t.assert(jsonData.includes('fullname'));
-  t.assert(jsonData.includes('Lorenzo Pichilli'));
+  t.is(jsonData, '{"id":1,"lastname":"Alfa","fullname":"John Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.is(userParsed.id, 1);
   t.is(userParsed.firstname, null);
-  t.is(userParsed.lastname, 'Pichilli');
-  t.deepEqual(userParsed.fullname, ['Lorenzo', 'Pichilli']);
+  t.is(userParsed.lastname, 'Alfa');
+  t.deepEqual(userParsed.fullname, ['John', 'Alfa']);
 });
 
 test('@JsonIgnoreProperties with ignoreUnknown "true"', t => {
@@ -196,12 +182,12 @@ test('@JsonIgnoreProperties with ignoreUnknown "true"', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  const jsonData = '{"id":1,"firstname":"Lorenzo","lastname":"Pichilli","email":"pichillilorenzo@gmail.com"}';
+  const jsonData = '{"id":1,"firstname":"John","lastname":"Alfa","email":"john.alfa@gmail.com"}';
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.is(userParsed.id, 1);
   t.is(userParsed.firstname, null);
-  t.is(userParsed.lastname, 'Pichilli');
+  t.is(userParsed.lastname, 'Alfa');
   t.assert(!Object.hasOwnProperty.call(userParsed, 'email'));
 });

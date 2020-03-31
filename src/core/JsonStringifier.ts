@@ -227,9 +227,6 @@ export class JsonStringifier<T> {
         if (this.hasJsonIdentityReferenceAlwaysAsId(value, options)) {
           replacement = this.stringifyJsonIdentityReference(replacement, value, options);
         } else {
-          replacement = this.stringifyJsonTypeInfo(replacement, value, options);
-          replacement = this.stringifyJsonRootName(replacement, value, options);
-
           // eslint-disable-next-line guard-for-in
           for (const k in replacement) {
             const newOptions = {...options};
@@ -245,6 +242,8 @@ export class JsonStringifier<T> {
             newOptions.mainCreator = newMainCreator;
             replacement[k] = this.transform(k, replacement[k], newOptions, new Map(valueAlreadySeen));
           }
+          replacement = this.stringifyJsonRootName(replacement, value, options);
+          replacement = this.stringifyJsonTypeInfo(replacement, value, options);
         }
 
         this.stringifyJsonNaming(replacement, value, options);
@@ -384,7 +383,7 @@ export class JsonStringifier<T> {
   }
 
   private stringifyJsonValue(obj: any, options: JsonStringifierTransformerOptions): null | any  {
-    const jsonValue: JsonValuePrivateOptions = getMetadata('jackson:JsonValue', obj, null, options.annotationsEnabled);
+    const jsonValue: JsonValuePrivateOptions = getMetadata('jackson:JsonValue', obj.constructor, null, options.annotationsEnabled);
     if (jsonValue) {
       return (typeof obj[jsonValue.propertyKey] === 'function') ? obj[jsonValue.propertyKey]() : obj[jsonValue.propertyKey];
     }
