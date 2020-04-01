@@ -1,5 +1,7 @@
 import test from 'ava';
-import {JsonInject, JsonClass, ObjectMapper} from '../src';
+import {JsonInject} from '../src/annotations/JsonInject';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonInject on class field', t => {
   class CurrencyRate {

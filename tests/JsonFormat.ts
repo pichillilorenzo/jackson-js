@@ -1,11 +1,8 @@
 import test from 'ava';
-import {
-  JsonFormat,
-  ObjectMapper,
-  JsonFormatShape,
-  JsonClass,
-  JsonDeserialize
-} from '../src';
+import {JsonFormat, JsonFormatShape} from '../src/annotations/JsonFormat';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonFormat on properties', t => {
   class Event {
@@ -40,7 +37,7 @@ test('@JsonFormat on properties', t => {
       phone: string;
     };
 
-    constructor(name: string, startDate: Date, price: number, canceled: number, info: {address: string; phone: string;}) {
+    constructor(name: string, startDate: Date, price: number, canceled: number, info: {address: string; phone: string}) {
       this.name = name;
       this.startDate = startDate;
       this.price = price;

@@ -1,14 +1,12 @@
 import test from 'ava';
-import {
-  ObjectMapper,
-  JacksonError,
-  JsonBackReference,
-  JsonClass,
-  JsonIdentityInfo,
-  JsonManagedReference,
-  ObjectIdGenerator,
-  JsonIdentityReference
-} from '../src';
+import {JacksonError} from '../src/core/JacksonError';
+import {JsonIdentityInfo, ObjectIdGenerator} from '../src/annotations/JsonIdentityInfo';
+import {JsonManagedReference} from '../src/annotations/JsonManagedReference';
+import {JsonBackReference} from '../src/annotations/JsonBackReference';
+import {JsonIdentityReference} from '../src/annotations/JsonIdentityReference';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
+
 
 test('Fail Infinite recursion', t => {
   class User {

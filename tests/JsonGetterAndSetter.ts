@@ -1,5 +1,7 @@
 import test from 'ava';
-import {JsonGetter, JsonSetter, ObjectMapper} from '../src';
+import {JsonGetter} from '../src/annotations/JsonGetter';
+import {JsonSetter} from '../src/annotations/JsonSetter';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 class User {
   id: number;

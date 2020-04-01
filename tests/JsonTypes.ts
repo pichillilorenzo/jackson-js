@@ -1,14 +1,8 @@
 import test from 'ava';
-import {
-  JsonIgnore,
-  JsonClass,
-  ObjectMapper,
-  JsonTypeInfo,
-  JsonTypeInfoId,
-  JsonTypeInfoAs,
-  JsonSubTypes,
-  JsonTypeName
-} from '../src';
+import {JsonTypeName} from '../src/annotations/JsonTypeName';
+import {JsonSubTypes} from '../src/annotations/JsonSubTypes';
+import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from '../src/annotations/JsonTypeInfo';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY', t => {
   @JsonTypeInfo({

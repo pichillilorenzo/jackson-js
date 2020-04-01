@@ -1,5 +1,7 @@
 import test from 'ava';
-import {JsonAnyGetter, ObjectMapper, JacksonError} from '../src';
+import {JacksonError} from '../src/core/JacksonError';
+import {JsonAnyGetter} from '../src/annotations/JsonAnyGetter';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 class ScreenInfo {
   id: string;

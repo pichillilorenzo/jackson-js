@@ -1,5 +1,6 @@
 import test from 'ava';
-import {ObjectMapper, JsonRawValue} from '../src';
+import {JsonRawValue} from '../src/annotations/JsonRawValue';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 class User {
   id: number;

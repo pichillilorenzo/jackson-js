@@ -1,5 +1,9 @@
 import test from 'ava';
-import {JsonIgnoreProperties, JsonClass, ObjectMapper, JsonGetter, JsonSetter} from '../src';
+import {JsonGetter} from '../src/annotations/JsonGetter';
+import {JsonSetter} from '../src/annotations/JsonSetter';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonIgnoreProperties} from '../src/annotations/JsonIgnoreProperties';
 
 test('@JsonIgnoreProperties', t => {
   class User {

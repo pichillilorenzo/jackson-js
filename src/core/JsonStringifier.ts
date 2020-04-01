@@ -1,15 +1,14 @@
 import {
   JsonAppendOptions,
   JsonClassOptions, JsonFilterOptions,
-  JsonFormatOptions, JsonGetterOptions, JsonIdentityInfoOptions, JsonIdentityReferenceOptions,
+  JsonFormatOptions, JsonIdentityInfoOptions, JsonIdentityReferenceOptions,
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions, JsonNamingOptions,
   JsonPropertyOptions,
   JsonPropertyOrderOptions, JsonRootNameOptions, JsonSerializeOptions, JsonStringifierFilterOptions,
   JsonStringifierOptions, JsonStringifierTransformerOptions,
-  JsonSubTypeOptions, JsonSubTypesOptions,
-  JsonTypeInfoOptions, JsonTypeNameOptions,
-  JsonUnwrappedOptions,
+  JsonSubTypesOptions,
+  JsonTypeInfoOptions, JsonUnwrappedOptions,
   JsonViewOptions
 } from '../@types';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
@@ -41,8 +40,8 @@ import {
   JsonTypeNamePrivateOptions,
   JsonValuePrivateOptions
 } from '../@types/private';
-import {JsonFilterType, JsonIgnoreProperties} from '..';
 import {JsonNamingStrategy} from '../annotations/JsonNaming';
+import {JsonFilterType} from '../annotations/JsonFilter';
 
 dayjs.extend(customParseFormat);
 

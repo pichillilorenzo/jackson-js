@@ -2,7 +2,7 @@ import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonCreatorDecorator, JsonCreatorOptions} from '../@types';
 import {JsonCreatorPrivateOptions} from '../@types/private';
-import {JacksonError} from '..';
+import {JacksonError} from '../core/JacksonError';
 
 export const defaultCreatorName = 'defaultCreatorName';
 

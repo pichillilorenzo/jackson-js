@@ -1,5 +1,7 @@
 import test from 'ava';
-import {JacksonError, JsonProperty, JsonPropertyAccess, ObjectMapper} from '../src';
+import {JacksonError} from '../src/core/JacksonError';
+import {JsonProperty, JsonPropertyAccess} from '../src/annotations/JsonProperty';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonProperty with value', t => {
   class Employee {

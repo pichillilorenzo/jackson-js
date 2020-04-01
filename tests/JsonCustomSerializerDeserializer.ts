@@ -1,5 +1,8 @@
 import test from 'ava';
-import {JsonClass, JsonDeserialize, JsonSerialize, ObjectMapper} from '../src';
+import {JsonSerialize} from '../src/annotations/JsonSerialize';
+import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonSerialize and @JsonDeserialize on class', t => {
   @JsonSerialize({using: (user: User) => ({

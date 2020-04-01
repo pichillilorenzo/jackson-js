@@ -1,5 +1,8 @@
 import test from 'ava';
-import {JsonFilter, JsonClass, ObjectMapper, JsonProperty, JsonFilterType} from '../src';
+import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonFilter, JsonFilterType} from '../src/annotations/JsonFilter';
+import {JsonClass} from '../src/annotations/JsonClass';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonFilter on class', t => {
 

@@ -1,6 +1,8 @@
 import test from 'ava';
-import {JacksonError, JsonAppend, ObjectMapper} from '../src';
 import {JsonIncludeType} from '../src/annotations/JsonInclude';
+import {JsonAppend} from '../src/annotations/JsonAppend';
+import {JacksonError} from '../src/core/JacksonError';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonAppend with value', t => {
   @JsonAppend({attrs: [

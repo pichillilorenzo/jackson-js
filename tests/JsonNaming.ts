@@ -1,5 +1,6 @@
 import test from 'ava';
-import {JsonNaming, JsonNamingStrategy, ObjectMapper} from '../src';
+import {JsonNaming, JsonNamingStrategy} from '../src/annotations/JsonNaming';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.SNAKE_CASE})

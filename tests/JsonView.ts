@@ -1,5 +1,6 @@
 import test from 'ava';
-import {ObjectMapper, JsonView} from '../src';
+import {JsonView} from '../src/annotations/JsonView';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 class Views {
   static public = class Public {};

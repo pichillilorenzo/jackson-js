@@ -1,5 +1,6 @@
 import test from 'ava';
-import {ObjectMapper, JsonRootName} from '../src';
+import {JsonRootName} from '../src/annotations/JsonRootName';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonRootName without value', t => {
   @JsonRootName()

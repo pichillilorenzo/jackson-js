@@ -1,4 +1,4 @@
-import {getArgumentNames, makeJacksonDecorator} from '../util';
+import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonAliasDecorator, JsonAliasOptions} from '../@types';
 

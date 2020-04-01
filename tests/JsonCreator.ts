@@ -1,5 +1,8 @@
 import test from 'ava';
-import {JsonCreator, ObjectMapper, JsonProperty, JacksonError} from '../src';
+import {JacksonError} from '../src/core/JacksonError';
+import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonCreator} from '../src/annotations/JsonCreator';
+import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonCreator on class', t => {
   @JsonCreator()

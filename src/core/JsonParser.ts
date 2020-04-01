@@ -6,7 +6,6 @@ import {
   isSameConstructorOrExtensionOfNoObject
 } from '../util';
 import {
-  ClassList,
   ClassType,
   JsonAliasOptions, JsonAppendOptions,
   JsonClassOptions, JsonDeserializeOptions,
@@ -14,9 +13,9 @@ import {
   JsonIgnorePropertiesOptions, JsonInjectOptions,
   JsonManagedReferenceOptions, JsonNamingOptions,
   JsonParserOptions, JsonParserTransformerOptions,
-  JsonPropertyOptions, JsonRootNameOptions, JsonSetterOptions, JsonStringifierTransformerOptions,
-  JsonSubTypeOptions, JsonSubTypesOptions,
-  JsonTypeInfoOptions, JsonTypeNameOptions,
+  JsonPropertyOptions, JsonRootNameOptions,
+  JsonSubTypesOptions,
+  JsonTypeInfoOptions,
   JsonUnwrappedOptions,
   JsonViewOptions
 } from '../@types';
@@ -706,6 +705,13 @@ export class JsonParser<T> {
     for (const metadataKey of metadataKeys) {
       if (metadataKey.startsWith('jackson:JsonUnwrapped:')) {
         const realKey = metadataKey.replace('jackson:JsonUnwrapped:', '');
+        const jsonClass: JsonClassOptions =
+          getMetadata('jackson:JsonClass', currentMainCreator, realKey, options.annotationsEnabled);
+        if (!jsonClass) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError(`@JsonUnwrapped() requires use of @JsonClass() for deserialization at ${currentMainCreator.name}["${realKey}"])`);
+        }
+
         const jsonUnwrapped: JsonUnwrappedOptions =
           getMetadata(metadataKey, currentMainCreator, null, options.annotationsEnabled);
 
@@ -714,11 +720,12 @@ export class JsonParser<T> {
 
         replacement[realKey] = {};
 
-        for (const k in replacement) {
-          if (k.startsWith(prefix) && k.endsWith(suffix) && Object.hasOwnProperty.call(replacement, k)) {
-            const unwrappedKey = k.substr(prefix.length, k.length - suffix.length);
-            replacement[realKey][unwrappedKey] = replacement[k];
-            delete replacement[k];
+        const properties = getClassProperties(jsonClass.class()[0]);
+        for (const k of properties) {
+          const wrappedKey = prefix + k + suffix;
+          if (Object.hasOwnProperty.call(replacement, wrappedKey)) {
+            replacement[realKey][k] = replacement[wrappedKey];
+            delete replacement[wrappedKey];
           }
         }
       }
