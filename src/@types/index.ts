@@ -69,6 +69,7 @@ export type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<JsonType
 export type JsonUnwrappedDecorator = JacksonDecoratorWithOptionalOptions<JsonUnwrappedOptions>;
 export type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOptions>;
 export type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions>;
+export type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeIdOptions>;
 
 export interface JsonStringifierFilterOptions {
   type: JsonFilterType;
@@ -92,6 +93,9 @@ export interface JsonStringifierOptions {
     [key: string]: boolean;
   };
   forType?: WeakMap<ClassType<any>, JsonStringifierOptions>;
+
+  /** @internal */
+  _internalAnnotations?: Map<ClassType<any>, {[key: string]: JsonAnnotationOptions}>;
 }
 
 export interface JsonParserBaseWithoutMainCreatorOptions {
@@ -108,6 +112,9 @@ export interface JsonParserBaseWithoutMainCreatorOptions {
     [key: string]: boolean;
   };
   forType?: WeakMap<ClassType<any>, JsonParserBaseWithoutMainCreatorOptions>;
+
+  /** @internal */
+  _internalAnnotations?: Map<ClassType<any>, {[key: string]: JsonAnnotationOptions}>;
 }
 
 export interface JsonParserOptions extends JsonParserBaseWithoutMainCreatorOptions {
@@ -380,3 +387,5 @@ export interface JsonGetterOptions extends JsonAnnotationOptions {
 export interface JsonSetterOptions extends JsonAnnotationOptions {
   value: string;
 }
+
+export type JsonTypeIdOptions = JsonAnnotationOptions;

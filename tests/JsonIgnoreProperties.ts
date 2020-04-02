@@ -52,6 +52,22 @@ test('@JsonIgnoreProperties', t => {
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
   t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}');
+
+  const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.email, 'john.alfa@gmail.com');
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
+  t.is(userParsed.items.length, 2);
+  t.is(userParsed.items[0].id, 1);
+  t.is(userParsed.items[0].name, 'Game Of Thrones');
+  t.is(userParsed.items[0].category, 'Book');
+  t.is(userParsed.items[0].owner, null);
+  t.is(userParsed.items[1].id, 2);
+  t.is(userParsed.items[1].name, 'NVIDIA');
+  t.is(userParsed.items[1].category, 'Graphic Card');
+  t.is(userParsed.items[1].owner, null);
 });
 
 test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {

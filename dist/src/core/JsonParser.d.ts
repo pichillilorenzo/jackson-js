@@ -27,6 +27,7 @@ export declare class JsonParser<T> {
     transform(key: string, value: any, options: JsonParserTransformerOptions): any;
     private convertParserOptionsToTransformerOptions;
     private getDefaultValue;
+    private propagateAnnotations;
     private invokeCustomDeserializers;
     private getInstanceAlreadySeen;
     private parseJsonCreator;

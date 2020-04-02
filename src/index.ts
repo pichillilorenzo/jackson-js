@@ -36,6 +36,8 @@ import {JsonAppend} from './annotations/JsonAppend';
 import {JsonNaming, JsonNamingStrategy} from './annotations/JsonNaming';
 import {JsonGetter} from './annotations/JsonGetter';
 import {JsonSetter} from './annotations/JsonSetter';
+import {JsonTypeId} from './annotations/JsonTypeId';
+import * as cloneDeep from 'lodash.clonedeep';
 
 //
 // // class DateSerializer {
@@ -752,3 +754,90 @@ import {JsonSetter} from './annotations/JsonSetter';
 // objectMapper.features.serialization[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] = true;
 // console.log(objectMapper.stringify(item));
 
+// @JsonTypeInfo({
+//   use: JsonTypeInfoId.NAME,
+//   include: JsonTypeInfoAs.WRAPPER_OBJECT
+// })
+// @JsonSubTypes({
+//   types: [
+//     {class: () => Dog, name: 'dog'},
+//     {class: () => Cat, name: 'cat'},
+//   ]
+// })
+// class Animal {
+//   name: string;
+//
+//   constructor(name: string) {
+//     this.name = name;
+//   }
+// }
+//
+// @JsonTypeName({value: 'dog'})
+// class Dog extends Animal {
+//
+// }
+//
+// @JsonTypeName({value: 'cat'})
+// class Cat extends Animal {
+//
+// }
+//
+// const dog = new Dog('Arthur');
+// const cat = new Cat('Merlin');
+//
+// const objectMapper = new ObjectMapper();
+// const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+// console.log(jsonData);
+//
+// const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
+// console.log(animals);
+
+class User {
+  id: number;
+  email: string;
+  firstname: string;
+  lastname: string;
+
+  @JsonIgnoreProperties({
+    value: ['owner']
+  })
+  @JsonClass({class: () => [Array, [Item]]})
+  items: Item[] = [];
+
+  constructor(id: number, email: string, firstname: string, lastname: string) {
+    this.id = id;
+    this.email = email;
+    this.firstname = firstname;
+    this.lastname = lastname;
+  }
+}
+
+class Item {
+  id: number;
+  name: string;
+  category: string;
+
+  @JsonClass({class: () => [User]})
+  owner: User;
+
+  constructor(id: number, name: string, category: string, owner: User) {
+    this.id = id;
+    this.name = name;
+    this.category = category;
+    this.owner = owner;
+  }
+}
+
+const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+const item1 = new Item(1, 'Game Of Thrones', 'Book', user);
+const item2 = new Item(2, 'NVIDIA', 'Graphic Card', user);
+user.items.push(...[item1, item2]);
+
+const objectMapper = new ObjectMapper();
+
+const jsonData = objectMapper.stringify<User>(user);
+console.log(jsonData);
+
+// eslint-disable-next-line max-len
+const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book","owner":{"id":1}},{"id":2,"name":"NVIDIA","category":"Graphic Card","owner":{"id":1}}]}', {mainCreator: () => [User]});
+console.log(userParsed);

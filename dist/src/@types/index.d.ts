@@ -56,6 +56,7 @@ export declare type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<
 export declare type JsonUnwrappedDecorator = JacksonDecoratorWithOptionalOptions<JsonUnwrappedOptions>;
 export declare type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOptions>;
 export declare type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions>;
+export declare type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeIdOptions>;
 export interface JsonStringifierFilterOptions {
     type: JsonFilterType;
     values?: string[];
@@ -77,6 +78,9 @@ export interface JsonStringifierOptions {
         [key: string]: boolean;
     };
     forType?: WeakMap<ClassType<any>, JsonStringifierOptions>;
+    annotations?: Map<ClassType<any>, {
+        [key: string]: JsonAnnotationOptions;
+    }>;
 }
 export interface JsonParserBaseWithoutMainCreatorOptions {
     withViews?: (...args: any[]) => ClassType<any>[];
@@ -92,6 +96,9 @@ export interface JsonParserBaseWithoutMainCreatorOptions {
         [key: string]: boolean;
     };
     forType?: WeakMap<ClassType<any>, JsonParserBaseWithoutMainCreatorOptions>;
+    annotations?: Map<ClassType<any>, {
+        [key: string]: JsonAnnotationOptions;
+    }>;
 }
 export interface JsonParserOptions extends JsonParserBaseWithoutMainCreatorOptions {
     mainCreator?: (...args: any[]) => ClassList<ClassType<any>>;
@@ -300,3 +307,4 @@ export interface JsonGetterOptions extends JsonAnnotationOptions {
 export interface JsonSetterOptions extends JsonAnnotationOptions {
     value: string;
 }
+export declare type JsonTypeIdOptions = JsonAnnotationOptions;

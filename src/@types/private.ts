@@ -3,7 +3,7 @@ import {
   JsonAnySetterOptions,
   JsonBackReferenceOptions,
   JsonCreatorOptions, JsonGetterOptions,
-  JsonManagedReferenceOptions, JsonSetterOptions, JsonTypeNameOptions, JsonValueOptions
+  JsonManagedReferenceOptions, JsonSetterOptions, JsonTypeIdOptions, JsonTypeNameOptions, JsonValueOptions
 } from './index';
 
 /** @internal */
@@ -51,4 +51,9 @@ export interface JsonValuePrivateOptions extends JsonValueOptions {
 /** @internal */
 export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
   ctor?: Record<string, any> | ObjectConstructor;
+}
+
+/** @internal */
+export interface JsonTypeIdPrivateOptions extends JsonTypeIdOptions {
+  propertyKey: string;
 }

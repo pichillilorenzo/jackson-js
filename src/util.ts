@@ -7,7 +7,13 @@ import {
   FunctionExpression, Identifier, MemberExpression,
   Node
 } from '@babel/types';
-import {ClassType, JsonAnnotationDecorator, JsonAnnotationOptions} from './@types';
+import {
+  ClassType,
+  JsonAnnotationDecorator,
+  JsonAnnotationOptions,
+  JsonParserOptions,
+  JsonStringifierOptions
+} from './@types';
 import 'reflect-metadata';
 
 /**
@@ -263,26 +269,33 @@ export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
 export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  annotationsEnabled?: { [key: string]: any }): T => {
-  const option: JsonAnnotationOptions = (propertyKey) ?
+  options?: JsonStringifierOptions | JsonParserOptions): T => {
+  let jsonAnnotationOptions: JsonAnnotationOptions = (propertyKey) ?
     Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
 
-  if (option != null && annotationsEnabled != null) {
-    const annotationKeys = Object.keys(annotationsEnabled);
-    const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
-    if (annotationKey && typeof annotationsEnabled[annotationKey] === 'boolean') {
-      option.enabled = annotationsEnabled[annotationKey];
+  if (jsonAnnotationOptions == null && propertyKey == null && options != null && options._internalAnnotations != null) {
+    const map = options._internalAnnotations.get(target as ObjectConstructor);
+    if (map != null && metadataKey in map) {
+      jsonAnnotationOptions = map[metadataKey];
     }
   }
 
-  return option != null && option.enabled ? option as T : null;
+  if (jsonAnnotationOptions != null && options != null && options.annotationsEnabled != null) {
+    const annotationKeys = Object.keys(options.annotationsEnabled);
+    const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
+    if (annotationKey && typeof options.annotationsEnabled[annotationKey] === 'boolean') {
+      jsonAnnotationOptions.enabled = options.annotationsEnabled[annotationKey];
+    }
+  }
+
+  return jsonAnnotationOptions != null && jsonAnnotationOptions.enabled ? jsonAnnotationOptions as T : null;
 };
 
 export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  annotationsEnabled?: { [key: string]: any }): boolean => {
-  const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, annotationsEnabled);
+  options?: JsonStringifierOptions | JsonParserOptions): boolean => {
+  const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, options);
   return option != null;
 };
 
@@ -321,3 +334,13 @@ export const isValueEmpty = (value: any): boolean => value == null ||
   ( (value instanceof Set || value instanceof Map) && value.size === 0 ) ||
   ( !(value instanceof Set || value instanceof Map) &&
     (typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0 );
+
+export const getDeepestClass = (array: Array<any>): any | null => {
+  if (array.length === 0) {
+    return null;
+  }
+  if (array.length === 1) {
+    return array[0];
+  }
+  return getDeepestClass(array[array.length - 1]);
+};

@@ -18,4 +18,7 @@ export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeJacksonDe
       Reflect.defineMetadata('jackson:JsonIgnoreProperties', options, target.constructor);
       return target;
     }
+    if (propertyKey != null) {
+      Reflect.defineMetadata('jackson:JsonIgnoreProperties', options, target.constructor, propertyKey);
+    }
   });

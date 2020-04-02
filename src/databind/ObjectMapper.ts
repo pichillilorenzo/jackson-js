@@ -73,6 +73,8 @@ export class ObjectMapper {
       features: this.features.serialization,
       filters: {},
       attributes: {},
+      annotationsEnabled: {},
+      _internalAnnotations: new Map(),
       ...options
     });
   }
@@ -90,6 +92,8 @@ export class ObjectMapper {
       deserializers: this.deserializers,
       features: this.features.deserialization,
       injectableValues: {},
+      annotationsEnabled: {},
+      _internalAnnotations: new Map(),
       ...options
     });
   }
