@@ -14,7 +14,6 @@ export const JsonIdentityReference: JsonIdentityReferenceDecorator = makeJackson
   (options: JsonIdentityReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonIdentityReference', options, target);
-      Reflect.defineMetadata('jackson:JsonIdentityReference', options, target.constructor);
       return target;
     }
   });

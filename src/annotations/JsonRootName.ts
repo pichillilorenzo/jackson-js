@@ -8,7 +8,6 @@ export const JsonRootName: JsonRootNameDecorator = makeJacksonDecorator(
     if (!descriptorOrParamIndex && isClass(target)) {
       options.value = (options.value == null) ? (target as ObjectConstructor).name : options.value;
       Reflect.defineMetadata('jackson:JsonRootName', options, target);
-      Reflect.defineMetadata('jackson:JsonRootName', options, target.constructor);
       return target;
     }
   });

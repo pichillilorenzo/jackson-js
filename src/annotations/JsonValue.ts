@@ -11,7 +11,6 @@ export const JsonValue: JsonValueDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      Reflect.defineMetadata('jackson:JsonValue', privateOptions, target);
       Reflect.defineMetadata('jackson:JsonValue', privateOptions, target.constructor);
     }
   });

@@ -7,10 +7,9 @@ export const JsonSerialize: JsonSerializeDecorator = makeJacksonDecorator(
   (options: JsonSerializeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonSerialize', options, target);
-      Reflect.defineMetadata('jackson:JsonSerialize', options, target.constructor);
       return target;
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonSerialize', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonSerialize', options, target.constructor, propertyKey);
     }
   });

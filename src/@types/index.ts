@@ -9,6 +9,7 @@ import {JsonNamingStrategy} from '../annotations/JsonNaming';
 /**
  * https://stackoverflow.com/a/55032655/4637638
  */
+/** @internal */
 export type Modify<T, R> = Omit<T, keyof R> & R;
 // before typescript@3.5
 // type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
@@ -16,7 +17,9 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 export type ClassType<T> = (new () => T) | (new (...args: any[]) => T) |
 ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 
+/** @internal */
 export type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' |  'unshift';
+/** @internal */
 export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> =
 Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
 & {
@@ -76,45 +79,42 @@ export interface JsonStringifierFilterOptions {
   values?: string[];
 }
 
-export interface JsonStringifierOptions {
+export interface JsonStringifierParserCommonOptions<T> {
   withViews?: (...args) => ClassType<any>[];
-  format?: string;
   features?: {
     [key: number]: boolean;
-  };
-  serializers?: ObjectMapperSerializer[];
-  filters?: {
-    [key: string]: JsonStringifierFilterOptions;
-  };
-  attributes?: {
-    [key: string]: any;
   };
   annotationsEnabled?: {
     [key: string]: boolean;
   };
-  forType?: WeakMap<ClassType<any>, JsonStringifierOptions>;
+  forType?: WeakMap<ClassType<any>, T>;
 
   /** @internal */
-  _internalAnnotations?: Map<ClassType<any>, {[key: string]: JsonAnnotationOptions}>;
+  _internalAnnotations?: Map<ClassType<any>, {
+    [key: string]: JsonAnnotationOptions | number;
+    dept: number;
+  }>;
 }
 
-export interface JsonParserBaseWithoutMainCreatorOptions {
-  withViews?: (...args) => ClassType<any>[];
-  withCreatorName?: string;
-  features?: {
-    [key: number]: boolean;
+export interface JsonStringifierOptions
+  extends JsonStringifierParserCommonOptions<JsonStringifierOptions> {
+  attributes?: {
+    [key: string]: any;
   };
+  filters?: {
+    [key: string]: JsonStringifierFilterOptions;
+  };
+  format?: string;
+  serializers?: ObjectMapperSerializer[];
+}
+
+export interface JsonParserBaseWithoutMainCreatorOptions
+  extends JsonStringifierParserCommonOptions<JsonParserBaseWithoutMainCreatorOptions> {
+  withCreatorName?: string;
   deserializers?: ObjectMapperDeserializer[];
   injectableValues?: {
     [key: string]: any;
   };
-  annotationsEnabled?: {
-    [key: string]: boolean;
-  };
-  forType?: WeakMap<ClassType<any>, JsonParserBaseWithoutMainCreatorOptions>;
-
-  /** @internal */
-  _internalAnnotations?: Map<ClassType<any>, {[key: string]: JsonAnnotationOptions}>;
 }
 
 export interface JsonParserOptions extends JsonParserBaseWithoutMainCreatorOptions {

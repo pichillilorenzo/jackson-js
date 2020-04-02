@@ -9,4 +9,7 @@ export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
       Reflect.defineMetadata('jackson:JsonSubTypes', options, target);
       return target;
     }
+    if (propertyKey != null) {
+      Reflect.defineMetadata('jackson:JsonSubTypes', options, target.constructor, propertyKey);
+    }
   });

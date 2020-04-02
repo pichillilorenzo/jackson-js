@@ -11,17 +11,19 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
     ...o
   }),
   (options: JsonManagedReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (Reflect.hasMetadata('jackson:JsonManagedReference:' + options.value, target.constructor)) {
-      // eslint-disable-next-line max-len
-      throw new JacksonError(`Multiple managed-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
+    if (propertyKey) {
+      if (Reflect.hasMetadata('jackson:JsonManagedReference:' + options.value, target.constructor)) {
+        // eslint-disable-next-line max-len
+        throw new JacksonError(`Multiple managed-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
+      }
+
+      const privateOptions: JsonManagedReferencePrivateOptions = {
+        propertyKey: propertyKey.toString(),
+        ...options
+      };
+
+      Reflect.defineMetadata('jackson:JsonManagedReference', privateOptions, target.constructor, propertyKey);
+      Reflect.defineMetadata('jackson:JsonManagedReference:' + privateOptions.value, privateOptions, target.constructor);
+      Reflect.defineMetadata('jackson:JsonManagedReference:' + propertyKey.toString(), privateOptions, target.constructor);
     }
-
-    const privateOptions: JsonManagedReferencePrivateOptions = {
-      propertyKey: propertyKey.toString(),
-      ...options
-    };
-
-    Reflect.defineMetadata('jackson:JsonManagedReference', privateOptions, target.constructor, propertyKey);
-    Reflect.defineMetadata('jackson:JsonManagedReference:' + privateOptions.value, privateOptions, target.constructor);
-    Reflect.defineMetadata('jackson:JsonManagedReference:' + propertyKey.toString(), privateOptions, target.constructor);
   });

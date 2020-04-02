@@ -23,7 +23,6 @@ export const JsonNaming: JsonNamingDecorator = makeJacksonDecorator(
   (options: JsonNamingOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonNaming', options, target);
-      Reflect.defineMetadata('jackson:JsonNaming', options, target.constructor);
       return target;
     }
   });

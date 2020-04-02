@@ -29,7 +29,6 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
   (options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target);
-      Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target.constructor);
       return target;
     }
   });

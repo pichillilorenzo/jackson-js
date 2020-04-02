@@ -16,6 +16,6 @@ export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
       Reflect.defineMetadata('jackson:JsonInclude', options, target);
       return target;
     } else if (propertyKey) {
-      Reflect.defineMetadata('jackson:JsonInclude', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonInclude', options, target.constructor, propertyKey);
     }
   });

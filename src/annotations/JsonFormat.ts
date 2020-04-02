@@ -24,7 +24,7 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
-      Reflect.defineMetadata('jackson:JsonFormat', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonFormat', options, target.constructor, propertyKey);
     } else if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonFormat', options, target);
       return target;

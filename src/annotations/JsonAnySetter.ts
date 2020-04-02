@@ -12,9 +12,9 @@ export const JsonAnySetter: JsonAnySetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      if (Reflect.hasMetadata('jackson:JsonAnySetter', target)) {
+      if (Reflect.hasMetadata('jackson:JsonAnySetter', target.constructor)) {
         throw new JacksonError(`Multiple 'any-setters' defined for "${target.constructor.name}".`);
       }
-      Reflect.defineMetadata('jackson:JsonAnySetter', privateOptions, target);
+      Reflect.defineMetadata('jackson:JsonAnySetter', privateOptions, target.constructor);
     }
   });

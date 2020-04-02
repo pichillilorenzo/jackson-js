@@ -11,7 +11,6 @@ export const JsonGetter: JsonGetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      Reflect.defineMetadata('jackson:JsonGetter', privateOptions, target, privateOptions.value);
       Reflect.defineMetadata('jackson:JsonGetter', privateOptions, target.constructor, privateOptions.value);
     }
   });

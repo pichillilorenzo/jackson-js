@@ -23,6 +23,6 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
     }
 
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonInject', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonInject', options, target.constructor, propertyKey);
     }
   });

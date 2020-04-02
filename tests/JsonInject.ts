@@ -26,7 +26,7 @@ test('@JsonInject on class field', t => {
   t.assert(currencyRate instanceof CurrencyRate);
   t.is(currencyRate.pair, 'USD/JPY');
   t.is(currencyRate.rate, 109.15);
-  t.is(currencyRate.lastUpdated, now);
+  t.deepEqual(currencyRate.lastUpdated, now);
 });
 
 test('@JsonInject with useInput false', t => {
@@ -52,7 +52,7 @@ test('@JsonInject with useInput false', t => {
   t.assert(currencyRate instanceof CurrencyRate);
   t.is(currencyRate.pair, 'USD/JPY');
   t.is(currencyRate.rate, 109.15);
-  t.is(currencyRate.lastUpdated, now);
+  t.deepEqual(currencyRate.lastUpdated, now);
 });
 
 test('@JsonInject with useInput true', t => {
@@ -109,5 +109,5 @@ test('@JsonInject on constructor parameter and different value', t => {
   t.assert(currencyRate instanceof CurrencyRate);
   t.is(currencyRate.pair, 'USD/JPY');
   t.is(currencyRate.rate, 109.15);
-  t.is(currencyRate.lastUpdated, now);
+  t.deepEqual(currencyRate.lastUpdated, now);
 });

@@ -15,10 +15,9 @@ export const JsonFilter: JsonFilterDecorator = makeJacksonDecorator(
   (o: JsonFilterOptions): JsonFilterOptions => ({enabled: true, ...o }),
   (options: JsonFilterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
-      Reflect.defineMetadata('jackson:JsonFilter', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonFilter', options, target.constructor, propertyKey);
     } else if (typeof descriptorOrParamIndex !== 'number' && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonFilter', options, target);
-      Reflect.defineMetadata('jackson:JsonFilter', options, target.constructor);
       return target;
     }
   });

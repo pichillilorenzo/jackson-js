@@ -11,7 +11,6 @@ export const JsonSetter: JsonSetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      Reflect.defineMetadata('jackson:JsonSetter', privateOptions, target, privateOptions.value);
       Reflect.defineMetadata('jackson:JsonSetter', privateOptions, target.constructor, privateOptions.value);
     }
   });

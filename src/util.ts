@@ -12,7 +12,7 @@ import {
   JsonAnnotationDecorator,
   JsonAnnotationOptions,
   JsonParserOptions,
-  JsonStringifierOptions
+  JsonStringifierOptions, JsonStringifierParserCommonOptions
 } from './@types';
 import 'reflect-metadata';
 
@@ -202,7 +202,10 @@ export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
   if (typeof ctor === 'string') {
     let parent = Object.getPrototypeOf(ctorExtensionOf);
     while (parent.name) {
-      if (parent.name === ctor) {return true; }
+      if (parent.name === ctor) {
+        return true;
+      }
+      // get parent class
       parent = Object.getPrototypeOf(parent);
     }
   } else {
@@ -266,19 +269,35 @@ export const isObjLiteral = (_obj: any): boolean => {
 export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
 export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
 
+// find metadata from the current class or from all of its parent classes
+export const findMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+  target: Record<string, any>,
+  propertyKey?: string | symbol | null,
+  options?: JsonStringifierParserCommonOptions<any>): T => {
+  let jsonAnnotationOptions: JsonAnnotationOptions = null;
+
+  while (jsonAnnotationOptions == null && target.name) {
+    jsonAnnotationOptions = (propertyKey) ?
+      Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
+
+    if (jsonAnnotationOptions == null && propertyKey == null && options != null && options._internalAnnotations != null) {
+      const map = options._internalAnnotations.get(target as ObjectConstructor);
+      if (map != null && metadataKey in map) {
+        jsonAnnotationOptions = map[metadataKey] as JsonAnnotationOptions;
+      }
+    }
+
+    // get parent class
+    target = Object.getPrototypeOf(target);
+  }
+  return jsonAnnotationOptions as T;
+};
+
 export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  options?: JsonStringifierOptions | JsonParserOptions): T => {
-  let jsonAnnotationOptions: JsonAnnotationOptions = (propertyKey) ?
-    Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
-
-  if (jsonAnnotationOptions == null && propertyKey == null && options != null && options._internalAnnotations != null) {
-    const map = options._internalAnnotations.get(target as ObjectConstructor);
-    if (map != null && metadataKey in map) {
-      jsonAnnotationOptions = map[metadataKey];
-    }
-  }
+  options?: JsonStringifierParserCommonOptions<any>): T => {
+  const jsonAnnotationOptions: JsonAnnotationOptions = findMetadata(metadataKey, target, propertyKey, options);
 
   if (jsonAnnotationOptions != null && options != null && options.annotationsEnabled != null) {
     const annotationKeys = Object.keys(options.annotationsEnabled);
@@ -294,7 +313,7 @@ export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string
 export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  options?: JsonStringifierOptions | JsonParserOptions): boolean => {
+  options?: JsonStringifierParserCommonOptions<any>): boolean => {
   const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, options);
   return option != null;
 };

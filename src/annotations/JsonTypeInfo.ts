@@ -26,4 +26,7 @@ export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
       Reflect.defineMetadata('jackson:JsonTypeInfo', options, target);
       return target;
     }
+    if (propertyKey != null) {
+      Reflect.defineMetadata('jackson:JsonTypeInfo', options, target.constructor, propertyKey);
+    }
   });

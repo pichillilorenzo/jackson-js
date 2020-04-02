@@ -23,7 +23,7 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex && typeof descriptorOrParamIndex !== 'number' && typeof descriptorOrParamIndex.value === 'function') {
       privateOptions.method = descriptorOrParamIndex.value;
       if (privateOptions.name && Reflect.hasMetadata('jackson:JsonCreator:' + privateOptions.name, target)) {
-        throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.constructor.name}".`);
+        throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.name}".`);
       }
       Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
     } else if (!descriptorOrParamIndex && isClass(target)) {

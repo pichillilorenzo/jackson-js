@@ -12,9 +12,9 @@ export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      if (Reflect.hasMetadata('jackson:JsonAnyGetter', target)) {
+      if (Reflect.hasMetadata('jackson:JsonAnyGetter', target.constructor)) {
         throw new JacksonError(`Multiple 'any-getters' defined for "${target.constructor.name}".`);
       }
-      Reflect.defineMetadata('jackson:JsonAnyGetter', privateOptions, target);
+      Reflect.defineMetadata('jackson:JsonAnyGetter', privateOptions, target.constructor);
     }
   });

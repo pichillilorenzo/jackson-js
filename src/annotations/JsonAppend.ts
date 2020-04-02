@@ -16,7 +16,6 @@ export const JsonAppend: JsonAppendDecorator = makeJacksonDecorator(
   (options: JsonAppendOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (!descriptorOrParamIndex && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonAppend', options, target);
-      Reflect.defineMetadata('jackson:JsonAppend', options, target.constructor);
       return target;
     }
   });

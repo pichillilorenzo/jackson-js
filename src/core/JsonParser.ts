@@ -16,7 +16,7 @@ import {
 } from '../util';
 import {
   ClassType,
-  JsonAliasOptions, JsonAppendOptions,
+  JsonAliasOptions, JsonAnnotationOptions, JsonAppendOptions,
   JsonClassOptions, JsonDeserializeOptions,
   JsonIdentityInfoOptions,
   JsonIgnorePropertiesOptions, JsonInjectOptions,
@@ -67,8 +67,10 @@ export class JsonParser<T> {
   parse(text: string, options: JsonParserOptions = {}): T {
     const value = JSON.parse(text);
 
-    const newOptions: JsonParserTransformerOptions = this.convertParserOptionsToTransformerOptions(cloneDeep(options));
+    let newOptions: JsonParserTransformerOptions = this.convertParserOptionsToTransformerOptions(options);
     newOptions.mainCreator = newOptions.mainCreator ? newOptions.mainCreator : [(value != null) ? value.constructor : Object];
+    newOptions._internalAnnotations = new Map();
+    newOptions = cloneDeep(newOptions);
     const result = this.transform('', value, newOptions);
 
     if (this._globalUnresolvedValueAlreadySeen.size > 0 &&
@@ -86,7 +88,6 @@ export class JsonParser<T> {
    * @param options
    */
   transform(key: string, value: any, options: JsonParserTransformerOptions): any {
-
     options = {
       features: [],
       deserializers: [],
@@ -96,6 +97,21 @@ export class JsonParser<T> {
       ...options
     };
     options = cloneDeep(options);
+
+    if (value != null && options._internalAnnotations != null &&
+      options._internalAnnotations.size > 0) {
+      let target = options.mainCreator[0];
+      while (target.name && !options._internalAnnotations.has(target)) {
+        target = Object.getPrototypeOf(target);
+      }
+      if (options._internalAnnotations.has(target)) {
+        if (options._internalAnnotations.get(target).dept === 0) {
+          options._internalAnnotations.delete(target);
+        } else {
+          options._internalAnnotations.get(target).dept--;
+        }
+      }
+    }
 
     if (options.forType && options.forType.has(options.mainCreator[0])) {
       options = {
@@ -161,11 +177,6 @@ export class JsonParser<T> {
         this.parseJsonUnwrapped(replacement, options);
         this.parseJsonPropertyAndJsonAlias(replacement, options);
 
-        let _hasInternalAnnotations = false;
-        if (options._internalAnnotations != null && options._internalAnnotations.size > 0) {
-          _hasInternalAnnotations = true;
-        }
-
         for (const k in replacement) {
           if (Object.hasOwnProperty.call(replacement, k)) {
             this.propagateAnnotations(k, options);
@@ -179,12 +190,6 @@ export class JsonParser<T> {
           }
         }
 
-        if (_hasInternalAnnotations) {
-          // remove all internal annotations because they are used only once
-          // and they must not be propagated
-          options._internalAnnotations = new Map();
-        }
-
         instance = this.parseJsonCreator(options, replacement);
         if (instance) {
           replacement = instance;
@@ -195,8 +200,6 @@ export class JsonParser<T> {
         const replacement = this.parseIterable(value, key, options);
         return replacement;
       }
-    } else {
-      options._internalAnnotations = new Map();
     }
 
     return value;
@@ -243,19 +246,31 @@ export class JsonParser<T> {
 
   private propagateAnnotations(key: string, options: JsonStringifierTransformerOptions): void {
     const currentMainCreator = options.mainCreator[0];
-    const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
-      getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, key, options);
     const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, key, options);
 
+    const metadataKeys = ['jackson:JsonIgnoreProperties', 'jackson:JsonTypeInfo', 'jackson:JsonSubTypes'];
+    const annotationsNameFound = [];
+    const annotationsToBeApplied = {
+      dept: 1
+    };
+    let deepestClass = null;
     if (jsonClass) {
-      const deepestClass = getDeepestClass(jsonClass.class());
-      const annotations = {};
-      if (jsonIgnoreProperties) {
-        annotations['jackson:JsonIgnoreProperties'] = jsonIgnoreProperties;
+      deepestClass = getDeepestClass(jsonClass.class());
+    }
+
+    for (const metadataKey of metadataKeys) {
+      const jsonAnnotationOptions: JsonAnnotationOptions = getMetadata(metadataKey, currentMainCreator, key, options);
+      if (jsonAnnotationOptions) {
+        annotationsNameFound.push(metadataKey.replace('jackson:', ''));
+        annotationsToBeApplied[metadataKey] = jsonAnnotationOptions;
       }
-      options._internalAnnotations.set(deepestClass, annotations);
-    } else if (!jsonClass && jsonIgnoreProperties) {
-      throw new JacksonError(`Missing mandatory @JsonClass() at ${currentMainCreator.name}["${key}"]`);
+    }
+
+    if (deepestClass != null && annotationsNameFound.length > 0) {
+      options._internalAnnotations.set(deepestClass, annotationsToBeApplied);
+    } else if (!jsonClass && annotationsNameFound.length > 0) {
+      // eslint-disable-next-line max-len
+      throw new JacksonError(`Missing mandatory @JsonClass() for [${annotationsNameFound.map((ann) => '@' + ann + '()').join(', ')}] at ${currentMainCreator.name}["${key}"]`);
     }
   }
 
@@ -395,7 +410,7 @@ export class JsonParser<T> {
         (method as Function)(...args) : new (method as ObjectConstructor)(...args);
 
       const hasJsonAnySetter =
-        hasMetadata('jackson:JsonAnySetter', instance, null, options);
+        hasMetadata('jackson:JsonAnySetter', instance.constructor, null, options);
 
       this.parseJsonIdentityInfo(instance, obj, options);
 
@@ -418,7 +433,7 @@ export class JsonParser<T> {
       const keys = Object.keys(obj).filter(n => !keysToBeExcluded.includes(n));
 
       for (const key of keys) {
-        const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', instance, key, options);
+        const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', instance.constructor, key, options);
         if (jsonSetter &&
           !(jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters && jsonIgnoreProperties.value.includes(key))) {
           instance[key] = instance[jsonSetter.propertyKey](obj[key]);
@@ -438,7 +453,7 @@ export class JsonParser<T> {
       for (const key in instance) {
         if (Object.hasOwnProperty.call(instance, key)) {
           const jsonInject: JsonInjectOptions =
-            getMetadata('jackson:JsonInject', instance, key, options);
+            getMetadata('jackson:JsonInject', instance.constructor, key, options);
           if (jsonInject) {
             instance[key] = (!jsonInject.useInput || (jsonInject.useInput && instance[key] == null)) ?
               options.injectableValues[jsonInject.value] : instance[key];
@@ -580,7 +595,7 @@ export class JsonParser<T> {
 
   private parseJsonAnySetter(replacement: any, obj: any, key: string, options: JsonParserTransformerOptions): void {
     const jsonAnySetter: JsonAnySetterPrivateOptions =
-      getMetadata('jackson:JsonAnySetter', replacement, null, options);
+      getMetadata('jackson:JsonAnySetter', replacement.constructor, null, options);
     if (jsonAnySetter && replacement[jsonAnySetter.propertyKey]) {
       if (typeof replacement[jsonAnySetter.propertyKey] === 'function') {
         replacement[jsonAnySetter.propertyKey](key, obj[key]);
@@ -685,14 +700,10 @@ export class JsonParser<T> {
 
       if (jsonSubTypes && jsonSubTypes.types && jsonSubTypes.types.length > 0) {
         for (const subType of jsonSubTypes.types) {
-          if (subType.name != null && jsonTypeInfoProperty === subType.name) {
-            jsonTypeCtor = subType.class();
-          } else {
-            const jsonTypeNameOptions: JsonTypeNamePrivateOptions =
-              getMetadata('jackson:JsonTypeName:' + jsonTypeInfoProperty, subType.class(), null, options);
-            if (jsonTypeNameOptions && jsonTypeNameOptions.ctor) {
-              jsonTypeCtor = jsonTypeNameOptions.ctor as ClassType<any>;
-            }
+          const subTypeClass = subType.class() as ObjectConstructor;
+          if ( (subType.name != null && jsonTypeInfoProperty === subType.name) ||
+            jsonTypeInfoProperty === subTypeClass.name) {
+            jsonTypeCtor = subTypeClass;
           }
         }
         if (!jsonTypeCtor) {

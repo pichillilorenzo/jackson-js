@@ -32,7 +32,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
     }
 
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonProperty', options, target, propertyKey);
+      Reflect.defineMetadata('jackson:JsonProperty', options, target.constructor, propertyKey);
       Reflect.defineMetadata('jackson:JsonProperty:' + propertyKey.toString(), options, target.constructor);
     }
   });
