@@ -31,6 +31,7 @@ export declare class JsonParser<T> {
     private invokeCustomDeserializers;
     private getInstanceAlreadySeen;
     private parseJsonCreator;
+    private parseJsonCreatorArguments;
     private parseJsonPropertyAndJsonAlias;
     private parseJsonRawValue;
     private parseJsonRootName;

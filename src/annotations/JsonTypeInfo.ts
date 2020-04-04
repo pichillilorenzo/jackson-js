@@ -1,4 +1,4 @@
-import {isClass, makeJacksonDecorator} from '../util';
+import {getArgumentNames, isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonTypeInfoDecorator, JsonTypeInfoOptions} from '../@types';
 
@@ -22,9 +22,14 @@ export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonTypeInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (!descriptorOrParamIndex && typeof descriptorOrParamIndex !== 'number' && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonTypeInfo', options, target);
       return target;
+    }
+    if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
+      Reflect.defineMetadata(
+        'jackson:JsonTypeInfoParam:' + descriptorOrParamIndex.toString(),
+        options, target, (propertyKey) ? propertyKey : 'constructor');
     }
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonTypeInfo', options, target.constructor, propertyKey);

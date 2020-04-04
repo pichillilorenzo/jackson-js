@@ -5,7 +5,7 @@ import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from '../src/annotations/J
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonTypeId} from '../src/annotations/JsonTypeId';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonClass} from "../src/annotations/JsonClass";
+import {JsonClass} from '../src/annotations/JsonClass';
 
 test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   @JsonTypeInfo({
@@ -98,6 +98,64 @@ test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without su
   const jsonData = objectMapper.stringify<Zoo>(zoo);
   // eslint-disable-next-line max-len
   t.is(jsonData, '{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"Dog"},{"name":"Merlin","@type":"Cat"}]}');
+
+  const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
+  t.assert(zooParsed instanceof Zoo);
+  t.is(zooParsed.animals.length, 2);
+  t.assert(zooParsed.animals[0] instanceof Dog);
+  t.is(zooParsed.animals[0].name, 'Arthur');
+  t.assert((zooParsed.animals[0] as Dog).father instanceof Dog);
+  t.is((zooParsed.animals[0] as Dog).father.name, 'Buddy');
+  t.assert((zooParsed.animals[0] as Dog).mother instanceof Dog);
+  t.is((zooParsed.animals[0] as Dog).mother.name, 'Coco');
+  t.assert(zooParsed.animals[1] instanceof Cat);
+  t.is(zooParsed.animals[1].name, 'Merlin');
+});
+
+test('@JsonTypeInfo at parameter field level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
+  class Zoo {
+    @JsonClass({class: () => [Array, [Animal]]})
+    animals: Animal[] = [];
+
+    constructor(
+    @JsonTypeInfo({
+      use: JsonTypeInfoId.NAME,
+      include: JsonTypeInfoAs.PROPERTY
+    })
+    @JsonSubTypes({
+      types: [
+        {class: () => Dog},
+        {class: () => Cat},
+      ]
+    })
+    @JsonClass({class: () => [Array, [Animal]]})
+      animals: Animal[]) {
+      this.animals = animals;
+    }
+  }
+
+  class Animal {
+    name: string;
+
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+
+  class Dog extends Animal {
+    @JsonClass({class: () => [Dog]})
+    father: Dog;
+    @JsonClass({class: () => [Dog]})
+    mother: Dog;
+  }
+
+  class Cat extends Animal {
+
+  }
+
+  const objectMapper = new ObjectMapper();
+  // eslint-disable-next-line max-len
+  const jsonData = '{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"Dog"},{"name":"Merlin","@type":"Cat"}]}';
 
   const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
   t.assert(zooParsed instanceof Zoo);

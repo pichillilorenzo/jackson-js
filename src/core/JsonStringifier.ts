@@ -114,10 +114,10 @@ export class JsonStringifier<T> {
         target = Object.getPrototypeOf(target);
       }
       if (options._internalAnnotations.has(target)) {
-        if (options._internalAnnotations.get(target).dept === 0) {
+        if (options._internalAnnotations.get(target).depth === 0) {
           options._internalAnnotations.delete(target);
         } else {
-          options._internalAnnotations.get(target).dept--;
+          options._internalAnnotations.get(target).depth--;
         }
       }
     }
@@ -324,13 +324,28 @@ export class JsonStringifier<T> {
     return defaultValue;
   }
 
+  /**
+   * Propagate annotations to class properties,
+   * only for the first level (depth) of recursion.
+   *
+   * Used, for example, in case of annotations applied on an iterable, such as an Array.
+   * In this case, the annotations are applied to each item of the iterable and not on the iterable itself.
+   * @param obj
+   * @param key
+   * @param options
+   */
   private propagateAnnotations(obj: any, key: string, options: JsonStringifierTransformerOptions): void {
     const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', obj.constructor, key, options);
 
-    const metadataKeys = ['jackson:JsonIgnoreProperties', 'jackson:JsonTypeInfo', 'jackson:JsonSubTypes'];
+    // Annotations list that can be propagated
+    const metadataKeys = [
+      'jackson:JsonIgnoreProperties',
+      'jackson:JsonTypeInfo',
+      'jackson:JsonSubTypes'
+    ];
     const annotationsNameFound = [];
     const annotationsToBeApplied = {
-      dept: 1
+      depth: 1
     };
     let deepestClass = null;
     if (jsonClass) {

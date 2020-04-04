@@ -92,7 +92,7 @@ export interface JsonStringifierParserCommonOptions<T> {
   /** @internal */
   _internalAnnotations?: Map<ClassType<any>, {
     [key: string]: JsonAnnotationOptions | number;
-    dept: number;
+    depth: number;
   }>;
 }
 

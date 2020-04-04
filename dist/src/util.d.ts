@@ -10,7 +10,7 @@ export declare const isClass: (obj: any) => boolean;
 export declare const isFunction: (funcOrClass: any) => boolean;
 export declare const makeDecorator: <T>(options: (...args: any[]) => JsonAnnotationOptions, decorator: JsonAnnotationDecorator) => any;
 export declare const makeJacksonDecorator: <T>(options: (...args: any[]) => JsonAnnotationOptions, decorator: JsonAnnotationDecorator) => any;
-export declare const getClassProperties: (clazz: ObjectConstructor | (new () => any) | (new (...args: any[]) => any) | ((...args: any[]) => any) | ((...args: any[]) => (cls: any) => any)) => string[];
+export declare const getClassProperties: (clazz: (new () => any) | (new (...args: any[]) => any) | ((...args: any[]) => any) | ((...args: any[]) => (cls: any) => any) | ObjectConstructor) => string[];
 export declare const getArgumentNames: (method: any) => string[];
 export declare const cloneClassInstance: <T>(instance: any) => T;
 export declare const isSameConstructor: (ctorOrCtorName: any, ctor2: any) => boolean;
