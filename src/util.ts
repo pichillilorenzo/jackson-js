@@ -92,66 +92,6 @@ const pluckParamName = (param): string => {
   if (param.type === 'RestElement') {return '...' + pluckParamName(param.argument); }
   return;
 };
-/*
-export const getClassProperties = (clazz: ObjectConstructor | ClassType<any>): string[] => {
-  const classCode = clazz.toString().trim();
-  const classProperties = [];
-
-  if (!classCode.startsWith('class ') &&
-    !classCode.startsWith('function ' + clazz.name) &&
-    !classCode.endsWith(' { [native code] }')) {
-    return classProperties;
-  }
-
-  const ast = parse(classCode);
-
-  const { body } = ast.program;
-  let expressionStatements: ExpressionStatement[] = [];
-  if (classCode.startsWith('class ')) {
-    const nodes: Node[] = (body[0] as ClassDeclaration).body.body;
-    // find constructor
-    for (const propertyOrMethod of nodes) {
-      if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
-        const ctor = propertyOrMethod as ClassMethod;
-        expressionStatements = ctor.body.body as ExpressionStatement[];
-        break;
-      }
-    }
-  } else {
-    expressionStatements = (body[0] as FunctionDeclaration).body.body as ExpressionStatement[];
-  }
-
-  for (const expressionStatement of expressionStatements) {
-    if (expressionStatement.type && expressionStatement.type === 'ExpressionStatement') {
-      const callExpression = (expressionStatement.expression as CallExpression);
-      if (callExpression.type === 'CallExpression') {
-        const callee = (callExpression.callee as MemberExpression);
-        const calleeObject = (callee.object as Identifier);
-        const calleeProperty = (callee.property as Identifier);
-        if (calleeObject && calleeProperty &&
-          calleeObject.name && calleeProperty.name &&
-          calleeObject.name === 'Object' && calleeProperty.name === 'defineProperty') {
-          const expressionArguments = callExpression.arguments;
-          if (expressionArguments.length > 1 &&
-            expressionArguments[0].type === 'ThisExpression' && expressionArguments[1].type === 'StringLiteral') {
-            classProperties.push(expressionArguments[1].value);
-          }
-        }
-      }
-    }
-  }
-
-  const propertyDescriptors =  Object.getOwnPropertyDescriptors(clazz.prototype);
-  // eslint-disable-next-line guard-for-in
-  for (const property in propertyDescriptors) {
-    const propertyDescriptor = propertyDescriptors[property];
-    if (propertyDescriptor.get != null || propertyDescriptor.set != null) {
-      classProperties.push(property);
-    }
-  }
-
-  return classProperties;
-};*/
 
 export const getClassProperties = (target: Record<string, any>, options = {
   withJsonProperties: false,
@@ -235,7 +175,9 @@ export const getArgumentNames = (method): string[] => {
     code = 'function ' + code;
   }
 
-  const ast = parse(code);
+  const ast = parse(code, {
+    plugins: ['typescript']
+  });
 
   const { body } = ast.program;
 
