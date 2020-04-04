@@ -1,6 +1,7 @@
 import test from 'ava';
 import {JsonView} from '../src/annotations/JsonView';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 class Views {
   static public = class Public {};
@@ -8,12 +9,18 @@ class Views {
 }
 
 class User {
+  @JsonProperty()
   id: number;
+  @JsonProperty()
   email: string;
+  @JsonProperty()
   @JsonView({value: () => [Views.internal]})
   password: string;
+  @JsonProperty()
   firstname: string;
+  @JsonProperty()
   lastname: string;
+  @JsonProperty()
   @JsonView({value: () => [Views.internal]})
   activationCode: string;
 

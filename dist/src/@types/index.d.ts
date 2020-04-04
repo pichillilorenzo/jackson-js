@@ -202,8 +202,15 @@ export interface JsonViewOptions extends JsonAnnotationOptions {
 export interface JsonAliasOptions extends JsonAnnotationOptions {
     values: string[];
 }
+export declare type ClassTypeWithAnnotationDefinitions = () => ({
+    target: ClassType<any>;
+    decorators: {
+        name: string;
+        options: JsonAnnotationOptions;
+    }[];
+});
 export interface JsonClassOptions extends JsonAnnotationOptions {
-    class: (...args: any[]) => ClassList<ClassType<any>>;
+    class: (...args: any[]) => ClassList<ClassType<any> | ClassTypeWithAnnotationDefinitions>;
 }
 export interface JsonUnwrappedOptions extends JsonAnnotationOptions {
     prefix?: string;

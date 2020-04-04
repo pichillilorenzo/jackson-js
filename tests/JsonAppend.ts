@@ -3,6 +3,7 @@ import {JsonIncludeType} from '../src/annotations/JsonInclude';
 import {JsonAppend} from '../src/annotations/JsonAppend';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonAppend with value', t => {
   @JsonAppend({attrs: [
@@ -11,7 +12,9 @@ test('@JsonAppend with value', t => {
     }
   ]})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {
@@ -42,7 +45,9 @@ test('@JsonAppend with prepend', t => {
     }
   ]})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {
@@ -74,7 +79,9 @@ test('@JsonAppend with userVersion', t => {
     }
   ]})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {
@@ -107,7 +114,9 @@ test('@JsonAppend fail with value required', t => {
     }
   ]})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {
@@ -134,7 +143,9 @@ test('@JsonAppend include only if value is non null', t => {
     }
   ]})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {

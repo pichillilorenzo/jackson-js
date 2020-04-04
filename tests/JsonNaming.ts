@@ -1,12 +1,16 @@
 import test from 'ava';
 import {JsonNaming, JsonNamingStrategy} from '../src/annotations/JsonNaming';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.SNAKE_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -32,8 +36,11 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.LOWER_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -59,8 +66,11 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.KEBAB_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.KEBAB_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -86,8 +96,11 @@ test('@JsonNaming with JsonNamingStrategy.KEBAB_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_CAMEL_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.LOWER_CAMEL_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -113,8 +126,11 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CAMEL_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.UPPER_CAMEL_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.UPPER_CAMEL_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -140,8 +156,11 @@ test('@JsonNaming with JsonNamingStrategy.UPPER_CAMEL_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_DOT_CASE', t => {
   @JsonNaming({strategy: JsonNamingStrategy.LOWER_DOT_CASE})
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     bookName: string;
+    @JsonProperty()
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {

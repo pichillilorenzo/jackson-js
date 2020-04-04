@@ -6,15 +6,21 @@ import {JsonBackReference} from '../src/annotations/JsonBackReference';
 import {JsonIdentityReference} from '../src/annotations/JsonIdentityReference';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 
 test('Fail Infinite recursion', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -27,9 +33,12 @@ test('Fail Infinite recursion', t => {
   }
 
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
@@ -56,11 +65,16 @@ test('Fail Infinite recursion', t => {
 
 test('@JsonManagedReference And @JsonBackReference', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     @JsonManagedReference()
     items: Item[] = [];
@@ -74,9 +88,12 @@ test('@JsonManagedReference And @JsonBackReference', t => {
   }
 
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     @JsonBackReference()
     owner: User;
@@ -97,7 +114,7 @@ test('@JsonManagedReference And @JsonBackReference', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book"},{"id":2,"name":"Computer"}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Book"},{"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -110,11 +127,16 @@ test('@JsonManagedReference And @JsonBackReference', t => {
 test('Fail @JsonIdentityInfo id already seen without scope', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id'})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -128,9 +150,12 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id'})
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
@@ -150,7 +175,7 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const err = t.throws<JacksonError>(() => {
     objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
@@ -162,11 +187,16 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 test('@JsonIdentityInfo One To Many', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -180,9 +210,12 @@ test('@JsonIdentityInfo One To Many', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
@@ -202,7 +235,7 @@ test('@JsonIdentityInfo One To Many', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -215,11 +248,16 @@ test('@JsonIdentityInfo One To Many', t => {
 test('@JsonIdentityInfo Many To Many', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -233,9 +271,12 @@ test('@JsonIdentityInfo Many To Many', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [User]]})
     owners: User[] = [];
 
@@ -260,7 +301,7 @@ test('@JsonIdentityInfo Many To Many', t => {
 
   const jsonData = objectMapper.stringify<User>(user1);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Book","owners":[1,{"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta","items":[1]}]},{"id":2,"name":"Computer","owners":[1]}]}');
+  t.is(jsonData, '{"items":[{"owners":[1,{"items":[1],"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta"}],"id":1,"name":"Book"},{"owners":[1],"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -273,11 +314,16 @@ test('@JsonIdentityInfo Many To Many', t => {
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -292,9 +338,12 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   @JsonIdentityReference({alwaysAsId: true})
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
@@ -313,5 +362,5 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[2,3]}');
+  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 });

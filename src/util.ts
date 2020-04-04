@@ -8,10 +8,10 @@ import {
   Node
 } from '@babel/types';
 import {
-  ClassType,
+  ClassType, JsonAliasOptions,
   JsonAnnotationDecorator,
   JsonAnnotationOptions,
-  JsonParserOptions,
+  JsonParserOptions, JsonPropertyOptions,
   JsonStringifierOptions, JsonStringifierParserCommonOptions
 } from './@types';
 import 'reflect-metadata';
@@ -92,7 +92,7 @@ const pluckParamName = (param): string => {
   if (param.type === 'RestElement') {return '...' + pluckParamName(param.argument); }
   return;
 };
-
+/*
 export const getClassProperties = (clazz: ObjectConstructor | ClassType<any>): string[] => {
   const classCode = clazz.toString().trim();
   const classProperties = [];
@@ -141,7 +141,83 @@ export const getClassProperties = (clazz: ObjectConstructor | ClassType<any>): s
     }
   }
 
+  const propertyDescriptors =  Object.getOwnPropertyDescriptors(clazz.prototype);
+  // eslint-disable-next-line guard-for-in
+  for (const property in propertyDescriptors) {
+    const propertyDescriptor = propertyDescriptors[property];
+    if (propertyDescriptor.get != null || propertyDescriptor.set != null) {
+      classProperties.push(property);
+    }
+  }
+
   return classProperties;
+};*/
+
+export const getClassProperties = (target: Record<string, any>, options = {
+  withJsonProperties: false,
+  withJsonAliases: false
+}): string[] => {
+  const metadataKeys = Reflect.getMetadataKeys(target);
+  const classProperties: Set<string> = new Set();
+  for (const metadataKey of metadataKeys) {
+    if (metadataKey.startsWith('jackson:JsonProperty:')) {
+      const propertyKey = metadataKey.replace('jackson:JsonProperty:', '');
+      classProperties.add(propertyKey);
+      if (options.withJsonProperties) {
+        const jsonProperty: JsonPropertyOptions = Reflect.getMetadata(metadataKey, target);
+        if (jsonProperty.value != null) {
+          classProperties.add(jsonProperty.value);
+        }
+      }
+    } else if (metadataKey.startsWith('jackson:JsonAlias:') && options.withJsonAliases) {
+      const propertyKey = metadataKey.replace('jackson:JsonAlias:', '');
+      classProperties.add(propertyKey);
+      const jsonAlias: JsonAliasOptions = Reflect.getMetadata(metadataKey, target);
+      if (jsonAlias.values != null) {
+        for (const alias of jsonAlias.values) {
+          classProperties.add(alias);
+        }
+      }
+    }
+  }
+
+  let parent = target;
+  while (parent.name && parent !== Object) {
+    const propertyDescriptors =  Object.getOwnPropertyDescriptors(parent.prototype);
+    // eslint-disable-next-line guard-for-in
+    for (const property in propertyDescriptors) {
+      const propertyDescriptor = propertyDescriptors[property];
+      if (propertyDescriptor.get != null || propertyDescriptor.set != null) {
+        classProperties.add(property);
+      }
+    }
+    parent = Object.getPrototypeOf(parent);
+  }
+
+  return [...classProperties];
+};
+
+export const classHasOwnProperty = (target: Record<string, any>, propertyKey: string,
+                                    options?: JsonStringifierParserCommonOptions<any>): boolean => {
+  const metadataKeys = getMetadataKeys(target, options);
+  if (metadataKeys.includes('jackson:JsonProperty:' + propertyKey)) {
+    return true;
+  }
+
+  let parent = target;
+  while (parent.name && parent !== Object) {
+    const propertyDescriptors =  Object.getOwnPropertyDescriptors(parent.prototype);
+    // eslint-disable-next-line guard-for-in
+    for (const property in propertyDescriptors) {
+      const propertyDescriptor = propertyDescriptors[property];
+      if (propertyDescriptor.get != null || propertyDescriptor.set != null && property === propertyKey) {
+        return true;
+      }
+    }
+    parent = Object.getPrototypeOf(parent);
+  }
+
+  return false;
 };
 
 export const getArgumentNames = (method): string[] => {
@@ -186,13 +262,6 @@ export const getArgumentNames = (method): string[] => {
     }
     return args;
   }, []).map(pluckParamName);
-};
-
-export const cloneClassInstance = <T>(instance): T => {
-  if (typeof instance !== 'object') {
-    return instance;
-  }
-  return Object.assign( Object.create( Object.getPrototypeOf(instance)), instance);
 };
 
 export const isSameConstructor = (ctorOrCtorName, ctor2): boolean =>
@@ -269,24 +338,22 @@ export const isObjLiteral = (_obj: any): boolean => {
 export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
 export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
 
-// find metadata from the current class or from all of its parent classes
+// find metadata considering also _internalAnnotations
 export const findMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
   options?: JsonStringifierParserCommonOptions<any>): T => {
-  let jsonAnnotationOptions: JsonAnnotationOptions = null;
+  let jsonAnnotationOptions: JsonAnnotationOptions = (propertyKey) ?
+    Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
 
-  while (jsonAnnotationOptions == null && target.name) {
-    jsonAnnotationOptions = (propertyKey) ?
-      Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
-
+  // search also on its prototype chain
+  while (jsonAnnotationOptions == null && target.name && target !== Object) {
     if (jsonAnnotationOptions == null && propertyKey == null && options != null && options._internalAnnotations != null) {
       const map = options._internalAnnotations.get(target as ObjectConstructor);
       if (map != null && metadataKey in map) {
         jsonAnnotationOptions = map[metadataKey] as JsonAnnotationOptions;
       }
     }
-
     // get parent class
     target = Object.getPrototypeOf(target);
   }
@@ -306,8 +373,45 @@ export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string
       jsonAnnotationOptions.enabled = options.annotationsEnabled[annotationKey];
     }
   }
+  return jsonAnnotationOptions != null && jsonAnnotationOptions.enabled ? jsonAnnotationOptions as T : undefined;
+};
 
-  return jsonAnnotationOptions != null && jsonAnnotationOptions.enabled ? jsonAnnotationOptions as T : null;
+// find all metadataKeys considering also _internalAnnotations
+export const findMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
+  options?: JsonStringifierParserCommonOptions<any>): any[] => {
+  const metadataKeys = new Set(Reflect.getMetadataKeys(target));
+
+  if (options != null && options._internalAnnotations != null) {
+    // search also on its prototype chain
+    let parent = target;
+    while (parent.name && parent !== Object) {
+      const internalAnnotations = options._internalAnnotations.get(parent as ObjectConstructor);
+      for (const key in internalAnnotations) {
+        if (key === 'depth') {
+          continue;
+        }
+        metadataKeys.add(key);
+      }
+      // get parent class
+      parent = Object.getPrototypeOf(parent);
+    }
+  }
+
+  return [...metadataKeys];
+};
+
+export const getMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
+  options?: JsonStringifierParserCommonOptions<any>): any[] => {
+  let metadataKeys = findMetadataKeys(target, options);
+
+  if (options != null && options.annotationsEnabled != null) {
+    const annotationKeys = Object.keys(options.annotationsEnabled);
+    metadataKeys = metadataKeys.filter((metadataKey) => {
+      const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
+      return options.annotationsEnabled[annotationKey] == null || options.annotationsEnabled[annotationKey];
+    });
+  }
+  return metadataKeys;
 };
 
 export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
@@ -362,4 +466,20 @@ export const getDeepestClass = (array: Array<any>): any | null => {
     return array[0];
   }
   return getDeepestClass(array[array.length - 1]);
+};
+
+export const getObjectKeysWithPropertyDescriptorNames = (obj: any): string[] => {
+  if (obj == null) {
+    return [];
+  }
+  const keys = Object.keys(obj);
+  const classProperties = getClassProperties(obj.constructor);
+  return [...new Set([...keys, ...classProperties])];
+};
+
+export const objectHasOwnPropertyWithPropertyDescriptorNames = (obj: any, key: string): boolean => {
+  if (obj == null || key == null) {
+    return false;
+  }
+  return getObjectKeysWithPropertyDescriptorNames(obj).includes(key);
 };

@@ -1,11 +1,14 @@
 import test from 'ava';
 import {JsonRootName} from '../src/annotations/JsonRootName';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonRootName without value', t => {
   @JsonRootName()
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {
@@ -29,7 +32,9 @@ test('@JsonRootName without value', t => {
 test('@JsonRootName with value', t => {
   @JsonRootName({value: 'userRoot'})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
 
     constructor(id: number, email: string) {

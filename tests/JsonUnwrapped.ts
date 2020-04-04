@@ -2,10 +2,13 @@ import test from 'ava';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {JsonUnwrapped} from '../src/annotations/JsonUnwrapped';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonUnwrapped', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     @JsonUnwrapped()
     @JsonClass({class: () => [Name]})
     name: Name;
@@ -18,7 +21,9 @@ test('@JsonUnwrapped', t => {
   }
 
   class Name {
+    @JsonProperty()
     first: string;
+    @JsonProperty()
     last: string;
 
     constructor(first: string, last: string) {
@@ -45,7 +50,9 @@ test('@JsonUnwrapped', t => {
 
 test('@JsonUnwrapped with prefix', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     @JsonUnwrapped({prefix: 'parent-'})
     @JsonClass({class: () => [Name]})
     name: Name;
@@ -58,7 +65,9 @@ test('@JsonUnwrapped with prefix', t => {
   }
 
   class Name {
+    @JsonProperty()
     first: string;
+    @JsonProperty()
     last: string;
 
     constructor(first: string, last: string) {
@@ -85,7 +94,9 @@ test('@JsonUnwrapped with prefix', t => {
 
 test('@JsonUnwrapped with suffix', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     @JsonUnwrapped({suffix: '-parent'})
     @JsonClass({class: () => [Name]})
     name: Name;
@@ -98,7 +109,9 @@ test('@JsonUnwrapped with suffix', t => {
   }
 
   class Name {
+    @JsonProperty()
     first: string;
+    @JsonProperty()
     last: string;
 
     constructor(first: string, last: string) {
@@ -125,7 +138,9 @@ test('@JsonUnwrapped with suffix', t => {
 
 test('@JsonUnwrapped with prefix and suffix', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     @JsonUnwrapped({prefix: 'parentPrefix-', suffix: '-parentSuffix'})
     @JsonClass({class: () => [Name]})
     name: Name;
@@ -138,7 +153,9 @@ test('@JsonUnwrapped with prefix and suffix', t => {
   }
 
   class Name {
+    @JsonProperty()
     first: string;
+    @JsonProperty()
     last: string;
 
     constructor(first: string, last: string) {

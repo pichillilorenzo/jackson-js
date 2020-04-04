@@ -2,13 +2,19 @@ import test from 'ava';
 import {JsonIgnore} from '../src/annotations/JsonIgnore';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 class User {
+  @JsonProperty()
   id: number;
+  @JsonProperty()
   email: string;
+  @JsonProperty()
   firstname: string;
+  @JsonProperty()
   lastname: string;
 
+  @JsonProperty()
   @JsonClass({class: () => [Array, [Item]]})
   items: Item[] = [];
 
@@ -21,12 +27,16 @@ class User {
 }
 
 class Item {
+  @JsonProperty()
   id: number;
+  @JsonProperty()
   name: string;
 
+  @JsonProperty()
   @JsonIgnore()
   category: string;
 
+  @JsonProperty()
   @JsonIgnore()
   owner: User;
 
@@ -48,5 +58,5 @@ test('@JsonIgnore', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones"},{"id":2,"name":"NVIDIA"}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones"},{"id":2,"name":"NVIDIA"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 });

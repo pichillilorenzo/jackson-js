@@ -1,10 +1,14 @@
 import test from 'ava';
 import {JsonRawValue} from '../src/annotations/JsonRawValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 class User {
+  @JsonProperty()
   id: number;
+  @JsonProperty()
   email: string;
+  @JsonProperty()
   @JsonRawValue()
   otherInfo: string;
 

@@ -1,15 +1,22 @@
 import test from 'ava';
 import {JsonInclude, JsonIncludeType} from '../src/annotations/JsonInclude';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonInclude on class with JsonIncludeType.NON_EMPTY', t => {
   @JsonInclude({value: JsonIncludeType.NON_EMPTY})
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     dept: string;
+    @JsonProperty()
     address: string;
+    @JsonProperty()
     phones: string[];
+    @JsonProperty()
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -32,11 +39,17 @@ test('@JsonInclude on class with JsonIncludeType.NON_EMPTY', t => {
 test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
   @JsonInclude({value: JsonIncludeType.NON_NULL})
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     dept: string;
+    @JsonProperty()
     address: string;
+    @JsonProperty()
     phones: string[];
+    @JsonProperty()
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -59,11 +72,17 @@ test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
 test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
   @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     dept: string;
+    @JsonProperty()
     address: string;
+    @JsonProperty()
     phones: string[];
+    @JsonProperty()
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -86,11 +105,17 @@ test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
 test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
   @JsonInclude({value: JsonIncludeType.ALWAYS})
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     dept: string;
+    @JsonProperty()
     address: string;
+    @JsonProperty()
     phones: string[];
+    @JsonProperty()
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {

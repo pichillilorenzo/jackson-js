@@ -2,11 +2,14 @@ import test from 'ava';
 import {JsonAlias} from '../src/annotations/JsonAlias';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonAlias on field', t => {
   class Book {
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonAlias({values: ['bkcat', 'mybkcat']})
     category: string;
 
@@ -17,9 +20,12 @@ test('@JsonAlias on field', t => {
   }
 
   class Writer {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Book]]})
     books: Book[] = [];
 
@@ -61,7 +67,9 @@ test('@JsonAlias on field', t => {
 
 test('@JsonAlias on constructor parameter', t => {
   class Book {
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     category: string;
 
     constructor(name: string, @JsonAlias({values: ['bkcat', 'mybkcat']}) category: string) {
@@ -71,9 +79,12 @@ test('@JsonAlias on constructor parameter', t => {
   }
 
   class Writer {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Book]]})
     books: Book[] = [];
 

@@ -5,6 +5,7 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonProperty with value', t => {
   class Employee {
+    @JsonProperty()
     id: number;
     @JsonProperty({value: 'empName'})
     name: string;
@@ -24,6 +25,7 @@ test('@JsonProperty with value', t => {
 
 test('Fail @JsonProperty with required', t => {
   class Employee {
+    @JsonProperty()
     id: number;
     @JsonProperty({required: true})
     name: string;
@@ -46,6 +48,7 @@ test('Fail @JsonProperty with required', t => {
 
 test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
   class Employee {
+    @JsonProperty()
     id: number;
     @JsonProperty({value: 'empName', access: JsonPropertyAccess.WRITE_ONLY})
     name: string;
@@ -68,6 +71,7 @@ test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
 
 test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
   class Employee {
+    @JsonProperty()
     id: number;
     @JsonProperty({value: 'empName', access: JsonPropertyAccess.READ_ONLY})
     name: string;

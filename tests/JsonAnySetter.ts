@@ -2,12 +2,18 @@ import test from 'ava';
 import {JsonAnySetter} from '../src/annotations/JsonAnySetter';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 class ScreenInfo {
+  @JsonProperty()
   id: string;
+  @JsonProperty()
   title: string;
+  @JsonProperty()
   width: number;
+  @JsonProperty()
   height: number;
+  @JsonProperty()
   otherInfo: Map<string, any> = new Map<string, any>();
 
   @JsonAnySetter()
@@ -42,10 +48,15 @@ test('Fail multi @JsonAnySetter annotations', t => {
 
   const err = t.throws<JacksonError>(() => {
     class ScreenInfoWithMultiJsonAnySetter {
+      @JsonProperty()
       id: string;
+      @JsonProperty()
       title: string;
+      @JsonProperty()
       width: number;
+      @JsonProperty()
       height: number;
+      @JsonProperty()
       otherInfo: Map<string, any> = new Map<string, any>();
 
       @JsonAnySetter()

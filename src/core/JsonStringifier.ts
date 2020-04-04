@@ -1,5 +1,5 @@
 import {
-  ClassType, JsonAnnotationOptions,
+  JsonAnnotationOptions,
   JsonAppendOptions,
   JsonClassOptions, JsonFilterOptions,
   JsonFormatOptions, JsonIdentityInfoOptions, JsonIdentityReferenceOptions,
@@ -8,24 +8,24 @@ import {
   JsonPropertyOptions,
   JsonPropertyOrderOptions, JsonRootNameOptions, JsonSerializeOptions, JsonStringifierFilterOptions,
   JsonStringifierOptions, JsonStringifierTransformerOptions,
-  JsonSubTypesOptions, JsonTypeIdOptions,
+  JsonSubTypesOptions,
   JsonTypeInfoOptions, JsonUnwrappedOptions,
   JsonViewOptions
 } from '../@types';
 import {JsonPropertyAccess} from '../annotations/JsonProperty';
 import {JsonIncludeType} from '../annotations/JsonInclude';
 import {
-  cloneClassInstance, getDeepestClass,
+  getDeepestClass,
   getDefaultPrimitiveTypeValue,
   getDefaultValue,
-  getMetadata,
+  getMetadata, getObjectKeysWithPropertyDescriptorNames,
   hasMetadata,
   isConstructorPrimitiveType,
   isIterableNoMapNoString,
   isObjLiteral,
   isSameConstructor,
   isSameConstructorOrExtensionOf, isValueEmpty,
-  isVariablePrimitiveType
+  isVariablePrimitiveType, objectHasOwnPropertyWithPropertyDescriptorNames
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../annotations/JsonTypeInfo';
 import {JsonFormatShape} from '../annotations/JsonFormat';
@@ -44,6 +44,7 @@ import {
 import {JsonNamingStrategy} from '../annotations/JsonNaming';
 import {JsonFilterType} from '../annotations/JsonFilter';
 import * as cloneDeep from 'lodash.clonedeep';
+import * as clone from 'lodash.clone';
 
 dayjs.extend(customParseFormat);
 
@@ -199,7 +200,7 @@ export class JsonStringifier<T> {
           this.stringifyJsonAppend(replacement, value, options);
         }
 
-        let keys = Object.keys(value);
+        let keys = getObjectKeysWithPropertyDescriptorNames(value);
         keys = this.stringifyJsonAnyGetter(replacement, value, keys, options);
         if (options.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
           keys = keys.sort();
@@ -209,13 +210,19 @@ export class JsonStringifier<T> {
           keys = this.stringifyJsonPropertyOrder(value, options);
         }
 
+        const namingMap = new Map<string, string>();
+
         for (const k of keys) {
           if (!this.stringifyHasJsonIgnore(value, k, options) &&
             !this.stringifyJsonInclude(value, k, options) &&
             this.stringifyHasJsonView(value, k, options) &&
             !this.stringifyHasJsonBackReference(value, k, options) &&
             !this.stringifyIsPropertyKeyExcludedByJsonFilter(value, k, options) &&
-            Object.hasOwnProperty.call(value, k)) {
+            objectHasOwnPropertyWithPropertyDescriptorNames(value, k)) {
+
+            const newKey = this.stringifyJsonNaming(replacement, value, k, options);
+            namingMap.set(k, newKey);
+
             // if it has a JsonIdentityReference, then we can skip all these methods because
             // the entire object will be replaced later by the identity value
             if (!this.hasJsonIdentityReferenceAlwaysAsId(value, options)) {
@@ -227,17 +234,17 @@ export class JsonStringifier<T> {
 
               this.propagateAnnotations(value, k, options);
 
-              replacement[k] = this.stringifyJsonGetter(value, k, options);
-              if (replacement[k] != null) {
-                replacement[k] = this.stringifyPropertyJsonFormat(replacement, value, k, options);
-                this.stringifyJsonSerializeProperty(replacement, value, k, options);
-                this.stringifyJsonRawValue(replacement, value, k, options);
-                this.stringifyJsonFilter(replacement, value, k, options);
-                this.stringifyJsonProperty(replacement, value, k, options);
-                this.stringifyJsonUnwrapped(replacement, value, k, options);
+              replacement[newKey] = this.stringifyJsonGetter(value, k, options);
+              if (replacement[newKey] != null) {
+                replacement[newKey] = this.stringifyPropertyJsonFormat(replacement, value, k, newKey, options);
+                this.stringifyJsonSerializeProperty(replacement, value, k, newKey, options);
+                this.stringifyJsonRawValue(replacement, value, k, newKey, options);
+                this.stringifyJsonFilter(replacement, value, k, newKey, options);
+                this.stringifyJsonProperty(replacement, value, k, newKey, options);
+                this.stringifyJsonUnwrapped(replacement, value, k, options, valueAlreadySeen);
               }
             } else {
-              replacement[k] = this.stringifyJsonGetter(value, k, options);
+              replacement[newKey] = this.stringifyJsonGetter(value, k, options);
             }
           }
         }
@@ -253,9 +260,10 @@ export class JsonStringifier<T> {
         } else {
           // eslint-disable-next-line guard-for-in
           for (const k in replacement) {
+            const oldKey = namingMap.get(k);
             const newOptions = cloneDeep(options);
             let newMainCreator;
-            const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', value.constructor, k, options);
+            const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', value.constructor, oldKey, options);
             if (jsonClass && jsonClass.class) {
               newMainCreator = jsonClass.class();
             } else if (replacement[k] != null) {
@@ -264,13 +272,11 @@ export class JsonStringifier<T> {
               newMainCreator = [Object];
             }
             newOptions.mainCreator = newMainCreator;
-            replacement[k] = this.transform(k, replacement[k], newOptions, new Map(valueAlreadySeen));
+            replacement[k] = this.transform(oldKey, replacement[k], newOptions, new Map(valueAlreadySeen));
           }
           replacement = this.stringifyJsonRootName(replacement, value, options);
           replacement = this.stringifyJsonTypeInfo(replacement, value, options);
         }
-
-        this.stringifyJsonNaming(replacement, value, options);
 
         return replacement;
       } else if (isIterableNoMapNoString(value)) {
@@ -329,7 +335,7 @@ export class JsonStringifier<T> {
    * only for the first level (depth) of recursion.
    *
    * Used, for example, in case of annotations applied on an iterable, such as an Array.
-   * In this case, the annotations are applied to each item of the iterable and not on the iterable itself.
+   * In this case, the annotations are applied to each item of the iterable and not on the iterable itself.JsonFormat
    * @param obj
    * @param key
    * @param options
@@ -374,12 +380,12 @@ export class JsonStringifier<T> {
       getMetadata('jackson:JsonIgnoreProperties', obj.constructor, null, options);
     if (jsonGetter &&
       !(jsonIgnoreProperties && !jsonIgnoreProperties.allowGetters && jsonIgnoreProperties.value.includes(key)) ) {
-      return obj[jsonGetter.propertyKey]();
+      return (typeof obj[jsonGetter.propertyKey] === 'function') ? obj[jsonGetter.propertyKey]() : obj[jsonGetter.propertyKey];
     }
     return obj[key];
   }
 
-  private stringifyJsonAnyGetter(replacement: any, obj: any, oldKeys: string[], options: JsonStringifierTransformerOptions): string[] {
+  private stringifyJsonAnyGetter(replacement: any, obj: any, keys: string[], options: JsonStringifierTransformerOptions): string[] {
     const newKeys = [];
     const jsonAnyGetter: JsonAnyGetterPrivateOptions = getMetadata('jackson:JsonAnyGetter', obj.constructor, null, options);
     if (jsonAnyGetter && obj[jsonAnyGetter.propertyKey]) {
@@ -405,18 +411,18 @@ export class JsonStringifier<T> {
         }
       }
 
-      if (jsonAnyGetter.for && oldKeys.includes(jsonAnyGetter.for) &&
-        !hasMetadata('jackson:JsonProperty', obj.constructor, jsonAnyGetter.for, options)) {
-        oldKeys.splice(oldKeys.indexOf(jsonAnyGetter.for), 1);
+      if (jsonAnyGetter.for && keys.includes(jsonAnyGetter.for)) {
+        keys.splice(keys.indexOf(jsonAnyGetter.for), 1);
       } else {
-        oldKeys = [];
+        keys = [];
       }
     }
-    return [...new Set([...oldKeys, ...newKeys])];
+
+    return [...new Set([...keys, ...newKeys])];
   }
 
   private stringifyJsonPropertyOrder(obj: any, options: JsonStringifierTransformerOptions): string[] {
-    let keys = Object.keys(obj);
+    let keys = getObjectKeysWithPropertyDescriptorNames(obj);
     const jsonPropertyOrder: JsonPropertyOrderOptions =
       getMetadata('jackson:JsonPropertyOrder', obj.constructor, null, options);
     if (jsonPropertyOrder) {
@@ -429,23 +435,25 @@ export class JsonStringifier<T> {
     return keys;
   }
 
-  private stringifyJsonProperty(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
-    const jsonProperty: JsonPropertyOptions = getMetadata('jackson:JsonProperty', obj.constructor, key, options);
+  private stringifyJsonProperty(replacement: any, obj: any, oldKey: string, newKey: string,
+                                options: JsonStringifierTransformerOptions): void {
+    const jsonProperty: JsonPropertyOptions = getMetadata('jackson:JsonProperty', obj.constructor, oldKey, options);
     if (jsonProperty) {
       const isIgnored = jsonProperty.access === JsonPropertyAccess.WRITE_ONLY;
-      if (!isIgnored && jsonProperty.value !== key) {
-        replacement[jsonProperty.value] = replacement[key];
-        delete replacement[key];
+      if (!isIgnored && jsonProperty.value !== oldKey) {
+        replacement[jsonProperty.value] = replacement[newKey];
+        delete replacement[newKey];
       } else if (isIgnored) {
-        delete replacement[key];
+        delete replacement[newKey];
       }
     }
   }
 
-  private stringifyJsonRawValue(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
-    const jsonRawValue = hasMetadata('jackson:JsonRawValue', obj.constructor, key, options);
+  private stringifyJsonRawValue(replacement: any, obj: any, oldKey: string, newKey: string,
+                                options: JsonStringifierTransformerOptions): void {
+    const jsonRawValue = hasMetadata('jackson:JsonRawValue', obj.constructor, oldKey, options);
     if (jsonRawValue) {
-      replacement[key] = JSON.parse(replacement[key]);
+      replacement[newKey] = JSON.parse(replacement[newKey]);
     }
   }
 
@@ -476,10 +484,11 @@ export class JsonStringifier<T> {
     return obj;
   }
 
-  private stringifyJsonSerializeProperty(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
-    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', obj.constructor, key, options);
+  private stringifyJsonSerializeProperty(replacement: any, obj: any, oldKey: string, newKey: string,
+                                         options: JsonStringifierTransformerOptions): void {
+    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', obj.constructor, oldKey, options);
     if (jsonSerialize && jsonSerialize.using) {
-      replacement[key] = jsonSerialize.using(replacement[key]);
+      replacement[newKey] = jsonSerialize.using(replacement[newKey]);
     }
   }
 
@@ -599,12 +608,13 @@ export class JsonStringifier<T> {
     return replacement;
   }
 
-  private stringifyPropertyJsonFormat(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): any {
-    const jsonFormat: JsonFormatOptions = getMetadata('jackson:JsonFormat', obj.constructor, key, options);
+  private stringifyPropertyJsonFormat(replacement: any, obj: any, oldKey: string, newKey: string,
+                                      options: JsonStringifierTransformerOptions): any {
+    const jsonFormat: JsonFormatOptions = getMetadata('jackson:JsonFormat', obj.constructor, oldKey, options);
     if (jsonFormat) {
-      return this.stringifyJsonFormat(jsonFormat, replacement[key], options);
+      return this.stringifyJsonFormat(jsonFormat, replacement[newKey], options);
     }
-    return replacement[key];
+    return replacement[newKey];
   }
 
   private stringifyClassJsonFormat(obj: any, options: JsonStringifierTransformerOptions): any {
@@ -711,24 +721,26 @@ export class JsonStringifier<T> {
     return true;
   }
 
-  private stringifyJsonUnwrapped(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): void {
+  private stringifyJsonUnwrapped(replacement: any, obj: any, key: string,
+                                 options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): void {
     const jsonUnwrapped: JsonUnwrappedOptions = getMetadata('jackson:JsonUnwrapped', obj.constructor, key, options);
     const hasJsonTypeInfo = (typeof obj[key] === 'object') ?
       hasMetadata('jackson:JsonTypeInfo', obj[key].constructor, null, options) : false;
 
     if (jsonUnwrapped) {
-      if (hasJsonTypeInfo && options.features[SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS]) {
+      if (hasJsonTypeInfo) {
         // eslint-disable-next-line max-len
-        throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize without disabling "SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS" (through reference chain: ${obj.constructor.name}["${key}"])`);
+        throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize (through reference chain: ${obj.constructor.name}["${key}"])`);
       }
 
       const prefix = (jsonUnwrapped.prefix != null) ? jsonUnwrapped.prefix : '';
       const suffix = (jsonUnwrapped.suffix != null) ? jsonUnwrapped.suffix : '';
 
-      const keys = Object.keys(obj[key]);
+      const objStringified = this.transform(key, obj[key], options, new Map(valueAlreadySeen));
+      const keys = Object.keys(objStringified);
       for (const oldKey of keys) {
         const newKey = prefix + oldKey + suffix;
-        replacement[newKey] = obj[key][oldKey];
+        replacement[newKey] = objStringified[oldKey];
       }
 
       delete replacement[key];
@@ -889,17 +901,17 @@ export class JsonStringifier<T> {
     return false;
   }
 
-  private stringifyJsonFilter(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions) {
-    const jsonFilter: JsonFilterOptions = getMetadata('jackson:JsonFilter', obj.constructor, key, options);
+  private stringifyJsonFilter(replacement: any, obj: any, oldKey: string, newKey: string, options: JsonStringifierTransformerOptions) {
+    const jsonFilter: JsonFilterOptions = getMetadata('jackson:JsonFilter', obj.constructor, oldKey, options);
     if (jsonFilter) {
       const filter = options.filters[jsonFilter.name];
       if (filter) {
-        replacement[key] = cloneClassInstance(obj[key]);
+        replacement[newKey] = clone(obj[oldKey]);
         // eslint-disable-next-line guard-for-in
-        for (const propertyKey in obj[key]) {
-          const isExluded = this.isPropertyKeyExcludedByJsonFilter(filter, obj[key], propertyKey, options);
-          if (isExluded) {
-            delete replacement[key][propertyKey];
+        for (const propertyKey in obj[oldKey]) {
+          const isExcluded = this.isPropertyKeyExcludedByJsonFilter(filter, obj[oldKey], propertyKey, options);
+          if (isExcluded) {
+            delete replacement[newKey][propertyKey];
           }
         }
       }
@@ -950,51 +962,51 @@ export class JsonStringifier<T> {
     }
   }
 
-  private stringifyJsonNaming(replacement: any, obj: any, options: JsonStringifierTransformerOptions): void {
+  private stringifyJsonNaming(replacement: any, obj: any, key: string, options: JsonStringifierTransformerOptions): string {
     const jsonNamingOptions: JsonNamingOptions = getMetadata('jackson:JsonNaming', obj.constructor, null, options);
     if (jsonNamingOptions && jsonNamingOptions.strategy != null) {
-      // eslint-disable-next-line guard-for-in
-      for (const key in replacement) {
-        const tokens = key.split(/(?=[A-Z])/);
-        const tokensLength = tokens.length;
-        let newKey = '';
-        for (let i = 0; i < tokensLength; i++) {
-          let token = tokens[i];
-          let separator = '';
-          switch (jsonNamingOptions.strategy) {
-          case JsonNamingStrategy.KEBAB_CASE:
+      const tokens = key.split(/(?=[A-Z])/);
+      const tokensLength = tokens.length;
+      let newKey = '';
+      for (let i = 0; i < tokensLength; i++) {
+        let token = tokens[i];
+        let separator = '';
+        switch (jsonNamingOptions.strategy) {
+        case JsonNamingStrategy.KEBAB_CASE:
+          token = token.toLowerCase();
+          separator = '-';
+          break;
+        case JsonNamingStrategy.LOWER_CAMEL_CASE:
+          if (i === 0) {
             token = token.toLowerCase();
-            separator = '-';
-            break;
-          case JsonNamingStrategy.LOWER_CAMEL_CASE:
-            if (i === 0) {
-              token = token.toLowerCase();
-            } else {
-              token = token.charAt(0).toUpperCase() + token.slice(1);
-            }
-            break;
-          case JsonNamingStrategy.LOWER_CASE:
-            token = token.toLowerCase();
-            break;
-          case JsonNamingStrategy.LOWER_DOT_CASE:
-            token = token.toLowerCase();
-            separator = '.';
-            break;
-          case JsonNamingStrategy.SNAKE_CASE:
-            token = token.toLowerCase();
-            separator = (i > 0 && tokens[i - 1].endsWith('_')) ? '' : '_';
-            break;
-          case JsonNamingStrategy.UPPER_CAMEL_CASE:
+          } else {
             token = token.charAt(0).toUpperCase() + token.slice(1);
-            break;
           }
-          newKey += (newKey !== '' && token.length > 1) ? separator + token : token;
+          break;
+        case JsonNamingStrategy.LOWER_CASE:
+          token = token.toLowerCase();
+          break;
+        case JsonNamingStrategy.LOWER_DOT_CASE:
+          token = token.toLowerCase();
+          separator = '.';
+          break;
+        case JsonNamingStrategy.SNAKE_CASE:
+          token = token.toLowerCase();
+          separator = (i > 0 && tokens[i - 1].endsWith('_')) ? '' : '_';
+          break;
+        case JsonNamingStrategy.UPPER_CAMEL_CASE:
+          token = token.charAt(0).toUpperCase() + token.slice(1);
+          break;
         }
-        if (newKey !== key) {
-          replacement[newKey] = replacement[key];
-          delete replacement[key];
-        }
+        newKey += (newKey !== '' && token.length > 1) ? separator + token : token;
       }
+
+      if (newKey !== key) {
+        replacement[newKey] = replacement[key];
+        delete replacement[key];
+      }
+      return newKey;
     }
+    return key;
   }
 }

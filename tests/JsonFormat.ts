@@ -3,11 +3,14 @@ import {JsonFormat, JsonFormatShape} from '../src/annotations/JsonFormat';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonFormat on properties', t => {
   class Event {
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonFormat({
       shape: JsonFormatShape.STRING,
       pattern: 'YYYY-MM-DD hh:mm:ss',
@@ -15,6 +18,7 @@ test('@JsonFormat on properties', t => {
     @JsonClass({class: () => [Date]})
     startDate: Date;
 
+    @JsonProperty()
     @JsonFormat({
       shape: JsonFormatShape.STRING,
       toFixed: 2
@@ -22,12 +26,14 @@ test('@JsonFormat on properties', t => {
     @JsonDeserialize({using: (value: string) => parseFloat(value)})
     price: number;
 
+    @JsonProperty()
     @JsonFormat({
       shape: JsonFormatShape.BOOLEAN
     })
     @JsonDeserialize({using: (value: boolean) => value ? 1 : 0})
     canceled: number;
 
+    @JsonProperty()
     @JsonFormat({
       shape: JsonFormatShape.ARRAY
     })
@@ -66,6 +72,7 @@ test('@JsonFormat on properties', t => {
 
 test('@JsonFormat JsonFormatShape.OBJECT on property', t => {
   class ArrayEx<T> extends Array<T> {
+    @JsonProperty()
     wrapper: number[] = [];
 
     constructor(...args) {
@@ -78,6 +85,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on property', t => {
   }
 
   class Example {
+    @JsonProperty()
     @JsonFormat({shape: JsonFormatShape.OBJECT})
     @JsonDeserialize({using: (value: {wrapper: number[]}) => value.wrapper})
     @JsonClass({class: () => [ArrayEx]})
@@ -100,6 +108,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on property', t => {
 test('@JsonFormat JsonFormatShape.OBJECT on class', t => {
   @JsonFormat({shape: JsonFormatShape.OBJECT})
   class ArrayEx<T> extends Array<T> {
+    @JsonProperty()
     wrapper: number[] = [];
 
     constructor(...args) {
@@ -112,6 +121,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on class', t => {
   }
 
   class Example {
+    @JsonProperty()
     @JsonDeserialize({using: (value: {wrapper: number[]}) => value.wrapper})
     @JsonClass({class: () => [ArrayEx]})
     numbers: ArrayEx<number>;

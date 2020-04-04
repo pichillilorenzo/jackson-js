@@ -2,13 +2,17 @@ import test from 'ava';
 import {JsonInject} from '../src/annotations/JsonInject';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonInject on class field', t => {
   class CurrencyRate {
+    @JsonProperty()
     pair: string;
+    @JsonProperty()
     rate: number;
 
     @JsonInject()
+    @JsonProperty()
     @JsonClass({class: () => [Date]})
     lastUpdated: Date;
   }
@@ -31,10 +35,13 @@ test('@JsonInject on class field', t => {
 
 test('@JsonInject with useInput false', t => {
   class CurrencyRate {
+    @JsonProperty()
     pair: string;
+    @JsonProperty()
     rate: number;
 
     @JsonInject({useInput: false})
+    @JsonProperty()
     @JsonClass({class: () => [Date]})
     lastUpdated: Date;
   }
@@ -57,10 +64,13 @@ test('@JsonInject with useInput false', t => {
 
 test('@JsonInject with useInput true', t => {
   class CurrencyRate {
+    @JsonProperty()
     pair: string;
+    @JsonProperty()
     rate: number;
 
     @JsonInject({useInput: true})
+    @JsonProperty()
     @JsonClass({class: () => [Date]})
     lastUpdated: Date;
   }
@@ -83,9 +93,12 @@ test('@JsonInject with useInput true', t => {
 
 test('@JsonInject on constructor parameter and different value', t => {
   class CurrencyRate {
+    @JsonProperty()
     pair: string;
+    @JsonProperty()
     rate: number;
 
+    @JsonProperty()
     @JsonClass({class: () => [Date]})
     lastUpdated: Date;
 

@@ -3,6 +3,7 @@ import {JsonSerialize} from '../src/annotations/JsonSerialize';
 import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonSerialize and @JsonDeserialize on class', t => {
   @JsonSerialize({using: (user: User) => ({
@@ -14,9 +15,13 @@ test('@JsonSerialize and @JsonDeserialize on class', t => {
     return user;
   }})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -62,18 +67,22 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
   }
 
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonSerialize({using: DateSerializer.serializeDate})
     @JsonDeserialize({using: DateSerializer.deserializeDate})
     @JsonClass({class: () => [Date]})
     date: Date;
 
+    @JsonProperty()
     @JsonClass({class: () => [Writer]})
     writer: Writer;
 
-    constructor(id: number, name: string, date: Date, writer: Writer) {
+    constructor(id: number, name: string, date: Date, @JsonClass({class: () => [Writer]}) writer: Writer) {
       this.id = id;
       this.name = name;
       this.date = date;
@@ -82,9 +91,12 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
   }
 
   class Writer {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Book]]})
     @JsonSerialize({using: customBookListSerializer})
     books: Book[] = [];
@@ -103,7 +115,7 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"name":"George R. R. Martin","books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null}]}');
+  t.is(jsonData, '{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null}],"id":1,"name":"George R. R. Martin"}');
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);
@@ -114,11 +126,15 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
 
 test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   class Book {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     @JsonClass({class: () => [Date]})
     date: Date;
 
+    @JsonProperty()
     @JsonClass({class: () => [Writer]})
     writer: Writer;
 
@@ -131,9 +147,12 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   }
 
   class Writer {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Book]]})
     books: Book[] = [];
 
@@ -182,7 +201,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"name":"George R. R. Martin","books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null},null,null]}');
+  t.is(jsonData, '{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null},null,null],"id":1,"name":"George R. R. Martin"}');
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);

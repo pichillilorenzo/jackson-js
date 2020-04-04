@@ -10,8 +10,11 @@ test('@JsonFilter on class', t => {
   class Student {
     @JsonProperty({value: 'stdName'})
     name: string;
+    @JsonProperty()
     age: number;
+    @JsonProperty()
     college: string;
+    @JsonProperty()
     city: string;
 
     constructor(name: string, age: number, college: string, city: string) {
@@ -57,19 +60,22 @@ test('@JsonFilter on class', t => {
 
 test('@JsonFilter on class property', t => {
   class Company {
+    @JsonProperty()
     name: string;
 
+    @JsonProperty()
     @JsonFilter({name: 'ceoFilter'})
     @JsonClass({class: () => [Employee]})
     ceo: Employee;
 
-    constructor(name: string, ceo: Employee) {
+    constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
       this.name = name;
       this.ceo = ceo;
     }
   }
 
   class Employee {
+    @JsonProperty()
     name: string;
     @JsonProperty({value: 'empAge'})
     age: number;

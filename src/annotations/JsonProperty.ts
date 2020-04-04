@@ -16,6 +16,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
     access: JsonPropertyAccess.AUTO,
     ...o
   }),
+
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
       options.value = (options.value) ? options.value : propertyKey.toString();

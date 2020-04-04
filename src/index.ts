@@ -38,6 +38,8 @@ import {JsonGetter} from './annotations/JsonGetter';
 import {JsonSetter} from './annotations/JsonSetter';
 import {JsonTypeId} from './annotations/JsonTypeId';
 import * as cloneDeep from 'lodash.clonedeep';
+import {getArgumentNames, getClassProperties, getMetadata, getMetadataKeys} from './util';
+import * as clone from 'lodash.clone';
 
 //
 // // class DateSerializer {
@@ -791,4 +793,7 @@ import * as cloneDeep from 'lodash.clonedeep';
 //
 // const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
 // console.log(animals);
+
+
+
 

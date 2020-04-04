@@ -31,6 +31,16 @@ export declare class JsonStringifier<T> {
     transform(key: string, value: any, options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): any;
     private invokeCustomSerializers;
     private getDefaultValue;
+    /**
+     * Propagate annotations to class properties,
+     * only for the first level (depth) of recursion.
+     *
+     * Used, for example, in case of annotations applied on an iterable, such as an Array.
+     * In this case, the annotations are applied to each item of the iterable and not on the iterable itself.JsonFormat
+     * @param obj
+     * @param key
+     * @param options
+     */
     private propagateAnnotations;
     private stringifyJsonGetter;
     private stringifyJsonAnyGetter;

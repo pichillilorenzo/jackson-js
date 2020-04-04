@@ -1,9 +1,14 @@
 import test from 'ava';
 import {JsonValue} from '../src/annotations/JsonValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonClass} from '../src/annotations/JsonClass';
 
 class Company {
+  @JsonProperty()
   name: string;
+  @JsonProperty()
+  @JsonClass({class: () => [Array, [Employee]]})
   employees: Employee[] = [];
 
   constructor(name: string) {
@@ -12,7 +17,9 @@ class Company {
 }
 
 class Employee {
+  @JsonProperty()
   name: string;
+  @JsonProperty()
   age: number;
 
   constructor(name: string, age: number) {
@@ -37,5 +44,5 @@ test('@JsonValue', t => {
   t.is(jsonData, '"John Alfa - 25"');
 
   jsonData = objectMapper.stringify<Company>(company);
-  t.is(jsonData, '{"name":"Google","employees":["John Alfa - 25"]}');
+  t.is(jsonData, '{"employees":["John Alfa - 25"],"name":"Google"}');
 });

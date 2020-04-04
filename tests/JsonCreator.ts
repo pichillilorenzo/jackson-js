@@ -7,8 +7,11 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 test('@JsonCreator on class', t => {
   @JsonCreator()
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     department: string;
 
     constructor(id: number, @JsonProperty({value: 'empName'}) name: string,
@@ -35,8 +38,11 @@ test('@JsonCreator on class', t => {
 
 test('@JsonCreator on static method with and without creator name', t => {
   class Employee {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     department: string;
 
     constructor(id: number, name: string, department: string) {
@@ -90,8 +96,11 @@ test('@JsonCreator on static method with and without creator name', t => {
 test('Fail @JsonCreator with multiple creators with same name', t => {
   const err = t.throws<JacksonError>(() => {
     class Employee {
+      @JsonProperty()
       id: number;
+      @JsonProperty()
       name: string;
+      @JsonProperty()
       department: string;
 
       constructor(id: number, name: string, department: string) {

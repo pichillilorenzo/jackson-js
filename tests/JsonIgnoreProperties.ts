@@ -4,14 +4,20 @@ import {JsonSetter} from '../src/annotations/JsonSetter';
 import {JsonClass} from '../src/annotations/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonIgnoreProperties} from '../src/annotations/JsonIgnoreProperties';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 test('@JsonIgnoreProperties', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -27,14 +33,18 @@ test('@JsonIgnoreProperties', t => {
     value: ['owner']
   })
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     category: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -51,7 +61,7 @@ test('@JsonIgnoreProperties', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -75,14 +85,19 @@ test('@JsonIgnoreProperties at class field level', t => {
     value: ['firstname']
   })
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
     @JsonIgnoreProperties({
       value: ['owner']
     })
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -95,14 +110,18 @@ test('@JsonIgnoreProperties at class field level', t => {
   }
 
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     category: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -119,7 +138,7 @@ test('@JsonIgnoreProperties at class field level', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}');
+  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","lastname":"Alfa"}');
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}},{"id":2,"name":"NVIDIA","category":"Graphic Card","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}]}', {mainCreator: () => [User]});
@@ -141,11 +160,16 @@ test('@JsonIgnoreProperties at class field level', t => {
 
 test('@JsonIgnoreProperties at parameter level', t => {
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     email: string;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
     items: Item[] = [];
 
@@ -160,14 +184,100 @@ test('@JsonIgnoreProperties at parameter level', t => {
   }
 
   class Item {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     name: string;
+    @JsonProperty()
     category: string;
 
+    @JsonProperty()
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+      this.id = id;
+      this.name = name;
+      this.category = category;
+      this.owner = owner;
+    }
+  }
+
+  const item1 = new Item(1, 'Game Of Thrones', 'Book', null);
+  const item2 = new Item(2, 'NVIDIA', 'Graphic Card', null);
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa', [item1, item2]);
+  item1.owner = user;
+  item2.owner = user;
+
+  const objectMapper = new ObjectMapper();
+
+  // eslint-disable-next-line max-len
+  const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}},{"id":2,"name":"NVIDIA","category":"Graphic Card","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}]}', {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.email, 'john.alfa@gmail.com');
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
+  t.is(userParsed.items.length, 2);
+  t.is(userParsed.items[0].id, 1);
+  t.is(userParsed.items[0].name, 'Game Of Thrones');
+  t.is(userParsed.items[0].category, 'Book');
+  t.is(userParsed.items[0].owner, null);
+  t.is(userParsed.items[1].id, 2);
+  t.is(userParsed.items[1].name, 'NVIDIA');
+  t.is(userParsed.items[1].category, 'Graphic Card');
+  t.is(userParsed.items[1].owner, null);
+});
+
+test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Item]]})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string,
+      @JsonClass({class: () => [Array, [
+        () => ({
+          target: Item,
+          decorators: [
+            {
+              name: 'JsonIgnoreProperties',
+              options: {
+                value: ['owner']
+              }
+            }
+          ]
+        })]]}) items: Item[]) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+      this.items = items;
+    }
+  }
+
+  class Item {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    category: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -204,9 +314,13 @@ test('@JsonIgnoreProperties at parameter level', t => {
 test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
   @JsonIgnoreProperties({value: ['fullname']})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
+    @JsonProperty()
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -221,8 +335,8 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
     }
 
     @JsonSetter({value: 'fullname'})
-    setFullname(fullname: string): string[] {
-      return fullname.split(' ');
+    setFullname(fullname: string) {
+      this.fullname = fullname.split(' ');
     }
   }
 
@@ -243,9 +357,13 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
 test('@JsonIgnoreProperties with allowGetters "true"', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
+    @JsonProperty()
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -260,8 +378,8 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
     }
 
     @JsonSetter({value: 'fullname'})
-    setFullname(fullname: string): string[] {
-      return fullname.split(' ');
+    setFullname(fullname: string) {
+      this.fullname = fullname.split(' ');
     }
   }
 
@@ -282,9 +400,13 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
 test('@JsonIgnoreProperties with allowSetters "true"', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true, allowSetters: true})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
+    @JsonProperty()
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -299,8 +421,8 @@ test('@JsonIgnoreProperties with allowSetters "true"', t => {
     }
 
     @JsonSetter({value: 'fullname'})
-    setFullname(fullname: string): string[] {
-      return fullname.split(' ');
+    setFullname(fullname: string) {
+      this.fullname = fullname.split(' ');
     }
   }
 

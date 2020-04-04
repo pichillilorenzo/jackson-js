@@ -2,11 +2,16 @@ import test from 'ava';
 import {JsonGetter} from '../src/annotations/JsonGetter';
 import {JsonSetter} from '../src/annotations/JsonSetter';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonProperty} from '../src/annotations/JsonProperty';
 
 class User {
+  @JsonProperty()
   id: number;
+  @JsonProperty()
   firstname: string;
+  @JsonProperty()
   lastname: string;
+  @JsonProperty()
   fullname: string[];
 
   constructor(id: number, firstname: string, lastname: string) {
@@ -21,8 +26,8 @@ class User {
   }
 
   @JsonSetter({value: 'fullname'})
-  setFullname(fullname: string): string[] {
-    return fullname.split(' ');
+  setFullname(fullname: string) {
+    this.fullname = fullname.split(' ');
   }
 }
 
@@ -35,6 +40,9 @@ test('@JsonGetter and @JsonSetter', t => {
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
   t.assert(userParsed.fullname instanceof Array);
   t.deepEqual(userParsed.fullname, ['John', 'Alfa']);
 });
