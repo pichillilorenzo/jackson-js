@@ -1,23 +1,23 @@
-import {parse, ParserPlugin} from '@babel/parser';
+import {parse} from '@babel/parser';
 import {
-  CallExpression,
   ClassDeclaration,
   ClassMethod,
   ExpressionStatement, FunctionDeclaration,
-  FunctionExpression, Identifier, MemberExpression,
+  FunctionExpression,
   Node
 } from '@babel/types';
 import {
   ClassType, JsonAliasOptions,
   JsonAnnotationDecorator,
   JsonAnnotationOptions,
-  JsonParserOptions, JsonPropertyOptions,
-  JsonStringifierOptions, JsonStringifierParserCommonOptions
+  JsonPropertyOptions,
+  JsonStringifierParserCommonOptions
 } from './@types';
 import 'reflect-metadata';
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
+ * @internal
  */
 export const isClass = (obj): boolean => {
   const isCtorClass = obj.constructor
@@ -34,12 +34,16 @@ export const isClass = (obj): boolean => {
 
 /**
  * https://stackoverflow.com/a/56035104/4637638
+ * @internal
  */
 export const isFunction = (funcOrClass: any): boolean => {
   const propertyNames = Object.getOwnPropertyNames(funcOrClass);
   return (!propertyNames.includes('prototype') || propertyNames.includes('arguments'));
 };
 
+/**
+ * @internal
+ */
 export const makeDecorator = <T>(
   options: (...args: any[]) => JsonAnnotationOptions,
   decorator: JsonAnnotationDecorator): any => {
@@ -61,6 +65,9 @@ export const makeDecorator = <T>(
   return DecoratorFactory;
 };
 
+/**
+ * @internal
+ */
 export const makeJacksonDecorator = <T>(
   options: (...args: any[]) => JsonAnnotationOptions,
   decorator: JsonAnnotationDecorator): any => makeDecorator<T>(
@@ -77,6 +84,7 @@ export const makeJacksonDecorator = <T>(
 
 /**
  * https://github.com/rphansen91/es-arguments/blob/master/src/arguments.js#L3
+ * @internal
  */
 const pluckPattern = (pattern): string => ['{',
   pattern.map(({ key }) => key.name).join(', '),
@@ -84,6 +92,7 @@ const pluckPattern = (pattern): string => ['{',
 
 /**
  * https://github.com/rphansen91/es-arguments/blob/master/src/arguments.js#L9
+ * @internal
  */
 const pluckParamName = (param): string => {
   if (param.name) {return param.name; }
@@ -93,6 +102,9 @@ const pluckParamName = (param): string => {
   return;
 };
 
+/**
+ * @internal
+ */
 export const getClassProperties = (target: Record<string, any>, options = {
   withJsonProperties: false,
   withJsonAliases: false
@@ -137,6 +149,9 @@ export const getClassProperties = (target: Record<string, any>, options = {
   return [...classProperties];
 };
 
+/**
+ * @internal
+ */
 export const classHasOwnProperty = (target: Record<string, any>, propertyKey: string,
                                     options?: JsonStringifierParserCommonOptions<any>): boolean => {
   const metadataKeys = getMetadataKeys(target, options);
@@ -160,6 +175,9 @@ export const classHasOwnProperty = (target: Record<string, any>, propertyKey: st
   return false;
 };
 
+/**
+ * @internal
+ */
 export const getArgumentNames = (method): string[] => {
   let code = method.toString().trim();
 
@@ -206,9 +224,15 @@ export const getArgumentNames = (method): string[] => {
   }, []).map(pluckParamName);
 };
 
+/**
+ * @internal
+ */
 export const isSameConstructor = (ctorOrCtorName, ctor2): boolean =>
   (typeof ctorOrCtorName === 'string' && ctorOrCtorName === ctor2.name) || ctorOrCtorName === ctor2;
 
+/**
+ * @internal
+ */
 export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
   if (typeof ctor === 'string') {
     let parent = Object.getPrototypeOf(ctorExtensionOf);
@@ -225,37 +249,62 @@ export const isExtensionOf = (ctor, ctorExtensionOf): boolean => {
   return false;
 };
 
+/**
+ * @internal
+ */
 export const isSameConstructorOrExtensionOf = (ctorOrCtorName, ctor2): boolean =>
   (isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2));
 
+/**
+ * @internal
+ */
 export const isSameConstructorOrExtensionOfNoObject = (ctorOrCtorName, ctor2): boolean =>
   ctorOrCtorName !== Object && (isSameConstructor(ctorOrCtorName, ctor2) || isExtensionOf(ctorOrCtorName, ctor2));
 
+/**
+ * @internal
+ */
 export const hasIterationProtocol = (variable): boolean =>
   variable !== null && Symbol.iterator in Object(variable);
 
+/**
+ * @internal
+ */
 export const isIterableNoMapNoString = (variable): boolean =>
   typeof variable !== 'string' &&
   !(isSameConstructorOrExtensionOfNoObject(variable.constructor, Map)) &&
   hasIterationProtocol(variable);
 
+/**
+ * @internal
+ */
 export const isIterableNoString = (variable): boolean =>
   typeof variable !== 'string' &&
   hasIterationProtocol(variable);
 
+/**
+ * @internal
+ */
 export const isClassIterableNoMap = (ctor: ClassType<any>): boolean =>
   !(isSameConstructorOrExtensionOfNoObject(ctor, Map)) &&
   hasIterationProtocol(ctor.prototype);
 
+/**
+ * @internal
+ */
 export const isClassIterableNoMapNoString = (ctor: ClassType<any>): boolean =>
   !(isSameConstructorOrExtensionOfNoObject(ctor, String)) &&
   !(isSameConstructorOrExtensionOfNoObject(ctor, Map)) &&
   hasIterationProtocol(ctor.prototype);
 
+/**
+ * @internal
+ */
 export const isClassIterable = (ctor: ClassType<any>): boolean => hasIterationProtocol(ctor.prototype);
 
 /**
  * https://stackoverflow.com/a/1482209/4637638
+ * @internal
  */
 export const isObjLiteral = (_obj: any): boolean => {
   let _test  = _obj;
@@ -276,11 +325,20 @@ export const isObjLiteral = (_obj: any): boolean => {
 
 /**
  * https://stackoverflow.com/a/3886106/4637638
+ * @internal
  */
 export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
+
+/**
+ * https://stackoverflow.com/a/3886106/4637638
+ * @internal
+ */
 export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
 
-// find metadata considering also _internalAnnotations
+/**
+ * find metadata considering also _internalAnnotations
+ * @internal
+ */
 export const findMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
@@ -302,6 +360,9 @@ export const findMetadata = <T extends JsonAnnotationOptions>(metadataKey: strin
   return jsonAnnotationOptions as T;
 };
 
+/**
+ * @internal
+ */
 export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
@@ -318,7 +379,10 @@ export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string
   return jsonAnnotationOptions != null && jsonAnnotationOptions.enabled ? jsonAnnotationOptions as T : undefined;
 };
 
-// find all metadataKeys considering also _internalAnnotations
+/**
+ * find all metadataKeys considering also _internalAnnotations
+ * @internal
+ */
 export const findMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
   options?: JsonStringifierParserCommonOptions<any>): any[] => {
   const metadataKeys = new Set(Reflect.getMetadataKeys(target));
@@ -342,6 +406,9 @@ export const findMetadataKeys = <T extends JsonAnnotationOptions>(target: Record
   return [...metadataKeys];
 };
 
+/**
+ * @internal
+ */
 export const getMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
   options?: JsonStringifierParserCommonOptions<any>): any[] => {
   let metadataKeys = findMetadataKeys(target, options);
@@ -356,6 +423,9 @@ export const getMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<
   return metadataKeys;
 };
 
+/**
+ * @internal
+ */
 export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
@@ -364,12 +434,21 @@ export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string
   return option != null;
 };
 
+/**
+ * @internal
+ */
 export const isVariablePrimitiveType = (value: any): boolean => value != null && isConstructorPrimitiveType(value.constructor);
 
+/**
+ * @internal
+ */
 export const isConstructorPrimitiveType = (ctor: any): boolean => ctor === Number ||
   (BigInt && ctor === BigInt) || ctor === String ||
   ctor === Boolean || (Symbol && ctor === Symbol);
 
+/**
+ * @internal
+ */
 export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null => {
   switch (ctor) {
   case Number:
@@ -388,6 +467,9 @@ export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null =
   return null;
 };
 
+/**
+ * @internal
+ */
 export const getDefaultValue = (value: any): any | null => {
   if (value != null) {
     return getDefaultPrimitiveTypeValue(value.constructor);
@@ -395,11 +477,17 @@ export const getDefaultValue = (value: any): any | null => {
   return null;
 };
 
+/**
+ * @internal
+ */
 export const isValueEmpty = (value: any): boolean => value == null ||
   ( (value instanceof Set || value instanceof Map) && value.size === 0 ) ||
   ( !(value instanceof Set || value instanceof Map) &&
     (typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0 );
 
+/**
+ * @internal
+ */
 export const getDeepestClass = (array: Array<any>): any | null => {
   if (array.length === 0) {
     return null;
@@ -410,6 +498,9 @@ export const getDeepestClass = (array: Array<any>): any | null => {
   return getDeepestClass(array[array.length - 1]);
 };
 
+/**
+ * @internal
+ */
 export const getObjectKeysWithPropertyDescriptorNames = (obj: any): string[] => {
   if (obj == null) {
     return [];
@@ -419,6 +510,9 @@ export const getObjectKeysWithPropertyDescriptorNames = (obj: any): string[] => 
   return [...new Set([...keys, ...classProperties])];
 };
 
+/**
+ * @internal
+ */
 export const objectHasOwnPropertyWithPropertyDescriptorNames = (obj: any, key: string): boolean => {
   if (obj == null || key == null) {
     return false;
