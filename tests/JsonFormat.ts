@@ -1,9 +1,9 @@
 import test from 'ava';
-import {JsonFormat, JsonFormatShape} from '../src/annotations/JsonFormat';
-import {JsonClass} from '../src/annotations/JsonClass';
-import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
+import {JsonFormat, JsonFormatShape} from '../src/decorators/JsonFormat';
+import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonFormat on properties', t => {
   class Event {

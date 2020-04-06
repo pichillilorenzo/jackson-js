@@ -1,8 +1,8 @@
 import test from 'ava';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonAnyGetter} from '../src/annotations/JsonAnyGetter';
+import {JsonAnyGetter} from '../src/decorators/JsonAnyGetter';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class ScreenInfo {
   @JsonProperty()
@@ -17,7 +17,7 @@ class ScreenInfo {
   otherInfo: Map<string, any> = new Map<string, any>();
 
   @JsonAnyGetter({for: 'otherInfo'})
-  public getOtherInfo() {
+  public getOtherInfo(): Map<string, any> {
     return this.otherInfo;
   }
 }

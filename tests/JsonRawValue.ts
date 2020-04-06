@@ -1,7 +1,7 @@
 import test from 'ava';
-import {JsonRawValue} from '../src/annotations/JsonRawValue';
+import {JsonRawValue} from '../src/decorators/JsonRawValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class User {
   @JsonProperty()

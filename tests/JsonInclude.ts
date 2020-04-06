@@ -1,7 +1,7 @@
 import test from 'ava';
-import {JsonInclude, JsonIncludeType} from '../src/annotations/JsonInclude';
+import {JsonInclude, JsonIncludeType} from '../src/decorators/JsonInclude';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonInclude on class with JsonIncludeType.NON_EMPTY', t => {
   @JsonInclude({value: JsonIncludeType.NON_EMPTY})

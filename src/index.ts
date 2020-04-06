@@ -1,45 +1,6 @@
-import {JsonAnyGetter} from './annotations/JsonAnyGetter';
-import {JsonProperty, JsonPropertyAccess} from './annotations/JsonProperty';
-import {JsonPropertyOrder} from './annotations/JsonPropertyOrder';
-import {JsonRawValue} from './annotations/JsonRawValue';
-import {JsonValue} from './annotations/JsonValue';
-import {JsonRootName} from './annotations/JsonRootName';
-import {JsonSerialize} from './annotations/JsonSerialize';
-import {JsonCreator} from './annotations/JsonCreator';
-import {JsonManagedReference} from './annotations/JsonManagedReference';
-import {JsonBackReference} from './annotations/JsonBackReference';
-import {JsonAnySetter} from './annotations/JsonAnySetter';
-import {JsonDeserialize} from './annotations/JsonDeserialize';
-import {JsonIgnore} from './annotations/JsonIgnore';
-import {JsonIgnoreProperties} from './annotations/JsonIgnoreProperties';
-import {JsonIgnoreType} from './annotations/JsonIgnoreType';
-import {JsonInclude, JsonIncludeType} from './annotations/JsonInclude';
-import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from './annotations/JsonTypeInfo';
-import {JsonTypeName} from './annotations/JsonTypeName';
-import {JsonSubTypes} from './annotations/JsonSubTypes';
-import {JsonFormat, JsonFormatShape} from './annotations/JsonFormat';
-import {JsonView} from './annotations/JsonView';
-import {JsonAlias} from './annotations/JsonAlias';
-import {JsonClass} from './annotations/JsonClass';
+import {JsonProperty} from './decorators/JsonProperty';
+import {JsonCreator, JsonCreatorMode} from './decorators/JsonCreator';
 import {ObjectMapper} from './databind/ObjectMapper';
-import {SerializationFeature} from './databind/SerializationFeature';
-import {DeserializationFeature} from './databind/DeserializationFeature';
-import {JsonParser} from './core/JsonParser';
-import {JsonStringifier} from './core/JsonStringifier';
-import {JacksonError} from './core/JacksonError';
-import {JsonUnwrapped} from './annotations/JsonUnwrapped';
-import {JsonIdentityInfo, ObjectIdGenerator} from './annotations/JsonIdentityInfo';
-import {JsonInject} from './annotations/JsonInject';
-import {JsonFilter, JsonFilterType} from './annotations/JsonFilter';
-import {JsonIdentityReference} from './annotations/JsonIdentityReference';
-import {JsonAppend} from './annotations/JsonAppend';
-import {JsonNaming, JsonNamingStrategy} from './annotations/JsonNaming';
-import {JsonGetter} from './annotations/JsonGetter';
-import {JsonSetter} from './annotations/JsonSetter';
-import {JsonTypeId} from './annotations/JsonTypeId';
-import * as cloneDeep from 'lodash.clonedeep';
-import {getArgumentNames, getClassProperties, getMetadata, getMetadataKeys} from './util';
-import * as clone from 'lodash.clone';
 
 //
 // // class DateSerializer {
@@ -793,6 +754,32 @@ import * as clone from 'lodash.clone';
 //
 // const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
 // console.log(animals);
+@JsonCreator()
+class Employee {
+  @JsonProperty()
+  id: number;
+  @JsonProperty()
+  name: string;
+  @JsonProperty()
+  department: string;
+
+  constructor(id: number, name: string, department: string) {
+    this.id = id;
+    this.name = name;
+    this.department = department;
+  }
+}
+
+const objectMapper = new ObjectMapper();
+const jsonData = `{
+  "id": 1,
+  "name": "Chris",
+  "department": "Admin"
+}`;
+const employee = objectMapper.parse<Employee>(jsonData, {mainCreator: () => [Employee]});
+console.log(employee);
+
+
 
 
 

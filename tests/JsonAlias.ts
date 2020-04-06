@@ -1,8 +1,8 @@
 import test from 'ava';
-import {JsonAlias} from '../src/annotations/JsonAlias';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonAlias} from '../src/decorators/JsonAlias';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonAlias on field', t => {
   class Book {

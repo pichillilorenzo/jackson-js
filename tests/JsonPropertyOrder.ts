@@ -1,7 +1,7 @@
 import test from 'ava';
-import {JsonPropertyOrder} from '../src/annotations/JsonPropertyOrder';
+import {JsonPropertyOrder} from '../src/decorators/JsonPropertyOrder';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('class without @JsonPropertyOrder', t => {
   class User {

@@ -1,8 +1,8 @@
 import test from 'ava';
-import {JsonClass} from '../src/annotations/JsonClass';
-import {JsonUnwrapped} from '../src/annotations/JsonUnwrapped';
+import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonUnwrapped} from '../src/decorators/JsonUnwrapped';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonUnwrapped', t => {
   class User {

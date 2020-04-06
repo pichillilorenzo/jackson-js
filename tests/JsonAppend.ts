@@ -1,9 +1,9 @@
 import test from 'ava';
-import {JsonIncludeType} from '../src/annotations/JsonInclude';
-import {JsonAppend} from '../src/annotations/JsonAppend';
+import {JsonIncludeType} from '../src/decorators/JsonInclude';
+import {JsonAppend} from '../src/decorators/JsonAppend';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonAppend with value', t => {
   @JsonAppend({attrs: [

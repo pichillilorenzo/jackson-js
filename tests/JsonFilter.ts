@@ -1,7 +1,7 @@
 import test from 'ava';
-import {JsonProperty} from '../src/annotations/JsonProperty';
-import {JsonFilter, JsonFilterType} from '../src/annotations/JsonFilter';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonFilter, JsonFilterType} from '../src/decorators/JsonFilter';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 
 test('@JsonFilter on class', t => {

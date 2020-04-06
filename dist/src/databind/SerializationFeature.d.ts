@@ -1,3 +1,7 @@
+/**
+ * @packageDocumentation
+ * @module Databind
+ */
 export declare enum SerializationFeature {
     FAIL_ON_SELF_REFERENCES = 0,
     ORDER_MAP_ENTRIES_BY_KEYS = 1,

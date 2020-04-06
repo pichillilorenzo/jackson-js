@@ -1,3 +1,7 @@
+/**
+ * @packageDocumentation
+ * @module Databind
+ */
 export declare enum DeserializationFeature {
     FAIL_ON_UNKNOWN_PROPERTIES = 0,
     FAIL_ON_NULL_FOR_PRIMITIVES = 1,
@@ -11,6 +15,5 @@ export declare enum DeserializationFeature {
     SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL = 9,
     SET_DEFAULT_VALUE_FOR_STRING_ON_NULL = 10,
     SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL = 11,
-    SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL = 12,
-    SET_DEFAULT_VALUE_FOR_SYMBOL_ON_NULL = 13
+    SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL = 12
 }

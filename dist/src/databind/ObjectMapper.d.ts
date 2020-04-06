@@ -1,4 +1,8 @@
-import { JsonParserOptions, JsonStringifierOptions, ObjectMapperDeserializer, ObjectMapperFeatures, ObjectMapperSerializer } from '../@types';
+/**
+ * @packageDocumentation
+ * @module Databind
+ */
+import { JsonParserContext, JsonStringifierContext, ObjectMapperDeserializer, ObjectMapperFeatures, ObjectMapperSerializer } from '../@types';
 /**
  *
  */
@@ -13,15 +17,15 @@ export declare class ObjectMapper {
     /**
      *
      * @param obj
-     * @param options
+     * @param context
      */
-    stringify<T>(obj: T, options?: JsonStringifierOptions): string;
+    stringify<T>(obj: T, context?: JsonStringifierContext): string;
     /**
      *
      * @param text
-     * @param options
+     * @param context
      */
-    parse<T>(text: string, options?: JsonParserOptions): T;
+    parse<T>(text: string, context?: JsonParserContext): T;
     /**
      *
      * @param mappers

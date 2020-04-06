@@ -1,10 +1,10 @@
 import test from 'ava';
-import {JsonGetter} from '../src/annotations/JsonGetter';
-import {JsonSetter} from '../src/annotations/JsonSetter';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonGetter} from '../src/decorators/JsonGetter';
+import {JsonSetter} from '../src/decorators/JsonSetter';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonIgnoreProperties} from '../src/annotations/JsonIgnoreProperties';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonIgnoreProperties} from '../src/decorators/JsonIgnoreProperties';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonIgnoreProperties', t => {
   class User {

@@ -1,4 +1,8 @@
-import { JsonStringifierOptions, JsonStringifierTransformerOptions } from '../@types';
+/**
+ * @packageDocumentation
+ * @module Core
+ */
+import { JsonStringifierContext, JsonStringifierTransformerContext } from '../@types';
 /**
  *
  */
@@ -18,58 +22,257 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param obj
-     * @param options
+     * @param context
      */
-    stringify(obj: T, options?: JsonStringifierOptions): string;
+    stringify(obj: T, context?: JsonStringifierContext): string;
     /**
      *
      * @param key
      * @param value
-     * @param options
+     * @param context
      * @param valueAlreadySeen: Map used to manage object circular references
      */
-    transform(key: string, value: any, options: JsonStringifierTransformerOptions, valueAlreadySeen: Map<any, any>): any;
+    transform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any;
+    /**
+     *
+     * @param key
+     * @param value
+     * @param context
+     */
     private invokeCustomSerializers;
+    /**
+     *
+     * @param context
+     */
     private getDefaultValue;
     /**
-     * Propagate annotations to class properties,
+     * Propagate decorators to class properties,
      * only for the first level (depth) of recursion.
      *
-     * Used, for example, in case of annotations applied on an iterable, such as an Array.
-     * In this case, the annotations are applied to each item of the iterable and not on the iterable itself.JsonFormat
+     * Used, for example, in case of decorators applied on an iterable, such as an Array.
+     * In this case, the decorators are applied to each item of the iterable and not on the iterable itself.JsonFormat
      * @param obj
      * @param key
-     * @param options
+     * @param context
      */
-    private propagateAnnotations;
+    private propagateDecorators;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyJsonGetter;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param keys
+     * @param context
+     */
     private stringifyJsonAnyGetter;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonPropertyOrder;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
     private stringifyJsonProperty;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
     private stringifyJsonRawValue;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private stringifyJsonValue;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonRootName;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private stringifyJsonSerializeClass;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
     private stringifyJsonSerializeProperty;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyHasJsonIgnore;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyJsonInclude;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private stringifyJsonIgnoreType;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyHasJsonBackReference;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonTypeInfo;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
     private stringifyPropertyJsonFormat;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private stringifyClassJsonFormat;
+    /**
+     *
+     * @param jsonFormat
+     * @param value
+     * @param context
+     */
     private stringifyJsonFormat;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyHasJsonView;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param key
+     * @param context
+     * @param valueAlreadySeen
+     */
     private stringifyJsonUnwrapped;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonIdentityInfo;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private hasJsonIdentityReferenceAlwaysAsId;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonIdentityReference;
+    /**
+     *
+     * @param key
+     * @param iterableNoString
+     * @param context
+     * @param valueAlreadySeen
+     */
     private stringifyIterable;
+    /**
+     *
+     * @param map
+     * @param context
+     */
     private stringifyMap;
+    /**
+     *
+     * @param filter
+     * @param obj
+     * @param key
+     * @param context
+     */
     private isPropertyKeyExcludedByJsonFilter;
+    /**
+     *
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyIsPropertyKeyExcludedByJsonFilter;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
     private stringifyJsonFilter;
+    /**
+     *
+     * @param obj
+     * @param context
+     */
     private isPrependJsonAppend;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param context
+     */
     private stringifyJsonAppend;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param key
+     * @param context
+     */
     private stringifyJsonNaming;
 }

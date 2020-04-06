@@ -1,9 +1,14 @@
+/**
+ * @packageDocumentation
+ * @module Databind
+ */
+
 import {
   JsonStringifier
 } from '../core/JsonStringifier';
 import {
-  JsonParserOptions,
-  JsonStringifierOptions,
+  JsonParserContext,
+  JsonStringifierContext,
   ObjectMapperDeserializer,
   ObjectMapperFeatures, ObjectMapperCustomMapper, ObjectMapperSerializer
 } from '../@types';
@@ -44,8 +49,7 @@ export class ObjectMapper {
       [DeserializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
       [DeserializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
       [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_SYMBOL_ON_NULL]: false
+      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
     }
   };
   serializers: ObjectMapperSerializer[] = [];
@@ -61,9 +65,9 @@ export class ObjectMapper {
   /**
    *
    * @param obj
-   * @param options
+   * @param context
    */
-  stringify<T>(obj: T, options?: JsonStringifierOptions): string {
+  stringify<T>(obj: T, context?: JsonStringifierContext): string {
     this.serializers = this.sortMappersByOrder(this.serializers);
 
     const jsonStringifier = new JsonStringifier<T>();
@@ -72,18 +76,18 @@ export class ObjectMapper {
       features: this.features.serialization,
       filters: {},
       attributes: {},
-      annotationsEnabled: {},
-      _internalAnnotations: new Map(),
-      ...options
+      decoratorsEnabled: {},
+      _internalDecorators: new Map(),
+      ...context
     });
   }
 
   /**
    *
    * @param text
-   * @param options
+   * @param context
    */
-  parse<T>(text: string, options?: JsonParserOptions): T {
+  parse<T>(text: string, context?: JsonParserContext): T {
     this.deserializers = this.sortMappersByOrder(this.deserializers);
 
     const jsonParser = new JsonParser<T>();
@@ -91,9 +95,9 @@ export class ObjectMapper {
       deserializers: this.deserializers,
       features: this.features.deserialization,
       injectableValues: {},
-      annotationsEnabled: {},
-      _internalAnnotations: new Map(),
-      ...options
+      decoratorsEnabled: {},
+      _internalDecorators: new Map(),
+      ...context
     });
   }
 

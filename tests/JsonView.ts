@@ -1,7 +1,7 @@
 import test from 'ava';
-import {JsonView} from '../src/annotations/JsonView';
+import {JsonView} from '../src/decorators/JsonView';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class Views {
   static public = class Public {};

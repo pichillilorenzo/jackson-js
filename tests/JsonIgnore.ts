@@ -1,8 +1,8 @@
 import test from 'ava';
-import {JsonIgnore} from '../src/annotations/JsonIgnore';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonIgnore} from '../src/decorators/JsonIgnore';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class User {
   @JsonProperty()

@@ -8,10 +8,10 @@ import {
 } from '@babel/types';
 import {
   ClassType, JsonAliasOptions,
-  JsonAnnotationDecorator,
-  JsonAnnotationOptions,
+  JsonDecorator,
+  JsonDecoratorOptions,
   JsonPropertyOptions,
-  JsonStringifierParserCommonOptions
+  JsonStringifierParserCommonContext
 } from './@types';
 import 'reflect-metadata';
 
@@ -45,8 +45,8 @@ export const isFunction = (funcOrClass: any): boolean => {
  * @internal
  */
 export const makeDecorator = <T>(
-  options: (...args: any[]) => JsonAnnotationOptions,
-  decorator: JsonAnnotationDecorator): any => {
+  options: (...args: any[]) => JsonDecoratorOptions,
+  decorator: JsonDecorator): any => {
   const DecoratorFactory = (...args: any[]): any => {
     const target: Record<string, any> = args[0];
     const propertyKey: null | string | symbol = args[1];
@@ -69,10 +69,10 @@ export const makeDecorator = <T>(
  * @internal
  */
 export const makeJacksonDecorator = <T>(
-  options: (...args: any[]) => JsonAnnotationOptions,
-  decorator: JsonAnnotationDecorator): any => makeDecorator<T>(
+  options: (...args: any[]) => JsonDecoratorOptions,
+  decorator: JsonDecorator): any => makeDecorator<T>(
   options,
-  (o: JsonAnnotationOptions, target, propertyKey, descriptorOrParamIndex) => {
+  (o: JsonDecoratorOptions, target, propertyKey, descriptorOrParamIndex) => {
     const value = decorator(o, target, propertyKey, descriptorOrParamIndex);
     if (value != null) {
       return value;
@@ -153,8 +153,8 @@ export const getClassProperties = (target: Record<string, any>, options = {
  * @internal
  */
 export const classHasOwnProperty = (target: Record<string, any>, propertyKey: string,
-                                    options?: JsonStringifierParserCommonOptions<any>): boolean => {
-  const metadataKeys = getMetadataKeys(target, options);
+                                    context?: JsonStringifierParserCommonContext<any>): boolean => {
+  const metadataKeys = getMetadataKeys(target, context);
   if (metadataKeys.includes('jackson:JsonProperty:' + propertyKey)) {
     return true;
   }
@@ -336,63 +336,63 @@ export const isInt = (n: number) => Number(n) === n && n % 1 === 0;
 export const isFloat = (n: number) => Number(n) === n && n % 1 !== 0;
 
 /**
- * find metadata considering also _internalAnnotations
+ * find metadata considering also _internalDecorators
  * @internal
  */
-export const findMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+export const findMetadata = <T extends JsonDecoratorOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  options?: JsonStringifierParserCommonOptions<any>): T => {
-  let jsonAnnotationOptions: JsonAnnotationOptions = (propertyKey) ?
+  context?: JsonStringifierParserCommonContext<any>): T => {
+  let jsonDecoratorOptions: JsonDecoratorOptions = (propertyKey) ?
     Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
 
   // search also on its prototype chain
-  while (jsonAnnotationOptions == null && target.name && target !== Object) {
-    if (jsonAnnotationOptions == null && propertyKey == null && options != null && options._internalAnnotations != null) {
-      const map = options._internalAnnotations.get(target as ObjectConstructor);
+  while (jsonDecoratorOptions == null && target.name && target !== Object) {
+    if (jsonDecoratorOptions == null && propertyKey == null && context != null && context._internalDecorators != null) {
+      const map = context._internalDecorators.get(target as ObjectConstructor);
       if (map != null && metadataKey in map) {
-        jsonAnnotationOptions = map[metadataKey] as JsonAnnotationOptions;
+        jsonDecoratorOptions = map[metadataKey] as JsonDecoratorOptions;
       }
     }
     // get parent class
     target = Object.getPrototypeOf(target);
   }
-  return jsonAnnotationOptions as T;
+  return jsonDecoratorOptions as T;
 };
 
 /**
  * @internal
  */
-export const getMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+export const getMetadata = <T extends JsonDecoratorOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  options?: JsonStringifierParserCommonOptions<any>): T => {
-  const jsonAnnotationOptions: JsonAnnotationOptions = findMetadata(metadataKey, target, propertyKey, options);
+  context?: JsonStringifierParserCommonContext<any>): T => {
+  const jsonjsonDecoratorOptions: JsonDecoratorOptions = findMetadata(metadataKey, target, propertyKey, context);
 
-  if (jsonAnnotationOptions != null && options != null && options.annotationsEnabled != null) {
-    const annotationKeys = Object.keys(options.annotationsEnabled);
-    const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
-    if (annotationKey && typeof options.annotationsEnabled[annotationKey] === 'boolean') {
-      jsonAnnotationOptions.enabled = options.annotationsEnabled[annotationKey];
+  if (jsonjsonDecoratorOptions != null && context != null && context.decoratorsEnabled != null) {
+    const decoratorKeys = Object.keys(context.decoratorsEnabled);
+    const decoratorKey = decoratorKeys.find((key) => metadataKey.startsWith('jackson:' + key));
+    if (decoratorKey && typeof context.decoratorsEnabled[decoratorKey] === 'boolean') {
+      jsonjsonDecoratorOptions.enabled = context.decoratorsEnabled[decoratorKey];
     }
   }
-  return jsonAnnotationOptions != null && jsonAnnotationOptions.enabled ? jsonAnnotationOptions as T : undefined;
+  return jsonjsonDecoratorOptions != null && jsonjsonDecoratorOptions.enabled ? jsonjsonDecoratorOptions as T : undefined;
 };
 
 /**
- * find all metadataKeys considering also _internalAnnotations
+ * find all metadataKeys considering also _internalDecorators
  * @internal
  */
-export const findMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
-  options?: JsonStringifierParserCommonOptions<any>): any[] => {
+export const findMetadataKeys = <T extends JsonDecoratorOptions>(target: Record<string, any>,
+  context?: JsonStringifierParserCommonContext<any>): any[] => {
   const metadataKeys = new Set(Reflect.getMetadataKeys(target));
 
-  if (options != null && options._internalAnnotations != null) {
+  if (context != null && context._internalDecorators != null) {
     // search also on its prototype chain
     let parent = target;
     while (parent.name && parent !== Object) {
-      const internalAnnotations = options._internalAnnotations.get(parent as ObjectConstructor);
-      for (const key in internalAnnotations) {
+      const internalDecorators = context._internalDecorators.get(parent as ObjectConstructor);
+      for (const key in internalDecorators) {
         if (key === 'depth') {
           continue;
         }
@@ -409,15 +409,15 @@ export const findMetadataKeys = <T extends JsonAnnotationOptions>(target: Record
 /**
  * @internal
  */
-export const getMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<string, any>,
-  options?: JsonStringifierParserCommonOptions<any>): any[] => {
-  let metadataKeys = findMetadataKeys(target, options);
+export const getMetadataKeys = <T extends JsonDecoratorOptions>(target: Record<string, any>,
+  context?: JsonStringifierParserCommonContext<any>): any[] => {
+  let metadataKeys = findMetadataKeys(target, context);
 
-  if (options != null && options.annotationsEnabled != null) {
-    const annotationKeys = Object.keys(options.annotationsEnabled);
+  if (context != null && context.decoratorsEnabled != null) {
+    const decoratorKeys = Object.keys(context.decoratorsEnabled);
     metadataKeys = metadataKeys.filter((metadataKey) => {
-      const annotationKey = annotationKeys.find((key) => metadataKey.startsWith('jackson:' + key));
-      return options.annotationsEnabled[annotationKey] == null || options.annotationsEnabled[annotationKey];
+      const decoratorKey = decoratorKeys.find((key) => metadataKey.startsWith('jackson:' + key));
+      return context.decoratorsEnabled[decoratorKey] == null || context.decoratorsEnabled[decoratorKey];
     });
   }
   return metadataKeys;
@@ -426,11 +426,11 @@ export const getMetadataKeys = <T extends JsonAnnotationOptions>(target: Record<
 /**
  * @internal
  */
-export const hasMetadata = <T extends JsonAnnotationOptions>(metadataKey: string,
+export const hasMetadata = <T extends JsonDecoratorOptions>(metadataKey: string,
   target: Record<string, any>,
   propertyKey?: string | symbol | null,
-  options?: JsonStringifierParserCommonOptions<any>): boolean => {
-  const option: JsonAnnotationOptions = getMetadata<T>(metadataKey, target, propertyKey, options);
+  context?: JsonStringifierParserCommonContext<any>): boolean => {
+  const option: JsonDecoratorOptions = getMetadata<T>(metadataKey, target, propertyKey, context);
   return option != null;
 };
 
@@ -460,8 +460,6 @@ export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null =
   default:
     if (BigInt && ctor === BigInt) {
       return BigInt(0);
-    } else if (Symbol && ctor === Symbol) {
-      return Symbol();
     }
   }
   return null;
@@ -505,7 +503,7 @@ export const getObjectKeysWithPropertyDescriptorNames = (obj: any): string[] => 
   if (obj == null) {
     return [];
   }
-  const keys = Object.keys(obj);
+  const keys = Object.getOwnPropertyNames(obj);
   const classProperties = getClassProperties(obj.constructor);
   return [...new Set([...keys, ...classProperties])];
 };

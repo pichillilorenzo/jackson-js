@@ -1,9 +1,9 @@
 import test from 'ava';
-import {JsonSerialize} from '../src/annotations/JsonSerialize';
-import {JsonDeserialize} from '../src/annotations/JsonDeserialize';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonSerialize} from '../src/decorators/JsonSerialize';
+import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonSerialize and @JsonDeserialize on class', t => {
   @JsonSerialize({using: (user: User) => ({

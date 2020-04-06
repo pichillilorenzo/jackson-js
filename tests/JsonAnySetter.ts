@@ -1,8 +1,8 @@
 import test from 'ava';
-import {JsonAnySetter} from '../src/annotations/JsonAnySetter';
+import {JsonAnySetter} from '../src/decorators/JsonAnySetter';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class ScreenInfo {
   @JsonProperty()

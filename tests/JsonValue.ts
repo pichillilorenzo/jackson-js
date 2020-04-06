@@ -1,8 +1,8 @@
 import test from 'ava';
-import {JsonValue} from '../src/annotations/JsonValue';
+import {JsonValue} from '../src/decorators/JsonValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonClass} from '../src/decorators/JsonClass';
 
 class Company {
   @JsonProperty()

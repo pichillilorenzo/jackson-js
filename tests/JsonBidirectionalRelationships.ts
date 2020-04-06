@@ -1,12 +1,12 @@
 import test from 'ava';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonIdentityInfo, ObjectIdGenerator} from '../src/annotations/JsonIdentityInfo';
-import {JsonManagedReference} from '../src/annotations/JsonManagedReference';
-import {JsonBackReference} from '../src/annotations/JsonBackReference';
-import {JsonIdentityReference} from '../src/annotations/JsonIdentityReference';
-import {JsonClass} from '../src/annotations/JsonClass';
+import {JsonIdentityInfo, ObjectIdGenerator} from '../src/decorators/JsonIdentityInfo';
+import {JsonManagedReference} from '../src/decorators/JsonManagedReference';
+import {JsonBackReference} from '../src/decorators/JsonBackReference';
+import {JsonIdentityReference} from '../src/decorators/JsonIdentityReference';
+import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
-import {JsonProperty} from '../src/annotations/JsonProperty';
+import {JsonProperty} from '../src/decorators/JsonProperty';
 
 
 test('Fail Infinite recursion', t => {
@@ -42,7 +42,7 @@ test('Fail Infinite recursion', t => {
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, owner: User) {
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -98,7 +98,7 @@ test('@JsonManagedReference And @JsonBackReference', t => {
     @JsonBackReference()
     owner: User;
 
-    constructor(id: number, name: string, owner: User) {
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -159,7 +159,7 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, owner: User) {
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -219,7 +219,7 @@ test('@JsonIdentityInfo One To Many', t => {
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, owner: User) {
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -347,7 +347,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, owner: User) {
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;

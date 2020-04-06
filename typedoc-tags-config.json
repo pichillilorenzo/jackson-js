@@ -1,0 +1,6 @@
+[
+  {
+    "tagName": "example",
+    "template": "\n#### Usage example\n\n{content}\n"
+  }
+]
