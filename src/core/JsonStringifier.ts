@@ -189,9 +189,10 @@ export class JsonStringifier<T> {
           return null;
         }
 
-        if (valueAlreadySeen.has(value)) {
-          throw new JacksonError(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
-        }
+        // Infinite recursion is already handled by JSON.stringify();
+        // if (valueAlreadySeen.has(value)) {
+        //   throw new JacksonError(`Infinite recursion on key "${key}" of type "${value.constructor.name}"`);
+        // }
         valueAlreadySeen.set(value, (identity) ? identity : null);
 
         let replacement = {};
@@ -376,8 +377,10 @@ export class JsonStringifier<T> {
       'jackson:JsonIgnoreProperties',
       'jackson:JsonTypeInfo',
       'jackson:JsonSubTypes',
-      'jackson:JsonTypeIdResolver'
+      'jackson:JsonTypeIdResolver',
+      'jackson:JsonFilter'
     ];
+
     const decoratorsNameFound = [];
     const decoratorsToBeApplied = {
       depth: 1
@@ -1097,7 +1100,7 @@ export class JsonStringifier<T> {
     const jsonFilter: JsonFilterOptions =
       getMetadata('jackson:JsonFilter', obj.constructor, null, context);
     if (jsonFilter) {
-      const filter = context.filters[jsonFilter.name];
+      const filter = context.filters[jsonFilter.value];
       if (filter) {
         return this.isPropertyKeyExcludedByJsonFilter(filter, obj, key, context);
       }
@@ -1116,7 +1119,7 @@ export class JsonStringifier<T> {
   private stringifyJsonFilter(replacement: any, obj: any, oldKey: string, newKey: string, context: JsonStringifierTransformerContext) {
     const jsonFilter: JsonFilterOptions = getMetadata('jackson:JsonFilter', obj.constructor, oldKey, context);
     if (jsonFilter) {
-      const filter = context.filters[jsonFilter.name];
+      const filter = context.filters[jsonFilter.value];
       if (filter) {
         replacement[newKey] = clone(obj[oldKey]);
         // eslint-disable-next-line guard-for-in

@@ -124,6 +124,67 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
   t.assert(writerParsed.books[0].date instanceof Date);
 });
 
+test('@JsonDeserialize at parameter level', t => {
+  class Company {
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Person]})
+    ceo: Person;
+
+    constructor(name: string,
+      @JsonDeserialize({using: (person: any) => {
+        delete person.otherInfo;
+        return person;
+      }}) @JsonClass({class: () => [Person]}) ceo: Person) {
+      this.name = name;
+      this.ceo = ceo;
+    }
+
+  }
+
+  @JsonSerialize({using: (person: Person) => ({
+    otherInfo: 'other info',
+    ...person
+  })})
+  class Person {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  const ceo = new Person(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const company = new Company('Google', ceo);
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<Company>(company);
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"name":"Google","ceo":{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}');
+
+  const companyParsed = objectMapper.parse<Company>(jsonData, {mainCreator: () => [Company]});
+  t.assert(companyParsed instanceof Company);
+  t.is(companyParsed.name, 'Google');
+  t.assert(companyParsed.ceo instanceof Person);
+  t.is(companyParsed.ceo.id, 1);
+  t.is(companyParsed.ceo.email, 'john.alfa@gmail.com');
+  t.is(companyParsed.ceo.firstname, 'John');
+  t.is(companyParsed.ceo.lastname, 'Alfa');
+  t.assert(!Object.hasOwnProperty.call(companyParsed.ceo, 'otherInfo'));
+});
+
 test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   class Book {
     @JsonProperty()

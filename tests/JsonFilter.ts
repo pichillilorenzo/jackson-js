@@ -4,9 +4,9 @@ import {JsonFilter, JsonFilterType} from '../src/decorators/JsonFilter';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 
-test('@JsonFilter on class', t => {
+test('@JsonFilter at class level', t => {
 
-  @JsonFilter({name: 'studentFilter'})
+  @JsonFilter({value: 'studentFilter'})
   class Student {
     @JsonProperty({value: 'stdName'})
     name: string;
@@ -58,13 +58,13 @@ test('@JsonFilter on class', t => {
   t.is(jsonData, '{"stdName":"Mohit","age":30,"college":"ABCD","city":"Varanasi"}');
 });
 
-test('@JsonFilter on class property', t => {
+test('@JsonFilter at property level', t => {
   class Company {
     @JsonProperty()
     name: string;
 
     @JsonProperty()
-    @JsonFilter({name: 'ceoFilter'})
+    @JsonFilter({value: 'ceoFilter'})
     @JsonClass({class: () => [Employee]})
     ceo: Employee;
 
@@ -86,7 +86,7 @@ test('@JsonFilter on class property', t => {
     }
   }
 
-  const ceo = new Employee('Tim Cook', 50);
+  const ceo = new Employee('John Alfa', 50);
   const company = new Company('Apple', ceo);
 
   const objectMapper = new ObjectMapper();
@@ -99,7 +99,7 @@ test('@JsonFilter on class property', t => {
       }
     }
   });
-  t.is(jsonData, '{"name":"Apple","ceo":{"name":"Tim Cook"}}');
+  t.is(jsonData, '{"name":"Apple","ceo":{"name":"John Alfa"}}');
 
   jsonData = objectMapper.stringify<Company>(company, {
     filters: {
@@ -118,5 +118,51 @@ test('@JsonFilter on class property', t => {
       }
     }
   });
-  t.is(jsonData, '{"name":"Apple","ceo":{"name":"Tim Cook","empAge":50}}');
+  t.is(jsonData, '{"name":"Apple","ceo":{"name":"John Alfa","empAge":50}}');
+});
+
+test('@JsonFilter at property level of type Array', t => {
+  class Company {
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonFilter({value: 'employeeFilter'})
+    @JsonClass({class: () => [Array, [Employee]]})
+    employees: Employee[] = [];
+
+    constructor(name: string, @JsonClass({class: () => [Array, [Employee]]}) employees: Employee[]) {
+      this.name = name;
+      this.employees = employees;
+    }
+  }
+
+  class Employee {
+    @JsonProperty()
+    name: string;
+    @JsonProperty({value: 'empAge'})
+    age: number;
+
+    constructor(name: string, age: number) {
+      this.name = name;
+      this.age = age;
+    }
+  }
+
+  const employee1 = new Employee('John Alfa', 50);
+  const employee2 = new Employee('John Beta', 45);
+  const company = new Company('Apple', [employee1, employee2]);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Company>(company, {
+    filters: {
+      employeeFilter: {
+        type: JsonFilterType.SERIALIZE_ALL_EXCEPT,
+        values: ['empAge']
+      }
+    }
+  });
+
+  t.is(jsonData, '{"employees":[{"name":"John Alfa"},{"name":"John Beta"}],"name":"Apple"}');
 });

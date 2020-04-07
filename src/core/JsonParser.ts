@@ -287,27 +287,39 @@ export class JsonParser<T> {
     const currentMainCreator = context.mainCreator[0];
 
     // Decorators list that can be propagated
-    const metadataKeys = [
+    const metadataKeysForDeepestClass = [
       'jackson:JsonIgnoreProperties',
-      'jackson:JsonTypeInfo',
-      'jackson:JsonSubTypes',
-      'jackson:JsonTypeIdResolver',
       'jackson:JsonIgnorePropertiesParam:' + argumentIndex,
+      'jackson:JsonTypeInfo',
       'jackson:JsonTypeInfoParam:' + argumentIndex,
+      'jackson:JsonSubTypes',
       'jackson:JsonSubTypesParam:' + argumentIndex,
+      'jackson:JsonTypeIdResolver',
       'jackson:JsonTypeIdResolverParam:' + argumentIndex
     ];
 
-    const decoratorsNameFound = [];
-    const decoratorsToBeApplied = {
+    const metadataKeysForFirstClass = [
+      'jackson:JsonDeserializeParam:' + argumentIndex
+    ];
+
+    let deepestClass = null;
+    const decoratorsNameFoundForDeepestClass: string[] = [];
+    const decoratorsToBeAppliedForDeepestClass = {
       depth: 1
     };
-    let deepestClass = null;
+
+    let firstClass = null;
+    const decoratorsNameFoundForFirstClass: string[] = [];
+    const decoratorsToBeAppliedForFirstClass = {
+      depth: 1
+    };
+
     if (jsonClass) {
+      firstClass = jsonClass.class()[0];
       deepestClass = getDeepestClass(jsonClass.class());
     }
 
-    for (const metadataKey of metadataKeys) {
+    for (const metadataKey of metadataKeysForDeepestClass) {
       const jsonDecoratorOptions: JsonDecoratorOptions = (!metadataKey.includes('Param:')) ?
         getMetadata(metadataKey, currentMainCreator, key, context) :
         getMetadata(metadataKey, currentMainCreator, argumentMethodName, context);
@@ -315,21 +327,58 @@ export class JsonParser<T> {
       if (jsonDecoratorOptions) {
         if (metadataKey.includes('Param:') && deepestClass != null && argumentMethodName != null && argumentIndex != null) {
           const jsonClassParam = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, argumentMethodName);
-          decoratorsToBeApplied[metadataKey.substring(0, metadataKey.indexOf('Param:'))] = jsonDecoratorOptions;
-          decoratorsToBeApplied['jackson:JsonClass'] = jsonClassParam;
-          decoratorsNameFound.push(metadataKey.replace('jackson:', '').substring(0, metadataKey.indexOf('Param:')));
+          decoratorsToBeAppliedForDeepestClass[metadataKey.substring(0, metadataKey.indexOf('Param:'))] = jsonDecoratorOptions;
+          decoratorsToBeAppliedForDeepestClass['jackson:JsonClass'] = jsonClassParam;
+          if (jsonClassParam == null) {
+            jsonClass = null;
+          }
+          decoratorsNameFoundForDeepestClass.push(metadataKey.replace('jackson:', '').substring(0, metadataKey.indexOf('Param:')));
         } else {
-          decoratorsToBeApplied[metadataKey] = jsonDecoratorOptions;
-          decoratorsNameFound.push(metadataKey.replace('jackson:', ''));
+          decoratorsToBeAppliedForDeepestClass[metadataKey] = jsonDecoratorOptions;
+          decoratorsNameFoundForDeepestClass.push(metadataKey.replace('jackson:', ''));
         }
       }
     }
 
-    if (deepestClass != null && decoratorsNameFound.length > 0) {
-      context._internalDecorators.set(deepestClass, decoratorsToBeApplied);
-    } else if (!jsonClass && decoratorsNameFound.length > 0) {
-      // eslint-disable-next-line max-len
-      throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound.map((ann) => '@' + ann + '()').join(', ')}] at ${currentMainCreator.name}["${key}"]`);
+    for (const metadataKey of metadataKeysForFirstClass) {
+      const jsonDecoratorOptions: JsonDecoratorOptions = (!metadataKey.includes('Param:')) ?
+        getMetadata(metadataKey, currentMainCreator, key, context) :
+        getMetadata(metadataKey, currentMainCreator, argumentMethodName, context);
+
+      if (jsonDecoratorOptions) {
+        if (metadataKey.includes('Param:') && firstClass != null && argumentMethodName != null && argumentIndex != null) {
+          const jsonClassParam = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, argumentMethodName);
+          decoratorsToBeAppliedForFirstClass[metadataKey.substring(0, metadataKey.indexOf('Param:'))] = jsonDecoratorOptions;
+          decoratorsToBeAppliedForFirstClass['jackson:JsonClass'] = jsonClassParam;
+          if (jsonClassParam == null) {
+            jsonClass = null;
+          }
+          decoratorsNameFoundForFirstClass.push(metadataKey.replace('jackson:', '').substring(0, metadataKey.indexOf('Param:')));
+        } else {
+          decoratorsToBeAppliedForFirstClass[metadataKey] = jsonDecoratorOptions;
+          decoratorsNameFoundForFirstClass.push(metadataKey.replace('jackson:', ''));
+        }
+      }
+    }
+
+    if (deepestClass != null && decoratorsNameFoundForDeepestClass.length > 0) {
+      context._internalDecorators.set(deepestClass, decoratorsToBeAppliedForDeepestClass);
+    }
+    if (firstClass != null && decoratorsNameFoundForFirstClass.length > 0) {
+      context._internalDecorators.set(firstClass, decoratorsToBeAppliedForFirstClass);
+    }
+    if (!jsonClass && (decoratorsNameFoundForDeepestClass.length > 0 || decoratorsNameFoundForFirstClass.length > 0)) {
+      const decoratorsNameFound = decoratorsNameFoundForDeepestClass.concat(decoratorsNameFoundForFirstClass)
+        .map((decorator) => '@' + ((decorator.includes('Param:')) ? decorator.substring(0, decorator.indexOf('Param:')) : decorator) + '()')
+        .join(', ');
+
+      if (argumentMethodName == null) {
+        throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound}] at ${currentMainCreator.name}["${key}"]`);
+      } else {
+        // eslint-disable-next-line max-len
+        throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound}] on parameter at index ${argumentIndex} at ${currentMainCreator.name}.${argumentMethodName}`);
+      }
+
     }
   }
 
@@ -396,7 +445,7 @@ export class JsonParser<T> {
    * @param obj
    */
   private parseJsonCreator(context: JsonParserTransformerContext, obj: any): any {
-    if (obj) {
+    if (obj != null) {
 
       const currentMainCreator = context.mainCreator[0];
 
@@ -426,24 +475,20 @@ export class JsonParser<T> {
 
       let instance;
 
-      if ('mode' in jsonCreator) {
-        switch (jsonCreator.mode) {
-        case JsonCreatorMode.PROPERTIES:
-          const result = this.parseJsonCreatorArguments(jsonCreator, method, obj, context);
-          args  = result.args;
-          argNames = result.argNames;
-          argNamesAliasToBeExcluded = result.argNamesAliasToBeExcluded;
+      if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
+        const result = this.parseJsonCreatorArguments(jsonCreator, method, obj, context);
+        args = result.args != null && result.args.length > 0 ? result.args : [obj];
+        argNames = result.argNames;
+        argNamesAliasToBeExcluded = result.argNamesAliasToBeExcluded;
 
-          instance = ('method' in jsonCreator && jsonCreator.method) ?
-            (method as Function)(...args) : new (method as ObjectConstructor)(...args);
-          break;
+        instance = ('method' in jsonCreator && jsonCreator.method) ?
+          (method as Function)(...args) : new (method as ObjectConstructor)(...args);
+      } else if ('mode' in jsonCreator) {
+        switch (jsonCreator.mode) {
         case JsonCreatorMode.DELEGATING:
           instance = ('method' in jsonCreator && jsonCreator.method) ?
             (method as Function)(obj) : new (method as ObjectConstructor)(obj);
           break;
-        default:
-          instance = ('method' in jsonCreator && jsonCreator.method) ?
-            (method as Function)(obj) : new (method as ObjectConstructor)(obj);
         }
       }
 
@@ -466,7 +511,7 @@ export class JsonParser<T> {
         }
       }
 
-      if ('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) {
+      if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
         const keysToBeExcluded = [...new Set([...argNames, ...argNamesAliasToBeExcluded, ...jsonAppendAttributesToBeExcluded])];
         // copy remaining properties and ignore the ones that are not part of "instance", except for instances of Object class
         const keys = Object.keys(obj).filter(n => !keysToBeExcluded.includes(n));

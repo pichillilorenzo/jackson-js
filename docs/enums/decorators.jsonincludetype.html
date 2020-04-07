@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JsonTypeInfoAs | jackson-js</title>
+	<title>JsonIncludeType | jackson-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,19 +56,26 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_decorators_jsontypeinfo_.html">&quot;decorators/JsonTypeInfo&quot;</a>
+					<a href="../modules/decorators.html">Decorators</a>
 				</li>
 				<li>
-					<a href="_decorators_jsontypeinfo_.jsontypeinfoas.html">JsonTypeInfoAs</a>
+					<a href="decorators.jsonincludetype.html">JsonIncludeType</a>
 				</li>
 			</ul>
-			<h1>Enumeration JsonTypeInfoAs</h1>
+			<h1>Enumeration JsonIncludeType</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Enumeration used with <a href="../modules/decorators.html#jsoninclude">JsonInclude</a> to define which properties of a Class are to be included in serialization.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -76,9 +83,10 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#property" class="tsd-kind-icon">PROPERTY</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#wrapper_array" class="tsd-kind-icon">WRAPPER_<wbr>ARRAY</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#wrapper_object" class="tsd-kind-icon">WRAPPER_<wbr>OBJECT</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonincludetype.html#always" class="tsd-kind-icon">ALWAYS</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonincludetype.html#non_default" class="tsd-kind-icon">NON_<wbr>DEFAULT</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonincludetype.html#non_empty" class="tsd-kind-icon">NON_<wbr>EMPTY</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonincludetype.html#non_null" class="tsd-kind-icon">NON_<wbr>NULL</a></li>
 							</ul>
 						</section>
 					</div>
@@ -87,34 +95,82 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="property" class="tsd-anchor"></a>
-					<h3>PROPERTY</h3>
-					<div class="tsd-signature tsd-kind-icon">PROPERTY<span class="tsd-signature-symbol">:</span></div>
+					<a name="always" class="tsd-anchor"></a>
+					<h3>ALWAYS</h3>
+					<div class="tsd-signature tsd-kind-icon">ALWAYS<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2bb8ed1/src/decorators/JsonTypeInfo.ts#L10">src/decorators/JsonTypeInfo.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonInclude.ts#L17">src/decorators/JsonInclude.ts:17</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that property is to be always included, independent of value of the property.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="wrapper_array" class="tsd-anchor"></a>
-					<h3>WRAPPER_<wbr>ARRAY</h3>
-					<div class="tsd-signature tsd-kind-icon">WRAPPER_<wbr>ARRAY<span class="tsd-signature-symbol">:</span></div>
+					<a name="non_default" class="tsd-anchor"></a>
+					<h3>NON_<wbr>DEFAULT</h3>
+					<div class="tsd-signature tsd-kind-icon">NON_<wbr>DEFAULT<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2bb8ed1/src/decorators/JsonTypeInfo.ts#L12">src/decorators/JsonTypeInfo.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonInclude.ts#L42">src/decorators/JsonInclude.ts:42</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Definition is such that:</p>
+							<ul>
+								<li>All values considered &quot;empty&quot; (as per <a href="decorators.jsonincludetype.html#non_empty">NON_EMPTY</a>) are excluded;</li>
+								<li>Primitive default values are excluded, which are defined such that:<ul>
+										<li><code>Number</code>: <code>0</code>;</li>
+										<li><code>Boolean</code>: <code>false</code>;</li>
+										<li><code>String</code>: <code>&#39;&#39;</code>;</li>
+										<li><code>BigInt</code>: <code>BigInt(0)</code>;</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="wrapper_object" class="tsd-anchor"></a>
-					<h3>WRAPPER_<wbr>OBJECT</h3>
-					<div class="tsd-signature tsd-kind-icon">WRAPPER_<wbr>OBJECT<span class="tsd-signature-symbol">:</span></div>
+					<a name="non_empty" class="tsd-anchor"></a>
+					<h3>NON_<wbr>EMPTY</h3>
+					<div class="tsd-signature tsd-kind-icon">NON_<wbr>EMPTY<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2bb8ed1/src/decorators/JsonTypeInfo.ts#L11">src/decorators/JsonTypeInfo.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonInclude.ts#L28">src/decorators/JsonInclude.ts:28</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that only properties with null value, or what is considered empty, are not to be included.
+							Definition of emptiness is data type specific; see below for details on actual handling.</p>
+						</div>
+						<p>Default emptiness for all types includes:</p>
+						<ul>
+							<li><code>null</code> values;</li>
+							<li>For <code>Set</code> and <code>Map</code>, method <code>size()</code> is called;</li>
+							<li>For <code>Array</code>, empty arrays are ones with length of 0;</li>
+							<li>For <code>String</code>, empty strings are ones with length of 0.</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
+					<a name="non_null" class="tsd-anchor"></a>
+					<h3>NON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">NON_<wbr>NULL<span class="tsd-signature-symbol">:</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonInclude.ts#L32">src/decorators/JsonInclude.ts:32</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that only properties with non-null values are to be included.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -124,8 +180,17 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/core.html">Core</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/databind.html">Databind</a>
+					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_decorators_jsontypeinfo_.html">&quot;decorators/<wbr>Json<wbr>Type<wbr>Info&quot;</a>
+						<a href="../modules/decorators.html">Decorators</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/types.html">Types</a>
 					</li>
 				</ul>
 			</nav>
@@ -134,27 +199,24 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-enum tsd-parent-kind-module">
-						<a href="_decorators_jsontypeinfo_.jsontypeinfoas.html" class="tsd-kind-icon">Json<wbr>Type<wbr>Info<wbr>As</a>
+						<a href="decorators.jsonincludetype.html" class="tsd-kind-icon">Json<wbr>Include<wbr>Type</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#property" class="tsd-kind-icon">PROPERTY</a>
+								<a href="decorators.jsonincludetype.html#always" class="tsd-kind-icon">ALWAYS</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#wrapper_array" class="tsd-kind-icon">WRAPPER_<wbr>ARRAY</a>
+								<a href="decorators.jsonincludetype.html#non_default" class="tsd-kind-icon">NON_<wbr>DEFAULT</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_decorators_jsontypeinfo_.jsontypeinfoas.html#wrapper_object" class="tsd-kind-icon">WRAPPER_<wbr>OBJECT</a>
+								<a href="decorators.jsonincludetype.html#non_empty" class="tsd-kind-icon">NON_<wbr>EMPTY</a>
+							</li>
+							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
+								<a href="decorators.jsonincludetype.html#non_null" class="tsd-kind-icon">NON_<wbr>NULL</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="_decorators_jsontypeinfo_.jsontypeinfoid.html" class="tsd-kind-icon">Json<wbr>Type<wbr>Info<wbr>Id</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module">
-						<a href="../modules/_decorators_jsontypeinfo_.html#jsontypeinfo" class="tsd-kind-icon">Json<wbr>Type<wbr>Info</a>
-					</li>
 				</ul>
 			</nav>
 		</div>

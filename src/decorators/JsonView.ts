@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
+
 import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonViewDecorator, JsonViewOptions} from '../@types';

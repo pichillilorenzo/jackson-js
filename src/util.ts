@@ -347,7 +347,7 @@ export const findMetadata = <T extends JsonDecoratorOptions>(metadataKey: string
     Reflect.getMetadata(metadataKey, target, propertyKey) : Reflect.getMetadata(metadataKey, target);
 
   // search also on its prototype chain
-  while (jsonDecoratorOptions == null && target.name && target !== Object) {
+  while (jsonDecoratorOptions == null && target.name) {
     if (jsonDecoratorOptions == null && propertyKey == null && context != null && context._internalDecorators != null) {
       const map = context._internalDecorators.get(target as ObjectConstructor);
       if (map != null && metadataKey in map) {
@@ -390,7 +390,7 @@ export const findMetadataKeys = <T extends JsonDecoratorOptions>(target: Record<
   if (context != null && context._internalDecorators != null) {
     // search also on its prototype chain
     let parent = target;
-    while (parent.name && parent !== Object) {
+    while (parent.name) {
       const internalDecorators = context._internalDecorators.get(parent as ObjectConstructor);
       for (const key in internalDecorators) {
         if (key === 'depth') {

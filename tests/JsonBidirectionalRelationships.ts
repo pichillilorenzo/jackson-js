@@ -60,7 +60,7 @@ test('Fail Infinite recursion', t => {
     objectMapper.stringify<User>(user);
   });
 
-  t.assert(err instanceof JacksonError);
+  t.assert(err instanceof Error);
 });
 
 test('@JsonManagedReference And @JsonBackReference', t => {

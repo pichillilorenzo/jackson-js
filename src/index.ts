@@ -1,6 +1,11 @@
 import {JsonProperty} from './decorators/JsonProperty';
 import {JsonCreator, JsonCreatorMode} from './decorators/JsonCreator';
 import {ObjectMapper} from './databind/ObjectMapper';
+import {JsonAlias} from './decorators/JsonAlias';
+import {JsonSerialize} from './decorators/JsonSerialize';
+import {JsonDeserialize} from './decorators/JsonDeserialize';
+import {JsonClass} from './decorators/JsonClass';
+import {JsonFilter, JsonFilterType} from "./decorators/JsonFilter";
 
 //
 // // class DateSerializer {
@@ -754,31 +759,6 @@ import {ObjectMapper} from './databind/ObjectMapper';
 //
 // const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
 // console.log(animals);
-@JsonCreator()
-class Employee {
-  @JsonProperty()
-  id: number;
-  @JsonProperty()
-  name: string;
-  @JsonProperty()
-  department: string;
-
-  constructor(id: number, name: string, department: string) {
-    this.id = id;
-    this.name = name;
-    this.department = department;
-  }
-}
-
-const objectMapper = new ObjectMapper();
-const jsonData = `{
-  "id": 1,
-  "name": "Chris",
-  "department": "Admin"
-}`;
-const employee = objectMapper.parse<Employee>(jsonData, {mainCreator: () => [Employee]});
-console.log(employee);
-
 
 
 

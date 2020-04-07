@@ -10,7 +10,7 @@ import { JsonPropertyAccess } from '../decorators/JsonProperty';
 import { ObjectIdGenerator } from '../decorators/JsonIdentityInfo';
 import { JsonFilterType } from '../decorators/JsonFilter';
 import { JsonNamingStrategy } from '../decorators/JsonNaming';
-import { JsonCreatorMode } from "../decorators/JsonCreator";
+import { JsonCreatorMode } from '../decorators/JsonCreator';
 export declare type ClassType<T> = (new () => T) | (new (...args: any[]) => T) | ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 export interface ClassList<T> extends Array<any> {
     [index: number]: T | ClassList<T>;
@@ -40,7 +40,10 @@ export declare type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppend
  * Decorator type for {@link JsonClass}.
  */
 export declare type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions, PropertyDecorator & ParameterDecorator>;
-export declare type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions, any>;
+/**
+ * Decorator type for {@link JsonDeserialize}.
+ */
+export declare type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions, ClassDecorator & PropertyDecorator>;
 export declare type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions, any>;
 export declare type JsonIdentityInfoDecorator = JacksonDecoratorWithOptions<JsonIdentityInfoOptions, any>;
 export declare type JsonIdentityReferenceDecorator = JacksonDecoratorWithOptions<JsonIdentityReferenceOptions, any>;
@@ -184,11 +187,18 @@ export interface JsonCreatorOptions extends JsonDecoratorOptions {
     /**
      * Property that is used to indicate how argument(s) is/are bound for creator.
      *
-     * @default `JsonCreatorMode.PROPERTIES`
+     * @default {@link JsonCreatorMode.PROPERTIES}
      */
     mode?: JsonCreatorMode;
 }
+/**
+ * Decorator options for {@link JsonDeserialize}.
+ */
 export interface JsonDeserializeOptions extends JsonDecoratorOptions {
+    /**
+     * Deserializer function to use for deserializing associated value.
+     * @param args
+     */
     using: (...args: any[]) => any;
 }
 export interface JsonFormatBaseOptions extends JsonDecoratorOptions {

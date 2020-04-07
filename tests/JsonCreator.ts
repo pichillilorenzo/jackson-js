@@ -14,7 +14,9 @@ test('@JsonCreator on class', t => {
     @JsonProperty()
     department: string;
 
-    constructor(id: number, name: string, department: string) {
+    constructor(id: number,
+      @JsonProperty({value: 'empName'}) name: string,
+      @JsonProperty({value: 'empDept'}) department: string) {
       this.id = id;
       this.name = name;
       this.department = department;
@@ -178,30 +180,6 @@ test('@JsonCreator on static method with and without creator name using JsonCrea
   t.is(anotherEmployee.id, 1);
   t.is(anotherEmployee.name, 'Another Chris');
   t.is(anotherEmployee.department, 'Another Admin');
-});
-
-test('Fail @JsonCreator, missing required JsonProperty "value" option', t => {
-  const err = t.throws<JacksonError>(() => {
-    @JsonCreator()
-    class Employee {
-      @JsonProperty()
-      id: number;
-      @JsonProperty()
-      name: string;
-      @JsonProperty()
-      department: string;
-
-      constructor(@JsonProperty() id: number,
-        @JsonProperty({value: 'empName'}) name: string,
-        @JsonProperty({value: 'empDept'}) department: string) {
-        this.id = id;
-        this.name = name;
-        this.department = department;
-      }
-    }
-  });
-
-  t.assert(err instanceof JacksonError);
 });
 
 test('Fail @JsonCreator with multiple creators with same name', t => {

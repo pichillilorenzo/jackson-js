@@ -1,3 +1,8 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
+
 import {getArgumentNames, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonInjectDecorator, JsonInjectOptions} from '../@types';

@@ -65,8 +65,15 @@ export type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppendOptions,
  * Decorator type for {@link JsonClass}.
  */
 export type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions, PropertyDecorator & ParameterDecorator>;
-export type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions, any>;
-export type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions, any>;
+/**
+ * Decorator type for {@link JsonDeserialize}.
+ */
+export type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions,
+ClassDecorator & PropertyDecorator & ParameterDecorator>;
+/**
+ * Decorator type for {@link JsonFilter}.
+ */
+export type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions, ClassDecorator & PropertyDecorator>;
 export type JsonIdentityInfoDecorator = JacksonDecoratorWithOptions<JsonIdentityInfoOptions, any>;
 export type JsonIdentityReferenceDecorator = JacksonDecoratorWithOptions<JsonIdentityReferenceOptions, any>;
 export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions, any>;
@@ -95,7 +102,10 @@ export type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<Jso
  * Decorator type for {@link JsonCreator}.
  */
 export type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreatorOptions, ClassDecorator & MethodDecorator>;
-export type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions, any>;
+/**
+ * Decorator type for {@link JsonFormat}.
+ */
+export type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions, ClassDecorator & PropertyDecorator>;
 export type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions, any>;
 export type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreTypeOptions, any>;
 export type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions, any>;
@@ -111,11 +121,9 @@ export type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOp
 export type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions, any>;
 export type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeIdOptions, any>;
 
-export interface JsonStringifierFilterOptions {
-  type: JsonFilterType;
-  values?: string[];
-}
-
+/**
+ * Common context properties used during serialization and deserialization.
+ */
 export interface JsonStringifierParserCommonContext<T> {
   withViews?: (...args) => ClassType<any>[];
   features?: {
@@ -133,6 +141,17 @@ export interface JsonStringifierParserCommonContext<T> {
   }>;
 }
 
+/**
+ * Filter options used during serialization.
+ */
+export interface JsonStringifierFilterOptions {
+  type: JsonFilterType;
+  values?: string[];
+}
+
+/**
+ * Context properties used during serialization.
+ */
 export interface JsonStringifierContext
   extends JsonStringifierParserCommonContext<JsonStringifierContext> {
   attributes?: {
@@ -145,6 +164,9 @@ export interface JsonStringifierContext
   serializers?: ObjectMapperSerializer[];
 }
 
+/**
+ * Context properties used during deserialization without {@link JsonParserContext.mainCreator}.
+ */
 export interface JsonParserBaseWithoutMainCreatorContext
   extends JsonStringifierParserCommonContext<JsonParserBaseWithoutMainCreatorContext> {
   withCreatorName?: string;
@@ -154,6 +176,9 @@ export interface JsonParserBaseWithoutMainCreatorContext
   };
 }
 
+/**
+ * Context properties used during deserialization.
+ */
 export interface JsonParserContext extends JsonParserBaseWithoutMainCreatorContext {
   mainCreator?: (...args) => ClassList<ClassType<any>>;
 }
@@ -244,55 +269,117 @@ export interface JsonCreatorOptions extends JsonDecoratorOptions {
   mode?: JsonCreatorMode;
 }
 
+/**
+ * Decorator options for {@link JsonDeserialize}.
+ */
 export interface JsonDeserializeOptions extends JsonDecoratorOptions {
+  /**
+   * Deserializer function to use for deserializing associated value.
+   * @param args
+   */
   using: (...args) => any;
 }
 
+/**
+ * Decorator base options for {@link JsonFormat}.
+ */
 export interface JsonFormatBaseOptions extends JsonDecoratorOptions {
+  /**
+   * Shape to be used by {@link JsonFormat}.
+   */
   shape?: JsonFormatShape;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.ANY}.
+ */
 export interface JsonFormatAny extends JsonFormatBaseOptions {
   shape: JsonFormatShape.ANY;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.ARRAY}.
+ */
 export interface JsonFormatArray extends JsonFormatBaseOptions {
   shape: JsonFormatShape.ARRAY;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.BOOLEAN}.
+ */
 export interface JsonFormatBoolean extends JsonFormatBaseOptions {
   shape: JsonFormatShape.BOOLEAN;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.NUMBER_FLOAT}.
+ */
 export interface JsonFormatNumberFloat extends JsonFormatBaseOptions {
   shape: JsonFormatShape.NUMBER_FLOAT;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.NUMBER_INT}.
+ */
 export interface JsonFormatNumberInt extends JsonFormatBaseOptions {
   shape: JsonFormatShape.NUMBER_INT;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.OBJECT}.
+ */
 export interface JsonFormatObject extends JsonFormatBaseOptions {
   shape: JsonFormatShape.OBJECT;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.SCALAR}.
+ */
 export interface JsonFormatScalar extends JsonFormatBaseOptions {
   shape: JsonFormatShape.SCALAR;
 }
 
+/**
+ * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.STRING}.
+ */
 export interface JsonFormatString extends JsonFormatBaseOptions {
   shape: JsonFormatShape.STRING;
-  // for Date
+  /**
+   * Pattern to be used to format a `Date` during serialization.
+   */
   pattern?: string;
+  /**
+   * Locale to be used to format a `Date` during serialization.
+   */
   locale?: string;
+  /**
+   * Timezone to be used to format a `Date` during serialization.
+   */
   timezone?: string;
-  // for Number
+  /**
+   * Radix to be used to format an integer `Number` during serialization and using `parseInt()`.
+   */
   radix?: number;
+  /**
+   * An integer specifying the number of digits after the decimal point
+   * to be used to format an integer `Number` during serialization and using `toExponential()`.
+   */
   toExponential?: number;
+  /**
+   * The number of digits to appear after the decimal point to be used to format a `Number`
+   * during serialization and using `toFixed()`.
+   */
   toFixed?: number;
+  /**
+   * An integer specifying the number of significant digits to be used to format a `Number`
+   * during serialization and using `toPrecision()`.
+   */
   toPrecision?: number;
 }
 
+/**
+ * Decorator options for {@link JsonFormat}
+ */
 export type JsonFormatOptions = JsonFormatAny | JsonFormatArray | JsonFormatBoolean | JsonFormatNumberFloat |
 JsonFormatNumberInt | JsonFormatObject | JsonFormatScalar | JsonFormatString;
 
@@ -457,8 +544,14 @@ export interface JsonInjectOptions extends JsonDecoratorOptions {
   useInput?: boolean;
 }
 
+/**
+ * Decorator options for {@link JsonFilter}.
+ */
 export interface JsonFilterOptions extends JsonDecoratorOptions {
-  name: string;
+  /**
+   * Id of filter to use.
+   */
+  value: string;
 }
 
 /**
