@@ -35,6 +35,11 @@ export declare class JsonStringifier<T> {
     transform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any;
     /**
      *
+     * @param context
+     */
+    private convertStringifierContextToTransformerContext;
+    /**
+     *
      * @param key
      * @param value
      * @param context
@@ -140,6 +145,13 @@ export declare class JsonStringifier<T> {
     private stringifyJsonInclude;
     /**
      *
+     * @param replacement
+     * @param key
+     * @param context
+     */
+    private stringifyJsonIncludeMap;
+    /**
+     *
      * @param obj
      * @param context
      */
@@ -166,17 +178,17 @@ export declare class JsonStringifier<T> {
      * @param newKey
      * @param context
      */
-    private stringifyPropertyJsonFormat;
+    private stringifyJsonFormatProperty;
     /**
      *
      * @param obj
      * @param context
      */
-    private stringifyClassJsonFormat;
+    private stringifyJsonFormatClass;
     /**
      *
      * @param jsonFormat
-     * @param value
+     * @param replacement
      * @param context
      */
     private stringifyJsonFormat;

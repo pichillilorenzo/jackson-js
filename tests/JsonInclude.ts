@@ -135,6 +135,39 @@ test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
   t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
 });
 
+test('@JsonInclude on class with JsonIncludeType.CUSTOM value filter', t => {
+  @JsonInclude({value: JsonIncludeType.CUSTOM, valueFilter: (value: any) => value == null || value === ''})
+  class Employee {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    dept: string;
+    @JsonProperty()
+    address: string;
+    @JsonProperty()
+    phones: string[];
+    @JsonProperty()
+    otherInfo: Map<string, string>;
+
+    constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
+      this.id = id;
+      this.name = name;
+      this.dept = dept;
+      this.address = address;
+      this.phones = phones;
+      this.otherInfo = otherInfo;
+    }
+  }
+
+  const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.is(jsonData, '{"id":0,"name":"John","phones":[],"otherInfo":{}}');
+});
+
 test('@JsonInclude on property with JsonIncludeType.NON_EMPTY', t => {
   class Employee {
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
@@ -261,4 +294,95 @@ test('@JsonInclude on property with JsonIncludeType.ALWAYS', t => {
 
   const jsonData = objectMapper.stringify<Employee>(employee);
   t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
+});
+
+test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
+  class Employee {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
+    otherInfo: Map<string, string>;
+
+    constructor(id: number, name: string, otherInfo: Map<string, string>) {
+      this.id = id;
+      this.name = name;
+      this.otherInfo = otherInfo;
+    }
+  }
+
+  const otherInfo = new Map<string, string>();
+  otherInfo.set('phone', null);
+  otherInfo.set('address', '123 Main Street, New York, NY 10030');
+
+  const employee = new Employee(0, 'John', otherInfo);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
+});
+
+test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
+  class Employee {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
+    otherInfo: Record<string, string>;
+
+    constructor(id: number, name: string, otherInfo: Record<string, string>) {
+      this.id = id;
+      this.name = name;
+      this.otherInfo = otherInfo;
+    }
+  }
+
+  const otherInfo = {
+    phone: null,
+    address: '123 Main Street, New York, NY 10030'
+  };
+  const employee = new Employee(0, 'John', otherInfo);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
+});
+
+test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and JsonIncludeType.CUSTOM content filter', t => {
+  class Employee {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    @JsonInclude({
+      value: JsonIncludeType.NON_EMPTY,
+      content: JsonIncludeType.CUSTOM,
+      contentFilter: (contentValue: any) => contentValue == null
+    })
+    otherInfo: Map<string, string>;
+
+    constructor(id: number, name: string, otherInfo: Map<string, string>) {
+      this.id = id;
+      this.name = name;
+      this.otherInfo = otherInfo;
+    }
+  }
+
+  const otherInfo = new Map<string, string>();
+  otherInfo.set('phone', null);
+  otherInfo.set('address', '123 Main Street, New York, NY 10030');
+
+  const employee = new Employee(0, 'John', otherInfo);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
 });

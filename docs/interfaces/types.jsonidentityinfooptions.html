@@ -69,6 +69,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Decorator options for <a href="../modules/decorators.html#jsonidentityinfo">JsonIdentityInfo</a>.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -111,7 +118,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsondecoratoroptions.html">JsonDecoratorOptions</a>.<a href="types.jsondecoratoroptions.html#enabled">enabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L218">src/@types/index.ts:218</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L266">src/@types/index.ts:266</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -131,9 +138,15 @@
 					<div class="tsd-signature tsd-kind-icon">generator<span class="tsd-signature-symbol">:</span> <a href="../enums/decorators.objectidgenerator.html" class="tsd-signature-type">ObjectIdGenerator</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L521">src/@types/index.ts:521</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L654">src/@types/index.ts:654</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Generator to use for producing Object Identifier for objects:
+							either one of pre-defined generators from <a href="../enums/decorators.objectidgenerator.html">ObjectIdGenerator</a>, or a custom generator.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="property" class="tsd-anchor"></a>
@@ -141,9 +154,19 @@
 					<div class="tsd-signature tsd-kind-icon">property<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L522">src/@types/index.ts:522</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L660">src/@types/index.ts:660</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Name of JSON property in which Object Id will reside.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p><code>&#39;@id&#39;</code></p>
+							</dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="scope" class="tsd-anchor"></a>
@@ -151,9 +174,15 @@
 					<div class="tsd-signature tsd-kind-icon">scope<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L523">src/@types/index.ts:523</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L665">src/@types/index.ts:665</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Scope is used to define applicability of an Object Id: all ids must be unique within their scope;
+							where scope is defined as combination of this value and generator type.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="uuidv1" class="tsd-anchor"></a>
@@ -161,9 +190,14 @@
 					<div class="tsd-signature tsd-kind-icon">uuidv1<span class="tsd-signature-symbol">:</span> <a href="types.uuidv1generatoroptions.html" class="tsd-signature-type">UUIDv1GeneratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L527">src/@types/index.ts:527</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L681">src/@types/index.ts:681</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for version 1 UUID Generator (see <a href="https://github.com/uuidjs/uuid#version-1-timestamp" class="external">https://github.com/uuidjs/uuid#version-1-timestamp</a>)</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="uuidv3" class="tsd-anchor"></a>
@@ -171,9 +205,14 @@
 					<div class="tsd-signature tsd-kind-icon">uuidv3<span class="tsd-signature-symbol">:</span> <a href="types.uuidv3generatoroptions.html" class="tsd-signature-type">UUIDv3GeneratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L526">src/@types/index.ts:526</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L677">src/@types/index.ts:677</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for version 3 UUID Generator (see <a href="https://github.com/uuidjs/uuid#version-3-namespace" class="external">https://github.com/uuidjs/uuid#version-3-namespace</a>)</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="uuidv4" class="tsd-anchor"></a>
@@ -181,9 +220,14 @@
 					<div class="tsd-signature tsd-kind-icon">uuidv4<span class="tsd-signature-symbol">:</span> <a href="types.uuidv4generatoroptions.html" class="tsd-signature-type">UUIDv4GeneratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L525">src/@types/index.ts:525</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L673">src/@types/index.ts:673</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for version 4 UUID Generator (see <a href="https://github.com/uuidjs/uuid#version-4-random" class="external">https://github.com/uuidjs/uuid#version-4-random</a>)</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="uuidv5" class="tsd-anchor"></a>
@@ -191,9 +235,14 @@
 					<div class="tsd-signature tsd-kind-icon">uuidv5<span class="tsd-signature-symbol">:</span> <a href="types.uuidv5generatoroptions.html" class="tsd-signature-type">UUIDv5GeneratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L524">src/@types/index.ts:524</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L669">src/@types/index.ts:669</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for version 5 UUID Generator (see <a href="https://github.com/uuidjs/uuid#version-5-namespace" class="external">https://github.com/uuidjs/uuid#version-5-namespace</a>)</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>

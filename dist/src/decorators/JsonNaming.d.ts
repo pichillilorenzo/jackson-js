@@ -1,3 +1,7 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
 import 'reflect-metadata';
 import { JsonNamingDecorator } from '../@types';
 export declare enum JsonNamingStrategy {

@@ -33,7 +33,7 @@ export declare class JsonParser<T> {
      *
      * @param context
      */
-    private convertParserOptionsToTransformerOptions;
+    private convertParserContextToTransformerContext;
     /**
      *
      * @param context

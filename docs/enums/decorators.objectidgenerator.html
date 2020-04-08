@@ -69,6 +69,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Generator to use for producing Object Identifier for objects</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -96,9 +103,14 @@
 					<div class="tsd-signature tsd-kind-icon">Int<wbr>Sequence<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L14">src/decorators/JsonIdentityInfo.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L20">src/decorators/JsonIdentityInfo.ts:20</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Simple sequence-number based generator, which uses basic integers (starting with value 1) as Object Identifiers.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="none" class="tsd-anchor"></a>
@@ -106,9 +118,14 @@
 					<div class="tsd-signature tsd-kind-icon">None<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L15">src/decorators/JsonIdentityInfo.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L24">src/decorators/JsonIdentityInfo.ts:24</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Used to allow explicitly specifying that no generator is used.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="propertygenerator" class="tsd-anchor"></a>
@@ -116,9 +133,15 @@
 					<div class="tsd-signature tsd-kind-icon">Property<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L16">src/decorators/JsonIdentityInfo.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L29">src/decorators/JsonIdentityInfo.ts:29</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Used to denote case where Object Identifier to use comes from a Class property (getter method or field).
+							If so, value is written directly during serialization, and used as-is during deserialization.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="uuidv1generator" class="tsd-anchor"></a>
@@ -126,9 +149,15 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv1<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L20">src/decorators/JsonIdentityInfo.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L49">src/decorators/JsonIdentityInfo.ts:49</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Implementation that just uses version 1 UUIDs as reliably unique identifiers.
+							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="uuidv3generator" class="tsd-anchor"></a>
@@ -136,9 +165,15 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv3<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L19">src/decorators/JsonIdentityInfo.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L44">src/decorators/JsonIdentityInfo.ts:44</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Implementation that just uses version 3 UUIDs as reliably unique identifiers.
+							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="uuidv4generator" class="tsd-anchor"></a>
@@ -146,9 +181,15 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv4<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L18">src/decorators/JsonIdentityInfo.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L39">src/decorators/JsonIdentityInfo.ts:39</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Implementation that just uses version 4 UUIDs as reliably unique identifiers.
+							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="uuidv5generator" class="tsd-anchor"></a>
@@ -156,9 +197,15 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv5<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/decorators/JsonIdentityInfo.ts#L17">src/decorators/JsonIdentityInfo.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonIdentityInfo.ts#L34">src/decorators/JsonIdentityInfo.ts:34</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Implementation that just uses version 5 UUIDs as reliably unique identifiers.
+							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>

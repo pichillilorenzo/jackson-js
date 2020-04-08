@@ -245,6 +245,67 @@ test('@JsonIdentityInfo One To Many', t => {
   t.assert(userParsed.items[1].owner === userParsed);
 });
 
+test('@JsonIdentityInfo One To Many at property level', t => {
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Item]]})
+    @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  class Item {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+      this.id = id;
+      this.name = name;
+      this.owner = owner;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const item1 = new Item(1, 'Book', user);
+  const item2 = new Item(2, 'Computer', user);
+  user.items.push(...[item1, item2]);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  // eslint-disable-next-line max-len
+  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+
+  const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.assert(userParsed.items.length === 2);
+  t.assert(userParsed.items[0] instanceof Item);
+  t.assert(userParsed.items[0].owner === userParsed);
+  t.assert(userParsed.items[1].owner === userParsed);
+});
+
 test('@JsonIdentityInfo Many To Many', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
@@ -303,6 +364,7 @@ test('@JsonIdentityInfo Many To Many', t => {
   // eslint-disable-next-line max-len
   t.is(jsonData, '{"items":[{"owners":[1,{"items":[1],"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta"}],"id":1,"name":"Book"},{"owners":[1],"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
 
+
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.assert(userParsed.items.length === 2);
@@ -337,6 +399,114 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   @JsonIdentityReference({alwaysAsId: true})
+  class Item {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+      this.id = id;
+      this.name = name;
+      this.owner = owner;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const item1 = new Item(2, 'Book', user);
+  const item2 = new Item(3, 'Computer', user);
+  user.items.push(...[item1, item2]);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+});
+
+test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property level', t => {
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Item]]})
+    @JsonIdentityReference({alwaysAsId: true})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
+  class Item {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+      this.id = id;
+      this.name = name;
+      this.owner = owner;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const item1 = new Item(2, 'Book', user);
+  const item2 = new Item(3, 'Computer', user);
+  user.items.push(...[item1, item2]);
+
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+});
+
+test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter level', t => {
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Item]]})
+    @JsonIdentityReference({alwaysAsId: true})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
     @JsonProperty()
     id: number;

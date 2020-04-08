@@ -80,7 +80,7 @@ test('@JsonIgnoreProperties', t => {
   t.is(userParsed.items[1].owner, null);
 });
 
-test('@JsonIgnoreProperties at class field level', t => {
+test('@JsonIgnoreProperties at property level', t => {
   @JsonIgnoreProperties({
     value: ['firstname']
   })

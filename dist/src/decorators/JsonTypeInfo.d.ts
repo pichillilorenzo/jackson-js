@@ -1,3 +1,7 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
 import 'reflect-metadata';
 import { JsonTypeInfoDecorator } from '../@types';
 export declare enum JsonTypeInfoId {

@@ -1,3 +1,7 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
 import 'reflect-metadata';
 import { JsonPropertyDecorator } from '../@types';
 export declare enum JsonPropertyAccess {

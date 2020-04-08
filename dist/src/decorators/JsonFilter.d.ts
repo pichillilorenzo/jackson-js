@@ -1,7 +1,11 @@
+/**
+ * @packageDocumentation
+ * @module Decorators
+ */
 import 'reflect-metadata';
 import { JsonFilterDecorator } from '../@types';
 /**
- * ${@link JsonFilter} type used to determine whether to serialize property as is, or to filter it out.
+ * {@link JsonFilter} type used to determine whether to serialize property as is, or to filter it out.
  */
 export declare enum JsonFilterType {
     /**
@@ -9,11 +13,11 @@ export declare enum JsonFilterType {
      */
     SERIALIZE_ALL = 0,
     /**
-     * Serialize all properties except ones includes in ${@link JsonStringifierFilterOptions.values}
+     * Serialize all properties except ones includes in {@link JsonStringifierFilterOptions.values}
      */
     SERIALIZE_ALL_EXCEPT = 1,
     /**
-     * Filters out all properties except ones includes in ${@link JsonStringifierFilterOptions.values}
+     * Filters out all properties except ones includes in {@link JsonStringifierFilterOptions.values}
      */
     FILTER_OUT_ALL_EXCEPT = 2
 }

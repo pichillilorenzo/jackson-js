@@ -85,10 +85,12 @@ export class JsonParser<T> {
   parse(text: string, context: JsonParserContext = {}): T {
     const value = JSON.parse(text);
 
-    let newContext: JsonParserTransformerContext = this.convertParserOptionsToTransformerOptions(context);
-    newContext.mainCreator = newContext.mainCreator ? newContext.mainCreator : [(value != null) ? value.constructor : Object];
+    let newContext: JsonParserTransformerContext = this.convertParserContextToTransformerContext(context);
+    newContext.mainCreator = (newContext.mainCreator && newContext.mainCreator[0] !== Object) ?
+      newContext.mainCreator : [(value != null) ? value.constructor : Object];
     newContext._internalDecorators = new Map();
     newContext = cloneDeep(newContext);
+
     const result = this.transform('', value, newContext);
 
     if (this._globalUnresolvedValueAlreadySeen.size > 0 &&
@@ -153,10 +155,10 @@ export class JsonParser<T> {
       value = null;
     }
 
-    const currentConstructor = context.mainCreator[0];
+    const currentMainCreator = context.mainCreator[0];
     if (value == null && context.features[DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES] &&
-      isConstructorPrimitiveType(currentConstructor)) {
-      throw new JacksonError(`Cannot map "null" into primitive type ${(currentConstructor as ObjectConstructor).name}`);
+      isConstructorPrimitiveType(currentMainCreator)) {
+      throw new JacksonError(`Cannot map "null" into primitive type ${(currentMainCreator as ObjectConstructor).name}`);
     }
 
     if (value != null && value.constructor === Number && context.features[DeserializationFeature.ACCEPT_FLOAT_AS_INT] && isFloat(value)) {
@@ -172,15 +174,15 @@ export class JsonParser<T> {
 
       value = this.parseJsonTypeInfo(value, context);
 
-      if (isSameConstructorOrExtensionOfNoObject(currentConstructor, Map)) {
+      if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Map)) {
         return this.parseMap(value, context);
-      } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentConstructor, BigInt)) {
+      } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
         return (value != null && value.constructor === String && value.endsWith('n')) ?
-          (currentConstructor as ObjectConstructor)(value.substring(0, value.length - 1)) :
-          (currentConstructor as ObjectConstructor)(value);
-      } else if (isSameConstructorOrExtensionOfNoObject(currentConstructor, RegExp) ||
-        isSameConstructorOrExtensionOfNoObject(currentConstructor, Date)) {
-        return new (currentConstructor as ObjectConstructor)(value);
+          (currentMainCreator as ObjectConstructor)(value.substring(0, value.length - 1)) :
+          (currentMainCreator as ObjectConstructor)(value);
+      } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, RegExp) ||
+        isSameConstructorOrExtensionOfNoObject(currentMainCreator, Date)) {
+        return new (currentMainCreator as ObjectConstructor)(value);
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
         if (this.parseJsonIgnoreType(context)) {
@@ -227,7 +229,7 @@ export class JsonParser<T> {
    *
    * @param context
    */
-  private convertParserOptionsToTransformerOptions(context: JsonParserContext): JsonParserTransformerContext {
+  private convertParserContextToTransformerContext(context: JsonParserContext): JsonParserTransformerContext {
     const newContext: JsonParserTransformerContext = {
       mainCreator: context.mainCreator ? context.mainCreator() : [Object]
     };
@@ -295,7 +297,9 @@ export class JsonParser<T> {
       'jackson:JsonSubTypes',
       'jackson:JsonSubTypesParam:' + argumentIndex,
       'jackson:JsonTypeIdResolver',
-      'jackson:JsonTypeIdResolverParam:' + argumentIndex
+      'jackson:JsonTypeIdResolverParam:' + argumentIndex,
+      'jackson:JsonIdentityInfo',
+      'jackson:JsonIdentityInfoParam:' + argumentIndex
     ];
 
     const metadataKeysForFirstClass = [
@@ -424,12 +428,14 @@ export class JsonParser<T> {
 
       const scope: string = jsonIdentityInfo.scope || '';
       const scopedId = this.generateScopedId(scope, id);
+
       if (this._globalValueAlreadySeen.has(scopedId)) {
         const instance = this._globalValueAlreadySeen.get(scopedId);
         if (instance.constructor !== currentMainCreator) {
           throw new JacksonError(`Already had Class "${instance.constructor.name}" for id ${id}.`);
         }
         this._globalUnresolvedValueAlreadySeen.delete(scopedId);
+
         return instance;
       } else if (typeof value !== 'object') {
         this._globalUnresolvedValueAlreadySeen.add(scopedId);
@@ -514,12 +520,11 @@ export class JsonParser<T> {
       if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
         const keysToBeExcluded = [...new Set([...argNames, ...argNamesAliasToBeExcluded, ...jsonAppendAttributesToBeExcluded])];
         // copy remaining properties and ignore the ones that are not part of "instance", except for instances of Object class
-        const keys = Object.keys(obj).filter(n => !keysToBeExcluded.includes(n));
+        const keys = Object.keys(obj).filter(k => !keysToBeExcluded.includes(k) && !this.parseHasJsonIgnore(context, k));
 
         for (const key of keys) {
           const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', instance.constructor, key, context);
-          if (jsonSetter &&
-            !(jsonIgnoreProperties && !jsonIgnoreProperties.allowSetters && jsonIgnoreProperties.value.includes(key))) {
+          if (jsonSetter) {
             if (typeof instance[jsonSetter.propertyKey] === 'function') {
               instance[jsonSetter.propertyKey](obj[key]);
             } else {
@@ -575,16 +580,24 @@ export class JsonParser<T> {
     const args = [];
     const argNames = getArgumentNames(method);
 
-    let argIndex = 0;
     const argNamesAliasToBeExcluded = [];
 
-    for (const key of argNames) {
+    for (let argIndex = 0; argIndex < argNames.length; argIndex++) {
+      const key = argNames[argIndex];
+
+      const hasJsonIgnore =
+        hasMetadata('jackson:JsonIgnoreParam:' + argIndex, currentMainCreator, argumentMethodName, context);
+      if (hasJsonIgnore) {
+        args.push(null);
+        continue;
+      }
+
       const jsonInject: JsonInjectOptions =
         getMetadata('jackson:JsonInjectParam:' + argIndex, currentMainCreator, argumentMethodName, context);
 
       if (!jsonInject || (jsonInject && jsonInject.useInput)) {
-        const jsonProperty: JsonPropertyOptions = getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator,
-          argumentMethodName, context);
+        const jsonProperty: JsonPropertyOptions =
+          getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator, argumentMethodName, context);
 
         let mappedKey: string = jsonProperty != null ? jsonProperty.value : null;
         if (!mappedKey) {
@@ -616,8 +629,6 @@ export class JsonParser<T> {
         // force argument value to use options.injectableValues
         args.push(jsonInject ? context.injectableValues[jsonInject.value] : null);
       }
-
-      argIndex++;
     }
 
     if (context.features[DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES]) {
@@ -890,6 +901,7 @@ export class JsonParser<T> {
    */
   private parseHasJsonIgnore(context: JsonParserTransformerContext, key: string): boolean {
     const currentMainCreator = context.mainCreator[0];
+
     const hasJsonIgnore =
       hasMetadata('jackson:JsonIgnore', currentMainCreator, key, context);
 

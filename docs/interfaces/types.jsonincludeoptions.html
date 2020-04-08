@@ -69,6 +69,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Decorator options for <a href="../modules/decorators.html#jsoninclude">JsonInclude</a>.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -89,8 +96,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonincludeoptions.html#content" class="tsd-kind-icon">content</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonincludeoptions.html#contentfilter" class="tsd-kind-icon">content<wbr>Filter</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonincludeoptions.html#enabled" class="tsd-kind-icon">enabled</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonincludeoptions.html#value" class="tsd-kind-icon">value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonincludeoptions.html#valuefilter" class="tsd-kind-icon">value<wbr>Filter</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,6 +108,71 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="content" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> content</h3>
+					<div class="tsd-signature tsd-kind-icon">content<span class="tsd-signature-symbol">:</span> <a href="../enums/decorators.jsonincludetype.html" class="tsd-signature-type">JsonIncludeType</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L504">src/@types/index.ts:504</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Inclusion rule to use for entries (&quot;content&quot;) of decorated <code>Map</code> or &quot;Object Literal&quot; properties.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p><a href="../enums/decorators.jsonincludetype.html#always">JsonIncludeType.ALWAYS</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="contentfilter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> content<wbr>Filter</h3>
+					<div class="tsd-signature tsd-kind-icon">content<wbr>Filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L512">src/@types/index.ts:512</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Specifies a function to use in case <a href="types.jsonincludeoptions.html#content">content</a> is <a href="../enums/decorators.jsonincludetype.html#custom">JsonIncludeType.CUSTOM</a> for filtering the content value.
+							If it returns <code>true</code>, then the content value is not serialized.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>content value to be filtered.</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>boolean</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">any</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="enabled" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> enabled</h3>
@@ -105,7 +180,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsondecoratoroptions.html">JsonDecoratorOptions</a>.<a href="types.jsondecoratoroptions.html#enabled">enabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L218">src/@types/index.ts:218</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L266">src/@types/index.ts:266</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -125,9 +200,64 @@
 					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <a href="../enums/decorators.jsonincludetype.html" class="tsd-signature-type">JsonIncludeType</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/56c9ded/src/@types/index.ts#L398">src/@types/index.ts:398</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L490">src/@types/index.ts:490</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Inclusion rule to use for instances (values) of types (Classes) or properties decorated.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>default</dt>
+							<dd><p><a href="../enums/decorators.jsonincludetype.html#always">JsonIncludeType.ALWAYS</a></p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="valuefilter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> value<wbr>Filter</h3>
+					<div class="tsd-signature tsd-kind-icon">value<wbr>Filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L498">src/@types/index.ts:498</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Specifies a function to use in case <a href="types.jsonincludeoptions.html#value">value</a> is <a href="../enums/decorators.jsonincludetype.html#custom">JsonIncludeType.CUSTOM</a> for filtering the value.
+							If it returns <code>true</code>, then the value is not serialized.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>value to be filtered.</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>boolean</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>value: <span class="tsd-signature-type">any</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -158,11 +288,20 @@
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
 						<a href="types.jsonincludeoptions.html" class="tsd-kind-icon">Json<wbr>Include<wbr>Options</a>
 						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types.jsonincludeoptions.html#content" class="tsd-kind-icon">content</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types.jsonincludeoptions.html#contentfilter" class="tsd-kind-icon">content<wbr>Filter</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="types.jsonincludeoptions.html#enabled" class="tsd-kind-icon">enabled</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="types.jsonincludeoptions.html#value" class="tsd-kind-icon">value</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types.jsonincludeoptions.html#valuefilter" class="tsd-kind-icon">value<wbr>Filter</a>
 							</li>
 						</ul>
 					</li>

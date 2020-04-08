@@ -7,6 +7,27 @@ import {isClass, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonIgnorePropertiesDecorator, JsonIgnorePropertiesOptions} from '../@types';
 
+/**
+ * Annotation that can be used to either suppress serialization of properties (during serialization),
+ * or ignore processing of JSON properties read (during deserialization).
+ *
+ * @example
+ * ```typescript
+ * @JsonIgnoreProperties({
+ *   value: ['firstname', 'lastname']
+ * })
+ * class User {
+ *   @JsonProperty()
+ *   id: number;
+ *   @JsonProperty()
+ *   email: string;
+ *   @JsonProperty()
+ *   firstname: string;
+ *   @JsonProperty()
+ *   lastname: string;
+ * }
+ * ```
+ */
 export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeJacksonDecorator(
   (o: JsonIgnorePropertiesOptions): JsonIgnorePropertiesOptions => (
     {
