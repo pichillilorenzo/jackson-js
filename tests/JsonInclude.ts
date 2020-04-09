@@ -33,7 +33,7 @@ test('@JsonInclude on class with JsonIncludeType.NON_EMPTY', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John"}'));
 });
 
 test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
@@ -66,7 +66,7 @@ test('@JsonInclude on class with JsonIncludeType.NON_NULL', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}'));
 });
 
 test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
@@ -99,7 +99,7 @@ test('@JsonInclude on class with JsonIncludeType.NON_DEFAULT', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"name":"John"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"John"}'));
 });
 
 test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
@@ -132,7 +132,7 @@ test('@JsonInclude on class with JsonIncludeType.ALWAYS', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}'));
 });
 
 test('@JsonInclude on class with JsonIncludeType.CUSTOM value filter', t => {
@@ -165,7 +165,7 @@ test('@JsonInclude on class with JsonIncludeType.CUSTOM value filter', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","phones":[],"otherInfo":{}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","phones":[],"otherInfo":{}}'));
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_EMPTY', t => {
@@ -197,7 +197,7 @@ test('@JsonInclude on property with JsonIncludeType.NON_EMPTY', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John"}'));
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_NULL', t => {
@@ -229,7 +229,7 @@ test('@JsonInclude on property with JsonIncludeType.NON_NULL', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","dept":"","phones":[],"otherInfo":{}}'));
 });
 
 test('@JsonInclude on property with JsonIncludeType.NON_DEFAULT', t => {
@@ -261,7 +261,7 @@ test('@JsonInclude on property with JsonIncludeType.NON_DEFAULT', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"name":"John"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"John"}'));
 });
 
 test('@JsonInclude on property with JsonIncludeType.ALWAYS', t => {
@@ -293,7 +293,7 @@ test('@JsonInclude on property with JsonIncludeType.ALWAYS', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","dept":"","address":null,"phones":[],"otherInfo":{}}'));
 });
 
 test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
@@ -306,6 +306,7 @@ test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and cont
     @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
     otherInfo: Map<string, string>;
 
+    // eslint-disable-next-line no-shadow
     constructor(id: number, name: string, otherInfo: Map<string, string>) {
       this.id = id;
       this.name = name;
@@ -322,7 +323,7 @@ test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and cont
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}'));
 });
 
 test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
@@ -335,6 +336,7 @@ test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_E
     @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
     otherInfo: Record<string, string>;
 
+    // eslint-disable-next-line no-shadow
     constructor(id: number, name: string, otherInfo: Record<string, string>) {
       this.id = id;
       this.name = name;
@@ -351,7 +353,7 @@ test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_E
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}'));
 });
 
 test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and JsonIncludeType.CUSTOM content filter', t => {
@@ -368,6 +370,7 @@ test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and Json
     })
     otherInfo: Map<string, string>;
 
+    // eslint-disable-next-line no-shadow
     constructor(id: number, name: string, otherInfo: Map<string, string>) {
       this.id = id;
       this.name = name;
@@ -384,5 +387,5 @@ test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and Json
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John","otherInfo":{"address":"123 Main Street, New York, NY 10030"}}'));
 });

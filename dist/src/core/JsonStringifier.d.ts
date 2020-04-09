@@ -85,6 +85,12 @@ export declare class JsonStringifier<T> {
     private stringifyJsonPropertyOrder;
     /**
      *
+     * @param oldKey
+     * @param context
+     */
+    private stringifyIsIgnoredByJsonPropertyAccess;
+    /**
+     *
      * @param replacement
      * @param obj
      * @param oldKey

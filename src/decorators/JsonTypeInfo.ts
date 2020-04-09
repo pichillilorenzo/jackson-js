@@ -34,7 +34,8 @@ export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       Reflect.defineMetadata(
         'jackson:JsonTypeInfoParam:' + descriptorOrParamIndex.toString(),
-        options, target, (propertyKey) ? propertyKey : 'constructor');
+        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        (propertyKey) ? propertyKey : 'constructor');
     }
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonTypeInfo', options, target.constructor, propertyKey);

@@ -59,7 +59,7 @@ test('@JsonIgnore at property level', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones"},{"id":2,"name":"NVIDIA"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Game Of Thrones"},{"id":2,"name":"NVIDIA"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}',

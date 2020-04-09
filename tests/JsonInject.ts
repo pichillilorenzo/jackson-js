@@ -3,6 +3,7 @@ import {JsonInject} from '../src/decorators/JsonInject';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonInject on class field', t => {
   class CurrencyRate {
@@ -105,6 +106,47 @@ test('@JsonInject on constructor parameter and different value', t => {
     constructor(pair: string, rate: number, @JsonInject({value: 'lastValue'}) lastUpdated: Date) {
       this.pair = pair;
       this.rate = rate;
+      this.lastUpdated = lastUpdated;
+    }
+  }
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = '{"pair":"USD/JPY","rate":109.15}';
+  const now = new Date();
+
+  const currencyRate = objectMapper.parse<CurrencyRate>(jsonData, {
+    mainCreator: () => [CurrencyRate],
+    injectableValues: {
+      lastValue: now
+    }
+  });
+  t.assert(currencyRate instanceof CurrencyRate);
+  t.is(currencyRate.pair, 'USD/JPY');
+  t.is(currencyRate.rate, 109.15);
+  t.deepEqual(currencyRate.lastUpdated, now);
+});
+
+test('@JsonInject on custom Setter parameter', t => {
+  class CurrencyRate {
+    @JsonProperty()
+    pair: string;
+    @JsonProperty()
+    rate: number;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Date]})
+    lastUpdated: Date;
+
+    constructor(pair: string, rate: number) {
+      this.pair = pair;
+      this.rate = rate;
+    }
+
+    @JsonSetter({value: 'lastUpdated'})
+    setLastUpdated(
+    @JsonInject({value: 'lastValue'})
+    @JsonClass({class: () => [Date]})
+      lastUpdated: Date) {
       this.lastUpdated = lastUpdated;
     }
   }

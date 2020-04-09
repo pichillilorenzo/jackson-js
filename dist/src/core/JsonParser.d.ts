@@ -49,7 +49,7 @@ export declare class JsonParser<T> {
      * @param jsonClass
      * @param key
      * @param context
-     * @param argumentMethodName
+     * @param methodName
      * @param argumentIndex
      */
     private propagateDecorators;
@@ -73,14 +73,16 @@ export declare class JsonParser<T> {
      * @param obj
      */
     private parseJsonCreator;
+    private parseJsonSetter;
     /**
      *
-     * @param jsonCreator
+     * @param methodName
      * @param method
      * @param obj
      * @param context
+     * @param isJsonCreator
      */
-    private parseJsonCreatorArguments;
+    private parseMethodArguments;
     /**
      *
      * @param replacement
@@ -105,7 +107,7 @@ export declare class JsonParser<T> {
      * @param context
      * @param obj
      * @param key
-     * @param argumentMethodName
+     * @param methodName
      * @param argumentIndex
      */
     private parseJsonClass;

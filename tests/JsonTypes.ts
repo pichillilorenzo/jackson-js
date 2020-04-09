@@ -48,7 +48,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"name":"Arthur","@type":"Dog"},{"name":"Merlin","@type":"Cat"}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"Dog"},{"name":"Merlin","@type":"Cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);
@@ -107,7 +107,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name and using
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"name":"Arthur","@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);
@@ -169,7 +169,7 @@ test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without su
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Zoo>(zoo);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"Dog"},{"name":"Merlin","@type":"Cat"}]}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"Dog"},{"name":"Merlin","@type":"Cat"}]}'));
 
   const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
   t.assert(zooParsed instanceof Zoo);
@@ -250,7 +250,7 @@ test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without su
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Zoo>(zoo);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]}'));
 
   const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
   t.assert(zooParsed instanceof Zoo);
@@ -607,7 +607,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with subtypes name', t => {
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"name":"Arthur","@type":"dog"},{"name":"Merlin","@type":"cat"}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"dog"},{"name":"Merlin","@type":"cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);
@@ -660,7 +660,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"DogTypeId":{"name":"Arthur"}},{"CatTypeId":{"name":"Merlin"}}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"DogTypeId":{"name":"Arthur"}},{"CatTypeId":{"name":"Merlin"}}]'));
 
   const err1 = t.throws<JacksonError>(() => {
     objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -728,7 +728,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY and custom property value', t =
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"name":"Arthur","myType":"dog"},{"name":"Merlin","myType":"cat"}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","myType":"dog"},{"name":"Merlin","myType":"cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);
@@ -774,7 +774,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_OBJECT', t => {
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[{"dog":{"name":"Arthur"}},{"cat":{"name":"Merlin"}}]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"dog":{"name":"Arthur"}},{"cat":{"name":"Merlin"}}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);
@@ -820,7 +820,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_ARRAY', t => {
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-  t.is(jsonData, '[["dog",{"name":"Arthur"}],["cat",{"name":"Merlin"}]]');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('[["dog",{"name":"Arthur"}],["cat",{"name":"Merlin"}]]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
   t.assert(animals instanceof Array);

@@ -48,7 +48,7 @@ export declare enum JsonFilterType {
  *
  * const objectMapper = new ObjectMapper();
  *
- * let jsonData = objectMapper.stringify<Student>(student, {
+ * const jsonData = objectMapper.stringify<Student>(student, {
  *   filters: {
  *     studentFilter: {
  *       type: JsonFilterType.SERIALIZE_ALL_EXCEPT,

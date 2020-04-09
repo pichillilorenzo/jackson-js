@@ -19,7 +19,7 @@ import {
   isIterableNoMapNoString,
   isSameConstructor,
   isSameConstructorOrExtensionOf,
-  isSameConstructorOrExtensionOfNoObject
+  isSameConstructorOrExtensionOfNoObject, objectHasOwnPropertyWithPropertyDescriptorNames
 } from '../util';
 import {
   ClassType,
@@ -52,10 +52,10 @@ import {JacksonError} from './JacksonError';
 import {
   JsonAnySetterPrivateOptions,
   JsonBackReferencePrivateOptions,
-  JsonCreatorPrivateOptions,
+  JsonCreatorPrivateOptions, JsonPropertyPrivateOptions,
   JsonSetterPrivateOptions
 } from '../@types/private';
-import {JsonNamingStrategy} from '../decorators/JsonNaming';
+import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {defaultCreatorName, JsonCreatorMode} from '../decorators/JsonCreator';
 import * as cloneDeep from 'lodash.clonedeep';
 
@@ -197,9 +197,9 @@ export class JsonParser<T> {
         this.parseJsonNaming(replacement, context);
 
         for (const k in replacement) {
-          if (Object.hasOwnProperty.call(replacement, k)) {
+          if (objectHasOwnPropertyWithPropertyDescriptorNames(replacement, currentMainCreator, k)) {
             const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', context.mainCreator[0], k, context);
-            this.propagateDecorators(jsonClass, k, context);
+            this.propagateDecorators(jsonClass, replacement, k, context);
 
             if (this.parseHasJsonIgnore(context, k) || !this.parseHasJsonView(context, k)) {
               delete replacement[k];
@@ -278,13 +278,14 @@ export class JsonParser<T> {
    * @param jsonClass
    * @param key
    * @param context
-   * @param argumentMethodName
+   * @param methodName
    * @param argumentIndex
    */
   private propagateDecorators(jsonClass: JsonClassOptions,
+                              obj: any,
                               key: string,
                               context: JsonStringifierTransformerContext,
-                              argumentMethodName?: string,
+                              methodName?: string,
                               argumentIndex?: number): void {
     const currentMainCreator = context.mainCreator[0];
 
@@ -321,16 +322,19 @@ export class JsonParser<T> {
     if (jsonClass) {
       firstClass = jsonClass.class()[0];
       deepestClass = getDeepestClass(jsonClass.class());
+    } else {
+      firstClass = (obj[key] != null) ? obj[key].constructor : Object;
+      deepestClass = (obj[key] != null) ? obj[key].constructor : Object;
     }
 
     for (const metadataKey of metadataKeysForDeepestClass) {
       const jsonDecoratorOptions: JsonDecoratorOptions = (!metadataKey.includes('Param:')) ?
         getMetadata(metadataKey, currentMainCreator, key, context) :
-        getMetadata(metadataKey, currentMainCreator, argumentMethodName, context);
+        getMetadata(metadataKey, currentMainCreator, methodName, context);
 
       if (jsonDecoratorOptions) {
-        if (metadataKey.includes('Param:') && deepestClass != null && argumentMethodName != null && argumentIndex != null) {
-          const jsonClassParam = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, argumentMethodName);
+        if (metadataKey.includes('Param:') && deepestClass != null && methodName != null && argumentIndex != null) {
+          const jsonClassParam: JsonClassOptions = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, methodName);
           decoratorsToBeAppliedForDeepestClass[metadataKey.substring(0, metadataKey.indexOf('Param:'))] = jsonDecoratorOptions;
           decoratorsToBeAppliedForDeepestClass['jackson:JsonClass'] = jsonClassParam;
           if (jsonClassParam == null) {
@@ -347,11 +351,11 @@ export class JsonParser<T> {
     for (const metadataKey of metadataKeysForFirstClass) {
       const jsonDecoratorOptions: JsonDecoratorOptions = (!metadataKey.includes('Param:')) ?
         getMetadata(metadataKey, currentMainCreator, key, context) :
-        getMetadata(metadataKey, currentMainCreator, argumentMethodName, context);
+        getMetadata(metadataKey, currentMainCreator, methodName, context);
 
       if (jsonDecoratorOptions) {
-        if (metadataKey.includes('Param:') && firstClass != null && argumentMethodName != null && argumentIndex != null) {
-          const jsonClassParam = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, argumentMethodName);
+        if (metadataKey.includes('Param:') && firstClass != null && methodName != null && argumentIndex != null) {
+          const jsonClassParam: JsonClassOptions = getMetadata('jackson:JsonClassParam:' + argumentIndex, currentMainCreator, methodName);
           decoratorsToBeAppliedForFirstClass[metadataKey.substring(0, metadataKey.indexOf('Param:'))] = jsonDecoratorOptions;
           decoratorsToBeAppliedForFirstClass['jackson:JsonClass'] = jsonClassParam;
           if (jsonClassParam == null) {
@@ -370,19 +374,6 @@ export class JsonParser<T> {
     }
     if (firstClass != null && decoratorsNameFoundForFirstClass.length > 0) {
       context._internalDecorators.set(firstClass, decoratorsToBeAppliedForFirstClass);
-    }
-    if (!jsonClass && (decoratorsNameFoundForDeepestClass.length > 0 || decoratorsNameFoundForFirstClass.length > 0)) {
-      const decoratorsNameFound = decoratorsNameFoundForDeepestClass.concat(decoratorsNameFoundForFirstClass)
-        .map((decorator) => '@' + ((decorator.includes('Param:')) ? decorator.substring(0, decorator.indexOf('Param:')) : decorator) + '()')
-        .join(', ');
-
-      if (argumentMethodName == null) {
-        throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound}] at ${currentMainCreator.name}["${key}"]`);
-      } else {
-        // eslint-disable-next-line max-len
-        throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound}] on parameter at index ${argumentIndex} at ${currentMainCreator.name}.${argumentMethodName}`);
-      }
-
     }
   }
 
@@ -482,7 +473,8 @@ export class JsonParser<T> {
       let instance;
 
       if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
-        const result = this.parseJsonCreatorArguments(jsonCreator, method, obj, context);
+        const methodName = ('propertyKey' in jsonCreator && jsonCreator.propertyKey) ? jsonCreator.propertyKey : 'constructor';
+        const result = this.parseMethodArguments(methodName, method, obj, context, null, true);
         args = result.args != null && result.args.length > 0 ? result.args : [obj];
         argNames = result.argNames;
         argNamesAliasToBeExcluded = result.argNamesAliasToBeExcluded;
@@ -497,9 +489,6 @@ export class JsonParser<T> {
           break;
         }
       }
-
-      const hasJsonAnySetter =
-        hasMetadata('jackson:JsonAnySetter', instance.constructor, null, context);
 
       this.parseJsonIdentityInfo(instance, obj, context);
 
@@ -519,24 +508,40 @@ export class JsonParser<T> {
 
       if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
         const keysToBeExcluded = [...new Set([...argNames, ...argNamesAliasToBeExcluded, ...jsonAppendAttributesToBeExcluded])];
-        // copy remaining properties and ignore the ones that are not part of "instance", except for instances of Object class
-        const keys = Object.keys(obj).filter(k => !keysToBeExcluded.includes(k) && !this.parseHasJsonIgnore(context, k));
 
-        for (const key of keys) {
-          const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', instance.constructor, key, context);
-          if (jsonSetter) {
-            if (typeof instance[jsonSetter.propertyKey] === 'function') {
-              instance[jsonSetter.propertyKey](obj[key]);
-            } else {
-              instance[jsonSetter.propertyKey] = obj[key];
-            }
-          } else if (classHasOwnProperty(instance.constructor, key, context) || instance.constructor.name === 'Object') {
+        const classKeys = getClassProperties(instance.constructor, {
+          withSetterVirtualProperties: true
+        });
+        const objKeys = Object.keys(obj);
+
+        const remainingKeys = new Set([...new Set([...classKeys, ...objKeys])]
+          .filter(k => !keysToBeExcluded.includes(k) && !this.parseHasJsonIgnore(context, k)));
+
+        for (const key of remainingKeys) {
+          const jsonProperty: JsonPropertyPrivateOptions = getMetadata('jackson:JsonProperty', instance.constructor, key, context);
+          if (jsonProperty && jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function') {
+            remainingKeys.delete(jsonProperty.value);
+          }
+        }
+
+        const hasJsonAnySetter =
+          hasMetadata('jackson:JsonAnySetter', instance.constructor, null, context);
+        // add remaining properties and ignore the ones that are not part of "instance"
+        for (const key of remainingKeys) {
+          const hasJsonSetter = hasMetadata('jackson:JsonSetter', instance.constructor, key, context);
+          const jsonProperty: JsonPropertyPrivateOptions = getMetadata('jackson:JsonProperty', instance.constructor, key, context);
+
+          if (hasJsonSetter || (jsonProperty && jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function')) {
+            this.parseJsonSetter(instance, obj, key, context);
+          } else if ((Object.hasOwnProperty.call(obj, key) && classHasOwnProperty(instance.constructor, key, context)) ||
+            instance.constructor.name === 'Object') {
             instance[key] = this.parseJsonClass(context, obj, key);
-          } else if (hasJsonAnySetter) {
+          } else if (hasJsonAnySetter && Object.hasOwnProperty.call(obj, key)) {
             // for any other unrecognized properties found
             this.parseJsonAnySetter(instance, obj, key, context);
-          } else if ((jsonIgnoreProperties == null && context.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
-            (jsonIgnoreProperties != null && !jsonIgnoreProperties.ignoreUnknown)) {
+          } else if (!classHasOwnProperty(instance.constructor, key, context) &&
+            ( (jsonIgnoreProperties == null && context.features[DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]) ||
+              (jsonIgnoreProperties != null && !jsonIgnoreProperties.ignoreUnknown)) ) {
             // eslint-disable-next-line max-len
             throw new JacksonError(`Unknown property "${key}" for ${instance.constructor.name} at [Source '${JSON.stringify(obj)}']`);
           }
@@ -544,7 +549,11 @@ export class JsonParser<T> {
       }
 
       const classProperties = getClassProperties(instance.constructor);
+
       for (const classProperty of classProperties) {
+        if (!Object.hasOwnProperty.call(instance, classProperty)) {
+          instance[classProperty] = undefined; // set to undefined all the missing class properties
+        }
         const jsonInject: JsonInjectOptions =
           getMetadata('jackson:JsonInject', instance.constructor, classProperty, context);
         if (jsonInject) {
@@ -560,25 +569,52 @@ export class JsonParser<T> {
     }
   }
 
+  private parseJsonSetter(replacement: any, obj: any, key: string, context: JsonParserTransformerContext) {
+    const currentMainCreator = context.mainCreator[0];
+
+    const jsonSetter: JsonSetterPrivateOptions = getMetadata('jackson:JsonSetter', currentMainCreator, key, context);
+    const jsonProperty: JsonPropertyPrivateOptions = getMetadata('jackson:JsonProperty', currentMainCreator, key, context);
+    if (jsonSetter || (jsonProperty && jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function')) {
+      if (jsonSetter) {
+        if (typeof replacement[jsonSetter.propertyKey] === 'function') {
+          const result = this.parseMethodArguments(jsonSetter.propertyKey, null, obj, context, [jsonSetter.value], false);
+          replacement[jsonSetter.propertyKey](result.args[0]);
+        } else {
+          replacement[jsonSetter.propertyKey] = this.parseJsonClass(context, obj, key);
+        }
+      } else if (jsonProperty.access !== JsonPropertyAccess.READ_ONLY) {
+        if (Object.hasOwnProperty.call(obj, jsonProperty.value)) {
+          const result = this.parseMethodArguments(key, null, obj, context, [jsonProperty.value], false);
+          replacement[key](result.args[0]);
+        } else if (jsonProperty.required) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError(`Required parameter "${jsonProperty.value}" not found for ${currentMainCreator.name}.${key} at [Source '${JSON.stringify(obj)}']`);
+        }
+      }
+    }
+  }
+
   /**
    *
-   * @param jsonCreator
+   * @param methodName
    * @param method
    * @param obj
    * @param context
+   * @param isJsonCreator
    */
-  private parseJsonCreatorArguments(jsonCreator: JsonCreatorPrivateOptions | ClassType<any>,
-                                    method: any,
-                                    obj: any,
-                                    context: JsonParserTransformerContext): {
+  private parseMethodArguments(methodName: string,
+                               method: any,
+                               obj: any,
+                               context: JsonParserTransformerContext,
+                               argumentNames: string[],
+                               isJsonCreator: boolean): {
       args: Array<any>;
       argNames: Array<string>;
       argNamesAliasToBeExcluded: Array<string>;
     } {
     const currentMainCreator = context.mainCreator[0];
-    const argumentMethodName = ('propertyKey' in jsonCreator && jsonCreator.propertyKey) ? jsonCreator.propertyKey : 'constructor';
     const args = [];
-    const argNames = getArgumentNames(method);
+    const argNames = (method) ? getArgumentNames(method) : argumentNames;
 
     const argNamesAliasToBeExcluded = [];
 
@@ -586,23 +622,23 @@ export class JsonParser<T> {
       const key = argNames[argIndex];
 
       const hasJsonIgnore =
-        hasMetadata('jackson:JsonIgnoreParam:' + argIndex, currentMainCreator, argumentMethodName, context);
+        hasMetadata('jackson:JsonIgnoreParam:' + argIndex, currentMainCreator, methodName, context);
       if (hasJsonIgnore) {
         args.push(null);
         continue;
       }
 
       const jsonInject: JsonInjectOptions =
-        getMetadata('jackson:JsonInjectParam:' + argIndex, currentMainCreator, argumentMethodName, context);
+        getMetadata('jackson:JsonInjectParam:' + argIndex, currentMainCreator, methodName, context);
 
       if (!jsonInject || (jsonInject && jsonInject.useInput)) {
         const jsonProperty: JsonPropertyOptions =
-          getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator, argumentMethodName, context);
+          getMetadata('jackson:JsonPropertyParam:' + argIndex, currentMainCreator, methodName, context);
 
         let mappedKey: string = jsonProperty != null ? jsonProperty.value : null;
         if (!mappedKey) {
           const jsonAlias: JsonAliasOptions =
-            getMetadata('jackson:JsonAliasParam:' + argIndex, currentMainCreator, argumentMethodName, context);
+            getMetadata('jackson:JsonAliasParam:' + argIndex, currentMainCreator, methodName, context);
 
           if (jsonAlias && jsonAlias.values) {
             mappedKey = jsonAlias.values.find((alias) => Object.hasOwnProperty.call(obj, alias));
@@ -610,17 +646,17 @@ export class JsonParser<T> {
         }
 
         if (mappedKey && Object.hasOwnProperty.call(obj, mappedKey)) {
-          args.push(this.parseJsonClass(context, obj, mappedKey, argumentMethodName, argIndex));
+          args.push(this.parseJsonClass(context, obj, mappedKey, methodName, argIndex));
           argNamesAliasToBeExcluded.push(mappedKey);
         } else if (mappedKey && jsonProperty.required) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Required property "${mappedKey}" not found on @JsonCreator() of "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Required property "${mappedKey}" not found on parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
         } else if (Object.hasOwnProperty.call(obj, key)) {
-          args.push(this.parseJsonClass(context, obj, key, argumentMethodName, argIndex));
+          args.push(this.parseJsonClass(context, obj, key, methodName, argIndex));
         } else {
-          if (context.features[DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES]) {
+          if (isJsonCreator && context.features[DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES]) {
             // eslint-disable-next-line max-len
-            throw new JacksonError(`Missing @JsonCreator() parameter at index ${argIndex} for Class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+            throw new JacksonError(`Missing @JsonCreator() parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
           }
           args.push(jsonInject ? context.injectableValues[jsonInject.value] : null);
         }
@@ -631,13 +667,13 @@ export class JsonParser<T> {
       }
     }
 
-    if (context.features[DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES]) {
+    if (isJsonCreator && context.features[DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES]) {
       const argsLength = args.length;
       for (let i = 0; i < argsLength; i++) {
         const arg = args[i];
         if (arg == null) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Found "${arg}" value on @JsonCreator() parameter at index ${i} for Class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Found "${arg}" value on @JsonCreator() parameter at index ${i} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
         }
       }
     }
@@ -664,21 +700,24 @@ export class JsonParser<T> {
 
         const realKey = metadataKey.replace(
           metadataKey.startsWith('jackson:JsonProperty:') ? 'jackson:JsonProperty:' : 'jackson:JsonAlias:', '');
-        const jsonProperty: JsonPropertyOptions =
+        const jsonProperty: JsonPropertyPrivateOptions =
           getMetadata(metadataKey, currentMainCreator, null, context);
         const jsonAlias: JsonAliasOptions =
           getMetadata(metadataKey, currentMainCreator, null, context);
 
         const isIgnored = jsonProperty && jsonProperty.access === JsonPropertyAccess.READ_ONLY;
 
-        if (jsonProperty && !isIgnored && Object.hasOwnProperty.call(replacement, jsonProperty.value)) {
-          replacement[realKey] = replacement[jsonProperty.value];
-          if (realKey !== jsonProperty.value) {
-            delete replacement[jsonProperty.value];
+        if (jsonProperty && jsonProperty.descriptor == null && !isIgnored) {
+          if (Object.hasOwnProperty.call(replacement, jsonProperty.value)) {
+            replacement[realKey] = replacement[jsonProperty.value];
+            if (realKey !== jsonProperty.value) {
+              delete replacement[jsonProperty.value];
+            }
+          } else if (jsonProperty.required) {
+            throw new JacksonError(`Required property "${jsonProperty.value}" not found at [Source '${JSON.stringify(replacement)}']`);
           }
-        } else if (jsonProperty && jsonProperty.required) {
-          throw new JacksonError(`Required property "${jsonProperty.value}" not found at [Source '${JSON.stringify(replacement)}']`);
-        } else if (jsonAlias && jsonAlias.values && !isIgnored) {
+        }
+        if (jsonAlias && jsonAlias.values && !isIgnored) {
           for (const alias of jsonAlias.values) {
             if (Object.hasOwnProperty.call(replacement, alias)) {
               replacement[realKey] = replacement[alias];
@@ -688,7 +727,8 @@ export class JsonParser<T> {
               break;
             }
           }
-        } else if (isIgnored) {
+        }
+        if (isIgnored) {
           delete replacement[realKey];
         }
       }
@@ -728,21 +768,21 @@ export class JsonParser<T> {
    * @param context
    * @param obj
    * @param key
-   * @param argumentMethodName
+   * @param methodName
    * @param argumentIndex
    */
   private parseJsonClass(context: JsonParserTransformerContext, obj: any, key: string,
-                         argumentMethodName?: string, argumentIndex?: number): any {
+                         methodName?: string, argumentIndex?: number): any {
     let jsonClass: JsonClassOptions;
-    if (argumentMethodName != null && argumentIndex != null) {
+    if (methodName != null && argumentIndex != null) {
       jsonClass =
-        getMetadata('jackson:JsonClassParam:' + argumentIndex, context.mainCreator[0], argumentMethodName, context);
+        getMetadata('jackson:JsonClassParam:' + argumentIndex, context.mainCreator[0], methodName, context);
     }
     if (!jsonClass) {
       // if @JsonClass() is not found at parameter level, try to get it from the class properties
       jsonClass = getMetadata('jackson:JsonClass', context.mainCreator[0], key, context);
     }
-    this.propagateDecorators(jsonClass, key, context, argumentMethodName, argumentIndex);
+    this.propagateDecorators(jsonClass, obj, key, context, methodName, argumentIndex);
 
     const newContext = cloneDeep(context);
 
@@ -909,16 +949,27 @@ export class JsonParser<T> {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
         getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, context);
       if (jsonIgnoreProperties) {
+        const jsonVirtualProperty: JsonPropertyPrivateOptions =
+          getMetadata('jackson:JsonVirtualProperty', currentMainCreator, key, context);
+
         if (jsonIgnoreProperties.value.includes(key)) {
           const hasJsonSetter = hasMetadata('jackson:JsonSetter', currentMainCreator, key, context);
-          if (jsonIgnoreProperties.allowSetters && hasJsonSetter) {
+          const hasJsonPropertySetter = jsonVirtualProperty &&
+            jsonVirtualProperty.descriptor != null &&
+            typeof jsonVirtualProperty.descriptor.value === 'function';
+          if (jsonIgnoreProperties.allowSetters && (hasJsonSetter || hasJsonPropertySetter)) {
             return false;
           }
           return true;
         }
-        const jsonProperty: JsonPropertyOptions =
+
+        const jsonProperty: JsonPropertyPrivateOptions =
           getMetadata('jackson:JsonProperty:' + key, currentMainCreator, null, context);
         if (jsonProperty && jsonIgnoreProperties.value.includes(jsonProperty.value)) {
+          const isJsonPropertySetter = jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function';
+          if (isJsonPropertySetter && jsonIgnoreProperties.allowSetters) {
+            return false;
+          }
           return true;
         }
       }
@@ -1241,21 +1292,24 @@ export class JsonParser<T> {
       getMetadata('jackson:JsonNaming', context.mainCreator[0], null, context);
     if (jsonNamingOptions && jsonNamingOptions.strategy != null) {
       const keys = Object.keys(obj);
-      const classProperties = new Set<string>(getClassProperties(context.mainCreator[0]));
+      const classProperties = new Set<string>(getClassProperties(context.mainCreator[0], {
+        withSetterVirtualPropertyValues: true
+      }));
+
       const keysLength = keys.length;
       for (let i = 0; i < keysLength; i++) {
         const key = keys[i];
         let oldKey = key;
         switch (jsonNamingOptions.strategy) {
-        case JsonNamingStrategy.KEBAB_CASE:
+        case PropertyNamingStrategy.KEBAB_CASE:
           oldKey = key.replace(/-/g, '');
           break;
-        case JsonNamingStrategy.LOWER_DOT_CASE:
+        case PropertyNamingStrategy.LOWER_DOT_CASE:
           oldKey = key.replace(/\./g, '');
           break;
-        case JsonNamingStrategy.LOWER_CAMEL_CASE:
-        case JsonNamingStrategy.LOWER_CASE:
-        case JsonNamingStrategy.UPPER_CAMEL_CASE:
+        case PropertyNamingStrategy.LOWER_CAMEL_CASE:
+        case PropertyNamingStrategy.LOWER_CASE:
+        case PropertyNamingStrategy.UPPER_CAMEL_CASE:
           break;
         }
 
@@ -1267,7 +1321,7 @@ export class JsonParser<T> {
             return;
           }
         });
-        if (!propertyFound && jsonNamingOptions.strategy === JsonNamingStrategy.SNAKE_CASE) {
+        if (!propertyFound && jsonNamingOptions.strategy === PropertyNamingStrategy.SNAKE_CASE) {
           classProperties.forEach((propertyKey) => {
             const tokens = propertyKey.split(/(?=[A-Z])/);
             const tokensLength = tokens.length;

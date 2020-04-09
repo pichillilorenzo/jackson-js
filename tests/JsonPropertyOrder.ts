@@ -22,7 +22,7 @@ test('class without @JsonPropertyOrder', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","name":"John Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","name":"John Alfa"}'));
 });
 
 test('class with @JsonPropertyOrder with value', t => {
@@ -45,7 +45,7 @@ test('class with @JsonPropertyOrder with value', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
+  t.deepEqual(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
 });
 
 test('class with @JsonPropertyOrder with alphabetic order', t => {
@@ -68,5 +68,5 @@ test('class with @JsonPropertyOrder with alphabetic order', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
+  t.deepEqual(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
 });

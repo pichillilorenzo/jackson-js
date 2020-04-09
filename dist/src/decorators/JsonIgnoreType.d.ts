@@ -25,8 +25,8 @@ import { JsonIgnoreTypeDecorator } from '../@types';
  *   items: Item[] = [];
  * }
  *
- *  @JsonIgnoreType()
- *  class Item {
+ * @JsonIgnoreType()
+ * class Item {
  *   @JsonProperty()
  *   id: number;
  *   @JsonProperty()

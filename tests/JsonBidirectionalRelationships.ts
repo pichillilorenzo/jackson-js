@@ -114,7 +114,7 @@ test('@JsonManagedReference And @JsonBackReference', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Book"},{"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Book"},{"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -175,7 +175,7 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const err = t.throws<JacksonError>(() => {
     objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
@@ -235,7 +235,7 @@ test('@JsonIdentityInfo One To Many', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -296,7 +296,7 @@ test('@JsonIdentityInfo One To Many at property level', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Book","owner":1},{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -362,7 +362,7 @@ test('@JsonIdentityInfo Many To Many', t => {
 
   const jsonData = objectMapper.stringify<User>(user1);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"owners":[1,{"items":[1],"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta"}],"id":1,"name":"Book"},{"owners":[1],"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"owners":[1,{"items":[1],"id":2,"email":"alex.beta@gmail.com","firstname":"Alex","lastname":"Beta"}],"id":1,"name":"Book"},{"owners":[1],"id":2,"name":"Computer"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
@@ -424,7 +424,8 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 });
 
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property level', t => {
@@ -478,7 +479,8 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 });
 
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter level', t => {
@@ -532,5 +534,6 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter lev
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 });

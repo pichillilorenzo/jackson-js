@@ -43,6 +43,7 @@ test('@JsonFormat on properties', t => {
       phone: string;
     };
 
+    // eslint-disable-next-line no-shadow
     constructor(name: string, startDate: Date, price: number, canceled: number, info: {address: string; phone: string}) {
       this.name = name;
       this.startDate = startDate;
@@ -63,7 +64,7 @@ test('@JsonFormat on properties', t => {
 
   const jsonData = objectMapper.stringify<Event>(event);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"name":"Event 1","startDate":"2020-03-24 10:00:00","price":"14.50","canceled":false,"info":["123 Main Street, New York, NY 10030","+393333111999"]}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Event 1","startDate":"2020-03-24 10:00:00","price":"14.50","canceled":false,"info":["123 Main Street, New York, NY 10030","+393333111999"]}'));
 
   const eventParsed = objectMapper.parse<Event>(jsonData, {mainCreator: () => [Event]});
   t.assert(eventParsed instanceof Event);
@@ -98,7 +99,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on property', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Example>(example);
-  t.is(jsonData, '{"numbers":{"wrapper":[12,13,15]}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"numbers":{"wrapper":[12,13,15]}}'));
 
   const exampleParsed = objectMapper.parse<Example>(jsonData, {mainCreator: () => [Example]});
   t.assert(exampleParsed instanceof Example);
@@ -133,7 +134,7 @@ test('@JsonFormat JsonFormatShape.OBJECT on class', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<Example>(example);
-  t.is(jsonData, '{"numbers":{"wrapper":[12,13,15]}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"numbers":{"wrapper":[12,13,15]}}'));
 
   const exampleParsed = objectMapper.parse<Example>(jsonData, {mainCreator: () => [Example]});
   t.assert(exampleParsed instanceof Example);

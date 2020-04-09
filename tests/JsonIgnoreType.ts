@@ -55,7 +55,8 @@ test('@JsonIgnoreType serialize', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"items":[null,null],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[null,null],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 });
 
 test('@JsonIgnoreType deserialize', t => {

@@ -61,7 +61,7 @@ test('@JsonIgnoreProperties', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -138,7 +138,7 @@ test('@JsonIgnoreProperties at property level', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}],"id":1,"email":"john.alfa@gmail.com","lastname":"Alfa"}'));
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}},{"id":2,"name":"NVIDIA","category":"Graphic Card","owner":{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}]}', {mainCreator: () => [User]});
@@ -344,7 +344,7 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"firstname":"John","lastname":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -387,7 +387,7 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"lastname":"Alfa","fullname":"John Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"lastname":"Alfa","fullname":"John Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -430,12 +430,152 @@ test('@JsonIgnoreProperties with allowSetters "true"', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"lastname":"Alfa","fullname":"John Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"lastname":"Alfa","fullname":"John Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
   t.is(userParsed.id, 1);
   t.is(userParsed.firstname, null);
+  t.is(userParsed.lastname, 'Alfa');
+  t.deepEqual(userParsed.fullname, ['John', 'Alfa']);
+});
+
+test('@JsonIgnoreProperties with @JsonProperty as getters and setters', t => {
+  @JsonIgnoreProperties({value: ['fullname', 'firstname']})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    fullname: string[];
+
+    constructor(id: number) {
+      this.id = id;
+    }
+
+    @JsonProperty()
+    getFullname(): string {
+      return this.firstname + ' ' + this.lastname;
+    }
+
+    @JsonProperty()
+    setFullname(fullname: string) {
+      const fullnameSplitted = fullname.split(' ');
+      this.firstname = fullnameSplitted[0];
+      this.lastname = fullnameSplitted[1];
+      this.fullname = fullnameSplitted;
+    }
+  }
+
+  const user = new User(1);
+  user.firstname = 'John';
+  user.lastname = 'Alfa';
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"lastname":"Alfa"}'));
+
+  const userParsed = objectMapper.parse<User>(
+    '{"id":1,"firstname":"John","lastname":"Alfa","fullname":"John Alfa"}', {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.firstname, undefined);
+  t.is(userParsed.lastname, 'Alfa');
+  t.is(userParsed.fullname, undefined);
+});
+
+test('@JsonIgnoreProperties with allowGetters and @JsonProperty as getters and setters', t => {
+  @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    fullname: string[];
+
+    constructor(id: number) {
+      this.id = id;
+    }
+
+    @JsonProperty()
+    getFullname(): string {
+      return this.firstname + ' ' + this.lastname;
+    }
+
+    @JsonProperty()
+    setFullname(fullname: string) {
+      const fullnameSplitted = fullname.split(' ');
+      this.firstname = fullnameSplitted[0];
+      this.lastname = fullnameSplitted[1];
+      this.fullname = fullnameSplitted;
+    }
+  }
+
+  const user = new User(1);
+  user.firstname = 'John';
+  user.lastname = 'Alfa';
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"lastname":"Alfa","fullname":"John Alfa"}'));
+
+  const userParsed = objectMapper.parse<User>(
+    '{"id":1,"firstname":"John","lastname":"Alfa","fullname":"John Alfa"}', {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.firstname, undefined);
+  t.is(userParsed.lastname, 'Alfa');
+  t.is(userParsed.fullname, undefined);
+});
+
+test('@JsonIgnoreProperties with allowSetters and @JsonProperty as getters and setters', t => {
+  @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true, allowSetters: true})
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    fullname: string[];
+
+    constructor(id: number) {
+      this.id = id;
+    }
+
+    @JsonProperty()
+    getFullname(): string {
+      return this.firstname + ' ' + this.lastname;
+    }
+
+    @JsonProperty()
+    setFullname(fullname: string) {
+      const fullnameSplitted = fullname.split(' ');
+      this.firstname = fullnameSplitted[0];
+      this.lastname = fullnameSplitted[1];
+      this.fullname = fullnameSplitted;
+    }
+  }
+
+  const user = new User(1);
+  user.firstname = 'John';
+  user.lastname = 'Alfa';
+  const objectMapper = new ObjectMapper();
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"lastname":"Alfa","fullname":"John Alfa"}'));
+
+  const userParsed = objectMapper.parse<User>('{"id":1,"fullname":"John Alfa"}', {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.firstname, 'John');
   t.is(userParsed.lastname, 'Alfa');
   t.deepEqual(userParsed.fullname, ['John', 'Alfa']);
 });

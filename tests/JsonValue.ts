@@ -41,8 +41,8 @@ test('@JsonValue', t => {
   const objectMapper = new ObjectMapper();
 
   let jsonData = objectMapper.stringify<Employee>(employee);
-  t.is(jsonData, '"John Alfa - 25"');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('"John Alfa - 25"'));
 
   jsonData = objectMapper.stringify<Company>(company);
-  t.is(jsonData, '{"employees":["John Alfa - 25"],"name":"Google"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"employees":["John Alfa - 25"],"name":"Google"}'));
 });

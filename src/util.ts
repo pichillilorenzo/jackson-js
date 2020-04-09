@@ -14,6 +14,7 @@ import {
   JsonStringifierParserCommonContext
 } from './@types';
 import 'reflect-metadata';
+import {JsonPropertyPrivateOptions} from './@types/private';
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
@@ -105,21 +106,56 @@ const pluckParamName = (param): string => {
 /**
  * @internal
  */
-export const getClassProperties = (target: Record<string, any>, options = {
-  withJsonProperties: false,
-  withJsonAliases: false
-}): string[] => {
+export interface GetClassPropertiesOptions {
+  withGetterVirtualProperties?: boolean;
+  withGetterVirtualPropertyValues?: boolean;
+  withSetterVirtualProperties?: boolean;
+  withSetterVirtualPropertyValues?: boolean;
+  withJsonProperties?: boolean;
+  withJsonAliases?: boolean;
+}
+
+/**
+ * @internal
+ */
+export const getClassProperties = (target: Record<string, any>, options: GetClassPropertiesOptions = {}): string[] => {
+  options = {
+    withGetterVirtualProperties: false,
+    withGetterVirtualPropertyValues: false,
+    withSetterVirtualProperties: false,
+    withSetterVirtualPropertyValues: false,
+    withJsonProperties: false,
+    withJsonAliases: false,
+    ...options
+  };
+
   const metadataKeys = Reflect.getMetadataKeys(target);
   const classProperties: Set<string> = new Set();
   for (const metadataKey of metadataKeys) {
     if (metadataKey.startsWith('jackson:JsonProperty:')) {
       const propertyKey = metadataKey.replace('jackson:JsonProperty:', '');
-      classProperties.add(propertyKey);
-      if (options.withJsonProperties) {
-        const jsonProperty: JsonPropertyOptions = Reflect.getMetadata(metadataKey, target);
-        if (jsonProperty.value != null) {
-          classProperties.add(jsonProperty.value);
+      const jsonProperty: JsonPropertyPrivateOptions = Reflect.getMetadata(metadataKey, target);
+      if (jsonProperty && jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function') {
+        if (propertyKey.startsWith('get')) {
+          if (options.withGetterVirtualPropertyValues) {
+            classProperties.add(jsonProperty.value);
+          }
+          if (!options.withGetterVirtualProperties) {
+            continue;
+          }
         }
+        if (propertyKey.startsWith('set')) {
+          if (options.withSetterVirtualPropertyValues) {
+            classProperties.add(jsonProperty.value);
+          }
+          if (!options.withSetterVirtualProperties) {
+            continue;
+          }
+        }
+      }
+      classProperties.add(propertyKey);
+      if (options.withJsonProperties && jsonProperty.value != null) {
+        classProperties.add(jsonProperty.value);
       }
     } else if (metadataKey.startsWith('jackson:JsonAlias:') && options.withJsonAliases) {
       const propertyKey = metadataKey.replace('jackson:JsonAlias:', '');
@@ -499,21 +535,30 @@ export const getDeepestClass = (array: Array<any>): any | null => {
 /**
  * @internal
  */
-export const getObjectKeysWithPropertyDescriptorNames = (obj: any): string[] => {
+export const getObjectKeysWithPropertyDescriptorNames = (obj: any, ctor?: any, options?: GetClassPropertiesOptions): string[] => {
   if (obj == null) {
     return [];
   }
   const keys = Object.getOwnPropertyNames(obj);
-  const classProperties = getClassProperties(obj.constructor);
+  const classProperties = getClassProperties(ctor != null ? ctor : obj.constructor, options);
+
+  if (keys.includes('constructor') &&
+    typeof obj.constructor === 'function' &&
+    !obj.constructor.toString().endsWith('{ [native code] }') &&
+    obj.constructor.constructor.toString().endsWith('{ [native code] }')) {
+    keys.splice(keys.indexOf('constructor'), 1);
+  }
+
   return [...new Set([...keys, ...classProperties])];
 };
 
 /**
  * @internal
  */
-export const objectHasOwnPropertyWithPropertyDescriptorNames = (obj: any, key: string): boolean => {
-  if (obj == null || key == null) {
-    return false;
-  }
-  return getObjectKeysWithPropertyDescriptorNames(obj).includes(key);
-};
+export const objectHasOwnPropertyWithPropertyDescriptorNames =
+  (obj: any, ctor: any, key: string, options?: GetClassPropertiesOptions): boolean => {
+    if (obj == null || key == null) {
+      return false;
+    }
+    return getObjectKeysWithPropertyDescriptorNames(obj, ctor, options).includes(key);
+  };

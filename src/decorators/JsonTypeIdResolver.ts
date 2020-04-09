@@ -21,7 +21,8 @@ export const JsonTypeIdResolver: JsonTypeIdResolverDecorator = makeJacksonDecora
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       Reflect.defineMetadata(
         'jackson:JsonTypeIdResolverParam:' + descriptorOrParamIndex.toString(),
-        options, target, (propertyKey) ? propertyKey : 'constructor');
+        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        (propertyKey) ? propertyKey : 'constructor');
     }
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonTypeIdResolver', options, target.constructor, propertyKey);

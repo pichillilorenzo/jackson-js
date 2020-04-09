@@ -21,7 +21,7 @@ test('@JsonRootName without value', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"User":{"id":1,"email":"john.alfa@gmail.com"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"User":{"id":1,"email":"john.alfa@gmail.com"}}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -47,7 +47,7 @@ test('@JsonRootName with value', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"userRoot":{"id":1,"email":"john.alfa@gmail.com"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"userRoot":{"id":1,"email":"john.alfa@gmail.com"}}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);

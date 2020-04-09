@@ -34,7 +34,8 @@ test('@JsonAnyGetter', t => {
   screenInfo.otherInfo.set('yLocation', 200);
 
   const jsonData = objectMapper.stringify<ScreenInfo>(screenInfo);
-  t.is(jsonData, '{"xLocation":400,"yLocation":200,"id":"TradeDetails","title":"Trade Details","width":500,"height":300}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"xLocation":400,"yLocation":200,"id":"TradeDetails","title":"Trade Details","width":500,"height":300}'));
 });
 
 test('Fail multi @JsonAnyGetter annotations', t => {

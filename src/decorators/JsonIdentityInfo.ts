@@ -106,7 +106,8 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       Reflect.defineMetadata(
         'jackson:JsonIdentityInfoParam:' + descriptorOrParamIndex.toString(),
-        options, target, (propertyKey) ? propertyKey : 'constructor');
+        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        (propertyKey) ? propertyKey : 'constructor');
     }
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target.constructor, propertyKey);

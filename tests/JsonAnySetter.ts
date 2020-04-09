@@ -40,6 +40,7 @@ test('@JsonAnySetter', t => {
   t.is(screenInfo.title, 'Trade Details');
   t.is(screenInfo.width, 500);
   t.is(screenInfo.height, 300);
+  t.is(screenInfo.otherInfo.size, 2);
   t.is(screenInfo.otherInfo.get('xLocation'), 400);
   t.is(screenInfo.otherInfo.get('yLocation'), 200);
 });

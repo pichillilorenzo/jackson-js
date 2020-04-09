@@ -6,10 +6,12 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonSerialize and @JsonDeserialize on class', t => {
+  // eslint-disable-next-line no-shadow
   @JsonSerialize({using: (user: User) => ({
     otherInfo: 'other info',
     ...user
   })})
+  // eslint-disable-next-line no-shadow
   @JsonDeserialize({using: (user: any) => {
     delete user.otherInfo;
     return user;
@@ -37,7 +39,8 @@ test('@JsonSerialize and @JsonDeserialize on class', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -50,6 +53,7 @@ test('@JsonSerialize and @JsonDeserialize on class', t => {
 
 test('@JsonSerialize and @JsonDeserialize on properties', t => {
   const customBookListSerializer = (books: Book[]) =>
+    // eslint-disable-next-line no-shadow
     books.map((book) => new Book(book.id, book.name, book.date, null));
 
   class DateSerializer {
@@ -82,6 +86,7 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
     @JsonClass({class: () => [Writer]})
     writer: Writer;
 
+    // eslint-disable-next-line no-shadow
     constructor(id: number, name: string, date: Date, @JsonClass({class: () => [Writer]}) writer: Writer) {
       this.id = id;
       this.name = name;
@@ -115,7 +120,7 @@ test('@JsonSerialize and @JsonDeserialize on properties', t => {
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null}],"id":1,"name":"George R. R. Martin"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null}],"id":1,"name":"George R. R. Martin"}'));
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);
@@ -137,6 +142,7 @@ test('@JsonDeserialize at parameter level', t => {
       @JsonDeserialize({using: (person: any) => {
         delete person.otherInfo;
         return person;
+        // eslint-disable-next-line no-shadow
       }}) @JsonClass({class: () => [Person]}) ceo: Person) {
       this.name = name;
       this.ceo = ceo;
@@ -172,7 +178,7 @@ test('@JsonDeserialize at parameter level', t => {
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Company>(company);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"name":"Google","ceo":{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Google","ceo":{"otherInfo":"other info","id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}'));
 
   const companyParsed = objectMapper.parse<Company>(jsonData, {mainCreator: () => [Company]});
   t.assert(companyParsed instanceof Company);
@@ -199,6 +205,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
     @JsonClass({class: () => [Writer]})
     writer: Writer;
 
+    // eslint-disable-next-line no-shadow
     constructor(id: number, name: string, date: Date, writer: Writer) {
       this.id = id;
       this.name = name;
@@ -262,7 +269,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
-  t.is(jsonData, '{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null},null,null],"id":1,"name":"George R. R. Martin"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":{"year":2012,"month":12,"day":4,"formatted":"12/4/2012"},"writer":null},null,null],"id":1,"name":"George R. R. Martin"}'));
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);

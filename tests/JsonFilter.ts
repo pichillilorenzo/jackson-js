@@ -36,7 +36,7 @@ test('@JsonFilter at class level', t => {
       }
     }
   });
-  t.is(jsonData, '{"age":30,"college":"ABCD"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"age":30,"college":"ABCD"}'));
 
   jsonData = objectMapper.stringify<Student>(student, {
     filters: {
@@ -46,7 +46,7 @@ test('@JsonFilter at class level', t => {
       }
     }
   });
-  t.is(jsonData, '{"stdName":"Mohit","city":"Varanasi"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"stdName":"Mohit","city":"Varanasi"}'));
 
   jsonData = objectMapper.stringify<Student>(student, {
     filters: {
@@ -55,7 +55,7 @@ test('@JsonFilter at class level', t => {
       }
     }
   });
-  t.is(jsonData, '{"stdName":"Mohit","age":30,"college":"ABCD","city":"Varanasi"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"stdName":"Mohit","age":30,"college":"ABCD","city":"Varanasi"}'));
 });
 
 test('@JsonFilter at property level', t => {
@@ -68,6 +68,7 @@ test('@JsonFilter at property level', t => {
     @JsonClass({class: () => [Employee]})
     ceo: Employee;
 
+    // eslint-disable-next-line no-shadow
     constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
       this.name = name;
       this.ceo = ceo;
@@ -99,7 +100,7 @@ test('@JsonFilter at property level', t => {
       }
     }
   });
-  t.is(jsonData, '{"name":"Apple","ceo":{"name":"John Alfa"}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"name":"John Alfa"}}'));
 
   jsonData = objectMapper.stringify<Company>(company, {
     filters: {
@@ -109,7 +110,7 @@ test('@JsonFilter at property level', t => {
       }
     }
   });
-  t.is(jsonData, '{"name":"Apple","ceo":{"empAge":50}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"empAge":50}}'));
 
   jsonData = objectMapper.stringify<Company>(company, {
     filters: {
@@ -118,7 +119,7 @@ test('@JsonFilter at property level', t => {
       }
     }
   });
-  t.is(jsonData, '{"name":"Apple","ceo":{"name":"John Alfa","empAge":50}}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"name":"John Alfa","empAge":50}}'));
 });
 
 test('@JsonFilter at property level of type Array', t => {
@@ -164,5 +165,5 @@ test('@JsonFilter at property level of type Array', t => {
     }
   });
 
-  t.is(jsonData, '{"employees":[{"name":"John Alfa"},{"name":"John Beta"}],"name":"Apple"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"employees":[{"name":"John Alfa"},{"name":"John Beta"}],"name":"Apple"}'));
 });

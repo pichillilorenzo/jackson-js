@@ -9,7 +9,7 @@ import {JsonFormatShape} from '../decorators/JsonFormat';
 import {JsonPropertyAccess} from '../decorators/JsonProperty';
 import {ObjectIdGenerator} from '../decorators/JsonIdentityInfo';
 import {JsonFilterType} from '../decorators/JsonFilter';
-import {JsonNamingStrategy} from '../decorators/JsonNaming';
+import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {JsonCreatorMode} from '../decorators/JsonCreator';
 
 /**
@@ -84,7 +84,10 @@ ClassDecorator & PropertyDecorator & ParameterDecorator>;
  */
 export type JsonIdentityReferenceDecorator = JacksonDecoratorWithOptions<JsonIdentityReferenceOptions,
 ClassDecorator & PropertyDecorator>;
-export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions, any>;
+/**
+ * Decorator type for {@link JsonNaming}.
+ */
+export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions, ClassDecorator>;
 export type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions, any>;
 export type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions, any>;
 export type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions, any>;
@@ -93,14 +96,6 @@ export type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOpti
  */
 export type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptions<JsonIgnorePropertiesOptions,
 ClassDecorator & PropertyDecorator & ParameterDecorator>;
-/**
- * Decorator type for {@link JsonGetter}.
- */
-export type JsonGetterDecorator = JacksonDecoratorWithOptions<JsonGetterOptions, MethodDecorator>;
-/**
- * Decorator type for {@link JsonSetter}.
- */
-export type JsonSetterDecorator = JacksonDecoratorWithOptions<JsonSetterOptions, MethodDecorator>;
 export type JsonTypeIdResolverDecorator = JacksonDecoratorWithOptions<JsonTypeIdResolverOptions,
 ClassDecorator & PropertyDecorator & ParameterDecorator>;
 
@@ -125,6 +120,14 @@ export type JsonCreatorDecorator = JacksonDecoratorWithOptionalOptions<JsonCreat
  */
 export type JsonFormatDecorator = JacksonDecoratorWithOptionalOptions<JsonFormatOptions, ClassDecorator & PropertyDecorator>;
 /**
+ * Decorator type for {@link JsonGetter}.
+ */
+export type JsonGetterDecorator = JacksonDecoratorWithOptionalOptions<JsonGetterOptions, MethodDecorator & PropertyDecorator>;
+/**
+ * Decorator type for {@link JsonSetter}.
+ */
+export type JsonSetterDecorator = JacksonDecoratorWithOptionalOptions<JsonSetterOptions, MethodDecorator & PropertyDecorator>;
+/**
  * Decorator type for {@link JsonIgnore}.
  */
 export type JsonIgnoreDecorator = JacksonDecoratorWithOptionalOptions<JsonIgnoreOptions, PropertyDecorator & ParameterDecorator>;
@@ -136,9 +139,19 @@ export type JsonIgnoreTypeDecorator = JacksonDecoratorWithOptionalOptions<JsonIg
  * Decorator type for {@link JsonInclude}.
  */
 export type JsonIncludeDecorator = JacksonDecoratorWithOptionalOptions<JsonIncludeOptions, ClassDecorator & PropertyDecorator>;
-export type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions, any>;
-export type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions, any>;
-export type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions, any>;
+/**
+ * Decorator type for {@link JsonInject}.
+ */
+export type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInjectOptions, PropertyDecorator & ParameterDecorator>;
+/**
+ * Decorator type for {@link JsonManagedReference}.
+ */
+export type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions, PropertyDecorator>;
+/**
+ * Decorator type for {@link JsonProperty}.
+ */
+export type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions,
+PropertyDecorator & MethodDecorator & ParameterDecorator>;
 export type JsonPropertyOrderDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOrderOptions, any>;
 export type JsonRawValueDecorator = JacksonDecoratorWithOptionalOptions<JsonRawValueOptions, any>;
 export type JsonRootNameDecorator = JacksonDecoratorWithOptionalOptions<JsonRootNameOptions, any>;
@@ -512,13 +525,41 @@ export interface JsonIncludeOptions extends JsonDecoratorOptions {
   contentFilter?: (value: any) => boolean;
 }
 
+/**
+ * Decorator options for {@link JsonManagedReference}.
+ */
 export interface JsonManagedReferenceOptions extends JsonDecoratorOptions {
+  /**
+   * Logical name for the reference property pair; used to link managed and back references.
+   * Default name can be used if there is just single reference pair
+   * (for example, node class that just has parent/child linkage, consisting of one managed reference and matching back reference).
+   *
+   * @default `'defaultReference'`
+   */
   value?: string;
 }
 
+/**
+ * Decorator options for {@link JsonProperty}.
+ */
 export interface JsonPropertyOptions extends JsonDecoratorOptions {
+  /**
+   * Defines name of the logical property.
+   */
   value?: any;
+  /**
+   * Property that may be used to change the way visibility of accessors (getter, field-as-getter)
+   * and mutators (constructor parameter, setter, field-as-setter) is determined.
+   *
+   * @default {@link JsonPropertyAccess.READ_WRITE}
+   */
   access?: JsonPropertyAccess;
+  /**
+   * Property that indicates whether a value (which may be explicit null)
+   * is expected for property during deserialization or not.
+   *
+   * @default `false`
+   */
   required?: boolean;
 }
 
@@ -692,8 +733,21 @@ export interface JsonIdentityReferenceOptions extends JsonDecoratorOptions {
   alwaysAsId: boolean;
 }
 
+/**
+ * Decorator options for {@link JsonInject}.
+ */
 export interface JsonInjectOptions extends JsonDecoratorOptions {
+  /**
+   * Logical id of the value to inject; if not specified (or specified as empty String),
+   * will use id based on declared type of property.
+   */
   value?: string;
+  /**
+   * Whether matching value from input (if any) is used for decorated property or not; if disabled (`false`),
+   * input value (if any) will be ignored; otherwise it will override injected value.
+   *
+   * @default `true`
+   */
   useInput?: boolean;
 }
 
@@ -751,8 +805,15 @@ export interface JsonAppendOptions extends JsonDecoratorOptions {
   attrs?: JsonAppendOptionsAttribute[];
 }
 
+/**
+ * Decorator options for {@link JsonNaming}.
+ */
 export interface JsonNamingOptions extends JsonDecoratorOptions {
-  strategy: JsonNamingStrategy;
+  /**
+   * Strategies that defines how names of JSON properties ("external names")
+   * are derived from names of POJO methods and fields ("internal names").
+   */
+  strategy: PropertyNamingStrategy;
 }
 
 /**
@@ -762,11 +823,11 @@ export interface JsonGetterOptions extends JsonDecoratorOptions {
   /**
    * Defines name of the logical property this method is used to access.
    */
-  value: string;
+  value?: string;
 }
 
 export interface JsonSetterOptions extends JsonDecoratorOptions {
-  value: string;
+  value?: string;
 }
 
 export type JsonTypeIdOptions = JsonDecoratorOptions;

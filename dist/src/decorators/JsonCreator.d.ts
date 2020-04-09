@@ -55,32 +55,33 @@ export declare enum JsonCreatorMode {
  * }
  *
  * class Employee {
- *  @JsonProperty()
- *  id: number;
- *  @JsonProperty()
- *  name: string;
- *  @JsonProperty()
- *  department: string;
+ *   @JsonProperty()
+ *   id: number;
+ *   @JsonProperty()
+ *   name: string;
+ *   @JsonProperty()
+ *   department: string;
  *
- *  constructor(id: number, name: string, department: string) {
- *    this.id = id;
- *    this.name = name;
- *    this.department = department;
- *  }
+ *   constructor(id: number, name: string, department: string) {
+ *     this.id = id;
+ *     this.name = name;
+ *     this.department = department;
+ *   }
  *
- *  @JsonCreator()
- *  static toEmployee(id: number,
- *    @JsonProperty({value: 'empName'}) name: string,
- *    @JsonProperty({value: 'empDept'}) department: string): Employee {
- *    return new Employee(id, name, department);
- *  }
+ *   @JsonCreator()
+ *   static toEmployee(id: number,
+ *     @JsonProperty({value: 'empName'}) name: string,
+ *     @JsonProperty({value: 'empDept'}) department: string): Employee {
+ *     return new Employee(id, name, department);
+ *   }
  *
- *  @JsonCreator({name: 'AnotherEmployeeCreator'})
- *  static toAnotherEmployee(id: number,
- *    @JsonProperty({value: 'anotherEmpName'}) anotherName: string,
- *    @JsonProperty({value: 'anotherEmpDept'}) anotherDepartment: string): Employee {
- *    return new Employee(id, 'Another ' + anotherName, 'Another ' + anotherDepartment);
- *  }
+ *   @JsonCreator({name: 'AnotherEmployeeCreator'})
+ *   static toAnotherEmployee(id: number,
+ *     @JsonProperty({value: 'anotherEmpName'}) anotherName: string,
+ *     @JsonProperty({value: 'anotherEmpDept'}) anotherDepartment: string): Employee {
+ *     return new Employee(id, 'Another ' + anotherName, 'Another ' + anotherDepartment);
+ *   }
+ * }
  * ```
  */
 export declare const JsonCreator: JsonCreatorDecorator;

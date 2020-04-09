@@ -2,8 +2,14 @@ import {
   JsonAnyGetterOptions,
   JsonAnySetterOptions,
   JsonBackReferenceOptions,
-  JsonCreatorOptions, JsonGetterOptions,
-  JsonManagedReferenceOptions, JsonSetterOptions, JsonTypeIdOptions, JsonTypeNameOptions, JsonValueOptions
+  JsonCreatorOptions,
+  JsonGetterOptions,
+  JsonManagedReferenceOptions,
+  JsonPropertyOptions,
+  JsonSetterOptions,
+  JsonTypeIdOptions,
+  JsonTypeNameOptions,
+  JsonValueOptions
 } from './index';
 
 /** @internal */
@@ -56,4 +62,9 @@ export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
 /** @internal */
 export interface JsonTypeIdPrivateOptions extends JsonTypeIdOptions {
   propertyKey: string;
+}
+
+/** @internal */
+export interface JsonPropertyPrivateOptions extends JsonPropertyOptions {
+  descriptor: TypedPropertyDescriptor<any>;
 }

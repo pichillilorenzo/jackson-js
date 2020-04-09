@@ -38,7 +38,7 @@ test('@JsonUnwrapped', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"first":"John","last":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"first":"John","last":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -82,7 +82,7 @@ test('@JsonUnwrapped with prefix', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"parent-first":"John","parent-last":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"parent-first":"John","parent-last":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -126,7 +126,7 @@ test('@JsonUnwrapped with suffix', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"first-parent":"John","last-parent":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"first-parent":"John","last-parent":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -170,7 +170,7 @@ test('@JsonUnwrapped with prefix and suffix', t => {
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
-  t.is(jsonData, '{"id":1,"parentPrefix-first-parentSuffix":"John","parentPrefix-last-parentSuffix":"Alfa"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"parentPrefix-first-parentSuffix":"John","parentPrefix-last-parentSuffix":"Alfa"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);

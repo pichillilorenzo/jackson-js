@@ -17,7 +17,8 @@ export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       Reflect.defineMetadata(
         'jackson:JsonSubTypesParam:' + descriptorOrParamIndex.toString(),
-        options, target, (propertyKey) ? propertyKey : 'constructor');
+        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        (propertyKey) ? propertyKey : 'constructor');
     }
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonSubTypes', options, target.constructor, propertyKey);

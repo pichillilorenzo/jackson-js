@@ -43,12 +43,13 @@ test('@JsonView', t => {
 
   const jsonDataWithoutView = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(jsonDataWithoutView, '{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}');
+  t.deepEqual(JSON.parse(jsonDataWithoutView), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}'));
 
   const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
-  t.is(jsonDataWithViewPublic, '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}');
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonDataWithViewPublic), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
   const jsonDataWithViewInternal = objectMapper.stringify<User>(user, {withViews: () => [Views.internal]});
   // eslint-disable-next-line max-len
-  t.is(jsonDataWithViewInternal, '{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}');
+  t.deepEqual(JSON.parse(jsonDataWithViewInternal), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","password":"rtJ9FrqP!rCE","firstname":"John","lastname":"Alfa","activationCode":"75afe654-695e-11ea-bc55-0242ac130003"}'));
 });

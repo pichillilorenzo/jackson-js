@@ -1,8 +1,18 @@
-import {JsonProperty} from './decorators/JsonProperty';
+import {JsonProperty, JsonPropertyAccess} from './decorators/JsonProperty';
 import {ObjectMapper} from './databind/ObjectMapper';
-import {JsonInclude, JsonIncludeType} from './decorators/JsonInclude';
-import {JsonIdentityInfo, ObjectIdGenerator} from './decorators/JsonIdentityInfo';
+import {JacksonError} from './core/JacksonError';
+import {JsonGetter} from './decorators/JsonGetter';
+import {JsonSetter} from './decorators/JsonSetter';
+import {JsonAnySetter} from './decorators/JsonAnySetter';
+import {JsonAlias} from './decorators/JsonAlias';
 import {JsonClass} from './decorators/JsonClass';
+import {JsonCreator} from './decorators/JsonCreator';
+import {JsonSerialize} from './decorators/JsonSerialize';
+import {JsonDeserialize} from './decorators/JsonDeserialize';
+import {JsonInject} from './decorators/JsonInject';
+import {JsonFormat, JsonFormatShape} from './decorators/JsonFormat';
+import {JsonNaming, PropertyNamingStrategy} from './decorators/JsonNaming';
+import {JsonIgnoreProperties} from './decorators/JsonIgnoreProperties';
 
 //
 // // class DateSerializer {
@@ -758,6 +768,42 @@ import {JsonClass} from './decorators/JsonClass';
 // console.log(animals);
 
 
+
+// class User {
+//   @JsonProperty()
+//   id: number;
+//   @JsonProperty()
+//   firstname: string;
+//   @JsonProperty()
+//   lastname: string;
+//   @JsonProperty()
+//   lastUpdated: Date;
+//
+//   constructor(id: number, firstname: string, lastname: string) {
+//     this.id = id;
+//     this.firstname = firstname;
+//     this.lastname = lastname;
+//   }
+//
+//   @JsonSetter({value: 'lastUpdated'})
+//   setLastUpdate(@JsonInject({useInput: false}) lastUpdated: Date) {
+//     this.lastUpdated = lastUpdated;
+//   }
+// }
+//
+// const user = new User(1, 'John', 'Alfa');
+// const objectMapper = new ObjectMapper();
+//
+// const jsonData = objectMapper.stringify<User>(user);
+// console.log(jsonData);
+//
+// const userParsed = objectMapper.parse<User>(jsonData, {
+//   mainCreator: () => [User],
+//   injectableValues: {
+//     lastUpdated: new Date()
+//   }
+// });
+// console.log(userParsed);
 
 
 

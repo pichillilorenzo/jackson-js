@@ -80,7 +80,12 @@ export declare enum JsonFormatShape {
  *   @JsonFormat({
  *     shape: JsonFormatShape.ARRAY
  *   })
- *   @JsonDeserialize({using: (value: string[]) => ({address: value[0], phone: value[1]}) })
+ *   @JsonDeserialize({
+ *     using: (value: string[]) => ({
+ *       address: value[0],
+ *       phone: value[1]
+ *     })
+ *   })
  *   info: {
  *     address: string;
  *     phone: string;

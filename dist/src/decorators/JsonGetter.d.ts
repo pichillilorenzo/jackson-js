@@ -24,12 +24,12 @@ import { JsonGetterDecorator } from '../@types';
  *   @JsonProperty()
  *   fullname: string[];
  *
- *   @JsonGetter({value: 'fullname'})
+ *   @JsonGetter()
  *   getFullname(): string {
  *     return this.firstname + ' ' + this.lastname;
  *   }
  *
- *   @JsonSetter({value: 'fullname'})
+ *   @JsonSetter()
  *   setFullname(fullname: string) {
  *     this.fullname = fullname.split(' ');
  *   }

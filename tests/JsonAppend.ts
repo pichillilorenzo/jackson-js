@@ -31,7 +31,7 @@ test('@JsonAppend with value', t => {
       version: 1.2
     }
   });
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","version":1.2}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","version":1.2}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -64,7 +64,7 @@ test('@JsonAppend with prepend', t => {
       version: 1.2
     }
   });
-  t.is(jsonData, '{"version":1.2,"id":1,"email":"john.alfa@gmail.com"}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"version":1.2,"id":1,"email":"john.alfa@gmail.com"}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -98,7 +98,7 @@ test('@JsonAppend with userVersion', t => {
       version: 1.2
     }
   });
-  t.is(jsonData, '{"id":1,"email":"john.alfa@gmail.com","userVersion":1.2}');
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","userVersion":1.2}'));
 
   const userParsed = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
   t.assert(userParsed instanceof User);
@@ -162,7 +162,7 @@ test('@JsonAppend include only if value is non null', t => {
       version: null
     }
   });
-  t.is(jsonDataWithNull, '{"id":1,"email":"john.alfa@gmail.com"}');
+  t.deepEqual(JSON.parse(jsonDataWithNull), JSON.parse('{"id":1,"email":"john.alfa@gmail.com"}'));
 
   const userParsedWithNull = objectMapper.parse<User>(jsonDataWithNull, {mainCreator: () => [User]});
   t.assert(userParsedWithNull instanceof User);
@@ -174,7 +174,7 @@ test('@JsonAppend include only if value is non null', t => {
       version: 1.2
     }
   });
-  t.is(jsonDataWithValue, '{"id":1,"email":"john.alfa@gmail.com","version":1.2}');
+  t.deepEqual(JSON.parse(jsonDataWithValue), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","version":1.2}'));
 
   const userParsedWithValue = objectMapper.parse<User>(jsonDataWithNull, {mainCreator: () => [User]});
   t.assert(userParsedWithValue instanceof User);
