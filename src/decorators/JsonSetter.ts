@@ -14,6 +14,7 @@ export const JsonSetter: JsonSetterDecorator = makeJacksonDecorator(
   (options: JsonSetterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
       const privateOptions: JsonSetterPrivateOptions = {
+        descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
         propertyKey: propertyKey.toString(),
         ...options
       };
@@ -36,6 +37,7 @@ export const JsonSetter: JsonSetterDecorator = makeJacksonDecorator(
         }
       }
 
-      Reflect.defineMetadata('jackson:JsonSetter', privateOptions, target.constructor, privateOptions.value);
+      Reflect.defineMetadata('jackson:JsonSetter', privateOptions, target.constructor, propertyKey);
+      Reflect.defineMetadata('jackson:JsonVirtualProperty:' + propertyKey.toString(), privateOptions, target.constructor);
     }
   });

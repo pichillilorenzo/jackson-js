@@ -12,6 +12,7 @@ import {JacksonError} from '../core/JacksonError';
 /**
  * Decorator that can be used to define a non-static,
  * no-argument value-returning (non-void) method to be used as a "getter" for a logical property.
+ * It can be used as an alternative to more general {@link JsonProperty} annotation (which is the recommended choice in general case).
  *
  * Getter means that when serializing Object instance of class that has this method
  * (possibly inherited from a super class), a call is made through the method,
@@ -46,6 +47,7 @@ export const JsonGetter: JsonGetterDecorator = makeJacksonDecorator(
   (options: JsonGetterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey) {
       const privateOptions: JsonGetterPrivateOptions = {
+        descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
         propertyKey: propertyKey.toString(),
         ...options
       };
@@ -68,6 +70,7 @@ export const JsonGetter: JsonGetterDecorator = makeJacksonDecorator(
         }
       }
 
-      Reflect.defineMetadata('jackson:JsonGetter', privateOptions, target.constructor, privateOptions.value);
+      Reflect.defineMetadata('jackson:JsonGetter', privateOptions, target.constructor, propertyKey);
+      Reflect.defineMetadata('jackson:JsonVirtualProperty:' + propertyKey.toString(), privateOptions, target.constructor);
     }
   });

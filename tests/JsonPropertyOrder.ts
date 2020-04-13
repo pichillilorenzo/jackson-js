@@ -2,6 +2,8 @@ import test from 'ava';
 import {JsonPropertyOrder} from '../src/decorators/JsonPropertyOrder';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonRootName} from '../src/decorators/JsonRootName';
+import {JsonClass} from '../src/decorators/JsonClass';
 
 test('class without @JsonPropertyOrder', t => {
   class User {
@@ -25,7 +27,7 @@ test('class without @JsonPropertyOrder', t => {
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","name":"John Alfa"}'));
 });
 
-test('class with @JsonPropertyOrder with value', t => {
+test('@JsonPropertyOrder with value', t => {
   @JsonPropertyOrder({value: ['email', 'id', 'name']})
   class User {
     @JsonProperty()
@@ -45,10 +47,37 @@ test('class with @JsonPropertyOrder with value', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<User>(user);
-  t.deepEqual(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
+  t.is(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
 });
 
-test('class with @JsonPropertyOrder with alphabetic order', t => {
+test('@JsonPropertyOrder with partial order', t => {
+  @JsonPropertyOrder({value: ['email', 'lastname']})
+  class User {
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<User>(user);
+  t.assert(jsonData.startsWith('{"email":"john.alfa@gmail.com","lastname":"Alfa",'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"email":"john.alfa@gmail.com","lastname":"Alfa","id":1,"firstname":"John"}'));
+});
+
+test('@JsonPropertyOrder with alphabetic order', t => {
   @JsonPropertyOrder({alphabetic: true})
   class User {
     @JsonProperty()
@@ -68,5 +97,75 @@ test('class with @JsonPropertyOrder with alphabetic order', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<User>(user);
-  t.deepEqual(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
+  t.is(jsonData, '{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}');
 });
+
+test('@JsonPropertyOrder with value and @JsonRootName', t => {
+  @JsonRootName()
+  @JsonPropertyOrder({value: ['email', 'id', 'name']})
+  class User {
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    email: string;
+    @JsonProperty()
+    id: number;
+
+    constructor(id: number, email: string, name: string) {
+      this.id = id;
+      this.email = email;
+      this.name = name;
+    }
+  }
+
+  const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<User>(user);
+  t.is(jsonData, '{"User":{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}}');
+});
+
+test('@JsonPropertyOrder at property level', t => {
+  class Book {
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    category: string;
+    @JsonProperty()
+    id: number;
+
+    constructor(id: number, name: string, category: string) {
+      this.id = id;
+      this.name = name;
+      this.category = category;
+    }
+  }
+
+  class Writer {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonPropertyOrder({value: ['category', 'id', 'name']})
+    @JsonClass({class: () => [Array, [Book]]})
+    books: Book[] = [];
+
+    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+      this.id = id;
+      this.name = name;
+      this.books = books;
+    }
+  }
+
+  const book = new Book(42, 'Learning TypeScript', 'Web Development');
+  const writer = new Writer(1, 'John', [book]);
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<Writer>(writer);
+  t.assert(jsonData.includes('[{"category":"Web Development","id":42,"name":"Learning TypeScript"}]'));
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"category":"Web Development","id":42,"name":"Learning TypeScript"}],"id":1,"name":"John"}'));
+});
+
+

@@ -24,11 +24,19 @@ export interface JsonAnySetterPrivateOptions extends JsonAnySetterOptions {
 
 /** @internal */
 export interface JsonGetterPrivateOptions extends JsonGetterOptions {
+  descriptor: TypedPropertyDescriptor<any>;
   propertyKey: string;
 }
 
 /** @internal */
 export interface JsonSetterPrivateOptions extends JsonSetterOptions {
+  descriptor: TypedPropertyDescriptor<any>;
+  propertyKey: string;
+}
+
+/** @internal */
+export interface JsonPropertyPrivateOptions extends JsonPropertyOptions {
+  descriptor: TypedPropertyDescriptor<any>;
   propertyKey: string;
 }
 
@@ -62,9 +70,4 @@ export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
 /** @internal */
 export interface JsonTypeIdPrivateOptions extends JsonTypeIdOptions {
   propertyKey: string;
-}
-
-/** @internal */
-export interface JsonPropertyPrivateOptions extends JsonPropertyOptions {
-  descriptor: TypedPropertyDescriptor<any>;
 }

@@ -203,10 +203,10 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE and @JsonProperty for a vir
     }
 
     @JsonProperty()
-    setFullName(fullname: string) {
-      const fullnameSplitted = fullname.split(' ');
-      this.firstName = fullnameSplitted[0];
-      this.lastName = fullnameSplitted[1];
+    setFullName(fullName: string) {
+      const fullNameSplitted = fullName.split(' ');
+      this.firstName = fullNameSplitted[0];
+      this.lastName = fullNameSplitted[1];
     }
   }
 
@@ -247,10 +247,10 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE and @JsonProperty with valu
     }
 
     @JsonProperty({value: 'myFullName'})
-    setFullName(fullname: string) {
-      const fullnameSplitted = fullname.split(' ');
-      this.firstName = fullnameSplitted[0];
-      this.lastName = fullnameSplitted[1];
+    setFullName(fullName: string) {
+      const fullNameSplitted = fullName.split(' ');
+      this.firstName = fullNameSplitted[0];
+      this.lastName = fullNameSplitted[1];
     }
   }
 

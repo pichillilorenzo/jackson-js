@@ -9,12 +9,11 @@ import {
 import {
   ClassType, JsonAliasOptions,
   JsonDecorator,
-  JsonDecoratorOptions,
-  JsonPropertyOptions,
-  JsonStringifierParserCommonContext
+  JsonDecoratorOptions, JsonParserTransformerContext,
+  JsonStringifierParserCommonContext, JsonStringifierTransformerContext
 } from './@types';
 import 'reflect-metadata';
-import {JsonPropertyPrivateOptions} from './@types/private';
+import {JsonGetterPrivateOptions, JsonPropertyPrivateOptions, JsonSetterPrivateOptions} from './@types/private';
 
 /**
  * https://stackoverflow.com/a/43197340/4637638
@@ -107,55 +106,87 @@ const pluckParamName = (param): string => {
  * @internal
  */
 export interface GetClassPropertiesOptions {
+  /**
+   * Class properties with Getters method/property name.
+   *
+   * If {@link withGetterVirtualProperties} is `false`, then the
+   * property the Getter is referencing will be deleted from the
+   * Class properties.
+   */
+  withGettersAsProperty?: boolean;
   withGetterVirtualProperties?: boolean;
-  withGetterVirtualPropertyValues?: boolean;
+  /**
+   * Class properties with Setters method/property name.
+   *
+   * If {@link withSetterVirtualProperties} is `false`, then the
+   * property the Setter is referencing will be deleted from the
+   * Class properties.
+   */
+  withSettersAsProperty?: boolean;
   withSetterVirtualProperties?: boolean;
-  withSetterVirtualPropertyValues?: boolean;
-  withJsonProperties?: boolean;
+  withJsonVirtualPropertyValues?: boolean;
   withJsonAliases?: boolean;
 }
 
 /**
  * @internal
  */
-export const getClassProperties = (target: Record<string, any>, options: GetClassPropertiesOptions = {}): string[] => {
+export const getClassProperties = (target: Record<string, any>, obj: any = null, options: GetClassPropertiesOptions = {}): string[] => {
   options = {
+    withGettersAsProperty: false,
     withGetterVirtualProperties: false,
-    withGetterVirtualPropertyValues: false,
+    withSettersAsProperty: false,
     withSetterVirtualProperties: false,
-    withSetterVirtualPropertyValues: false,
-    withJsonProperties: false,
+    withJsonVirtualPropertyValues: false,
     withJsonAliases: false,
     ...options
   };
 
+  let objKeys = [];
+  if (obj != null) {
+    objKeys = Object.getOwnPropertyNames(obj);
+    if (objKeys.includes('constructor') &&
+      typeof obj.constructor === 'function' &&
+      !obj.constructor.toString().endsWith('{ [native code] }') &&
+      obj.constructor.constructor.toString().endsWith('{ [native code] }')) {
+      objKeys.splice(objKeys.indexOf('constructor'), 1);
+    }
+  }
+
+  const keysToBeDeleted = new Set<string>();
   const metadataKeys = Reflect.getMetadataKeys(target);
-  const classProperties: Set<string> = new Set();
+  let classProperties: Set<string> = new Set(objKeys);
+
   for (const metadataKey of metadataKeys) {
-    if (metadataKey.startsWith('jackson:JsonProperty:')) {
-      const propertyKey = metadataKey.replace('jackson:JsonProperty:', '');
-      const jsonProperty: JsonPropertyPrivateOptions = Reflect.getMetadata(metadataKey, target);
-      if (jsonProperty && jsonProperty.descriptor != null && typeof jsonProperty.descriptor.value === 'function') {
-        if (propertyKey.startsWith('get')) {
-          if (options.withGetterVirtualPropertyValues) {
-            classProperties.add(jsonProperty.value);
+    if (metadataKey.startsWith('jackson:JsonVirtualProperty:')) {
+      const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+        Reflect.getMetadata(metadataKey, target);
+
+      if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') {
+        if (jsonVirtualProperty.propertyKey.startsWith('get')) {
+          if (options.withGetterVirtualProperties) {
+            classProperties.add(jsonVirtualProperty.value);
           }
-          if (!options.withGetterVirtualProperties) {
+          if (!options.withGettersAsProperty) {
             continue;
+          } else if (!options.withGetterVirtualProperties) {
+            keysToBeDeleted.add(jsonVirtualProperty.value);
           }
         }
-        if (propertyKey.startsWith('set')) {
-          if (options.withSetterVirtualPropertyValues) {
-            classProperties.add(jsonProperty.value);
+        if (jsonVirtualProperty.propertyKey.startsWith('set')) {
+          if (options.withSetterVirtualProperties) {
+            classProperties.add(jsonVirtualProperty.value);
           }
-          if (!options.withSetterVirtualProperties) {
+          if (!options.withSettersAsProperty) {
             continue;
+          } else if (!options.withSetterVirtualProperties) {
+            keysToBeDeleted.add(jsonVirtualProperty.value);
           }
         }
       }
-      classProperties.add(propertyKey);
-      if (options.withJsonProperties && jsonProperty.value != null) {
-        classProperties.add(jsonProperty.value);
+      classProperties.add(jsonVirtualProperty.propertyKey);
+      if (options.withJsonVirtualPropertyValues && jsonVirtualProperty.value != null) {
+        classProperties.add(jsonVirtualProperty.value);
       }
     } else if (metadataKey.startsWith('jackson:JsonAlias:') && options.withJsonAliases) {
       const propertyKey = metadataKey.replace('jackson:JsonAlias:', '');
@@ -169,9 +200,11 @@ export const getClassProperties = (target: Record<string, any>, options: GetClas
     }
   }
 
+  classProperties = new Set([...classProperties].filter((key) => !keysToBeDeleted.has(key)));
+
   let parent = target;
   while (parent.name && parent !== Object) {
-    const propertyDescriptors =  Object.getOwnPropertyDescriptors(parent.prototype);
+    const propertyDescriptors = Object.getOwnPropertyDescriptors(parent.prototype);
     // eslint-disable-next-line guard-for-in
     for (const property in propertyDescriptors) {
       const propertyDescriptor = propertyDescriptors[property];
@@ -188,28 +221,70 @@ export const getClassProperties = (target: Record<string, any>, options: GetClas
 /**
  * @internal
  */
-export const classHasOwnProperty = (target: Record<string, any>, propertyKey: string,
-                                    context?: JsonStringifierParserCommonContext<any>): boolean => {
-  const metadataKeys = getMetadataKeys(target, context);
-  if (metadataKeys.includes('jackson:JsonProperty:' + propertyKey)) {
-    return true;
-  }
+export const classHasOwnProperty = (target: Record<string, any>, propertyKey: string, obj?: any,
+                                    options?: GetClassPropertiesOptions): boolean => {
+  const classProperties = getClassProperties(target, obj, options);
+  return classProperties.includes(propertyKey);
+};
 
-  let parent = target;
-  while (parent.name && parent !== Object) {
-    const propertyDescriptors =  Object.getOwnPropertyDescriptors(parent.prototype);
-    // eslint-disable-next-line guard-for-in
-    for (const property in propertyDescriptors) {
-      const propertyDescriptor = propertyDescriptors[property];
-      if (propertyDescriptor.get != null || propertyDescriptor.set != null && property === propertyKey) {
-        return true;
+/**
+ * @internal
+ */
+export interface MapVirtualPropertiesToClassPropertiesOptions {
+  checkGetters?: boolean;
+  checkSetters?: boolean;
+}
+
+/**
+ * @internal
+ */
+export const mapVirtualPropertiesToClassProperties =
+  (target: Record<string, any>, keys: string[], context: JsonStringifierTransformerContext | JsonParserTransformerContext,
+   options: MapVirtualPropertiesToClassPropertiesOptions): string[] => {
+    options = {
+      checkGetters: false,
+      checkSetters: false,
+      ...options
+    };
+
+    const metadataKeys = Reflect.getMetadataKeys(target);
+    const classProperties: Set<string> = new Set();
+
+    for (const key of keys) {
+      let getterOrSetterFound = false;
+      for (const metadataKey of metadataKeys) {
+        if (metadataKey.startsWith('jackson:JsonVirtualProperty:')) {
+          const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+            Reflect.getMetadata(metadataKey, target);
+
+          if (jsonVirtualProperty.value !== key) {
+            continue;
+          }
+
+          if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') {
+            if ((options.checkGetters && jsonVirtualProperty.propertyKey.startsWith('get')) ||
+              (options.checkSetters && jsonVirtualProperty.propertyKey.startsWith('set'))) {
+              classProperties.add(jsonVirtualProperty.propertyKey);
+              getterOrSetterFound = true;
+              break;
+            }
+          }
+        }
+      }
+      if (!getterOrSetterFound) {
+        classProperties.add(key);
       }
     }
-    parent = Object.getPrototypeOf(parent);
-  }
+    return [...classProperties];
+  };
 
-  return false;
-};
+/**
+ * @internal
+ */
+export const mapVirtualPropertyToClassProperty =
+  (target: Record<string, any>, key: string, context: JsonStringifierTransformerContext | JsonParserTransformerContext,
+   options: MapVirtualPropertiesToClassPropertiesOptions): string =>
+    mapVirtualPropertiesToClassProperties(target, [key], context, options)[0];
 
 /**
  * @internal

@@ -67,6 +67,10 @@ export declare type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonType
  * Decorator type for {@link JsonIgnoreProperties}.
  */
 export declare type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptions<JsonIgnorePropertiesOptions, ClassDecorator & PropertyDecorator & ParameterDecorator>;
+/**
+ * Decorator type for {@link JsonPropertyOrder}.
+ */
+export declare type JsonPropertyOrderDecorator = JacksonDecoratorWithOptions<JsonPropertyOrderOptions, ClassDecorator & PropertyDecorator>;
 export declare type JsonTypeIdResolverDecorator = JacksonDecoratorWithOptions<JsonTypeIdResolverOptions, ClassDecorator & PropertyDecorator & ParameterDecorator>;
 /**
  * Decorator type for {@link JsonAnyGetter}.
@@ -120,7 +124,6 @@ export declare type JsonManagedReferenceDecorator = JacksonDecoratorWithOptional
  * Decorator type for {@link JsonProperty}.
  */
 export declare type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions, PropertyDecorator & MethodDecorator & ParameterDecorator>;
-export declare type JsonPropertyOrderDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOrderOptions, any>;
 export declare type JsonRawValueDecorator = JacksonDecoratorWithOptionalOptions<JsonRawValueOptions, any>;
 export declare type JsonRootNameDecorator = JacksonDecoratorWithOptionalOptions<JsonRootNameOptions, any>;
 export declare type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeNameOptions, any>;
@@ -232,7 +235,7 @@ export interface JsonAnyGetterOptions extends JsonDecoratorOptions {
      * Specify the name of the class property that contains the set of key/value pairs
      * that should be added along with regular property values tha class has.
      */
-    for?: string;
+    value?: string;
 }
 /**
  * Decorator options for {@link JsonAnySetter}.

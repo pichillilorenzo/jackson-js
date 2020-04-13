@@ -42,8 +42,9 @@ export enum JsonPropertyAccess {
  * but it can be specified to non-empty value to specify different name.
  * Property name refers to name used externally, as the field name in JSON objects.
  *
- * **IMPORTANT**: Each class property must be decorated with this decorator, otherwise deserialization and some functionality
- * of serialization will not work, because, for example, given a JavaScript class, there isn't any way or API
+ * **IMPORTANT**: Each class property must be decorated with this decorator,
+ * otherwise deserialization and serialization will not work!
+ * That's because, for example, given a JavaScript class, there isn't any way or API
  * (such as Reflection API for Java - {@link https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html})
  * to get all the class properties and its types (see {@link JsonClass}).
  *
@@ -82,6 +83,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
     const privateOptions: JsonPropertyPrivateOptions = {
       descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
+      propertyKey: (propertyKey != null) ? propertyKey.toString() : null,
       ...options
     };
 
@@ -119,6 +121,6 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
     if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonProperty', privateOptions, target.constructor, propertyKey);
       Reflect.defineMetadata('jackson:JsonProperty:' + propertyKey.toString(), privateOptions, target.constructor);
-      Reflect.defineMetadata('jackson:JsonVirtualProperty', privateOptions, target.constructor, privateOptions.value);
+      Reflect.defineMetadata('jackson:JsonVirtualProperty:' + propertyKey.toString(), privateOptions, target.constructor);
     }
   });

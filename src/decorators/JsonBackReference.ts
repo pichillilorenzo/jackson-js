@@ -72,8 +72,23 @@ export const JsonBackReference: JsonBackReferenceDecorator = makeJacksonDecorato
         ...options
       };
 
+      if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
+        const methodName = propertyKey.toString();
+        const prefix = methodName.startsWith('get') ? 'set' : 'get';
+        const oppositePropertyKey = prefix + methodName.substring(3);
+        const oppositePrivateOptions: JsonBackReferencePrivateOptions = {
+          propertyKey: oppositePropertyKey,
+          ...options
+        };
+        Reflect.defineMetadata('jackson:JsonBackReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+        if (prefix === 'set') {
+          Reflect.defineMetadata('jackson:JsonBackReference:' + oppositePrivateOptions.value, oppositePrivateOptions,
+            target.constructor);
+        }
+      } else {
+        Reflect.defineMetadata('jackson:JsonBackReference:' + privateOptions.value, privateOptions, target.constructor);
+      }
+
       Reflect.defineMetadata('jackson:JsonBackReference', privateOptions, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonBackReference:' + privateOptions.value, privateOptions, target.constructor);
-      Reflect.defineMetadata('jackson:JsonBackReference:' + propertyKey.toString(), privateOptions, target.constructor);
     }
   });

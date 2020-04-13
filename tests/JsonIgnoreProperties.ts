@@ -583,8 +583,11 @@ test('@JsonIgnoreProperties with allowSetters and @JsonProperty as getters and s
 test('@JsonIgnoreProperties with ignoreUnknown "true"', t => {
   @JsonIgnoreProperties({value: ['firstname'], ignoreUnknown: true})
   class User {
+    @JsonProperty()
     id: number;
+    @JsonProperty()
     firstname: string;
+    @JsonProperty()
     lastname: string;
 
     constructor(id: number, firstname: string, lastname: string) {

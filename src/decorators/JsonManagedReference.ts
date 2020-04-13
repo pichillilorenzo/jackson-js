@@ -7,7 +7,7 @@ import {makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonManagedReferenceDecorator, JsonManagedReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-import {JsonManagedReferencePrivateOptions} from '../@types/private';
+import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} from '../@types/private';
 
 /**
  * Decorator used to indicate that decorated property is part of two-way linkage between fields
@@ -71,8 +71,17 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
         ...options
       };
 
+      if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
+        const methodName = propertyKey.toString();
+        const prefix = methodName.startsWith('get') ? 'set' : 'get';
+        const oppositePropertyKey = prefix + methodName.substring(3);
+        const oppositePrivateOptions: JsonBackReferencePrivateOptions = {
+          propertyKey: oppositePropertyKey,
+          ...options
+        };
+        Reflect.defineMetadata('jackson:JsonManagedReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+      }
+
       Reflect.defineMetadata('jackson:JsonManagedReference', privateOptions, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonManagedReference:' + privateOptions.value, privateOptions, target.constructor);
-      Reflect.defineMetadata('jackson:JsonManagedReference:' + propertyKey.toString(), privateOptions, target.constructor);
     }
   });

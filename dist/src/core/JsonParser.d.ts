@@ -28,7 +28,14 @@ export declare class JsonParser<T> {
      * @param value
      * @param context
      */
-    transform(key: string, value: any, context: JsonParserTransformerContext): any;
+    transform(key: string, value: any, context?: JsonParserTransformerContext): any;
+    /**
+     *
+     * @param key
+     * @param value
+     * @param context
+     */
+    private deepTransform;
     /**
      *
      * @param context
@@ -88,7 +95,7 @@ export declare class JsonParser<T> {
      * @param replacement
      * @param context
      */
-    private parseJsonPropertyAndJsonAlias;
+    private parseJsonVirtualPropertyAndJsonAlias;
     /**
      *
      * @param context

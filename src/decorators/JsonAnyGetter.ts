@@ -51,6 +51,25 @@ export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
       if (Reflect.hasMetadata('jackson:JsonAnyGetter', target.constructor)) {
         throw new JacksonError(`Multiple 'any-getters' defined for "${target.constructor.name}".`);
       }
+
+      if (!privateOptions.value) {
+        if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
+          const methodName = propertyKey.toString();
+          if (methodName.startsWith('get')) {
+            privateOptions.value = methodName.substring(3);
+            if (privateOptions.value.length > 0) {
+              privateOptions.value = privateOptions.value.charAt(0).toLowerCase() + privateOptions.value.substring(1);
+            }
+          }
+          if (!privateOptions.value) {
+            // eslint-disable-next-line max-len
+            throw new JacksonError(`Invalid usage of @JsonAnyGetter() on ${target.constructor.name}.${propertyKey.toString()}. You must either define a non-empty @JsonAnyGetter() option value or change the method name starting with "get".`);
+          }
+        } else {
+          privateOptions.value = propertyKey.toString();
+        }
+      }
+
       Reflect.defineMetadata('jackson:JsonAnyGetter', privateOptions, target.constructor);
     }
   });

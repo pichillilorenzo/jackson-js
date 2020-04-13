@@ -32,7 +32,15 @@ export declare class JsonStringifier<T> {
      * @param context
      * @param valueAlreadySeen: Map used to manage object circular references
      */
-    transform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any;
+    transform(key: string, value: any, context?: JsonStringifierTransformerContext, valueAlreadySeen?: Map<any, any>): any;
+    /**
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @param valueAlreadySeen: Map used to manage object circular references
+     */
+    deepTransform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any;
     /**
      *
      * @param context
@@ -72,14 +80,12 @@ export declare class JsonStringifier<T> {
      *
      * @param replacement
      * @param obj
-     * @param keys
      * @param context
      */
     private stringifyJsonAnyGetter;
     /**
      *
-     * @param replacement
-     * @param obj
+     * @param keys
      * @param context
      */
     private stringifyJsonPropertyOrder;
@@ -96,8 +102,9 @@ export declare class JsonStringifier<T> {
      * @param oldKey
      * @param newKey
      * @param context
+     * @param namingMap
      */
-    private stringifyJsonProperty;
+    private stringifyJsonVirtualProperty;
     /**
      *
      * @param replacement

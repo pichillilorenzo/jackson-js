@@ -13,6 +13,14 @@ import {JsonInject} from './decorators/JsonInject';
 import {JsonFormat, JsonFormatShape} from './decorators/JsonFormat';
 import {JsonNaming, PropertyNamingStrategy} from './decorators/JsonNaming';
 import {JsonIgnoreProperties} from './decorators/JsonIgnoreProperties';
+import {SerializationFeature} from './databind/SerializationFeature';
+import {JsonRootName} from './decorators/JsonRootName';
+import {JsonPropertyOrder} from './decorators/JsonPropertyOrder';
+import {JsonAnyGetter} from './decorators/JsonAnyGetter';
+import {JsonIgnore} from "./decorators/JsonIgnore";
+import {JsonManagedReference} from "./decorators/JsonManagedReference";
+import {JsonBackReference} from "./decorators/JsonBackReference";
+import {JsonIdentityInfo, ObjectIdGenerator} from "./decorators/JsonIdentityInfo";
 
 //
 // // class DateSerializer {
@@ -729,45 +737,6 @@ import {JsonIgnoreProperties} from './decorators/JsonIgnoreProperties';
 // objectMapper.features.serialization[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] = true;
 // console.log(objectMapper.stringify(item));
 
-// @JsonTypeInfo({
-//   use: JsonTypeInfoId.NAME,
-//   include: JsonTypeInfoAs.WRAPPER_OBJECT
-// })
-// @JsonSubTypes({
-//   types: [
-//     {class: () => Dog, name: 'dog'},
-//     {class: () => Cat, name: 'cat'},
-//   ]
-// })
-// class Animal {
-//   name: string;
-//
-//   constructor(name: string) {
-//     this.name = name;
-//   }
-// }
-//
-// @JsonTypeName({value: 'dog'})
-// class Dog extends Animal {
-//
-// }
-//
-// @JsonTypeName({value: 'cat'})
-// class Cat extends Animal {
-//
-// }
-//
-// const dog = new Dog('Arthur');
-// const cat = new Cat('Merlin');
-//
-// const objectMapper = new ObjectMapper();
-// const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
-// console.log(jsonData);
-//
-// const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
-// console.log(animals);
-
-
 
 // class User {
 //   @JsonProperty()
@@ -777,35 +746,22 @@ import {JsonIgnoreProperties} from './decorators/JsonIgnoreProperties';
 //   @JsonProperty()
 //   lastname: string;
 //   @JsonProperty()
-//   lastUpdated: Date;
+//   map = new Map();
 //
 //   constructor(id: number, firstname: string, lastname: string) {
 //     this.id = id;
 //     this.firstname = firstname;
 //     this.lastname = lastname;
 //   }
-//
-//   @JsonSetter({value: 'lastUpdated'})
-//   setLastUpdate(@JsonInject({useInput: false}) lastUpdated: Date) {
-//     this.lastUpdated = lastUpdated;
-//   }
 // }
-//
 // const user = new User(1, 'John', 'Alfa');
+// user.map.set('b', 1);
+// user.map.set('c', 2);
+// user.map.set('a', 3);
 // const objectMapper = new ObjectMapper();
-//
+// objectMapper.features.serialization[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS] = true;
 // const jsonData = objectMapper.stringify<User>(user);
 // console.log(jsonData);
-//
-// const userParsed = objectMapper.parse<User>(jsonData, {
-//   mainCreator: () => [User],
-//   injectableValues: {
-//     lastUpdated: new Date()
-//   }
-// });
-// console.log(userParsed);
-
-
 
 
 

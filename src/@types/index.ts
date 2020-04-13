@@ -56,7 +56,7 @@ JacksonDecoratorWithOptions<T, TDecorator> | JacksonDecoratorWithOptionalOptions
 /**
  * Decorator type for {@link JsonAlias}.
  */
-export type JsonAliasDecorator = JacksonDecoratorWithOptions<JsonAliasOptions, PropertyDecorator & ParameterDecorator>;
+export type JsonAliasDecorator = JacksonDecoratorWithOptions<JsonAliasOptions, PropertyDecorator & ParameterDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonAppend}.
  */
@@ -64,12 +64,12 @@ export type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppendOptions,
 /**
  * Decorator type for {@link JsonClass}.
  */
-export type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions, PropertyDecorator & ParameterDecorator>;
+export type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions, PropertyDecorator & ParameterDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonDeserialize}.
  */
 export type JsonDeserializeDecorator = JacksonDecoratorWithOptions<JsonDeserializeOptions,
-ClassDecorator & PropertyDecorator & ParameterDecorator>;
+ClassDecorator & PropertyDecorator & ParameterDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonFilter}.
  */
@@ -78,7 +78,7 @@ export type JsonFilterDecorator = JacksonDecoratorWithOptions<JsonFilterOptions,
  * Decorator type for {@link JsonIdentityInfo}.
  */
 export type JsonIdentityInfoDecorator = JacksonDecoratorWithOptions<JsonIdentityInfoOptions,
-ClassDecorator & PropertyDecorator & ParameterDecorator>;
+ClassDecorator & PropertyDecorator & ParameterDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonIdentityReference}.
  */
@@ -88,16 +88,36 @@ ClassDecorator & PropertyDecorator>;
  * Decorator type for {@link JsonNaming}.
  */
 export type JsonNamingDecorator = JacksonDecoratorWithOptions<JsonNamingOptions, ClassDecorator>;
-export type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions, any>;
+/**
+ * Decorator type for {@link JsonSerialize}.
+ */
+export type JsonSerializeDecorator = JacksonDecoratorWithOptions<JsonSerializeOptions,
+ClassDecorator & PropertyDecorator & ParameterDecorator & MethodDecorator>;
+/**
+ * Decorator type for {@link JsonSubTypes}.
+ */
 export type JsonSubTypesDecorator = JacksonDecoratorWithOptions<JsonSubTypesOptions, any>;
+/**
+ * Decorator type for {@link JsonTypeInfo}.
+ */
 export type JsonTypeInfoDecorator = JacksonDecoratorWithOptions<JsonTypeInfoOptions, any>;
 /**
  * Decorator type for {@link JsonIgnoreProperties}.
  */
 export type JsonIgnorePropertiesDecorator = JacksonDecoratorWithOptions<JsonIgnorePropertiesOptions,
 ClassDecorator & PropertyDecorator & ParameterDecorator>;
+/**
+ * Decorator type for {@link JsonPropertyOrder}.
+ */
+export type JsonPropertyOrderDecorator = JacksonDecoratorWithOptions<JsonPropertyOrderOptions,
+ClassDecorator & PropertyDecorator>;
+/**
+ * Decorator type for {@link JsonTypeIdResolver}.
+ */
 export type JsonTypeIdResolverDecorator = JacksonDecoratorWithOptions<JsonTypeIdResolverOptions,
 ClassDecorator & PropertyDecorator & ParameterDecorator>;
+
+
 
 /**
  * Decorator type for {@link JsonAnyGetter}.
@@ -110,7 +130,7 @@ export type JsonAnySetterDecorator = JacksonDecoratorWithOptionalOptions<JsonAny
 /**
  * Decorator type for {@link JsonBackReference}.
  */
-export type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonBackReferenceOptions, PropertyDecorator>;
+export type JsonBackReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonBackReferenceOptions, PropertyDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonCreator}.
  */
@@ -146,19 +166,40 @@ export type JsonInjectDecorator = JacksonDecoratorWithOptionalOptions<JsonInject
 /**
  * Decorator type for {@link JsonManagedReference}.
  */
-export type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions, PropertyDecorator>;
+export type JsonManagedReferenceDecorator = JacksonDecoratorWithOptionalOptions<JsonManagedReferenceOptions,
+PropertyDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonProperty}.
  */
 export type JsonPropertyDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOptions,
 PropertyDecorator & MethodDecorator & ParameterDecorator>;
-export type JsonPropertyOrderDecorator = JacksonDecoratorWithOptionalOptions<JsonPropertyOrderOptions, any>;
+/**
+ * Decorator type for {@link JsonRawValue}.
+ */
 export type JsonRawValueDecorator = JacksonDecoratorWithOptionalOptions<JsonRawValueOptions, any>;
+/**
+ * Decorator type for {@link JsonRootName}.
+ */
 export type JsonRootNameDecorator = JacksonDecoratorWithOptionalOptions<JsonRootNameOptions, any>;
+/**
+ * Decorator type for {@link JsonTypeName}.
+ */
 export type JsonTypeNameDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeNameOptions, any>;
+/**
+ * Decorator type for {@link JsonUnwrapped}.
+ */
 export type JsonUnwrappedDecorator = JacksonDecoratorWithOptionalOptions<JsonUnwrappedOptions, any>;
+/**
+ * Decorator type for {@link JsonValue}.
+ */
 export type JsonValueDecorator = JacksonDecoratorWithOptionalOptions<JsonValueOptions, any>;
+/**
+ * Decorator type for {@link JsonView}.
+ */
 export type JsonViewDecorator = JacksonDecoratorWithOptionalOptions<JsonViewOptions, any>;
+/**
+ * Decorator type for {@link JsonTypeId}.
+ */
 export type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeIdOptions, any>;
 
 /**
@@ -212,10 +253,10 @@ export interface JsonStringifierContext extends JsonStringifierContextWithoutMai
 }
 
 /**
- * Context properties used by {@link JsonStringifier.transform} during deserialization.
+ * Context properties used by {@link JsonStringifier.deepTransform} during deserialization.
  */
 export type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
-  mainCreator: ClassList<ClassType<any>>;
+  mainCreator?: ClassList<ClassType<any>>;
 }>;
 
 /**
@@ -238,10 +279,10 @@ export interface JsonParserContext extends JsonParserBaseWithoutMainCreatorConte
 }
 
 /**
- * Context properties used by {@link JsonParser.transform} during deserialization.
+ * Context properties used by {@link JsonParser.deepTransform} during deserialization.
  */
 export type JsonParserTransformerContext = Modify<JsonParserContext, {
-  mainCreator: ClassList<ClassType<any>>;
+  mainCreator?: ClassList<ClassType<any>>;
 }>;
 
 export type Serializer = (key: string, value: any, options?: JsonStringifierTransformerContext) => any;
@@ -292,7 +333,7 @@ export interface JsonAnyGetterOptions extends JsonDecoratorOptions {
    * Specify the name of the class property that contains the set of key/value pairs
    * that should be added along with regular property values tha class has.
    */
-  for?: string;
+  value?: string;
 }
 
 /**
