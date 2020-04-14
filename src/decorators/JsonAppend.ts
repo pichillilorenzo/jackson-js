@@ -52,7 +52,7 @@ export const JsonAppend: JsonAppendDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonAppendOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonAppend', options, target);
       return target;
     }

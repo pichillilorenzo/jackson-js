@@ -81,10 +81,11 @@ export enum JsonIncludeType {
 export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
   (o: JsonIncludeOptions): JsonIncludeOptions => ({enabled: true, value: JsonIncludeType.ALWAYS, ...o}),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonInclude', options, target);
       return target;
-    } else if (propertyKey) {
+    }
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonInclude', options, target.constructor, propertyKey);
     }
   });

@@ -107,10 +107,11 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
-      Reflect.defineMetadata('jackson:JsonFormat', options, target.constructor, propertyKey);
-    } else if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonFormat', options, target);
       return target;
+    }
+    if (propertyKey != null) {
+      Reflect.defineMetadata('jackson:JsonFormat', options, target.constructor, propertyKey);
     }
   });

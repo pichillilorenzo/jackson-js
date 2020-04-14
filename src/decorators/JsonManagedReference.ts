@@ -60,7 +60,7 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
     ...o
   }),
   (options: JsonManagedReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
+    if (propertyKey != null) {
       if (Reflect.hasMetadata('jackson:JsonManagedReference:' + options.value, target.constructor)) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`Multiple managed-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);

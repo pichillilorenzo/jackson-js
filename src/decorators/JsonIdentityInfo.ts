@@ -99,7 +99,7 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target);
       return target;
     }

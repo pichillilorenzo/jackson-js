@@ -34,7 +34,7 @@ import {
   getDeepestClass,
   getDefaultPrimitiveTypeValue,
   getDefaultValue,
-  getMetadata,
+  getMetadata, getObjectKeysWithPropertyDescriptorNames,
   hasMetadata,
   isConstructorPrimitiveType,
   isIterableNoMapNoString,
@@ -46,13 +46,13 @@ import {
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../decorators/JsonTypeInfo';
 import {JsonFormatShape} from '../decorators/JsonFormat';
-import {SerializationFeature} from '../databind/SerializationFeature';
 import {ObjectIdGenerator} from '../decorators/JsonIdentityInfo';
 import * as dayjs from 'dayjs';
 import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import {v1 as uuidv1, v3 as uuidv3, v4 as uuidv4, v5 as uuidv5} from 'uuid';
 import {JacksonError} from './JacksonError';
 import {
+  InternalDecorators,
   JsonAnyGetterPrivateOptions,
   JsonGetterPrivateOptions, JsonPropertyPrivateOptions,
   JsonTypeIdPrivateOptions,
@@ -63,7 +63,8 @@ import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {JsonFilterType} from '../decorators/JsonFilter';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as clone from 'lodash.clone';
-import {MapperFeature} from '../databind/MapperFeature';
+import {DefaultSerializationFeatureValues} from '../databind/SerializationFeature';
+import {DefaultMapperFeatureValues} from '../databind/MapperFeature';
 
 dayjs.extend(customParseFormat);
 
@@ -116,6 +117,7 @@ export class JsonStringifier<T> {
     const preProcessedObj = this.deepTransform('', value, context, new Map());
     return preProcessedObj;
   }
+
   /**
    *
    * @param key
@@ -126,8 +128,8 @@ export class JsonStringifier<T> {
   deepTransform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
     context = {
       features: {
-        mapper: [],
-        serialization: []
+        mapper: DefaultMapperFeatureValues,
+        serialization: DefaultSerializationFeatureValues
       },
       filters: {},
       serializers: [],
@@ -168,22 +170,22 @@ export class JsonStringifier<T> {
       value = this.getDefaultValue(context);
     }
 
-    if (value != null && value.constructor === Number && isNaN(value) && context.features.serialization[SerializationFeature.WRITE_NAN_AS_ZERO]) {
+    if (value != null && value.constructor === Number && isNaN(value) && context.features.serialization.WRITE_NAN_AS_ZERO) {
       value = 0;
     } else if (value === Infinity) {
-      if (context.features.serialization[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
+      if (context.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER) {
         value = Number.MAX_SAFE_INTEGER;
-      } else if (context.features.serialization[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
+      } else if (context.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE) {
         value = Number.MAX_VALUE;
       }
     } else if (value === -Infinity) {
-      if (context.features.serialization[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
+      if (context.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER) {
         value = Number.MIN_SAFE_INTEGER;
-      } else if (context.features.serialization[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
+      } else if (context.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE) {
         value = Number.MIN_VALUE;
       }
     } else if (value != null && value instanceof Date &&
-      context.features.serialization[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
+      context.features.serialization.WRITE_DATES_AS_TIMESTAMPS) {
       value = value.getTime();
     }
 
@@ -198,10 +200,6 @@ export class JsonStringifier<T> {
 
       value = this.stringifyJsonFormatClass(value, context);
 
-      if (value instanceof Map) {
-        value = this.stringifyMap(value, context);
-      }
-
       if (BigInt && value instanceof BigInt) {
         return value.toString() + 'n';
       } else if (value instanceof RegExp) {
@@ -209,6 +207,8 @@ export class JsonStringifier<T> {
         return replacement.substring(1, replacement.length - 1);
       } else if (value instanceof Date) {
         return value;
+      } else if (value instanceof Map || isObjLiteral(value)) {
+        value = this.stringifyMapAndObjLiteral(key, value, context, valueAlreadySeen);
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
         if (this.stringifyJsonIgnoreType(value, context)) {
@@ -274,7 +274,9 @@ export class JsonStringifier<T> {
             // the entire object will be replaced later by the identity value
             if (!this.hasJsonIdentityReferenceAlwaysAsId(value, context)) {
 
-              if (value === value[k] && context.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
+              const jsonIdentityInfo: JsonIdentityInfoOptions =
+                getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, context);
+              if (value === value[k] && jsonIdentityInfo == null && context.features.serialization.FAIL_ON_SELF_REFERENCES) {
                 // eslint-disable-next-line max-len
                 throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${currentMainCreator.name}["${k}"])`);
               }
@@ -293,13 +295,7 @@ export class JsonStringifier<T> {
               }
 
               if (replacement[newKey] != null) {
-                if (replacement[newKey] instanceof Map || isObjLiteral(replacement[newKey])) {
-                  this.stringifyJsonSerializeMap(replacement, k, newKey, context);
-                }
                 this.stringifyJsonSerializeProperty(replacement, value, k, newKey, context);
-                if (replacement[newKey] instanceof Map || isObjLiteral(replacement[newKey])) {
-                  this.stringifyJsonIncludeMap(replacement, k, newKey, context);
-                }
                 replacement[newKey] = this.stringifyJsonFormatProperty(replacement, value, k, newKey, context);
                 this.stringifyJsonRawValue(replacement, value, k, newKey, context);
                 this.stringifyJsonFilter(replacement, value, k, newKey, context);
@@ -418,20 +414,20 @@ export class JsonStringifier<T> {
     let defaultValue = null;
     const currentMainCreator = context.mainCreator[0];
     if (currentMainCreator === String &&
-      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]) ) {
+      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.mapper.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(String);
     } else if (currentMainCreator === Number &&
-      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]) ) {
+      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.mapper.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Number);
     } else if (currentMainCreator === Boolean &&
-      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]) ) {
+      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.mapper.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Boolean);
     } else if (BigInt && currentMainCreator === BigInt &&
-      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]) ) {
+      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.mapper.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);
     }
     return defaultValue;
@@ -464,7 +460,7 @@ export class JsonStringifier<T> {
     ];
 
     const decoratorsNameFound = [];
-    const decoratorsToBeApplied = {
+    const decoratorsToBeApplied: InternalDecorators = {
       depth: 1
     };
     let deepestClass = null;
@@ -557,13 +553,14 @@ export class JsonStringifier<T> {
 
     const jsonPropertyOrder: JsonPropertyOrderOptions =
       getMetadata('jackson:JsonPropertyOrder', currentMainCreator, null, context);
-    if (jsonPropertyOrder) {
-      const classProperties =
-        mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, {checkGetters: true});
+    if (context.features.serialization.SORT_PROPERTIES_ALPHABETICALLY || jsonPropertyOrder) {
+      const classProperties = (jsonPropertyOrder) ?
+        mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, {checkGetters: true}) :
+        [];
 
       let remainingKeys = keys.filter(key => !classProperties.includes(key));
 
-      if (jsonPropertyOrder.alphabetic) {
+      if (context.features.serialization.SORT_PROPERTIES_ALPHABETICALLY || jsonPropertyOrder.alphabetic) {
         const remainingKeysToVirtualPropertiesMapping =
           classPropertiesToVirtualPropertiesMapping(currentMainCreator, remainingKeys);
         const remainingVirtualKeysOrdered = new Map(
@@ -714,41 +711,6 @@ export class JsonStringifier<T> {
 
   /**
    *
-   * @param replacement
-   * @param oldKey
-   * @param newKey
-   * @param context
-   */
-  private stringifyJsonSerializeMap(replacement: any, oldKey: string, newKey: string, context: JsonStringifierTransformerContext): void {
-    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
-    if (jsonSerialize && (jsonSerialize.contentUsing || jsonSerialize.keyUsing)) {
-      const mapIterable =
-        (replacement[newKey] instanceof Map) ?
-          [...replacement[newKey].entries()] :
-          Object.entries(replacement[newKey]);
-
-      for (const [mapKey, mapValue] of mapIterable) {
-        const newMapKey = (jsonSerialize.keyUsing) ? jsonSerialize.keyUsing(mapKey, context) : mapKey;
-        const newMapValue = (jsonSerialize.contentUsing) ?
-          jsonSerialize.contentUsing(mapValue, context) : mapValue;
-
-        if (replacement[newKey] instanceof Map) {
-          if (mapKey !== newMapKey) {
-            (replacement[newKey] as Map<any, any>).delete(mapKey);
-          }
-          (replacement[newKey] as Map<any, any>).set(newMapKey, newMapValue);
-        } else {
-          if (mapKey !== newMapKey) {
-            delete replacement[newKey][mapKey];
-          }
-          replacement[newKey][newMapKey] = newMapValue;
-        }
-      }
-    }
-  }
-
-  /**
-   *
    * @param obj
    * @param key
    * @param context
@@ -809,63 +771,6 @@ export class JsonStringifier<T> {
     }
 
     return true;
-  }
-
-  /**
-   *
-   * @param replacement
-   * @param key
-   * @param context
-   */
-  private stringifyJsonIncludeMap(replacement: any, oldKey: string, newKey: string, context: JsonStringifierTransformerContext): void {
-    const currentMainCreator = context.mainCreator[0];
-
-    const keyJsonInclude: JsonIncludeOptions =
-      getMetadata('jackson:JsonInclude', currentMainCreator, oldKey, context);
-    const constructorJsonInclude: JsonIncludeOptions =
-      getMetadata('jackson:JsonInclude', currentMainCreator, null, context);
-    const jsonInclude = (keyJsonInclude) ? keyJsonInclude : constructorJsonInclude;
-
-    const map: Map<any, any> | Record<string, any> = clone(replacement[newKey]);
-
-    if (jsonInclude && jsonInclude.content != null && jsonInclude.content !== JsonIncludeType.ALWAYS) {
-      const mapIterable = (map instanceof Map) ? map : Object.entries(map);
-      for (const [k, value] of mapIterable) {
-        let shouldBeDeleted = false;
-        switch (jsonInclude.content) {
-        case JsonIncludeType.NON_EMPTY:
-          if (isValueEmpty(value)) {
-            shouldBeDeleted = true;
-          }
-          break;
-        case JsonIncludeType.NON_NULL:
-          if (value == null) {
-            shouldBeDeleted = true;
-          }
-          break;
-        case JsonIncludeType.NON_DEFAULT:
-          if (value === getDefaultValue(value) || isValueEmpty(value)) {
-            shouldBeDeleted = true;
-          }
-          break;
-        case JsonIncludeType.CUSTOM:
-          if (jsonInclude.contentFilter(value)) {
-            shouldBeDeleted = true;
-          }
-          break;
-        }
-
-        if (shouldBeDeleted) {
-          if (map instanceof Map) {
-            map.delete(k);
-          } else {
-            delete map[k];
-          }
-        }
-      }
-    }
-
-    replacement[newKey] = map;
   }
 
   /**
@@ -1109,6 +1014,8 @@ export class JsonStringifier<T> {
         }
         return false;
       }
+
+      return context.features.mapper.DEFAULT_VIEW_INCLUSION;
     }
     return true;
   }
@@ -1324,14 +1231,69 @@ export class JsonStringifier<T> {
    * @param map
    * @param context
    */
-  private stringifyMap(map: Map<any, any>, context: JsonStringifierTransformerContext): any {
+  private stringifyMapAndObjLiteral(key: string, map: Map<any, any> | Record<string, any>,
+                                    context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
+    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context._propertyParentCreator, key, context);
+
+    let jsonInclude: JsonIncludeOptions =
+      getMetadata('jackson:JsonInclude', context._propertyParentCreator, key, context);
+    if (!jsonInclude) {
+      jsonInclude = getMetadata('jackson:JsonInclude', context._propertyParentCreator, null, context);
+    }
+
     const newValue = {};
-    let mapKeys = [...map.keys()];
-    if (context.features.serialization[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
+    let mapKeys = (map instanceof Map) ? [...map.keys()] : getObjectKeysWithPropertyDescriptorNames(map);
+    if (context.features.serialization.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS) {
       mapKeys = mapKeys.sort();
     }
-    for (const mapKey of mapKeys) {
-      newValue[mapKey.toString()] = map.get(mapKey);
+
+    for (let mapKey of mapKeys) {
+      let mapValue = (map instanceof Map) ? map.get(mapKey) : map[mapKey];
+
+      const newContext = cloneDeep(context);
+      let newMainCreator;
+      if (context.mainCreator.length > 1) {
+        newMainCreator = newContext.mainCreator[1];
+      } else {
+        newMainCreator = [Object];
+      }
+      if (mapValue != null && mapValue.constructor !== Object) {
+        newMainCreator[0] = mapValue.constructor;
+      }
+      newContext.mainCreator = newMainCreator;
+
+      if (jsonSerialize && (jsonSerialize.contentUsing || jsonSerialize.keyUsing)) {
+        mapKey = (jsonSerialize.keyUsing) ? jsonSerialize.keyUsing(mapKey, context) : mapKey;
+        mapValue = (jsonSerialize.contentUsing) ?
+          jsonSerialize.contentUsing(mapValue, context) : mapValue;
+      }
+
+      if (jsonInclude && jsonInclude.content != null && jsonInclude.content !== JsonIncludeType.ALWAYS) {
+        switch (jsonInclude.content) {
+        case JsonIncludeType.NON_EMPTY:
+          if (isValueEmpty(mapValue)) {
+            continue;
+          }
+          break;
+        case JsonIncludeType.NON_NULL:
+          if (mapValue == null) {
+            continue;
+          }
+          break;
+        case JsonIncludeType.NON_DEFAULT:
+          if (mapValue === getDefaultValue(mapValue) || isValueEmpty(mapValue)) {
+            continue;
+          }
+          break;
+        case JsonIncludeType.CUSTOM:
+          if (jsonInclude.contentFilter(mapValue)) {
+            continue;
+          }
+          break;
+        }
+      }
+
+      newValue[mapKey.toString()] = this.deepTransform(mapKey, mapValue, newContext, new Map(valueAlreadySeen));
     }
     return newValue;
   }

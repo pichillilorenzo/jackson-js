@@ -47,7 +47,7 @@ export const JsonUnwrapped: JsonUnwrappedDecorator = makeJacksonDecorator(
       ...options
     };
 
-    if (typeof descriptorOrParamIndex !== 'number') {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonUnwrapped', privateOptions, target.constructor, propertyKey);
       Reflect.defineMetadata('jackson:JsonUnwrapped:' + propertyKey.toString(), privateOptions, target.constructor);
     }

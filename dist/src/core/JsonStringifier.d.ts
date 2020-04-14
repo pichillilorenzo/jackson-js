@@ -152,14 +152,6 @@ export declare class JsonStringifier<T> {
     private stringifyJsonSerializePropertyNull;
     /**
      *
-     * @param replacement
-     * @param oldKey
-     * @param newKey
-     * @param context
-     */
-    private stringifyJsonSerializeMap;
-    /**
-     *
      * @param obj
      * @param key
      * @param context
@@ -172,13 +164,6 @@ export declare class JsonStringifier<T> {
      * @param context
      */
     private stringifyJsonInclude;
-    /**
-     *
-     * @param replacement
-     * @param key
-     * @param context
-     */
-    private stringifyJsonIncludeMap;
     /**
      *
      * @param obj
@@ -270,7 +255,7 @@ export declare class JsonStringifier<T> {
      * @param map
      * @param context
      */
-    private stringifyMap;
+    private stringifyMapAndObjLiteral;
     /**
      *
      * @param filter

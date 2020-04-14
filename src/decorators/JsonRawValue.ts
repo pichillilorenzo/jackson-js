@@ -42,7 +42,7 @@ import {JsonRawValueDecorator, JsonRawValueOptions} from '../@types';
 export const JsonRawValue: JsonRawValueDecorator = makeJacksonDecorator(
   (o: JsonRawValueOptions): JsonRawValueOptions => ({enabled: true, ...o}),
   (options: JsonRawValueOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonRawValue', options, target.constructor, propertyKey);
     }
   });

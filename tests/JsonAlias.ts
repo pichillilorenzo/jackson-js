@@ -3,7 +3,7 @@ import {JsonAlias} from '../src/decorators/JsonAlias';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonSetter} from "../src/decorators/JsonSetter";
+import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonAlias at property level', t => {
   class Book {

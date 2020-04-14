@@ -13,44 +13,47 @@ import {
   ObjectMapperFeatures, ObjectMapperCustomMapper, ObjectMapperSerializer
 } from '../@types';
 import {JsonParser} from '../core/JsonParser';
-import {SerializationFeature} from './SerializationFeature';
-import {DeserializationFeature} from './DeserializationFeature';
-import {MapperFeature} from './MapperFeature';
+import {DefaultSerializationFeatureValues} from './SerializationFeature';
+import {DefaultDeserializationFeatureValues} from './DeserializationFeature';
+import {DefaultMapperFeatureValues} from './MapperFeature';
+import * as cloneDeep from 'lodash.clonedeep';
 
 /**
+ * ObjectMapper provides functionality for reading and writing JSON.
+ * It is also highly customizable to work both with different styles of JSON content,
+ * and to support more advanced Object concepts such as polymorphism and Object identity.
  *
+ * ObjectMapper will use instances of {@link JsonParser} and {@link JsonStringifier}
+ * for implementing actual reading/writing of JSON.
  */
 export class ObjectMapper {
+  /**
+   * Property that defines features to set for {@link ObjectMapper}.
+   */
   features: ObjectMapperFeatures = {
-    mapper: {
-      [MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
-      [MapperFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
-      [MapperFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
-      [MapperFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
-      [MapperFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
-    },
-    serialization: {
-      [SerializationFeature.FAIL_ON_SELF_REFERENCES]: true,
-      [SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]: false,
-      [SerializationFeature.WRITE_NAN_AS_ZERO]: false,
-      [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]: false,
-      [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]: false,
-      [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]: false,
-      [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]: false,
-      [SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]: true
-    },
-    deserialization: {
-      [DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]: true,
-      [DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES]: false,
-      [DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES]: false,
-      [DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES]: false,
-      [DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS]: true,
-      [DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT]: false,
-      [DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT]: false,
-      [DeserializationFeature.ACCEPT_FLOAT_AS_INT]: false
-    }
+    /**
+     * Property that defines common features to set for {@link ObjectMapper},
+     * {@link JsonParser} and {@link JsonStringifier}.
+     */
+    mapper: cloneDeep(DefaultMapperFeatureValues),
+    /**
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+     */
+    serialization: cloneDeep(DefaultSerializationFeatureValues),
+    /**
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
+     */
+    deserialization: cloneDeep(DefaultDeserializationFeatureValues)
   };
+
+  /**
+   * Array of custom user-defined serializers.
+   */
   serializers: ObjectMapperSerializer[] = [];
+
+  /**
+   * Array of custom user-defined deserializers.
+   */
   deserializers: ObjectMapperDeserializer[] = [];
 
   /**
@@ -61,9 +64,10 @@ export class ObjectMapper {
   }
 
   /**
+   * Method for serializing a JavaScript object or a value to a JSON string.
    *
-   * @param obj
-   * @param context
+   * @param obj - the JavaScript object or value to be serialized.
+   * @param context - the context to be used during serialization.
    */
   stringify<T>(obj: T, context?: JsonStringifierContext): string {
     this.serializers = this.sortMappersByOrder(this.serializers);
@@ -84,9 +88,10 @@ export class ObjectMapper {
   }
 
   /**
+   * Method for deserializing a JSON string into a JavaScript object or value.
    *
-   * @param text
-   * @param context
+   * @param text - the JSON string to be deserialized.
+   * @param context - the context to be used during deserialization.
    */
   parse<T>(text: string, context?: JsonParserContext): T {
     this.deserializers = this.sortMappersByOrder(this.deserializers);
@@ -106,6 +111,7 @@ export class ObjectMapper {
   }
 
   /**
+   * Sort custom user-defined serializers/deserializers by its order.
    *
    * @param mappers
    */

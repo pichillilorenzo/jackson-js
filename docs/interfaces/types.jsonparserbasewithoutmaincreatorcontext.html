@@ -122,7 +122,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#decoratorsenabled">decoratorsEnabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L227">src/@types/index.ts:227</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L236">src/@types/index.ts:236</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -140,38 +140,44 @@
 					<div class="tsd-signature tsd-kind-icon">deserializers<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#objectmapperdeserializer" class="tsd-signature-type">ObjectMapperDeserializer</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L301">src/@types/index.ts:301</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L331">src/@types/index.ts:331</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 					<a name="features" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> features</h3>
-					<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>deserialization<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>mapper<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>deserialization<span class="tsd-signature-symbol">: </span><a href="databind.deserializationfeature.html" class="tsd-signature-type">DeserializationFeature</a><span class="tsd-signature-symbol">; </span>mapper<span class="tsd-signature-symbol">: </span><a href="databind.mapperfeature.html" class="tsd-signature-type">MapperFeature</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<p>Overrides <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#features">features</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L292">src/@types/index.ts:292</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L316">src/@types/index.ts:316</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Property that defines simple on/off features to set for <a href="../classes/databind.objectmapper.html">ObjectMapper</a> and <a href="../classes/core.jsonparser.html">JsonParser</a>.</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>deserialization<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-index-signature">
-										<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
-									</li>
-								</ul>
+								<h5>deserialization<span class="tsd-signature-symbol">: </span><a href="databind.deserializationfeature.html" class="tsd-signature-type">DeserializationFeature</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Property that defines simple on/off common features to set for <a href="../classes/databind.objectmapper.html">ObjectMapper</a> and <a href="../classes/core.jsonparser.html">JsonParser</a>.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>mapper<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></h5>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter-index-signature">
-										<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
-									</li>
-								</ul>
+								<h5>mapper<span class="tsd-signature-symbol">: </span><a href="databind.mapperfeature.html" class="tsd-signature-type">MapperFeature</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Property that defines simple on/off common features to set for <a href="../classes/databind.objectmapper.html">ObjectMapper</a>,
+										<a href="../classes/core.jsonparser.html">JsonParser</a> and <a href="../classes/core.jsonstringifier.html">JsonStringifier</a>.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -183,7 +189,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#fortype">forType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L230">src/@types/index.ts:230</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L239">src/@types/index.ts:239</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -193,7 +199,7 @@
 					<div class="tsd-signature tsd-kind-icon">injectable<wbr>Values<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L302">src/@types/index.ts:302</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L332">src/@types/index.ts:332</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -211,9 +217,14 @@
 					<div class="tsd-signature tsd-kind-icon">with<wbr>Creator<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L300">src/@types/index.ts:300</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L330">src/@types/index.ts:330</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Define which <a href="../modules/decorators.html#jsoncreator">JsonCreator</a> should be used during deserialization through its name.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="withviews" class="tsd-anchor"></a>
@@ -222,9 +233,14 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#withviews">withViews</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L218">src/@types/index.ts:218</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L225">src/@types/index.ts:225</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>List of views (see <a href="../modules/decorators.html#jsonview">JsonView</a>) used to serialize/deserialize JSON objects.</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -305,6 +321,7 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
 				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>

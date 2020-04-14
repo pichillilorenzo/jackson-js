@@ -69,6 +69,17 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>ObjectMapper provides functionality for reading and writing JSON.
+							It is also highly customizable to work both with different styles of JSON content,
+						and to support more advanced Object concepts such as polymorphism and Object identity.</p>
+					</div>
+					<p>ObjectMapper will use instances of <a href="core.jsonparser.html">JsonParser</a> and <a href="core.jsonstringifier.html">JsonStringifier</a>
+					for implementing actual reading/writing of JSON.</p>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -122,7 +133,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L54">src/databind/ObjectMapper.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L57">src/databind/ObjectMapper.ts:57</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="databind.objectmapper.html" class="tsd-signature-type">ObjectMapper</a></h4>
@@ -138,9 +149,14 @@
 					<div class="tsd-signature tsd-kind-icon">deserializers<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#objectmapperdeserializer" class="tsd-signature-type">ObjectMapperDeserializer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L54">src/databind/ObjectMapper.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L57">src/databind/ObjectMapper.ts:57</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of custom user-defined deserializers.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="serializers" class="tsd-anchor"></a>
@@ -148,9 +164,14 @@
 					<div class="tsd-signature tsd-kind-icon">serializers<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#objectmapperserializer" class="tsd-signature-type">ObjectMapperSerializer</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L53">src/databind/ObjectMapper.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L52">src/databind/ObjectMapper.ts:52</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Array of custom user-defined serializers.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -165,10 +186,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L91">src/databind/ObjectMapper.ts:91</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L96">src/databind/ObjectMapper.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method for deserializing a JSON string into a JavaScript object or value.</p>
+								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
@@ -180,10 +204,14 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>text: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the JSON string to be deserialized.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="../interfaces/types.jsonparsercontext.html" class="tsd-signature-type">JsonParserContext</a></h5>
 									<div class="tsd-comment tsd-typography">
+										<p>the context to be used during deserialization.</p>
 									</div>
 								</li>
 							</ul>
@@ -201,10 +229,13 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L68">src/databind/ObjectMapper.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L72">src/databind/ObjectMapper.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method for serializing a JavaScript object or a value to a JSON string.</p>
+								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
@@ -216,10 +247,14 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>obj: <span class="tsd-signature-type">T</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the JavaScript object or value to be serialized.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <a href="../interfaces/types.jsonstringifiercontext.html" class="tsd-signature-type">JsonStringifierContext</a></h5>
 									<div class="tsd-comment tsd-typography">
+										<p>the context to be used during serialization.</p>
 									</div>
 								</li>
 							</ul>
@@ -236,86 +271,59 @@
 					<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L24">src/databind/ObjectMapper.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L33">src/databind/ObjectMapper.ts:33</a></li>
 						</ul>
 					</aside>
-					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Property that defines features to set for <a href="databind.objectmapper.html">ObjectMapper</a>.</p>
+						</div>
+					</div>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
 						<a name="features.deserialization" class="tsd-anchor"></a>
 						<h3>deserialization</h3>
-						<div class="tsd-signature tsd-kind-icon">deserialization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">deserialization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = cloneDeep(DefaultDeserializationFeatureValues)</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L42">src/databind/ObjectMapper.ts:42</a></li>
+								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L46">src/databind/ObjectMapper.ts:46</a></li>
 							</ul>
 						</aside>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-							<a name="features.deserialization.__computed" class="tsd-anchor"></a>
-							<h3>__computed</h3>
-							<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L43">src/databind/ObjectMapper.ts:43</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L44">src/databind/ObjectMapper.ts:44</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L45">src/databind/ObjectMapper.ts:45</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L46">src/databind/ObjectMapper.ts:46</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L47">src/databind/ObjectMapper.ts:47</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L48">src/databind/ObjectMapper.ts:48</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L49">src/databind/ObjectMapper.ts:49</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L50">src/databind/ObjectMapper.ts:50</a></li>
-								</ul>
-							</aside>
-						</section>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Property that defines features to set for <a href="databind.objectmapper.html">ObjectMapper</a> and <a href="core.jsonparser.html">JsonParser</a>.</p>
+							</div>
+						</div>
 					</section>
-					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
 						<a name="features.mapper" class="tsd-anchor"></a>
 						<h3>mapper</h3>
-						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">mapper<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = cloneDeep(DefaultMapperFeatureValues)</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L25">src/databind/ObjectMapper.ts:25</a></li>
+								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L38">src/databind/ObjectMapper.ts:38</a></li>
 							</ul>
 						</aside>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-							<a name="features.mapper.__computed-1" class="tsd-anchor"></a>
-							<h3>__computed</h3>
-							<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L26">src/databind/ObjectMapper.ts:26</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L27">src/databind/ObjectMapper.ts:27</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L28">src/databind/ObjectMapper.ts:28</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L29">src/databind/ObjectMapper.ts:29</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L30">src/databind/ObjectMapper.ts:30</a></li>
-								</ul>
-							</aside>
-						</section>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Property that defines common features to set for <a href="databind.objectmapper.html">ObjectMapper</a>,
+								<a href="core.jsonparser.html">JsonParser</a> and <a href="core.jsonstringifier.html">JsonStringifier</a>.</p>
+							</div>
+						</div>
 					</section>
-					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal">
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
 						<a name="features.serialization" class="tsd-anchor"></a>
 						<h3>serialization</h3>
-						<div class="tsd-signature tsd-kind-icon">serialization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">serialization<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = cloneDeep(DefaultSerializationFeatureValues)</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L32">src/databind/ObjectMapper.ts:32</a></li>
+								<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/databind/ObjectMapper.ts#L42">src/databind/ObjectMapper.ts:42</a></li>
 							</ul>
 						</aside>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
-							<a name="features.serialization.__computed-2" class="tsd-anchor"></a>
-							<h3>__computed</h3>
-							<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L33">src/databind/ObjectMapper.ts:33</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L34">src/databind/ObjectMapper.ts:34</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L35">src/databind/ObjectMapper.ts:35</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L36">src/databind/ObjectMapper.ts:36</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L37">src/databind/ObjectMapper.ts:37</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L38">src/databind/ObjectMapper.ts:38</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L39">src/databind/ObjectMapper.ts:39</a></li>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/databind/ObjectMapper.ts#L40">src/databind/ObjectMapper.ts:40</a></li>
-								</ul>
-							</aside>
-						</section>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Property that defines features to set for <a href="databind.objectmapper.html">ObjectMapper</a> and <a href="core.jsonstringifier.html">JsonStringifier</a>.</p>
+							</div>
+						</div>
 					</section>
 				</section>
 			</section>
@@ -342,15 +350,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/databind.mapperfeature.html" class="tsd-kind-icon">Mapper<wbr>Feature</a>
-					</li>
-					<li class=" tsd-kind-enum tsd-parent-kind-module">
-						<a href="../enums/databind.serializationfeature.html" class="tsd-kind-icon">Serialization<wbr>Feature</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
@@ -378,6 +377,24 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/databind.mapperfeature.html" class="tsd-kind-icon">Mapper<wbr>Feature</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/databind.serializationfeature.html" class="tsd-kind-icon">Serialization<wbr>Feature</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
+						<a href="../modules/databind.html#defaultdeserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Deserialization<wbr>Feature<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
+						<a href="../modules/databind.html#defaultmapperfeaturevalues" class="tsd-kind-icon">Default<wbr>Mapper<wbr>Feature<wbr>Values</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
+						<a href="../modules/databind.html#defaultserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Serialization<wbr>Feature<wbr>Values</a>
+					</li>
 				</ul>
 			</nav>
 		</div>
@@ -388,15 +405,16 @@
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>

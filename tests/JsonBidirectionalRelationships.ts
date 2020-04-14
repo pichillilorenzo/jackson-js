@@ -58,7 +58,7 @@ test('Fail Infinite recursion', t => {
 
   const objectMapper = new ObjectMapper();
 
-  const err = t.throws<JacksonError>(() => {
+  const err = t.throws<Error>(() => {
     objectMapper.stringify<User>(user);
   });
 

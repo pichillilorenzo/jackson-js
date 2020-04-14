@@ -73,11 +73,11 @@ export enum JsonFilterType {
 export const JsonFilter: JsonFilterDecorator = makeJacksonDecorator(
   (o: JsonFilterOptions): JsonFilterOptions => ({enabled: true, ...o }),
   (options: JsonFilterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonFilter', options, target);
       return target;
     }
-    if (propertyKey) {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonFilter', options, target.constructor, propertyKey);
     }
   });

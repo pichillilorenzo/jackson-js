@@ -56,7 +56,7 @@ import {JsonTypeIdResolverDecorator, JsonTypeIdResolverOptions} from '../@types'
 export const JsonTypeIdResolver: JsonTypeIdResolverDecorator = makeJacksonDecorator(
   (o: JsonTypeIdResolverOptions): JsonTypeIdResolverOptions => ({enabled: true, ...o}),
   (options: JsonTypeIdResolverOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && typeof descriptorOrParamIndex !== 'number' && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonTypeIdResolver', options, target);
       return target;
     }

@@ -55,7 +55,7 @@ export const JsonIdentityReference: JsonIdentityReferenceDecorator = makeJackson
       ...o
     }),
   (options: JsonIdentityReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonIdentityReference', options, target);
       return target;
     }

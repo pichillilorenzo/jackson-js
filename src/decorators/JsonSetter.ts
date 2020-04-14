@@ -69,7 +69,7 @@ export const JsonSetter: JsonSetterDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonSetterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
+    if (propertyKey != null) {
       const privateOptions: JsonSetterPrivateOptions = {
         descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
         propertyKey: propertyKey.toString(),

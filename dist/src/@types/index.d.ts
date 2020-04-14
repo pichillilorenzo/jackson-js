@@ -12,6 +12,9 @@ import { JsonFilterType } from '../decorators/JsonFilter';
 import { PropertyNamingStrategy } from '../decorators/JsonNaming';
 import { JsonCreatorMode } from '../decorators/JsonCreator';
 import { JsonSetterNulls } from '../decorators/JsonSetter';
+import { MapperFeature } from '../databind/MapperFeature';
+import { SerializationFeature } from '../databind/SerializationFeature';
+import { DeserializationFeature } from '../databind/DeserializationFeature';
 export declare type ClassType<T> = (new () => T) | (new (...args: any[]) => T) | ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 export interface ClassList<T> extends Array<any> {
     [index: number]: T | ClassList<T>;
@@ -88,7 +91,7 @@ export declare type JsonTypeIdResolverDecorator = JacksonDecoratorWithOptions<Js
 /**
  * Decorator type for {@link JsonView}.
  */
-export declare type JsonViewDecorator = JacksonDecoratorWithOptions<JsonViewOptions, ClassDecorator & MethodDecorator & PropertyDecorator>;
+export declare type JsonViewDecorator = JacksonDecoratorWithOptions<JsonViewOptions, ClassDecorator & MethodDecorator & PropertyDecorator & ParameterDecorator>;
 /**
  * Decorator type for {@link JsonAnyGetter}.
  */
@@ -169,9 +172,19 @@ export declare type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<Js
  * Common context properties used during serialization and deserialization.
  */
 export interface JsonStringifierParserCommonContext<T> {
-    withViews?: (...args: any[]) => ClassType<any>[];
+    /**
+     * List of views (see {@link JsonView}) used to serialize/deserialize JSON objects.
+     */
+    withViews?: () => ClassType<any>[];
+    /**
+     * Property that defines simple on/off features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
+     */
     features?: {
-        [key: number]: boolean;
+        /**
+         * Property that defines simple on/off common features to set for {@link ObjectMapper},
+         * {@link JsonParser} and {@link JsonStringifier}.
+         */
+        mapper: MapperFeature;
     };
     decoratorsEnabled?: {
         [key: string]: boolean;
@@ -192,6 +205,20 @@ export interface JsonStringifierContextWithoutMainCreatorContext extends JsonStr
     attributes?: {
         [key: string]: any;
     };
+    /**
+     * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+     */
+    features?: {
+        /**
+         * Property that defines simple on/off common features to set for {@link ObjectMapper},
+         * {@link JsonParser} and {@link JsonStringifier}.
+         */
+        mapper: MapperFeature;
+        /**
+         * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+         */
+        serialization: SerializationFeature;
+    };
     filters?: {
         [key: string]: JsonStringifierFilterOptions;
     };
@@ -199,21 +226,47 @@ export interface JsonStringifierContextWithoutMainCreatorContext extends JsonStr
     serializers?: ObjectMapperSerializer[];
 }
 /**
- * Context properties used by {@link JsonStringifier.stringify} during deserialization.
+ * Context properties used by {@link JsonStringifier.stringify} during serialization.
  */
 export interface JsonStringifierContext extends JsonStringifierContextWithoutMainCreatorContext {
+    /**
+     * Function that returns a list of JavaScript Classes.
+     *
+     * @returns ClassList<ClassType<any>>
+     */
     mainCreator?: () => ClassList<ClassType<any>>;
 }
 /**
- * Context properties used by {@link JsonStringifier.deepTransform} during deserialization.
+ * Context properties used by {@link JsonStringifier.transform} during serialization.
  */
 export declare type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
+    /**
+     * List of the current JavaScript Class that is being serialized.
+     * So, `mainCreator[0]` will return the current JavaScript Class.
+     */
     mainCreator?: ClassList<ClassType<any>>;
 }>;
 /**
  * Context properties used during deserialization without {@link JsonParserContext.mainCreator}.
  */
 export interface JsonParserBaseWithoutMainCreatorContext extends JsonStringifierParserCommonContext<JsonParserBaseWithoutMainCreatorContext> {
+    /**
+     * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonParser}.
+     */
+    features?: {
+        /**
+         * Property that defines simple on/off common features to set for {@link ObjectMapper},
+         * {@link JsonParser} and {@link JsonStringifier}.
+         */
+        mapper: MapperFeature;
+        /**
+         * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonParser}.
+         */
+        deserialization: DeserializationFeature;
+    };
+    /**
+     * Define which {@link JsonCreator} should be used during deserialization through its name.
+     */
     withCreatorName?: string;
     deserializers?: ObjectMapperDeserializer[];
     injectableValues?: {
@@ -224,23 +277,29 @@ export interface JsonParserBaseWithoutMainCreatorContext extends JsonStringifier
  * Context properties used by {@link JsonParser.parse} during deserialization.
  */
 export interface JsonParserContext extends JsonParserBaseWithoutMainCreatorContext {
+    /**
+     * Function that returns a list of JavaScript Classes.
+     *
+     * @returns ClassList<ClassType<any>>
+     */
     mainCreator?: () => ClassList<ClassType<any>>;
 }
 /**
- * Context properties used by {@link JsonParser.deepTransform} during deserialization.
+ * Context properties used by {@link JsonParser.transform} during deserialization.
  */
 export declare type JsonParserTransformerContext = Modify<JsonParserContext, {
+    /**
+     * List of the current JavaScript Class that is being deserialized.
+     * So, `mainCreator[0]` will return the current JavaScript Class.
+     */
     mainCreator?: ClassList<ClassType<any>>;
 }>;
 export declare type Serializer = (key: string, value: any, context?: JsonStringifierTransformerContext) => any;
 export declare type Deserializer = (key: string, value: any, context?: JsonParserTransformerContext) => any;
 export interface ObjectMapperFeatures {
-    serialization: {
-        [key: number]: boolean;
-    };
-    deserialization: {
-        [key: number]: boolean;
-    };
+    mapper: MapperFeature;
+    serialization: SerializationFeature;
+    deserialization: DeserializationFeature;
 }
 export interface ObjectMapperCustomMapper<T> {
     mapper: T;
@@ -321,7 +380,7 @@ export interface JsonDeserializeOptions extends JsonDecoratorOptions {
      * @param obj
      * @param context
      */
-    contentUsing?: (obj: any, context?: JsonStringifierTransformerContext) => any;
+    contentUsing?: (obj: any, context?: JsonParserTransformerContext) => any;
     /**
      * Deserializer function to use for deserializing `Map` of `Object Literal`
      * keys of decorated property.
@@ -329,7 +388,7 @@ export interface JsonDeserializeOptions extends JsonDecoratorOptions {
      * @param key
      * @param context
      */
-    keyUsing?: (key: any, context?: JsonStringifierTransformerContext) => any;
+    keyUsing?: (key: any, context?: JsonParserTransformerContext) => any;
 }
 /**
  * Decorator base options for {@link JsonFormat}.

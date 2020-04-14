@@ -12,6 +12,10 @@ import {JsonFilterType} from '../decorators/JsonFilter';
 import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {JsonCreatorMode} from '../decorators/JsonCreator';
 import {JsonSetterNulls} from '../decorators/JsonSetter';
+import {MapperFeature} from '../databind/MapperFeature';
+import {SerializationFeature} from '../databind/SerializationFeature';
+import {DeserializationFeature} from '../databind/DeserializationFeature';
+import {InternalDecorators} from './private';
 
 /**
  * https://stackoverflow.com/a/55032655/4637638
@@ -215,14 +219,19 @@ export type JsonTypeIdDecorator = JacksonDecoratorWithOptionalOptions<JsonTypeId
  * Common context properties used during serialization and deserialization.
  */
 export interface JsonStringifierParserCommonContext<T> {
+  /**
+   * List of views (see {@link JsonView}) used to serialize/deserialize JSON objects.
+   */
   withViews?: () => ClassType<any>[];
+  /**
+   * Property that defines simple on/off features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
+   */
   features?: {
-    [key: string]: {
-      [key: number]: boolean;
-    };
-    mapper: {
-      [key: number]: boolean;
-    };
+    /**
+     * Property that defines simple on/off common features to set for {@link ObjectMapper},
+     * {@link JsonParser} and {@link JsonStringifier}.
+     */
+    mapper: MapperFeature;
   };
   decoratorsEnabled?: {
     [key: string]: boolean;
@@ -230,10 +239,7 @@ export interface JsonStringifierParserCommonContext<T> {
   forType?: WeakMap<ClassType<any>, T>;
 
   /** @internal */
-  _internalDecorators?: Map<ClassType<any>, {
-    [key: string]: JsonDecoratorOptions | number;
-    depth: number;
-  }>;
+  _internalDecorators?: Map<ClassType<any>, InternalDecorators>;
 
   /** @internal */
   _propertyParentCreator?: ClassType<any>;
@@ -255,13 +261,19 @@ export interface JsonStringifierContextWithoutMainCreatorContext
   attributes?: {
     [key: string]: any;
   };
+  /**
+   * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+   */
   features?: {
-    mapper: {
-      [key: number]: boolean;
-    };
-    serialization: {
-      [key: number]: boolean;
-    };
+    /**
+     * Property that defines simple on/off common features to set for {@link ObjectMapper},
+     * {@link JsonParser} and {@link JsonStringifier}.
+     */
+    mapper: MapperFeature;
+    /**
+     * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+     */
+    serialization: SerializationFeature;
   };
   filters?: {
     [key: string]: JsonStringifierFilterOptions;
@@ -271,16 +283,25 @@ export interface JsonStringifierContextWithoutMainCreatorContext
 }
 
 /**
- * Context properties used by {@link JsonStringifier.stringify} during deserialization.
+ * Context properties used by {@link JsonStringifier.stringify} during serialization.
  */
 export interface JsonStringifierContext extends JsonStringifierContextWithoutMainCreatorContext {
+  /**
+   * Function that returns a list of JavaScript Classes.
+   *
+   * @returns ClassList<ClassType<any>>
+   */
   mainCreator?: () => ClassList<ClassType<any>>;
 }
 
 /**
- * Context properties used by {@link JsonStringifier.deepTransform} during deserialization.
+ * Context properties used by {@link JsonStringifier.transform} during serialization.
  */
 export type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
+  /**
+   * List of the current JavaScript Class that is being serialized.
+   * So, `mainCreator[0]` will return the current JavaScript Class.
+   */
   mainCreator?: ClassList<ClassType<any>>;
 }>;
 
@@ -289,14 +310,23 @@ export type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
  */
 export interface JsonParserBaseWithoutMainCreatorContext
   extends JsonStringifierParserCommonContext<JsonParserBaseWithoutMainCreatorContext> {
+  /**
+   * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonParser}.
+   */
   features?: {
-    mapper: {
-      [key: number]: boolean;
-    };
-    deserialization: {
-      [key: number]: boolean;
-    };
+    /**
+     * Property that defines simple on/off common features to set for {@link ObjectMapper},
+     * {@link JsonParser} and {@link JsonStringifier}.
+     */
+    mapper: MapperFeature;
+    /**
+     * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonParser}.
+     */
+    deserialization: DeserializationFeature;
   };
+  /**
+   * Define which {@link JsonCreator} should be used during deserialization through its name.
+   */
   withCreatorName?: string;
   deserializers?: ObjectMapperDeserializer[];
   injectableValues?: {
@@ -308,13 +338,22 @@ export interface JsonParserBaseWithoutMainCreatorContext
  * Context properties used by {@link JsonParser.parse} during deserialization.
  */
 export interface JsonParserContext extends JsonParserBaseWithoutMainCreatorContext {
+  /**
+   * Function that returns a list of JavaScript Classes.
+   *
+   * @returns ClassList<ClassType<any>>
+   */
   mainCreator?: () => ClassList<ClassType<any>>;
 }
 
 /**
- * Context properties used by {@link JsonParser.deepTransform} during deserialization.
+ * Context properties used by {@link JsonParser.transform} during deserialization.
  */
 export type JsonParserTransformerContext = Modify<JsonParserContext, {
+  /**
+   * List of the current JavaScript Class that is being deserialized.
+   * So, `mainCreator[0]` will return the current JavaScript Class.
+   */
   mainCreator?: ClassList<ClassType<any>>;
 }>;
 
@@ -323,15 +362,9 @@ export type Serializer = (key: string, value: any, context?: JsonStringifierTran
 export type Deserializer = (key: string, value: any, context?: JsonParserTransformerContext) => any;
 
 export interface ObjectMapperFeatures {
-  mapper: {
-    [key: number]: boolean;
-  };
-  serialization: {
-    [key: number]: boolean;
-  };
-  deserialization: {
-    [key: number]: boolean;
-  };
+  mapper: MapperFeature;
+  serialization: SerializationFeature;
+  deserialization: DeserializationFeature;
 }
 
 export interface ObjectMapperCustomMapper<T> {

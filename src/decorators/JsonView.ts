@@ -59,7 +59,7 @@ import {JsonViewDecorator, JsonViewOptions} from '../@types';
 export const JsonView: JsonViewDecorator = makeJacksonDecorator(
   (o: JsonViewOptions): JsonViewOptions => ({enabled: true, ...o}),
   (options: JsonViewOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonView', options, target);
       return target;
     }
@@ -69,7 +69,7 @@ export const JsonView: JsonViewDecorator = makeJacksonDecorator(
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor');
     }
-    if (propertyKey) {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonView', options, target.constructor, propertyKey);
     }
   });

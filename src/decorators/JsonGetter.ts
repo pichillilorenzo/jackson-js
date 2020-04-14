@@ -46,7 +46,7 @@ import {JacksonError} from '../core/JacksonError';
 export const JsonGetter: JsonGetterDecorator = makeJacksonDecorator(
   (o: JsonGetterOptions): JsonGetterOptions => ({enabled: true, ...o}),
   (options: JsonGetterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
+    if (propertyKey != null) {
       const privateOptions: JsonGetterPrivateOptions = {
         descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
         propertyKey: propertyKey.toString(),

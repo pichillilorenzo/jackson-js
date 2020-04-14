@@ -48,7 +48,9 @@ import { JsonViewDecorator } from '../@types';
  *
  * const objectMapper = new ObjectMapper();
  *
- * const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
+ * const jsonDataWithViewPublic = objectMapper.stringify<User>(user, {
+ *   withViews: () => [Views.public]
+ * });
  * ```
  */
 export declare const JsonView: JsonViewDecorator;

@@ -106,13 +106,14 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
       ...options
     };
 
-    if (descriptorOrParamIndex && typeof descriptorOrParamIndex !== 'number' && typeof descriptorOrParamIndex.value === 'function') {
+    if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex !== 'number' &&
+      typeof descriptorOrParamIndex.value === 'function') {
       privateOptions.method = descriptorOrParamIndex.value;
       if (privateOptions.name && Reflect.hasMetadata('jackson:JsonCreator:' + privateOptions.name, target)) {
         throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.name}".`);
       }
       Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
-    } else if (!descriptorOrParamIndex && isClass(target)) {
+    } else if (descriptorOrParamIndex == null && isClass(target)) {
       privateOptions.ctor = target;
       // get original constructor
       while (privateOptions.ctor.toString().trim().startsWith('class extends target {')) {

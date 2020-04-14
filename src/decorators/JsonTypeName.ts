@@ -43,7 +43,7 @@ import {JsonTypeNamePrivateOptions} from '../@types/private';
 export const JsonTypeName: JsonTypeNameDecorator = makeJacksonDecorator(
   (o: JsonTypeNameOptions): JsonTypeNameOptions => ({enabled: true, ...o}),
   (options: JsonTypeNameOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       const privateOptions: JsonTypeNamePrivateOptions = {
         ctor: target,
         ...options

@@ -70,7 +70,7 @@ export const JsonNaming: JsonNamingDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonNamingOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonNaming', options, target);
       return target;
     }

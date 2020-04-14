@@ -639,11 +639,11 @@ export const isValueEmpty = (value: any): boolean => value == null ||
  * @internal
  */
 export const getDeepestClass = (array: Array<any>): any | null => {
-  if (array.length === 0) {
+  if (array == null || array.length === 0) {
     return null;
   }
-  if (array.length === 1) {
-    return array[0];
+  if (!(array[array.length - 1] instanceof Array)) {
+    return array[array.length - 1];
   }
   return getDeepestClass(array[array.length - 1]);
 };

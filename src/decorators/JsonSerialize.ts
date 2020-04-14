@@ -43,7 +43,7 @@ import {JsonSerializeDecorator, JsonSerializeOptions} from '../@types';
 export const JsonSerialize: JsonSerializeDecorator = makeJacksonDecorator(
   (o: JsonSerializeOptions): JsonSerializeOptions => ({enabled: true, ...o}),
   (options: JsonSerializeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonSerialize', options, target);
       return target;
     }

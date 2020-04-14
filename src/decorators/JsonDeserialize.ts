@@ -43,7 +43,7 @@ import {JsonDeserializeDecorator, JsonDeserializeOptions} from '../@types';
 export const JsonDeserialize: JsonDeserializeDecorator = makeJacksonDecorator(
   (o: JsonDeserializeOptions): JsonDeserializeOptions => ({enabled: true, ...o}),
   (options: JsonDeserializeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonDeserialize', options, target);
       return target;
     }
@@ -53,7 +53,7 @@ export const JsonDeserialize: JsonDeserializeDecorator = makeJacksonDecorator(
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor');
     }
-    if (propertyKey) {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonDeserialize', options, target.constructor, propertyKey);
     }
   });

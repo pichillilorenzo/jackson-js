@@ -181,7 +181,8 @@ export declare class JsonParser<T> {
     /**
      *
      * @param context
-     * @param key
+     * @param methodName
+     * @param argumentIndex
      */
     private parseIsIncludedByJsonViewParam;
     /**
@@ -215,7 +216,7 @@ export declare class JsonParser<T> {
      * @param obj
      * @param context
      */
-    private parseMap;
+    private parseMapAndObjLiteral;
     /**
      *
      * @param scope

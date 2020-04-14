@@ -46,7 +46,7 @@ export const JsonClass: JsonClassDecorator = makeJacksonDecorator(
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor');
     }
-    if (propertyKey) {
+    if (propertyKey != null) {
       Reflect.defineMetadata('jackson:JsonClass', options, target.constructor, propertyKey);
       Reflect.defineMetadata('jackson:JsonClass:' + propertyKey.toString(), options, target.constructor);
     }

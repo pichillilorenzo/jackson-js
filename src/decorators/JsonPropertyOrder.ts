@@ -39,7 +39,7 @@ export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorato
     ...o
   }),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonPropertyOrder', options, target);
       return target;
     }

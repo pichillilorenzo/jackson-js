@@ -43,7 +43,7 @@ import {JsonAnyGetterPrivateOptions} from '../@types/private';
 export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
   (o: JsonAnyGetterOptions): JsonAnyGetterOptions => ({enabled: true, ...o}),
   (options: JsonAnyGetterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (propertyKey) {
+    if (propertyKey != null) {
       const privateOptions: JsonAnyGetterPrivateOptions = {
         propertyKey: propertyKey.toString(),
         ...options

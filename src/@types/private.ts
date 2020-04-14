@@ -2,7 +2,7 @@ import {
   JsonAnyGetterOptions,
   JsonAnySetterOptions,
   JsonBackReferenceOptions,
-  JsonCreatorOptions,
+  JsonCreatorOptions, JsonDecoratorOptions,
   JsonGetterOptions,
   JsonManagedReferenceOptions,
   JsonPropertyOptions,
@@ -11,6 +11,12 @@ import {
   JsonTypeNameOptions, JsonUnwrappedOptions,
   JsonValueOptions
 } from './index';
+
+/** @internal */
+export interface InternalDecorators {
+  [key: string]: JsonDecoratorOptions | number;
+  depth?: number;
+}
 
 /** @internal */
 export interface JsonAnyGetterPrivateOptions extends JsonAnyGetterOptions {

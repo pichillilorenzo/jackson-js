@@ -42,7 +42,7 @@ export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeJacksonDe
       ...o
     }),
   (options: JsonIgnorePropertiesOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (!descriptorOrParamIndex && isClass(target)) {
+    if (descriptorOrParamIndex == null && isClass(target)) {
       Reflect.defineMetadata('jackson:JsonIgnoreProperties', options, target);
       return target;
     }
