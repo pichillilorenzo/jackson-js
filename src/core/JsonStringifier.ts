@@ -14,8 +14,6 @@ import {
   JsonIgnorePropertiesOptions,
   JsonIncludeOptions,
   JsonNamingOptions,
-  JsonParserContext,
-  JsonParserTransformerContext,
   JsonPropertyOptions,
   JsonPropertyOrderOptions,
   JsonRootNameOptions,
@@ -26,13 +24,12 @@ import {
   JsonSubTypesOptions,
   JsonTypeIdResolverOptions,
   JsonTypeInfoOptions,
-  JsonUnwrappedOptions,
   JsonViewOptions
 } from '../@types';
 import {JsonPropertyAccess} from '../decorators/JsonProperty';
 import {JsonIncludeType} from '../decorators/JsonInclude';
 import {
-  classHasOwnProperty,
+  classHasOwnProperty, classPropertiesToVirtualPropertiesMapping,
   getClassProperties,
   getDeepestClass,
   getDefaultPrimitiveTypeValue,
@@ -59,13 +56,14 @@ import {
   JsonAnyGetterPrivateOptions,
   JsonGetterPrivateOptions, JsonPropertyPrivateOptions,
   JsonTypeIdPrivateOptions,
-  JsonTypeNamePrivateOptions,
+  JsonTypeNamePrivateOptions, JsonUnwrappedPrivateOptions,
   JsonValuePrivateOptions
 } from '../@types/private';
 import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {JsonFilterType} from '../decorators/JsonFilter';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as clone from 'lodash.clone';
+import {MapperFeature} from '../databind/MapperFeature';
 
 dayjs.extend(customParseFormat);
 
@@ -113,6 +111,7 @@ export class JsonStringifier<T> {
             valueAlreadySeen: Map<any, any> = new Map<any, any>()): any {
     context.mainCreator = (context.mainCreator && context.mainCreator[0] !== Object) ?
       context.mainCreator : [(value != null) ? (value.constructor as ObjectConstructor) : Object];
+    context._propertyParentCreator = context.mainCreator[0];
     context = cloneDeep(context);
     const preProcessedObj = this.deepTransform('', value, context, new Map());
     return preProcessedObj;
@@ -126,7 +125,10 @@ export class JsonStringifier<T> {
    */
   deepTransform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
     context = {
-      features: [],
+      features: {
+        mapper: [],
+        serialization: []
+      },
       filters: {},
       serializers: [],
       attributes: {},
@@ -160,28 +162,28 @@ export class JsonStringifier<T> {
     }
 
     value = this.invokeCustomSerializers(key, value, context);
-    value = this.stringifyJsonSerializeClass(value, context);
+    value = this.stringifyJsonSerializeClass(key, value, context);
 
     if (value == null && isConstructorPrimitiveType(context.mainCreator[0])) {
       value = this.getDefaultValue(context);
     }
 
-    if (value != null && value.constructor === Number && isNaN(value) && context.features[SerializationFeature.WRITE_NAN_AS_ZERO]) {
+    if (value != null && value.constructor === Number && isNaN(value) && context.features.serialization[SerializationFeature.WRITE_NAN_AS_ZERO]) {
       value = 0;
     } else if (value === Infinity) {
-      if (context.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
+      if (context.features.serialization[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER]) {
         value = Number.MAX_SAFE_INTEGER;
-      } else if (context.features[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
+      } else if (context.features.serialization[SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]) {
         value = Number.MAX_VALUE;
       }
     } else if (value === -Infinity) {
-      if (context.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
+      if (context.features.serialization[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]) {
         value = Number.MIN_SAFE_INTEGER;
-      } else if (context.features[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
+      } else if (context.features.serialization[SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]) {
         value = Number.MIN_VALUE;
       }
     } else if (value != null && value instanceof Date &&
-      context.features[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
+      context.features.serialization[SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]) {
       value = value.getTime();
     }
 
@@ -220,13 +222,32 @@ export class JsonStringifier<T> {
         valueAlreadySeen.set(value, (identity) ? identity : null);
 
         let replacement = {};
-        const jsonValue = this.stringifyJsonValue(value, context);
-        if (jsonValue) {
-          replacement = jsonValue;
+
+        const jsonValueOptions: JsonValuePrivateOptions = getMetadata('jackson:JsonValue', context.mainCreator[0], null, context);
+        if (jsonValueOptions) {
+          const jsonValue = this.stringifyJsonValue(value, context);
+          const newContext: JsonStringifierTransformerContext = cloneDeep(context);
+
+          let newMainCreator;
+          const jsonClass: JsonClassOptions =
+            getMetadata('jackson:JsonClass', currentMainCreator, jsonValueOptions.propertyKey, context);
+          if (jsonClass && jsonClass.class) {
+            newMainCreator = jsonClass.class();
+          } else {
+            newMainCreator = [Object];
+          }
+          if (jsonValue != null && jsonValue.constructor !== Object) {
+            newMainCreator[0] = jsonValue.constructor;
+          }
+
+          newContext.mainCreator = newMainCreator;
+          newContext._propertyParentCreator = newContext.mainCreator[0];
+          replacement = this.deepTransform(key, jsonValue, newContext, new Map(valueAlreadySeen));
           return replacement;
         }
 
-        if (this.isPrependJsonAppend(value, context)) {
+        const isPrepJsonAppend = this.isPrependJsonAppend(value, context);
+        if (isPrepJsonAppend) {
           this.stringifyJsonAppend(replacement, value, context);
         }
 
@@ -240,21 +261,20 @@ export class JsonStringifier<T> {
 
         for (const k of keys) {
           if (!this.stringifyHasJsonIgnore(value, k, context) &&
-            this.stringifyJsonInclude(value, k, context) &&
             this.stringifyHasJsonView(value, k, context) &&
             !this.stringifyIsIgnoredByJsonPropertyAccess(k, context) &&
             !this.stringifyHasJsonBackReference(value, k, context) &&
             !this.stringifyIsPropertyKeyExcludedByJsonFilter(value, k, context) &&
             classHasOwnProperty(currentMainCreator, k, value, {withGettersAsProperty: true})) {
 
-            const newKey = this.stringifyJsonNaming(replacement, value, k, context);
+            let newKey = this.stringifyJsonNaming(replacement, value, k, context);
             namingMap.set(k, newKey);
 
             // if it has a JsonIdentityReference, then we can skip all these methods because
             // the entire object will be replaced later by the identity value
             if (!this.hasJsonIdentityReferenceAlwaysAsId(value, context)) {
 
-              if (value === value[k] && context.features[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
+              if (value === value[k] && context.features.serialization[SerializationFeature.FAIL_ON_SELF_REFERENCES]) {
                 // eslint-disable-next-line max-len
                 throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${currentMainCreator.name}["${k}"])`);
               }
@@ -262,26 +282,50 @@ export class JsonStringifier<T> {
               this.propagateDecorators(value, k, context);
 
               replacement[newKey] = this.stringifyJsonGetter(value, k, context);
+              if (!this.stringifyJsonInclude(replacement, newKey, context)) {
+                namingMap.delete(k);
+                delete replacement[newKey];
+                continue;
+              }
+
+              if (replacement[newKey] == null) {
+                this.stringifyJsonSerializePropertyNull(replacement, k, newKey, context);
+              }
+
               if (replacement[newKey] != null) {
+                if (replacement[newKey] instanceof Map || isObjLiteral(replacement[newKey])) {
+                  this.stringifyJsonSerializeMap(replacement, k, newKey, context);
+                }
+                this.stringifyJsonSerializeProperty(replacement, value, k, newKey, context);
                 if (replacement[newKey] instanceof Map || isObjLiteral(replacement[newKey])) {
                   this.stringifyJsonIncludeMap(replacement, k, newKey, context);
                 }
                 replacement[newKey] = this.stringifyJsonFormatProperty(replacement, value, k, newKey, context);
-                this.stringifyJsonSerializeProperty(replacement, value, k, newKey, context);
                 this.stringifyJsonRawValue(replacement, value, k, newKey, context);
                 this.stringifyJsonFilter(replacement, value, k, newKey, context);
-                this.stringifyJsonVirtualProperty(replacement, value, k, newKey, context, namingMap);
-                this.stringifyJsonUnwrapped(replacement, value, k, context, valueAlreadySeen);
+                newKey = this.stringifyJsonVirtualProperty(replacement, value, k, newKey, context, namingMap);
+                if (!isIterableNoMapNoString(replacement[newKey])) {
+                  this.stringifyJsonUnwrapped(replacement, value, k, newKey, context, valueAlreadySeen);
+                }
               }
             } else {
               replacement[newKey] = this.stringifyJsonGetter(value, k, context);
+              if (!this.stringifyJsonInclude(replacement, newKey, context)) {
+                namingMap.delete(k);
+                delete replacement[newKey];
+                continue;
+              }
+
+              if (replacement[newKey] == null) {
+                this.stringifyJsonSerializePropertyNull(replacement, k, newKey, context);
+              }
             }
           }
         }
 
         this.stringifyJsonAnyGetter(replacement, value, context);
 
-        if (!this.isPrependJsonAppend(value, context)) {
+        if (!isPrepJsonAppend) {
           this.stringifyJsonAppend(replacement, value, context);
         }
 
@@ -294,6 +338,8 @@ export class JsonStringifier<T> {
           for (const k in replacement) {
             const oldKey = namingMap.get(k);
             const newContext: JsonStringifierTransformerContext = cloneDeep(context);
+            newContext._propertyParentCreator = currentMainCreator;
+
             let newMainCreator;
             const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, oldKey, context);
             if (jsonClass && jsonClass.class) {
@@ -326,7 +372,7 @@ export class JsonStringifier<T> {
    *
    * @param context
    */
-  private convertStringifierContextToTransformerContext(context: JsonParserContext): JsonParserTransformerContext {
+  private convertStringifierContextToTransformerContext(context: JsonStringifierContext): JsonStringifierTransformerContext {
     const newContext: JsonStringifierTransformerContext = {
       mainCreator: context.mainCreator ? context.mainCreator() : [Object]
     };
@@ -372,20 +418,20 @@ export class JsonStringifier<T> {
     let defaultValue = null;
     const currentMainCreator = context.mainCreator[0];
     if (currentMainCreator === String &&
-      (context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]) ) {
+      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]) ) {
       defaultValue = getDefaultPrimitiveTypeValue(String);
     } else if (currentMainCreator === Number &&
-      (context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]) ) {
+      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Number);
     } else if (currentMainCreator === Boolean &&
-      (context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]) ) {
+      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Boolean);
     } else if (BigInt && currentMainCreator === BigInt &&
-      (context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
-        context.features[SerializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]) ) {
+      (context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL] ||
+        context.features.mapper[MapperFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]) ) {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);
     }
     return defaultValue;
@@ -512,18 +558,26 @@ export class JsonStringifier<T> {
     const jsonPropertyOrder: JsonPropertyOrderOptions =
       getMetadata('jackson:JsonPropertyOrder', currentMainCreator, null, context);
     if (jsonPropertyOrder) {
+      const classProperties =
+        mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, {checkGetters: true});
+
+      let remainingKeys = keys.filter(key => !classProperties.includes(key));
+
       if (jsonPropertyOrder.alphabetic) {
-        const classProperties =
-          mapVirtualPropertiesToClassProperties(currentMainCreator, keys, context, {checkGetters: true});
-
-        keys = classProperties.sort();
-      } else if (jsonPropertyOrder.value) {
-        const classProperties =
-          mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, context, {checkGetters: true});
-
-        keys = classProperties.filter((jsonPropertyOrderKey) => keys.includes(jsonPropertyOrderKey))
-          .concat(keys.filter(key => !classProperties.includes(key)));
+        const remainingKeysToVirtualPropertiesMapping =
+          classPropertiesToVirtualPropertiesMapping(currentMainCreator, remainingKeys);
+        const remainingVirtualKeysOrdered = new Map(
+          [...remainingKeysToVirtualPropertiesMapping.entries()]
+            .sort((a, b) => a[1] > b[1] ? 1 : -1)
+        );
+        const remainingKeysOrdered = [];
+        for (const [classProperty, virtualProperty] of remainingVirtualKeysOrdered) {
+          remainingKeysOrdered.push(classProperty);
+        }
+        remainingKeys = remainingKeysOrdered;
       }
+
+      keys = classProperties.concat(remainingKeys);
     }
     return keys;
   }
@@ -551,7 +605,7 @@ export class JsonStringifier<T> {
    * @param namingMap
    */
   private stringifyJsonVirtualProperty(replacement: any, obj: any, oldKey: string, newKey: string,
-                                       context: JsonStringifierTransformerContext, namingMap: Map<string, string>): void {
+                                       context: JsonStringifierTransformerContext, namingMap: Map<string, string>): string {
     const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
       getMetadata('jackson:JsonVirtualProperty:' + oldKey, context.mainCreator[0], null, context);
 
@@ -561,7 +615,11 @@ export class JsonStringifier<T> {
 
       replacement[newKeyUpdated] = replacement[newKey];
       delete replacement[newKey];
+
+      return newKeyUpdated;
     }
+
+    return newKey;
   }
 
   /**
@@ -614,11 +672,11 @@ export class JsonStringifier<T> {
    * @param obj
    * @param context
    */
-  private stringifyJsonSerializeClass(obj: any, context: JsonStringifierTransformerContext): any {
+  private stringifyJsonSerializeClass(key: string, obj: any, context: JsonStringifierTransformerContext): any {
     const jsonSerialize: JsonSerializeOptions =
       getMetadata('jackson:JsonSerialize', context.mainCreator[0], null, context);
     if (jsonSerialize && jsonSerialize.using) {
-      return jsonSerialize.using(obj);
+      return jsonSerialize.using(obj, context);
     }
     return obj;
   }
@@ -635,7 +693,57 @@ export class JsonStringifier<T> {
                                          context: JsonStringifierTransformerContext): void {
     const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
     if (jsonSerialize && jsonSerialize.using) {
-      replacement[newKey] = jsonSerialize.using(replacement[newKey]);
+      replacement[newKey] = jsonSerialize.using(replacement[newKey], context);
+    }
+  }
+
+  /**
+   *
+   * @param replacement
+   * @param oldKey
+   * @param newKey
+   * @param context
+   */
+  private stringifyJsonSerializePropertyNull(replacement: any, oldKey: string, newKey: string,
+                                             context: JsonStringifierTransformerContext): void {
+    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
+    if (jsonSerialize && jsonSerialize.nullsUsing) {
+      replacement[newKey] = jsonSerialize.nullsUsing(context);
+    }
+  }
+
+  /**
+   *
+   * @param replacement
+   * @param oldKey
+   * @param newKey
+   * @param context
+   */
+  private stringifyJsonSerializeMap(replacement: any, oldKey: string, newKey: string, context: JsonStringifierTransformerContext): void {
+    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
+    if (jsonSerialize && (jsonSerialize.contentUsing || jsonSerialize.keyUsing)) {
+      const mapIterable =
+        (replacement[newKey] instanceof Map) ?
+          [...replacement[newKey].entries()] :
+          Object.entries(replacement[newKey]);
+
+      for (const [mapKey, mapValue] of mapIterable) {
+        const newMapKey = (jsonSerialize.keyUsing) ? jsonSerialize.keyUsing(mapKey, context) : mapKey;
+        const newMapValue = (jsonSerialize.contentUsing) ?
+          jsonSerialize.contentUsing(mapValue, context) : mapValue;
+
+        if (replacement[newKey] instanceof Map) {
+          if (mapKey !== newMapKey) {
+            (replacement[newKey] as Map<any, any>).delete(mapKey);
+          }
+          (replacement[newKey] as Map<any, any>).set(newMapKey, newMapValue);
+        } else {
+          if (mapKey !== newMapKey) {
+            delete replacement[newKey][mapKey];
+          }
+          replacement[newKey][newMapKey] = newMapValue;
+        }
+      }
     }
   }
 
@@ -980,8 +1088,15 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyHasJsonView(obj: any, key: string, context: JsonStringifierTransformerContext): boolean {
+    const currentMainCreator = context.mainCreator[0];
+
     if (context.withViews) {
-      const jsonView: JsonViewOptions = getMetadata('jackson:JsonView', context.mainCreator[0], key, context);
+      let jsonView: JsonViewOptions =
+        getMetadata('jackson:JsonView', currentMainCreator, key, context);
+      if (!jsonView) {
+        jsonView = getMetadata('jackson:JsonView', currentMainCreator, null, context);
+      }
+
       if (jsonView && jsonView.value) {
         const views = jsonView.value();
         const withViews = context.withViews();
@@ -1006,44 +1121,45 @@ export class JsonStringifier<T> {
    * @param context
    * @param valueAlreadySeen
    */
-  private stringifyJsonUnwrapped(replacement: any, obj: any, key: string,
+  private stringifyJsonUnwrapped(replacement: any, obj: any, oldKey: string, newKey: string,
                                  context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): void {
     const currentMainCreator = context.mainCreator[0];
-
-    const newContext = cloneDeep(context);
-    let newMainCreator;
-    const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, key, context);
-    if (jsonClass && jsonClass.class) {
-      newMainCreator = jsonClass.class();
-    } else {
-      newMainCreator = [Object];
-    }
-    if (obj[key] != null && obj[key].constructor !== Object) {
-      newMainCreator[0] = obj[key].constructor;
-    }
-    newContext.mainCreator = newMainCreator;
-
-    const jsonUnwrapped: JsonUnwrappedOptions = getMetadata('jackson:JsonUnwrapped', currentMainCreator, key, context);
-    const hasJsonTypeInfo = (typeof obj[key] === 'object') ?
-      hasMetadata('jackson:JsonTypeInfo', newContext.mainCreator, null, newContext) : false;
+    const jsonUnwrapped: JsonUnwrappedPrivateOptions = getMetadata('jackson:JsonUnwrapped', currentMainCreator, oldKey, context);
 
     if (jsonUnwrapped) {
+      const objValue = (typeof obj[oldKey] === 'function') ? obj[oldKey]() : obj[oldKey];
+      const newContext = cloneDeep(context);
+      let newMainCreator;
+      const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, oldKey, context);
+      if (jsonClass && jsonClass.class) {
+        newMainCreator = jsonClass.class();
+      } else {
+        newMainCreator = [Object];
+      }
+      if (obj[oldKey] != null && objValue.constructor !== Object) {
+        newMainCreator[0] = objValue.constructor;
+      }
+      newContext.mainCreator = newMainCreator;
+
+      const hasJsonTypeInfo = (typeof objValue === 'object') ?
+        hasMetadata('jackson:JsonTypeInfo', newContext.mainCreator, null, newContext) : false;
       if (hasJsonTypeInfo) {
         // eslint-disable-next-line max-len
-        throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize (through reference chain: ${currentMainCreator.name}["${key}"])`);
+        throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize (through reference chain: ${currentMainCreator.name}["${oldKey}"])`);
       }
 
       const prefix = (jsonUnwrapped.prefix != null) ? jsonUnwrapped.prefix : '';
       const suffix = (jsonUnwrapped.suffix != null) ? jsonUnwrapped.suffix : '';
 
-      const objStringified = this.deepTransform(key, obj[key], newContext, new Map(valueAlreadySeen));
-      const keys = Object.keys(objStringified);
-      for (const oldKey of keys) {
-        const newKey = prefix + oldKey + suffix;
-        replacement[newKey] = objStringified[oldKey];
+      const objTransformed = this.deepTransform(oldKey, objValue, newContext, new Map(valueAlreadySeen));
+      const keys = Object.keys(objTransformed);
+
+      for (const objKey of keys) {
+        const newKeyWrapped = prefix + objKey + suffix;
+        replacement[newKeyWrapped] = objTransformed[objKey];
       }
 
-      delete replacement[key];
+      delete replacement[newKey];
     }
   }
 
@@ -1174,9 +1290,14 @@ export class JsonStringifier<T> {
    */
   private stringifyIterable(key: string, iterableNoString: any,
                             context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any[] {
+    const jsonSerialize: JsonSerializeOptions =
+      getMetadata('jackson:JsonSerialize',
+        context._propertyParentCreator,
+        key, context);
+
     const iterable = [...iterableNoString];
     const newIterable = [];
-    for (const value of iterable) {
+    for (let value of iterable) {
       const newContext = cloneDeep(context);
       let newMainCreator;
       if (context.mainCreator.length > 1) {
@@ -1188,7 +1309,12 @@ export class JsonStringifier<T> {
         newMainCreator[0] = value.constructor;
       }
       newContext.mainCreator = newMainCreator;
-      (newIterable).push(this.deepTransform(key, value, newContext, new Map(valueAlreadySeen)));
+
+      if (jsonSerialize && jsonSerialize.contentUsing) {
+        value = jsonSerialize.contentUsing(value, newContext);
+      }
+
+      newIterable.push(this.deepTransform(key, value, newContext, new Map(valueAlreadySeen)));
     }
     return newIterable;
   }
@@ -1201,7 +1327,7 @@ export class JsonStringifier<T> {
   private stringifyMap(map: Map<any, any>, context: JsonStringifierTransformerContext): any {
     const newValue = {};
     let mapKeys = [...map.keys()];
-    if (context.features[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
+    if (context.features.serialization[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]) {
       mapKeys = mapKeys.sort();
     }
     for (const mapKey of mapKeys) {
@@ -1267,7 +1393,9 @@ export class JsonStringifier<T> {
     if (jsonFilter) {
       const filter = context.filters[jsonFilter.value];
       if (filter) {
-        replacement[newKey] = clone(obj[oldKey]);
+        replacement[newKey] = clone(
+          (typeof obj[oldKey] === 'function') ? obj[oldKey]() : obj[oldKey]
+        );
         // eslint-disable-next-line guard-for-in
         for (const propertyKey in obj[oldKey]) {
 

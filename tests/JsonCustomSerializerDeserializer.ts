@@ -7,12 +7,12 @@ import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonSerialize and @JsonDeserialize at class level', t => {
   // eslint-disable-next-line no-shadow
-  @JsonSerialize({using: (user: User) => ({
+  @JsonSerialize({using: (user: User, context) => ({
     otherInfo: 'other info',
     ...user
   })})
   // eslint-disable-next-line no-shadow
-  @JsonDeserialize({using: (user: any) => {
+  @JsonDeserialize({using: (user: any, context) => {
     delete user.otherInfo;
     return user;
   }})
@@ -52,12 +52,12 @@ test('@JsonSerialize and @JsonDeserialize at class level', t => {
 });
 
 test('@JsonSerialize and @JsonDeserialize at property level', t => {
-  const customBookListSerializer = (books: Book[]) =>
+  const customBookListSerializer = (books: Book[], context) =>
     // eslint-disable-next-line no-shadow
     books.map((book) => new Book(book.id, book.name, book.date, null));
 
   class DateSerializer {
-    static serializeDate(date): any {
+    static serializeDate(date, context): any {
       return {
         year: date.getFullYear(),
         month: date.getMonth() + 1,
@@ -65,7 +65,7 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
         formatted: date.toLocaleDateString()
       };
     }
-    static deserializeDate(dateObj): Date {
+    static deserializeDate(dateObj, context): Date {
       return new Date(dateObj.formatted);
     }
   }
@@ -130,7 +130,7 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
 });
 
 test('@JsonSerialize and @JsonDeserialize at method level', t => {
-  const customBookListSerializer = (books: Book[]) =>
+  const customBookListSerializer = (books: Book[], context) =>
     // eslint-disable-next-line no-shadow
     books.map((book) => {
       const bookWithoutWriter = new Book();
@@ -142,7 +142,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
     });
 
   class DateSerializer {
-    static serializeDate(date): any {
+    static serializeDate(date, context): any {
       return {
         year: date.getFullYear(),
         month: date.getMonth() + 1,
@@ -150,7 +150,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
         formatted: date.toLocaleDateString()
       };
     }
-    static deserializeDate(dateObj): Date {
+    static deserializeDate(dateObj, context): Date {
       return new Date(dateObj.formatted);
     }
   }
@@ -237,7 +237,7 @@ test('@JsonDeserialize at parameter level', t => {
     ceo: Person;
 
     constructor(name: string,
-      @JsonDeserialize({using: (person: any) => {
+      @JsonDeserialize({using: (person: any, context) => {
         delete person.otherInfo;
         return person;
         // eslint-disable-next-line no-shadow
@@ -248,7 +248,7 @@ test('@JsonDeserialize at parameter level', t => {
 
   }
 
-  @JsonSerialize({using: (person: Person) => ({
+  @JsonSerialize({using: (person: Person, context) => ({
     otherInfo: 'other info',
     ...person
   })})
@@ -336,7 +336,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
 
   const objectMapper = new ObjectMapper();
   objectMapper.serializers.push({
-    mapper: (key, value: Book) => {
+    mapper: (key, value: Book, context) => {
       if (value != null) {
         return {
           id: value.id,
@@ -356,7 +356,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   });
 
   objectMapper.deserializers.push({
-    mapper: (key, value: any) => {
+    mapper: (key, value: any, context) => {
       if (value != null) {
         return new Book(value.id, value.name, new Date(value.date.formatted), value.writer);
       }
@@ -376,4 +376,116 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   t.assert(writerParsed.books[0].date instanceof Date);
   t.assert(writerParsed.books[1] === null);
   t.assert(writerParsed.books[2] === null);
+});
+
+test('@JsonSerialize and @JsonDeserialize at property level with contentUsing and keyUsing option values', t => {
+  class Book {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    @JsonClass({class: () => [Date]})
+    date: Date;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Writer]})
+    writer: Writer;
+
+    // eslint-disable-next-line no-shadow
+    constructor(id: number, name: string, date: Date, writer: Writer) {
+      this.id = id;
+      this.name = name;
+      this.date = date;
+      this.writer = writer;
+    }
+  }
+
+  class Writer {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Book]]})
+    @JsonSerialize({
+      // eslint-disable-next-line no-shadow
+      contentUsing: (book: Book, context) => {
+        // @ts-ignore
+        book.writerName = book.writer.name;
+        book.writer = null;
+        return book;
+      }
+    })
+    @JsonDeserialize({
+      // eslint-disable-next-line no-shadow
+      contentUsing: (book: any, context) => {
+        delete book.writerName;
+        return book;
+      }
+    })
+    books: Book[] = [];
+
+    @JsonProperty()
+    @JsonClass({class: () => [Map]})
+    @JsonSerialize({
+      keyUsing: (key: string, context) => 'newMapKey-' + key,
+      contentUsing: (obj: string, context) => 'newMapValue: ' + obj
+    })
+    @JsonDeserialize({
+      keyUsing: (key: string, context) => key.replace('newMapKey-', ''),
+      contentUsing: (obj: string, context) => obj.replace('newMapValue: ', '')
+    })
+    otherInfoMap: Map<string, string> = new Map();
+
+    @JsonProperty()
+    @JsonSerialize({
+      keyUsing: (key: string, context) => 'newObjKey-' + key,
+      contentUsing: (obj: string, context) => 'newObjValue: ' + obj
+    })
+    @JsonDeserialize({
+      keyUsing: (key: string, context) => key.replace('newObjKey-', ''),
+      contentUsing: (obj: string, context) => obj.replace('newObjValue: ', '')
+    })
+    otherInfoObjLiteral: {phone?: string; address?: string} = {};
+
+    constructor(id: number, name: string) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+
+  const writer = new Writer(1, 'George R. R. Martin');
+  writer.otherInfoMap.set('phone', '+393333111999');
+  writer.otherInfoMap.set('address', '123 Main Street, New York, NY 10030');
+  writer.otherInfoObjLiteral = {
+    address: '123 Main Street, New York, NY 10030',
+    phone: '+393333111999'
+  };
+
+  const book = new Book(1, 'Game Of Thrones', new Date(2012, 11, 4), writer);
+  writer.books.push(book);
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<Writer>(writer);
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":1354575600000,"writer":null,"writerName":"George R. R. Martin"}],"otherInfoMap":{"newMapKey-phone":"newMapValue: +393333111999","newMapKey-address":"newMapValue: 123 Main Street, New York, NY 10030"},"otherInfoObjLiteral":{"newObjKey-address":"newObjValue: 123 Main Street, New York, NY 10030","newObjKey-phone":"newObjValue: +393333111999"},"id":1,"name":"George R. R. Martin"}'));
+
+  const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
+  t.assert(writerParsed instanceof Writer);
+  t.is(writerParsed.id, 1);
+  t.is(writerParsed.name, 'George R. R. Martin');
+  t.assert(writerParsed.otherInfoMap instanceof Map);
+  t.is(writerParsed.otherInfoMap.get('phone'), '+393333111999');
+  t.is(writerParsed.otherInfoMap.get('address'), '123 Main Street, New York, NY 10030');
+  t.is(writerParsed.otherInfoObjLiteral.phone, '+393333111999');
+  t.is(writerParsed.otherInfoObjLiteral.address, '123 Main Street, New York, NY 10030');
+  t.assert(writerParsed.books.length === 1);
+  t.assert(writerParsed.books[0] instanceof Book);
+  t.assert(writerParsed.books[0].date instanceof Date);
+  t.is(writerParsed.books[0].id, 1);
+  t.is(writerParsed.books[0].name, 'Game Of Thrones');
+  t.deepEqual(writerParsed.books[0].date, new Date(2012, 11, 4));
+  t.is(writerParsed.books[0].writer, null);
 });

@@ -8,7 +8,7 @@ import {
   JsonPropertyOptions,
   JsonSetterOptions,
   JsonTypeIdOptions,
-  JsonTypeNameOptions,
+  JsonTypeNameOptions, JsonUnwrappedOptions,
   JsonValueOptions
 } from './index';
 
@@ -70,4 +70,9 @@ export interface JsonTypeNamePrivateOptions extends JsonTypeNameOptions {
 /** @internal */
 export interface JsonTypeIdPrivateOptions extends JsonTypeIdOptions {
   propertyKey: string;
+}
+
+/** @internal */
+export interface JsonUnwrappedPrivateOptions extends JsonUnwrappedOptions {
+  descriptor: TypedPropertyDescriptor<any>;
 }

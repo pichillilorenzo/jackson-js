@@ -230,7 +230,7 @@ export const classHasOwnProperty = (target: Record<string, any>, propertyKey: st
 /**
  * @internal
  */
-export interface MapVirtualPropertiesToClassPropertiesOptions {
+export interface VirtualPropertiesToClassPropertiesMappingOptions {
   checkGetters?: boolean;
   checkSetters?: boolean;
 }
@@ -239,8 +239,16 @@ export interface MapVirtualPropertiesToClassPropertiesOptions {
  * @internal
  */
 export const mapVirtualPropertiesToClassProperties =
-  (target: Record<string, any>, keys: string[], context: JsonStringifierTransformerContext | JsonParserTransformerContext,
-   options: MapVirtualPropertiesToClassPropertiesOptions): string[] => {
+  (target: Record<string, any>, keys: string[],
+   options: VirtualPropertiesToClassPropertiesMappingOptions): string[] =>
+    [...virtualPropertiesToClassPropertiesMapping(target, keys, options).values()];
+
+/**
+ * @internal
+ */
+export const virtualPropertiesToClassPropertiesMapping =
+  (target: Record<string, any>, keys: string[],
+   options: VirtualPropertiesToClassPropertiesMappingOptions): Map<string, string> => {
     options = {
       checkGetters: false,
       checkSetters: false,
@@ -248,7 +256,7 @@ export const mapVirtualPropertiesToClassProperties =
     };
 
     const metadataKeys = Reflect.getMetadataKeys(target);
-    const classProperties: Set<string> = new Set();
+    const propertiesMapping: Map<string, string> = new Map();
 
     for (const key of keys) {
       let getterOrSetterFound = false;
@@ -264,7 +272,7 @@ export const mapVirtualPropertiesToClassProperties =
           if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') {
             if ((options.checkGetters && jsonVirtualProperty.propertyKey.startsWith('get')) ||
               (options.checkSetters && jsonVirtualProperty.propertyKey.startsWith('set'))) {
-              classProperties.add(jsonVirtualProperty.propertyKey);
+              propertiesMapping.set(key, jsonVirtualProperty.propertyKey);
               getterOrSetterFound = true;
               break;
             }
@@ -272,19 +280,52 @@ export const mapVirtualPropertiesToClassProperties =
         }
       }
       if (!getterOrSetterFound) {
-        classProperties.add(key);
+        propertiesMapping.set(key, key);
       }
     }
-    return [...classProperties];
+    return propertiesMapping;
   };
 
 /**
  * @internal
  */
 export const mapVirtualPropertyToClassProperty =
-  (target: Record<string, any>, key: string, context: JsonStringifierTransformerContext | JsonParserTransformerContext,
-   options: MapVirtualPropertiesToClassPropertiesOptions): string =>
-    mapVirtualPropertiesToClassProperties(target, [key], context, options)[0];
+  (target: Record<string, any>, key: string, options: VirtualPropertiesToClassPropertiesMappingOptions): string =>
+    mapVirtualPropertiesToClassProperties(target, [key], options)[0];
+
+/**
+ * @internal
+ */
+export const mapClassPropertiesToVirtualProperties =
+  (target: Record<string, any>, classProperties: string[]): string[] =>
+    [...classPropertiesToVirtualPropertiesMapping(target, classProperties).values()];
+
+/**
+ * @internal
+ */
+export const classPropertiesToVirtualPropertiesMapping =
+  (target: Record<string, any>, classProperties: string[]): Map<string, string> => {
+
+    const propertiesMapping: Map<string, string> = new Map();
+
+    for (const classProperty of classProperties) {
+      const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+        Reflect.getMetadata('jackson:JsonVirtualProperty:' + classProperty, target);
+      if (jsonVirtualProperty) {
+        propertiesMapping.set(classProperty, jsonVirtualProperty.value);
+      } else {
+        propertiesMapping.set(classProperty, classProperty);
+      }
+    }
+    return propertiesMapping;
+  };
+
+/**
+ * @internal
+ */
+export const mapClassPropertyToVirtualProperty =
+  (target: Record<string, any>, key: string): string =>
+    mapClassPropertiesToVirtualProperties(target, [key])[0];
 
 /**
  * @internal

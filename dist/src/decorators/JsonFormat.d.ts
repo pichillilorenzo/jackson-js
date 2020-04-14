@@ -43,7 +43,7 @@ export declare enum JsonFormatShape {
 }
 /**
  * General-purpose decorator used for configuring details of how values of properties are to be serialized.
- * This decorator does not have specific universal interpretation: instead, effect depends on datatype of property being annotated.
+ * This decorator does not have specific universal interpretation: instead, effect depends on datatype of property being decorated.
  *
  * Iterables, such as `Array` and `Set`, can be serialized as JSON Objects if {@link JsonFormatShape.OBJECT} is used.
  *

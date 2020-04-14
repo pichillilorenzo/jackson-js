@@ -3,6 +3,7 @@ import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonFilter, JsonFilterType} from '../src/decorators/JsonFilter';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonGetter} from '../src/decorators/JsonGetter';
 
 test('@JsonFilter at class level', t => {
 
@@ -72,6 +73,76 @@ test('@JsonFilter at property level', t => {
     constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
       this.name = name;
       this.ceo = ceo;
+    }
+  }
+
+  class Employee {
+    @JsonProperty()
+    name: string;
+    @JsonProperty({value: 'empAge'})
+    age: number;
+
+    constructor(name: string, age: number) {
+      this.name = name;
+      this.age = age;
+    }
+  }
+
+  const ceo = new Employee('John Alfa', 50);
+  const company = new Company('Apple', ceo);
+
+  const objectMapper = new ObjectMapper();
+
+  let jsonData = objectMapper.stringify<Company>(company, {
+    filters: {
+      ceoFilter: {
+        type: JsonFilterType.SERIALIZE_ALL_EXCEPT,
+        values: ['empAge']
+      }
+    }
+  });
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"name":"John Alfa"}}'));
+
+  jsonData = objectMapper.stringify<Company>(company, {
+    filters: {
+      ceoFilter: {
+        type: JsonFilterType.FILTER_OUT_ALL_EXCEPT,
+        values: ['empAge']
+      }
+    }
+  });
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"empAge":50}}'));
+
+  jsonData = objectMapper.stringify<Company>(company, {
+    filters: {
+      ceoFilter: {
+        type: JsonFilterType.SERIALIZE_ALL
+      }
+    }
+  });
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Apple","ceo":{"name":"John Alfa","empAge":50}}'));
+});
+
+test('@JsonFilter at method level', t => {
+  class Company {
+    @JsonProperty()
+    name: string;
+
+    @JsonProperty()
+    @JsonClass({class: () => [Employee]})
+    ceo: Employee;
+
+    // eslint-disable-next-line no-shadow
+    constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
+      this.name = name;
+      this.ceo = ceo;
+    }
+
+    @JsonGetter()
+    @JsonFilter({value: 'ceoFilter'})
+    @JsonClass({class: () => [Employee]})
+    getCeo(): Employee {
+      return this.ceo;
     }
   }
 

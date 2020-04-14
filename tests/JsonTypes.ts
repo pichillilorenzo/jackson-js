@@ -14,8 +14,10 @@ import {
   TypeIdResolver
 } from '../src/@types';
 import {JsonTypeIdResolver} from '../src/decorators/JsonTypeIdResolver';
+import {JsonGetter} from '../src/decorators/JsonGetter';
+import {JsonSetter} from '../src/decorators/JsonSetter';
 
-test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
+test('@JsonTypeInfo and @JsonSubTypes at class level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   @JsonTypeInfo({
     use: JsonTypeInfoId.NAME,
     include: JsonTypeInfoAs.PROPERTY
@@ -59,7 +61,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   t.is(animals[1].name, 'Merlin');
 });
 
-test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name and using a custom @JsonTypeIdResolver', t => {
+test('@JsonTypeInfo at class level with JsonTypeInfoAs.PROPERTY without subtypes name and using a custom @JsonTypeIdResolver', t => {
   class CustomTypeIdResolver implements TypeIdResolver {
     idFromValue(obj: any, options: (JsonStringifierTransformerContext | JsonParserTransformerContext)): string {
       if (obj instanceof Dog) {
@@ -118,7 +120,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY without subtypes name and using
   t.is(animals[1].name, 'Merlin');
 });
 
-test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
+test('@JsonTypeInfo and @JsonSubTypes at property level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   class Zoo {
     @JsonTypeInfo({
       use: JsonTypeInfoId.NAME,
@@ -184,7 +186,81 @@ test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without su
   t.is(zooParsed.animals[1].name, 'Merlin');
 });
 
-test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without subtypes name and using a custom @JsonTypeIdResolver', t => {
+test('@JsonTypeInfo and @JsonSubTypes at method level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
+  class Zoo {
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Animal]]})
+    animals: Animal[] = [];
+
+    @JsonGetter()
+    @JsonTypeInfo({
+      use: JsonTypeInfoId.NAME,
+      include: JsonTypeInfoAs.PROPERTY
+    })
+    @JsonSubTypes({
+      types: [
+        {class: () => Dog},
+        {class: () => Cat},
+      ]
+    })
+    @JsonClass({class: () => [Array, [Animal]]})
+    getAnimals(): Animal[] {
+      return this.animals;
+    }
+
+    @JsonSetter()
+    @JsonTypeInfo({
+      use: JsonTypeInfoId.NAME,
+      include: JsonTypeInfoAs.PROPERTY
+    })
+    @JsonSubTypes({
+      types: [
+        {class: () => Dog},
+        {class: () => Cat},
+      ]
+    })
+    setAnimals(@JsonClass({class: () => [Array, [Animal]]}) animals) {
+      this.animals = animals;
+    }
+  }
+
+  class Animal {
+    @JsonProperty()
+    name: string;
+
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+
+  class Dog extends Animal {
+
+  }
+
+  class Cat extends Animal {
+
+  }
+
+  const zoo = new Zoo();
+  const dog = new Dog('Arthur');
+  const cat = new Cat('Merlin');
+  zoo.animals.push(dog, cat);
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<Zoo>(zoo);
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"animals":[{"name":"Arthur","@type":"Dog"},{"name":"Merlin","@type":"Cat"}]}'));
+
+  const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
+  t.assert(zooParsed instanceof Zoo);
+  t.is(zooParsed.animals.length, 2);
+  t.assert(zooParsed.animals[0] instanceof Dog);
+  t.is(zooParsed.animals[0].name, 'Arthur');
+  t.assert(zooParsed.animals[1] instanceof Cat);
+  t.is(zooParsed.animals[1].name, 'Merlin');
+});
+
+test('@JsonTypeInfo at property level with JsonTypeInfoAs.PROPERTY without subtypes name and using a custom @JsonTypeIdResolver', t => {
   class CustomTypeIdResolver implements TypeIdResolver {
     idFromValue(obj: any, options: (JsonStringifierTransformerContext | JsonParserTransformerContext)): string {
       if (obj instanceof Dog) {
@@ -265,7 +341,104 @@ test('@JsonTypeInfo at class field level with JsonTypeInfoAs.PROPERTY without su
   t.is(zooParsed.animals[1].name, 'Merlin');
 });
 
-test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
+test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtypes name and using a custom @JsonTypeIdResolver', t => {
+  class CustomTypeIdResolver implements TypeIdResolver {
+    idFromValue(obj: any, options: (JsonStringifierTransformerContext | JsonParserTransformerContext)): string {
+      if (obj instanceof Dog) {
+        return 'animalDogType';
+      } else if (obj instanceof Cat) {
+        return 'animalCatType';
+      }
+      return null;
+    }
+    typeFromId(id: string, options: (JsonStringifierTransformerContext | JsonParserTransformerContext)): ClassType<any> {
+      switch (id) {
+      case 'animalDogType':
+        return Dog;
+      case 'animalCatType':
+        return Cat;
+      }
+      return null;
+    };
+  }
+
+  class Zoo {
+    @JsonProperty()
+    @JsonClass({class: () => [Array, [Animal]]})
+    animals: Animal[] = [];
+
+    @JsonGetter()
+    @JsonTypeInfo({
+      use: JsonTypeInfoId.NAME,
+      include: JsonTypeInfoAs.PROPERTY
+    })
+    @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
+    @JsonClass({class: () => [Array, [Animal]]})
+    getAnimals(): Animal[] {
+      return this.animals;
+    }
+
+    @JsonSetter()
+    @JsonTypeInfo({
+      use: JsonTypeInfoId.NAME,
+      include: JsonTypeInfoAs.PROPERTY
+    })
+    @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
+    setAnimals(@JsonClass({class: () => [Array, [Animal]]}) animals) {
+      this.animals = animals;
+    }
+  }
+
+  class Animal {
+    @JsonProperty()
+    name: string;
+
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+
+  class Dog extends Animal {
+    @JsonProperty()
+    @JsonClass({class: () => [Dog]})
+    father: Dog;
+    @JsonProperty()
+    @JsonClass({class: () => [Dog]})
+    mother: Dog;
+  }
+
+  class Cat extends Animal {
+
+  }
+
+  const zoo = new Zoo();
+  const dog = new Dog('Arthur');
+  const fatherDog = new Dog('Buddy');
+  const motherDog = new Dog('Coco');
+  dog.father = fatherDog;
+  dog.mother = motherDog;
+  const cat = new Cat('Merlin');
+  zoo.animals.push(dog, cat);
+
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<Zoo>(zoo);
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"animals":[{"name":"Arthur","father":{"name":"Buddy"},"mother":{"name":"Coco"},"@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]}'));
+
+  const zooParsed = objectMapper.parse<Zoo>(jsonData, {mainCreator: () => [Zoo]});
+  t.assert(zooParsed instanceof Zoo);
+  t.is(zooParsed.animals.length, 2);
+  t.assert(zooParsed.animals[0] instanceof Dog);
+  t.is(zooParsed.animals[0].name, 'Arthur');
+  t.assert((zooParsed.animals[0] as Dog).father instanceof Dog);
+  t.is((zooParsed.animals[0] as Dog).father.name, 'Buddy');
+  t.assert((zooParsed.animals[0] as Dog).mother instanceof Dog);
+  t.is((zooParsed.animals[0] as Dog).mother.name, 'Coco');
+  t.assert(zooParsed.animals[1] instanceof Cat);
+  t.is(zooParsed.animals[1].name, 'Merlin');
+});
+
+test('@JsonTypeInfo and @JsonSubTypes at parameter level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   class Zoo {
     @JsonProperty()
     @JsonClass({class: () => [Array, [Animal]]})
@@ -651,7 +824,6 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
       return 'CatTypeId';
     }
   }
-
 
   const dog = new Dog('Arthur');
   dog.typeId = 'DogTypeId';

@@ -380,11 +380,9 @@ test('@JsonIdentityInfo One To Many at property level', t => {
   item1.owner = user;
   item2.owner = user;
 
-  user.items.push(...[item1, item2]);
-
   const objectMapper = new ObjectMapper();
 
-  const jsonData = objectMapper.stringify<User>(user);
+  const jsonData = objectMapper.stringify<Item>(item1);
   // eslint-disable-next-line max-len
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"name":"Book","owner":{"items":[1,{"id":2,"name":"Computer","owner":1}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}}'));
 
@@ -578,16 +576,17 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string) {
       this.id = id;
       this.name = name;
-      this.owner = owner;
     }
   }
 
   const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
-  const item1 = new Item(2, 'Book', user);
-  const item2 = new Item(3, 'Computer', user);
+  const item1 = new Item(2, 'Book');
+  item1.owner = user;
+  const item2 = new Item(3, 'Computer');
+  item2.owner = user;
   user.items.push(...[item1, item2]);
 
   const objectMapper = new ObjectMapper();
@@ -633,26 +632,27 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string) {
       this.id = id;
       this.name = name;
-      this.owner = owner;
     }
   }
 
   const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
-  const item1 = new Item(2, 'Book', user);
-  const item2 = new Item(3, 'Computer', user);
+  const item1 = new Item(2, 'Book');
+  item1.owner = user;
+  const item2 = new Item(3, 'Computer');
+  item2.owner = user;
   user.items.push(...[item1, item2]);
 
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[2,3]}'));
 });
 
-test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter level', t => {
+test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
     @JsonProperty()
@@ -666,7 +666,6 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter lev
 
     @JsonProperty()
     @JsonClass({class: () => [Array, [Item]]})
-    @JsonIdentityReference({alwaysAsId: true})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -674,6 +673,13 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter lev
       this.email = email;
       this.firstname = firstname;
       this.lastname = lastname;
+    }
+
+    @JsonGetter()
+    @JsonClass({class: () => [Array, [Item]]})
+    @JsonIdentityReference({alwaysAsId: true})
+    getItems() {
+      return this.items;
     }
   }
 
@@ -688,21 +694,22 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at parameter lev
     @JsonClass({class: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string) {
       this.id = id;
       this.name = name;
-      this.owner = owner;
     }
   }
 
   const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
-  const item1 = new Item(2, 'Book', user);
-  const item2 = new Item(3, 'Computer', user);
+  const item1 = new Item(2, 'Book');
+  item1.owner = user;
+  const item2 = new Item(3, 'Computer');
+  item2.owner = user;
   user.items.push(...[item1, item2]);
 
   const objectMapper = new ObjectMapper();
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[2,3],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[2,3]}'));
 });

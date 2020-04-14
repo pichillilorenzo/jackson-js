@@ -103,7 +103,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#attributes" class="tsd-kind-icon">attributes</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#decoratorsenabled" class="tsd-kind-icon">decorators<wbr>Enabled</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#features" class="tsd-kind-icon">features</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#features" class="tsd-kind-icon">features</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#filters" class="tsd-kind-icon">filters</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#fortype" class="tsd-kind-icon">for<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#format" class="tsd-kind-icon">format</a></li>
@@ -122,7 +122,7 @@
 					<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L184">src/@types/index.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L255">src/@types/index.ts:255</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -141,7 +141,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#decoratorsenabled">decoratorsEnabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L159">src/@types/index.ts:159</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L227">src/@types/index.ts:227</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -153,21 +153,34 @@
 						</ul>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 					<a name="features" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> features</h3>
-					<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<div class="tsd-signature tsd-kind-icon">features<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>mapper<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>serialization<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#features">features</a></p>
+						<p>Overrides <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#features">features</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L156">src/@types/index.ts:156</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L258">src/@types/index.ts:258</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
-							<li class="tsd-parameter-index-signature">
-								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
+							<li class="tsd-parameter">
+								<h5>mapper<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>serialization<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</div>
@@ -178,7 +191,7 @@
 					<div class="tsd-signature tsd-kind-icon">filters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L187">src/@types/index.ts:187</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L266">src/@types/index.ts:266</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -197,7 +210,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#fortype">forType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L162">src/@types/index.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L230">src/@types/index.ts:230</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -207,7 +220,7 @@
 					<div class="tsd-signature tsd-kind-icon">format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L190">src/@types/index.ts:190</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L269">src/@types/index.ts:269</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -217,18 +230,18 @@
 					<div class="tsd-signature tsd-kind-icon">serializers<span class="tsd-signature-symbol">:</span> <a href="../modules/types.html#objectmapperserializer" class="tsd-signature-type">ObjectMapperSerializer</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L191">src/@types/index.ts:191</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L270">src/@types/index.ts:270</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="withviews" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Views</h3>
-					<div class="tsd-signature tsd-kind-icon">with<wbr>Views<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../modules/types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">with<wbr>Views<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="../modules/types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#withviews">withViews</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/@types/index.ts#L155">src/@types/index.ts:155</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/@types/index.ts#L218">src/@types/index.ts:218</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -236,16 +249,10 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
-											</li>
-										</ul>
 										<h4 class="tsd-returns-title">Returns <a href="../modules/types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h4>
 									</li>
 								</ul>
@@ -288,7 +295,7 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#decoratorsenabled" class="tsd-kind-icon">decorators<wbr>Enabled</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite">
 								<a href="types.jsonstringifiercontextwithoutmaincreatorcontext.html#features" class="tsd-kind-icon">features</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">

@@ -69,6 +69,13 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Definition of standard type inclusion mechanisms for type metadata.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -92,9 +99,15 @@
 					<div class="tsd-signature tsd-kind-icon">PROPERTY<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonTypeInfo.ts#L15">src/decorators/JsonTypeInfo.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonTypeInfo.ts#L29">src/decorators/JsonTypeInfo.ts:29</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Inclusion mechanism that uses a single configurable property, included along with actual data
+							(Class properties) as a separate meta-property.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="wrapper_array" class="tsd-anchor"></a>
@@ -102,9 +115,16 @@
 					<div class="tsd-signature tsd-kind-icon">WRAPPER_<wbr>ARRAY<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonTypeInfo.ts#L17">src/decorators/JsonTypeInfo.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonTypeInfo.ts#L41">src/decorators/JsonTypeInfo.ts:41</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Inclusion mechanism that wraps typed JSON value (Class serialized as JSON)
+								in a 2-element JSON array: first element is the serialized type identifier,
+							and second element the serialized Class as JSON Object.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="wrapper_object" class="tsd-anchor"></a>
@@ -112,9 +132,16 @@
 					<div class="tsd-signature tsd-kind-icon">WRAPPER_<wbr>OBJECT<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonTypeInfo.ts#L16">src/decorators/JsonTypeInfo.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonTypeInfo.ts#L35">src/decorators/JsonTypeInfo.ts:35</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Inclusion mechanism that wraps typed JSON value (Class serialized as JSON)
+								in a JSON Object that has a single entry, where field name is serialized type identifier,
+							and value is the actual JSON value.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>

@@ -69,6 +69,14 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Used by <a href="../modules/decorators.html#jsonproperty">JsonProperty</a>, it specifies how property
+						may be accessed during serialization and deserialization.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -76,7 +84,6 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonpropertyaccess.html#auto" class="tsd-kind-icon">AUTO</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonpropertyaccess.html#read_only" class="tsd-kind-icon">READ_<wbr>ONLY</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonpropertyaccess.html#read_write" class="tsd-kind-icon">READ_<wbr>WRITE</a></li>
 								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonpropertyaccess.html#write_only" class="tsd-kind-icon">WRITE_<wbr>ONLY</a></li>
@@ -88,24 +95,20 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="auto" class="tsd-anchor"></a>
-					<h3>AUTO</h3>
-					<div class="tsd-signature tsd-kind-icon">AUTO<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonProperty.ts#L14">src/decorators/JsonProperty.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="read_only" class="tsd-anchor"></a>
 					<h3>READ_<wbr>ONLY</h3>
 					<div class="tsd-signature tsd-kind-icon">READ_<wbr>ONLY<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonProperty.ts#L12">src/decorators/JsonProperty.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonProperty.ts#L21">src/decorators/JsonProperty.ts:21</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access setting that means that the property may only be read for serialization
+							but not written (set) during deserialization.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="read_write" class="tsd-anchor"></a>
@@ -113,9 +116,16 @@
 					<div class="tsd-signature tsd-kind-icon">READ_<wbr>WRITE<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonProperty.ts#L13">src/decorators/JsonProperty.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonProperty.ts#L27">src/decorators/JsonProperty.ts:27</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access setting that means that the property will be accessed for both serialization
+								(writing out values as external representation) and deserialization
+							(reading values from external representation).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
 					<a name="write_only" class="tsd-anchor"></a>
@@ -123,9 +133,16 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>ONLY<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonProperty.ts#L11">src/decorators/JsonProperty.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonProperty.ts#L33">src/decorators/JsonProperty.ts:33</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access setting that means that the property may only be written (set) as part of deserialization
+								but will not be read (get) for serialization, that is,
+							the value of the property is not included in serialization.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -156,9 +173,6 @@
 					<li class="current tsd-kind-enum tsd-parent-kind-module">
 						<a href="decorators.jsonpropertyaccess.html" class="tsd-kind-icon">Json<wbr>Property<wbr>Access</a>
 						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonpropertyaccess.html#auto" class="tsd-kind-icon">AUTO</a>
-							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
 								<a href="decorators.jsonpropertyaccess.html#read_only" class="tsd-kind-icon">READ_<wbr>ONLY</a>
 							</li>

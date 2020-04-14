@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>JsonNamingStrategy | jackson-js</title>
+	<title>JsonSetterNulls | jackson-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,16 +59,24 @@
 					<a href="../modules/decorators.html">Decorators</a>
 				</li>
 				<li>
-					<a href="decorators.jsonnamingstrategy.html">JsonNamingStrategy</a>
+					<a href="decorators.jsonsetternulls.html">JsonSetterNulls</a>
 				</li>
 			</ul>
-			<h1>Enumeration JsonNamingStrategy</h1>
+			<h1>Enumeration JsonSetterNulls</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Used with <a href="../modules/decorators.html#jsonsetter">JsonSetter</a> (for properties <code>nulls</code> and <code>contentNulls</code>) to define
+						how explicit <code>null</code> values from input are handled.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
@@ -76,12 +84,9 @@
 						<section class="tsd-index-section ">
 							<h3>Enumeration members</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#kebab_case" class="tsd-kind-icon">KEBAB_<wbr>CASE</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#lower_camel_case" class="tsd-kind-icon">LOWER_<wbr>CAMEL_<wbr>CASE</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#lower_case" class="tsd-kind-icon">LOWER_<wbr>CASE</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#lower_dot_case" class="tsd-kind-icon">LOWER_<wbr>DOT_<wbr>CASE</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#snake_case" class="tsd-kind-icon">SNAKE_<wbr>CASE</a></li>
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonnamingstrategy.html#upper_camel_case" class="tsd-kind-icon">UPPER_<wbr>CAMEL_<wbr>CASE</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonsetternulls.html#fail" class="tsd-kind-icon">FAIL</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonsetternulls.html#set" class="tsd-kind-icon">SET</a></li>
+								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="decorators.jsonsetternulls.html#skip" class="tsd-kind-icon">SKIP</a></li>
 							</ul>
 						</section>
 					</div>
@@ -90,64 +95,51 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Enumeration members</h2>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="kebab_case" class="tsd-anchor"></a>
-					<h3>KEBAB_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">KEBAB_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
+					<a name="fail" class="tsd-anchor"></a>
+					<h3>FAIL</h3>
+					<div class="tsd-signature tsd-kind-icon">FAIL<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L18">src/decorators/JsonNaming.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonSetter.ts#L21">src/decorators/JsonSetter.ts:21</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that an exception (of type that indicates input mismatch problem)
+							is to be thrown, to indicate that null values are not accepted.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="lower_camel_case" class="tsd-anchor"></a>
-					<h3>LOWER_<wbr>CAMEL_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">LOWER_<wbr>CAMEL_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
+					<a name="set" class="tsd-anchor"></a>
+					<h3>SET</h3>
+					<div class="tsd-signature tsd-kind-icon">SET<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L16">src/decorators/JsonNaming.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonSetter.ts#L26">src/decorators/JsonSetter.ts:26</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that an input null should result in assignment of JavaScript <code>null</code>value
+							of matching property.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="lower_case" class="tsd-anchor"></a>
-					<h3>LOWER_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">LOWER_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
+					<a name="skip" class="tsd-anchor"></a>
+					<h3>SKIP</h3>
+					<div class="tsd-signature tsd-kind-icon">SKIP<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L17">src/decorators/JsonNaming.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/decorators/JsonSetter.ts#L30">src/decorators/JsonSetter.ts:30</a></li>
 						</ul>
 					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="lower_dot_case" class="tsd-anchor"></a>
-					<h3>LOWER_<wbr>DOT_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">LOWER_<wbr>DOT_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L19">src/decorators/JsonNaming.ts:19</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="snake_case" class="tsd-anchor"></a>
-					<h3>SNAKE_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">SNAKE_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L14">src/decorators/JsonNaming.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="upper_camel_case" class="tsd-anchor"></a>
-					<h3>UPPER_<wbr>CAMEL_<wbr>CASE</h3>
-					<div class="tsd-signature tsd-kind-icon">UPPER_<wbr>CAMEL_<wbr>CASE<span class="tsd-signature-symbol">:</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/decorators/JsonNaming.ts#L15">src/decorators/JsonNaming.ts:15</a></li>
-						</ul>
-					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Value that indicates that an input null value should be skipped and no assignment is to be made.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -176,25 +168,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-enum tsd-parent-kind-module">
-						<a href="decorators.jsonnamingstrategy.html" class="tsd-kind-icon">Json<wbr>Naming<wbr>Strategy</a>
+						<a href="decorators.jsonsetternulls.html" class="tsd-kind-icon">Json<wbr>Setter<wbr>Nulls</a>
 						<ul>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#kebab_case" class="tsd-kind-icon">KEBAB_<wbr>CASE</a>
+								<a href="decorators.jsonsetternulls.html#fail" class="tsd-kind-icon">FAIL</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#lower_camel_case" class="tsd-kind-icon">LOWER_<wbr>CAMEL_<wbr>CASE</a>
+								<a href="decorators.jsonsetternulls.html#set" class="tsd-kind-icon">SET</a>
 							</li>
 							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#lower_case" class="tsd-kind-icon">LOWER_<wbr>CASE</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#lower_dot_case" class="tsd-kind-icon">LOWER_<wbr>DOT_<wbr>CASE</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#snake_case" class="tsd-kind-icon">SNAKE_<wbr>CASE</a>
-							</li>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="decorators.jsonnamingstrategy.html#upper_camel_case" class="tsd-kind-icon">UPPER_<wbr>CAMEL_<wbr>CASE</a>
+								<a href="decorators.jsonsetternulls.html#skip" class="tsd-kind-icon">SKIP</a>
 							</li>
 						</ul>
 					</li>

@@ -80,6 +80,7 @@ export declare class JsonParser<T> {
      * @param obj
      */
     private parseJsonCreator;
+    private parseJsonInject;
     private parseJsonSetter;
     /**
      *
@@ -176,7 +177,19 @@ export declare class JsonParser<T> {
      * @param context
      * @param key
      */
-    private parseHasJsonView;
+    private parseIsIncludedByJsonViewProperty;
+    /**
+     *
+     * @param context
+     * @param key
+     */
+    private parseIsIncludedByJsonViewParam;
+    /**
+     *
+     * @param jsonView
+     * @param context
+     */
+    private parseIsIncludedByJsonView;
     /**
      *
      * @param replacement

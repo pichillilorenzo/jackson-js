@@ -6,6 +6,7 @@
 import {getArgumentNames, makeJacksonDecorator} from '../util';
 import 'reflect-metadata';
 import {JsonInjectDecorator, JsonInjectOptions} from '../@types';
+import {JacksonError} from '../core/JacksonError';
 
 /**
  * Decorator used for indicating that value of decorated property will be "injected" through
@@ -61,6 +62,19 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
     }
 
     if (propertyKey != null) {
+      if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
+        const methodName = propertyKey.toString();
+        if (methodName.startsWith('get') || methodName.startsWith('set')) {
+          options.value = methodName.substring(3);
+          if (options.value.length > 0) {
+            options.value = options.value.charAt(0).toLowerCase() + options.value.substring(1);
+          }
+        }
+        if (!options.value) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError(`Invalid usage of @JsonInject() on ${((target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonInject() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
+        }
+      }
       Reflect.defineMetadata('jackson:JsonInject', options, target.constructor, propertyKey);
     }
   });

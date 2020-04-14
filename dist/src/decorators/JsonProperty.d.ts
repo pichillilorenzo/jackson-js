@@ -36,7 +36,7 @@ export declare enum JsonPropertyAccess {
  * but it can be specified to non-empty value to specify different name.
  * Property name refers to name used externally, as the field name in JSON objects.
  *
- * **IMPORTANT**: Each class property must be decorated with this decorator,
+ * **IMPORTANT**: Each class property (or its getter/setter) must be decorated with this decorator,
  * otherwise deserialization and serialization will not work!
  * That's because, for example, given a JavaScript class, there isn't any way or API
  * (such as Reflection API for Java - {@link https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html})

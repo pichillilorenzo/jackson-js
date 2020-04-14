@@ -98,6 +98,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core.jsonstringifier.html#deeptransform" class="tsd-kind-icon">deep<wbr>Transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core.jsonstringifier.html#stringify" class="tsd-kind-icon">stringify</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="core.jsonstringifier.html#transform" class="tsd-kind-icon">transform</a></li>
 							</ul>
@@ -117,7 +118,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/core/JsonStringifier.ts#L85">src/core/JsonStringifier.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/core/JsonStringifier.ts#L83">src/core/JsonStringifier.ts:83</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="core.jsonstringifier.html" class="tsd-signature-type">JsonStringifier</a></h4>
@@ -128,6 +129,40 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="deeptransform" class="tsd-anchor"></a>
+					<h3>deep<wbr>Transform</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">deep<wbr>Transform<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a>, valueAlreadySeen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/core/JsonStringifier.ts#L126">src/core/JsonStringifier.ts:126</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>key: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>context: <a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a></h5>
+								</li>
+								<li>
+									<h5>valueAlreadySeen: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="stringify" class="tsd-anchor"></a>
 					<h3>stringify</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -137,7 +172,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/core/JsonStringifier.ts#L98">src/core/JsonStringifier.ts:98</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/core/JsonStringifier.ts#L96">src/core/JsonStringifier.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -161,13 +196,13 @@
 					<a name="transform" class="tsd-anchor"></a>
 					<h3>transform</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a>, valueAlreadySeen<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a>, valueAlreadySeen<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/80e4e82/src/core/JsonStringifier.ts#L116">src/core/JsonStringifier.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0f957d6/src/core/JsonStringifier.ts#L109">src/core/JsonStringifier.ts:109</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -181,10 +216,10 @@
 									<h5>value: <span class="tsd-signature-type">any</span></h5>
 								</li>
 								<li>
-									<h5>context: <a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> context: <a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol"> = {}</span></h5>
 								</li>
 								<li>
-									<h5>valueAlreadySeen: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> valueAlreadySeen: <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map&lt;any, any&gt;()</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -228,6 +263,9 @@
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
 								<a href="core.jsonstringifier.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="core.jsonstringifier.html#deeptransform" class="tsd-kind-icon">deep<wbr>Transform</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="core.jsonstringifier.html#stringify" class="tsd-kind-icon">stringify</a>

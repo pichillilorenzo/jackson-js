@@ -148,7 +148,7 @@ test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
   t.assert(err instanceof JacksonError);
 });
 
-test('Using @JsonProperty as getters and setters', t => {
+test('Using @JsonProperty as getters and setters at method level', t => {
   class Employee {
     @JsonProperty()
     id: number;

@@ -30,6 +30,11 @@ export enum JsonFilterType {
 
 /**
  * Decorator used to indicate which logical filter is to be used for filtering out properties of type (class) decorated.
+ * Association made by this decorator declaring ids of filters,
+ * and {@link JsonStringifierContext} providing matching filters by id.
+ *
+ * When used for properties (fields, methods), this decorator applies to values:
+ * so when applied to Iterables and Maps, it will apply to contained values, not the container.
  *
  * @example
  * ```typescript

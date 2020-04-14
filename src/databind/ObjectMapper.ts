@@ -15,12 +15,20 @@ import {
 import {JsonParser} from '../core/JsonParser';
 import {SerializationFeature} from './SerializationFeature';
 import {DeserializationFeature} from './DeserializationFeature';
+import {MapperFeature} from './MapperFeature';
 
 /**
  *
  */
 export class ObjectMapper {
   features: ObjectMapperFeatures = {
+    mapper: {
+      [MapperFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
+      [MapperFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
+      [MapperFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
+      [MapperFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
+      [MapperFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
+    },
     serialization: {
       [SerializationFeature.FAIL_ON_SELF_REFERENCES]: true,
       [SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS]: false,
@@ -29,12 +37,7 @@ export class ObjectMapper {
       [SerializationFeature.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE]: false,
       [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER]: false,
       [SerializationFeature.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE]: false,
-      [SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]: true,
-      [SerializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
-      [SerializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
-      [SerializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
-      [SerializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
-      [SerializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
+      [SerializationFeature.WRITE_DATES_AS_TIMESTAMPS]: true
     },
     deserialization: {
       [DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES]: true,
@@ -44,12 +47,7 @@ export class ObjectMapper {
       [DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS]: true,
       [DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT]: false,
       [DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT]: false,
-      [DeserializationFeature.ACCEPT_FLOAT_AS_INT]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL]: false,
-      [DeserializationFeature.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL]: false
+      [DeserializationFeature.ACCEPT_FLOAT_AS_INT]: false
     }
   };
   serializers: ObjectMapperSerializer[] = [];
@@ -73,7 +71,10 @@ export class ObjectMapper {
     const jsonStringifier = new JsonStringifier<T>();
     return jsonStringifier.stringify(obj, {
       serializers: this.serializers,
-      features: this.features.serialization,
+      features: {
+        mapper: this.features.mapper,
+        serialization: this.features.serialization
+      },
       filters: {},
       attributes: {},
       decoratorsEnabled: {},
@@ -93,7 +94,10 @@ export class ObjectMapper {
     const jsonParser = new JsonParser<T>();
     return jsonParser.parse(text, {
       deserializers: this.deserializers,
-      features: this.features.deserialization,
+      features: {
+        mapper: this.features.mapper,
+        deserialization: this.features.deserialization
+      },
       injectableValues: {},
       decoratorsEnabled: {},
       _internalDecorators: new Map(),

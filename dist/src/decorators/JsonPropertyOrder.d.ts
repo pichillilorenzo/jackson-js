@@ -10,6 +10,9 @@ import { JsonPropertyOrderDecorator } from '../@types';
  * followed by any properties not included in the definition.
  * This decorator definition will override any implicit orderings.
  *
+ * When used for properties (fields, methods), this decorator applies to values:
+ * so when applied to Iterables and Maps, it will apply to contained values, not the container.
+ *
  * @example
  * ```typescript
  * @JsonPropertyOrder({value: ['email', 'lastname']})

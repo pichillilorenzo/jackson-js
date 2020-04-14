@@ -144,6 +144,22 @@ export declare class JsonStringifier<T> {
     private stringifyJsonSerializeProperty;
     /**
      *
+     * @param replacement
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
+    private stringifyJsonSerializePropertyNull;
+    /**
+     *
+     * @param replacement
+     * @param oldKey
+     * @param newKey
+     * @param context
+     */
+    private stringifyJsonSerializeMap;
+    /**
+     *
      * @param obj
      * @param key
      * @param context
