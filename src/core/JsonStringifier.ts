@@ -276,9 +276,14 @@ export class JsonStringifier<T> {
 
               const jsonIdentityInfo: JsonIdentityInfoOptions =
                 getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, context);
-              if (value === value[k] && jsonIdentityInfo == null && context.features.serialization.FAIL_ON_SELF_REFERENCES) {
-                // eslint-disable-next-line max-len
-                throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${currentMainCreator.name}["${k}"])`);
+              if (value === value[k] && jsonIdentityInfo == null) {
+                if (context.features.serialization.FAIL_ON_SELF_REFERENCES) {
+                  // eslint-disable-next-line max-len
+                  throw new JacksonError(`Direct self-reference leading to cycle (through reference chain: ${currentMainCreator.name}["${k}"])`);
+                }
+                if (context.features.serialization.WRITE_SELF_REFERENCES_AS_NULL) {
+                  value[k] = null;
+                }
               }
 
               this.propagateDecorators(value, k, context);
@@ -655,10 +660,13 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyJsonRootName(replacement: any, obj: any, context: JsonStringifierTransformerContext): any {
-    const jsonRootName: JsonRootNameOptions = getMetadata('jackson:JsonRootName', context.mainCreator[0], null, context);
-    if (jsonRootName && jsonRootName.value) {
+    if (context.features.serialization.WRAP_ROOT_VALUE) {
+      const jsonRootName: JsonRootNameOptions =
+        getMetadata('jackson:JsonRootName', context.mainCreator[0], null, context);
+      const wrapKey = (jsonRootName && jsonRootName.value) ? jsonRootName.value : context.mainCreator[0].constructor.name;
+
       const newReplacement = {};
-      newReplacement[jsonRootName.value] = replacement;
+      newReplacement[wrapKey] = replacement;
       return newReplacement;
     }
     return replacement;
@@ -1233,6 +1241,8 @@ export class JsonStringifier<T> {
    */
   private stringifyMapAndObjLiteral(key: string, map: Map<any, any> | Record<string, any>,
                                     context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
+    const currentMainCreator = context.mainCreator;
+
     const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context._propertyParentCreator, key, context);
 
     let jsonInclude: JsonIncludeOptions =
@@ -1290,6 +1300,15 @@ export class JsonStringifier<T> {
             continue;
           }
           break;
+        }
+      }
+
+      if (context.features.serialization.WRITE_DATE_KEYS_AS_TIMESTAMPS) {
+        if (map instanceof Map && mapKey instanceof Date) {
+          mapKey = mapKey.getTime();
+        } else if (!(map instanceof Map) && currentMainCreator[0] === Object && currentMainCreator.length === 2 &&
+          currentMainCreator[1].length > 0 && currentMainCreator[1][0] === Date) {
+          mapKey = new Date(mapKey).getTime();
         }
       }
 

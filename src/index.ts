@@ -3,6 +3,7 @@ import {ObjectMapper} from './databind/ObjectMapper';
 import {JsonIdentityInfo, ObjectIdGenerator} from './decorators/JsonIdentityInfo';
 import {JsonClass} from "./decorators/JsonClass";
 import {DefaultDeserializationFeatureValues} from "./databind/DeserializationFeature";
+import {JsonRootName} from "./decorators/JsonRootName";
 
 //
 // // class DateSerializer {
@@ -744,8 +745,5 @@ import {DefaultDeserializationFeatureValues} from "./databind/DeserializationFea
 // objectMapper.features.serialization[SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS] = true;
 // const jsonData = objectMapper.stringify<User>(user);
 // console.log(jsonData);
-
-
-
 
 

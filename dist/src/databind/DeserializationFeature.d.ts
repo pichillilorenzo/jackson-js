@@ -31,6 +31,14 @@ export interface DeserializationFeature {
     FAIL_ON_MISSING_CREATOR_PROPERTIES?: boolean;
     FAIL_ON_NULL_CREATOR_PROPERTIES?: boolean;
     FAIL_ON_UNRESOLVED_OBJECT_IDS?: boolean;
+    /**
+     * Feature to allow "unwrapping" root-level JSON value, to match setting of {@link SerializationFeature.WRAP_ROOT_VALUE}
+     * used for serialization. Will verify that the root JSON value is a JSON Object,
+     * and that it has a single property with expected root name.
+     * If not, a {@link JacksonError} is thrown;
+     * otherwise value of the wrapped property will be deserialized as if it was the root value.
+     */
+    UNWRAP_ROOT_VALUE?: boolean;
 }
 /**
  * Variable that defines default feature values for {@link ObjectMapper} and {@link JsonParser}.

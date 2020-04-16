@@ -935,10 +935,15 @@ export class JsonParser<T> {
    * @param context
    */
   private parseJsonRootName(replacement: any, context: JsonParserTransformerContext): any {
-    const jsonRootName: JsonRootNameOptions =
-      getMetadata('jackson:JsonRootName', context.mainCreator[0], null, context);
-    if (jsonRootName && jsonRootName.value) {
-      return replacement[jsonRootName.value];
+    if (context.features.deserialization.UNWRAP_ROOT_VALUE) {
+      const jsonRootName: JsonRootNameOptions =
+        getMetadata('jackson:JsonRootName', context.mainCreator[0], null, context);
+      const wrapKey = (jsonRootName && jsonRootName.value) ? jsonRootName.value : context.mainCreator[0].constructor.name;
+      if (!(wrapKey in replacement) || Object.getOwnPropertyNames(replacement).length !== 1) {
+        // eslint-disable-next-line max-len
+        throw new JacksonError(`No JSON Object with single property as root name "${wrapKey}" found to unwrap value at [Source "${JSON.stringify(replacement)}"]`);
+      }
+      return replacement[wrapKey];
     }
     return replacement;
   }
@@ -1537,11 +1542,13 @@ export class JsonParser<T> {
         mapValue = (jsonDeserialize.contentUsing) ?
           jsonDeserialize.contentUsing(mapValue, context) : mapValue;
       }
+
+      const mapKeyParsed = this.deepTransform('', mapKey, keyNewContext);
       const mapValueParsed = this.deepTransform(mapKey, mapValue, valueNewContext);
       if (map instanceof Map) {
-        map.set(mapKey, mapValueParsed);
+        map.set(mapKeyParsed, mapValueParsed);
       } else {
-        map[mapKey] = mapValueParsed;
+        map[mapKeyParsed] = mapValueParsed;
       }
     }
 

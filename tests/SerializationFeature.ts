@@ -160,3 +160,61 @@ test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
 
   t.assert(errInfiniteRecursion instanceof Error);
 });
+
+test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
+  class Event {
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    @JsonClass({class: () => [Map, [Date, String]]})
+    infoMap: Map<Date, string> = new Map<Date, string>();
+    @JsonProperty()
+    @JsonClass({class: () => [Object, [Date, String]]})
+    infoObjLiteral = {};
+
+    constructor(name: string) {
+      this.name = name;
+    }
+  }
+  const eventDate = new Date(1586993967000);
+  const event = new Event('Event 1');
+  event.infoMap.set(eventDate, 'info map');
+  // @ts-ignore
+  event.infoObjLiteral[eventDate] = 'info obj literal';
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRITE_DATE_KEYS_AS_TIMESTAMPS = true;
+
+  const jsonData = objectMapper.stringify<Event>(event);
+  // eslint-disable-next-line max-len
+  t.is(JSON.parse(jsonData), JSON.parse('{"infoMap":{"1586993967000":"info map"},"infoObjLiteral":{"1586993967000":"info obj literal"},"name":"Event 1"}'));
+});
+
+test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    userRef: User;
+
+    constructor(id: number, firstname: string, lastname: string) {
+      this.id = id;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  const user = new User(1, 'John', 'Alfa');
+  user.userRef = user;
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.FAIL_ON_SELF_REFERENCES = false;
+  objectMapper.features.serialization.WRITE_SELF_REFERENCES_AS_NULL = true;
+
+  const jsonData = objectMapper.stringify<User>(user);
+  // eslint-disable-next-line max-len
+  t.is(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","userRef":null}'));
+});

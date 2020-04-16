@@ -28,12 +28,28 @@ export interface SerializationFeature {
      * if disabled, order is unspecified (based on what JavaScript gives us, which may be declaration order, but is not guaranteed).
      */
     SORT_PROPERTIES_ALPHABETICALLY?: boolean;
+    /**
+     * Feature that can be enabled to make root value wrapped within a single property JSON object, where key as the "root name".
+     */
+    WRAP_ROOT_VALUE?: boolean;
     WRITE_NAN_AS_ZERO?: boolean;
     WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER?: boolean;
     WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE?: boolean;
     WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER?: boolean;
     WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE?: boolean;
     WRITE_DATES_AS_TIMESTAMPS?: boolean;
+    /**
+     * Feature that determines whether Dates used as `Map` or Object Literal keys
+     * are serialized as time stamps or not (if not, will be serialized as textual values).
+     */
+    WRITE_DATE_KEYS_AS_TIMESTAMPS?: boolean;
+    /**
+     * Feature that determines what happens when a direct self-reference is detected by
+     * a Class (and no Object Id handling is enabled for it): if enabled write that reference as null;
+     * if disabled, default behavior is used (which will try to serialize usually resulting in exception).
+     * But if {@link FAIL_ON_SELF_REFERENCES} is enabled, this property is ignored.
+     */
+    WRITE_SELF_REFERENCES_AS_NULL?: boolean;
 }
 /**
  * Variable that defines default feature values for {@link ObjectMapper} and {@link JsonStringifier}.
