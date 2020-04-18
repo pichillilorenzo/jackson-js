@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonManagedReferenceDecorator, JsonManagedReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} from '../@types/private';
@@ -61,7 +60,7 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
   }),
   (options: JsonManagedReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      if (Reflect.hasMetadata('jackson:JsonManagedReference:' + options.value, target.constructor)) {
+      if (hasMetadata('JsonManagedReference:' + options.value, target.constructor, null, {withContextGroups: options.contextGroups})) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`Multiple managed-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
       }
@@ -79,9 +78,9 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
           propertyKey: oppositePropertyKey,
           ...options
         };
-        Reflect.defineMetadata('jackson:JsonManagedReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+        defineMetadata('JsonManagedReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
       }
 
-      Reflect.defineMetadata('jackson:JsonManagedReference', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonManagedReference', privateOptions, target.constructor, propertyKey);
     }
   });

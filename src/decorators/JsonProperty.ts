@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {getArgumentNames, isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, getArgumentNames, makeJacksonDecorator} from '../util';
 import {JsonPropertyDecorator, JsonPropertyOptions} from '../@types';
 import {JsonPropertyPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
@@ -112,15 +111,21 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
         privateOptions.value = argNames[descriptorOrParamIndex];
       }
 
-      Reflect.defineMetadata(
-        'jackson:JsonPropertyParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonPropertyParam',
         privateOptions, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
 
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonProperty', privateOptions, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonProperty:' + propertyKey.toString(), privateOptions, target.constructor);
-      Reflect.defineMetadata('jackson:JsonVirtualProperty:' + propertyKey.toString(), privateOptions, target.constructor);
+      defineMetadata('JsonProperty', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonProperty', privateOptions, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
+      defineMetadata('JsonVirtualProperty', privateOptions, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
     }
   });

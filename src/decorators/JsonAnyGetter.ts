@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonAnyGetterDecorator, JsonAnyGetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonAnyGetterPrivateOptions} from '../@types/private';
@@ -48,7 +47,7 @@ export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      if (Reflect.hasMetadata('jackson:JsonAnyGetter', target.constructor)) {
+      if (hasMetadata('JsonAnyGetter', target.constructor, null, {withContextGroups: privateOptions.contextGroups})) {
         throw new JacksonError(`Multiple 'any-getters' defined for "${target.constructor.name}".`);
       }
 
@@ -70,6 +69,6 @@ export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
         }
       }
 
-      Reflect.defineMetadata('jackson:JsonAnyGetter', privateOptions, target.constructor);
+      defineMetadata('JsonAnyGetter', privateOptions, target.constructor);
     }
   });

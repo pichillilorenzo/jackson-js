@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonFormatDecorator } from '../@types';
 /**
  * Value enumeration used for indicating preferred Shape; translates loosely to JSON types.

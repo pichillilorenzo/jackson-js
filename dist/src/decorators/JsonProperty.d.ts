@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonPropertyDecorator } from '../@types';
 /**
  * Used by {@link JsonProperty}, it specifies how property

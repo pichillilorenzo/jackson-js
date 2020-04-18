@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {JsonFormatDecorator, JsonFormatOptions} from '../@types';
 
 /**
@@ -108,10 +107,10 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonFormat', options, target);
+      defineMetadata('JsonFormat', options, target);
       return target;
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonFormat', options, target.constructor, propertyKey);
+      defineMetadata('JsonFormat', options, target.constructor, propertyKey);
     }
   });

@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIdentityInfoDecorator } from '../@types';
 /**
  * Generator to use for producing Object Identifier for objects

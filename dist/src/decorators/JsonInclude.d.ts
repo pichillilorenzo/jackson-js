@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIncludeDecorator } from '../@types';
 /**
  * Enumeration used with {@link JsonInclude} to define which properties of a Class are to be included in serialization.

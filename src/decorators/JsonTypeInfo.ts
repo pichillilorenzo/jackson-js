@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {JsonTypeInfoDecorator, JsonTypeInfoOptions} from '../@types';
 
 /**
@@ -89,16 +88,18 @@ export const JsonTypeInfo: JsonTypeInfoDecorator = makeJacksonDecorator(
     }),
   (options: JsonTypeInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonTypeInfo', options, target);
+      defineMetadata('JsonTypeInfo', options, target);
       return target;
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonTypeInfoParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonTypeInfoParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonTypeInfo', options, target.constructor, propertyKey);
+      defineMetadata('JsonTypeInfo', options, target.constructor, propertyKey);
     }
   });

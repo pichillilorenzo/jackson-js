@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {JsonTypeNameDecorator, JsonTypeNameOptions} from '../@types';
 import {JsonTypeNamePrivateOptions} from '../@types/private';
 
@@ -53,9 +52,13 @@ export const JsonTypeName: JsonTypeNameDecorator = makeJacksonDecorator(
         privateOptions.value = (target as ObjectConstructor).name;
       }
 
-      Reflect.defineMetadata('jackson:JsonTypeName', privateOptions, target);
-      Reflect.defineMetadata('jackson:JsonTypeName:' + options.value, privateOptions, target);
-      Reflect.defineMetadata('jackson:JsonTypeName:' + (target as ObjectConstructor).name, privateOptions, target);
+      defineMetadata('JsonTypeName', privateOptions, target);
+      defineMetadata('JsonTypeName', privateOptions, target, null, {
+        suffix: options.value
+      });
+      defineMetadata('JsonTypeName', privateOptions, target, null, {
+        suffix: (target as ObjectConstructor).name
+      });
       return target;
     }
   });

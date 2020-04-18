@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonCreatorDecorator } from '../@types';
 /**
  * Default creator name used by {@link JsonCreator}.

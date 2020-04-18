@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {
   JsonNamingDecorator,
   JsonNamingOptions
@@ -71,7 +70,7 @@ export const JsonNaming: JsonNamingDecorator = makeJacksonDecorator(
     }),
   (options: JsonNamingOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonNaming', options, target);
+      defineMetadata('JsonNaming', options, target);
       return target;
     }
   });

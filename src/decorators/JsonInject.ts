@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {getArgumentNames, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, getArgumentNames, makeJacksonDecorator} from '../util';
 import {JsonInjectDecorator, JsonInjectOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 
@@ -56,9 +55,11 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
         options.value = argNames[descriptorOrParamIndex];
       }
 
-      Reflect.defineMetadata('jackson:JsonInjectParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata('JsonInjectParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
 
     if (propertyKey != null) {
@@ -75,6 +76,6 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
           throw new JacksonError(`Invalid usage of @JsonInject() on ${((target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonInject() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
         }
       }
-      Reflect.defineMetadata('jackson:JsonInject', options, target.constructor, propertyKey);
+      defineMetadata('JsonInject', options, target.constructor, propertyKey);
     }
   });

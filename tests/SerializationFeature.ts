@@ -187,7 +187,7 @@ test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
 
   const jsonData = objectMapper.stringify<Event>(event);
   // eslint-disable-next-line max-len
-  t.is(JSON.parse(jsonData), JSON.parse('{"infoMap":{"1586993967000":"info map"},"infoObjLiteral":{"1586993967000":"info obj literal"},"name":"Event 1"}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"infoMap":{"1586993967000":"info map"},"infoObjLiteral":{"1586993967000":"info obj literal"},"name":"Event 1"}'));
 });
 
 test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
@@ -216,5 +216,5 @@ test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.is(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","userRef":null}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","userRef":null}'));
 });

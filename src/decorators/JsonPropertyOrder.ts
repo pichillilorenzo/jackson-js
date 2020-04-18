@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass} from '../util';
-import 'reflect-metadata';
+import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
 import {JsonPropertyOrderDecorator, JsonPropertyOrderOptions} from '../@types';
 
 /**
@@ -40,16 +39,18 @@ export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorato
   }),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonPropertyOrder', options, target);
+      defineMetadata('JsonPropertyOrder', options, target);
       return target;
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonPropertyOrderParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonPropertyOrderParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonPropertyOrder', options, target.constructor, propertyKey);
+      defineMetadata('JsonPropertyOrder', options, target.constructor, propertyKey);
     }
   });

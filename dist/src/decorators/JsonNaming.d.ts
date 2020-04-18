@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonNamingDecorator } from '../@types';
 /**
  * Strategies that defines how names of JSON properties ("external names")

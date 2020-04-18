@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass} from '../util';
-import 'reflect-metadata';
+import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
 import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
 
 /**
@@ -46,16 +45,18 @@ export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
   (o: JsonSubTypesOptions): JsonSubTypesOptions => ({enabled: true, ...o}),
   (options: JsonSubTypesOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonSubTypes', options, target);
+      defineMetadata('JsonSubTypes', options, target);
       return target;
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonSubTypesParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonSubTypesParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonSubTypes', options, target.constructor, propertyKey);
+      defineMetadata('JsonSubTypes', options, target.constructor, propertyKey);
     }
   });

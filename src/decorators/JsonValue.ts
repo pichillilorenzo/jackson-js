@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonValueDecorator, JsonValueOptions} from '../@types';
 import {JsonValuePrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
@@ -44,7 +43,7 @@ export const JsonValue: JsonValueDecorator = makeJacksonDecorator(
   (o: JsonValueOptions): JsonValueOptions => ({enabled: true, ...o}),
   (options: JsonValueOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      if (Reflect.hasMetadata('jackson:JsonValue', target.constructor)) {
+      if (hasMetadata('JsonValue', target.constructor, null, {withContextGroups: options.contextGroups})) {
         throw new JacksonError(`Multiple @JsonValue() decorators for ${target.constructor}.'`);
       }
 
@@ -52,6 +51,6 @@ export const JsonValue: JsonValueDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      Reflect.defineMetadata('jackson:JsonValue', privateOptions, target.constructor);
+      defineMetadata('JsonValue', privateOptions, target.constructor);
     }
   });

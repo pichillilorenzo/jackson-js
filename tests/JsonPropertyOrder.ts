@@ -144,6 +144,7 @@ test('@JsonPropertyOrder at class level with value and @JsonRootName', t => {
 
   const user = new User(1, 'john.alfa@gmail.com', 'John Alfa');
   const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRAP_ROOT_VALUE = true;
   const jsonData = objectMapper.stringify<User>(user);
   t.is(jsonData, '{"User":{"email":"john.alfa@gmail.com","id":1,"name":"John Alfa"}}');
 });

@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonClassDecorator, JsonClassOptions} from '../@types';
 
 /**
@@ -41,13 +40,17 @@ export const JsonClass: JsonClassDecorator = makeJacksonDecorator(
   (o: JsonClassOptions): JsonClassOptions => ({enabled: true, ...o}),
   (options: JsonClassOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonClassParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonClassParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonClass', options, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonClass:' + propertyKey.toString(), options, target.constructor);
+      defineMetadata('JsonClass', options, target.constructor, propertyKey);
+      defineMetadata('JsonClass', options, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
     }
   });

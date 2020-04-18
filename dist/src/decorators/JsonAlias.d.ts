@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonAliasDecorator } from '../@types';
 /**
  * Decorator that can be used to define one or more alternative names for a property,

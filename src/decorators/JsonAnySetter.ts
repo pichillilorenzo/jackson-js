@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonAnySetterDecorator, JsonAnySetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonAnySetterPrivateOptions} from '../@types/private';
@@ -48,9 +47,9 @@ export const JsonAnySetter: JsonAnySetterDecorator = makeJacksonDecorator(
         propertyKey: propertyKey.toString(),
         ...options
       };
-      if (Reflect.hasMetadata('jackson:JsonAnySetter', target.constructor)) {
+      if (hasMetadata('JsonAnySetter', target.constructor, null, {withContextGroups: privateOptions.contextGroups})) {
         throw new JacksonError(`Multiple 'any-setters' defined for "${target.constructor.name}".`);
       }
-      Reflect.defineMetadata('jackson:JsonAnySetter', privateOptions, target.constructor);
+      defineMetadata('JsonAnySetter', privateOptions, target.constructor);
     }
   });

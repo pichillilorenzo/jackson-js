@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonBackReferenceDecorator, JsonBackReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 import {JsonBackReferencePrivateOptions} from '../@types/private';
@@ -62,7 +61,7 @@ export const JsonBackReference: JsonBackReferenceDecorator = makeJacksonDecorato
   }),
   (options: JsonBackReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      if (Reflect.hasMetadata('jackson:JsonBackReference:' + options.value, target.constructor)) {
+      if (hasMetadata('JsonBackReference:' + options.value, target.constructor, null, {withContextGroups: options.contextGroups})) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`Multiple back-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
       }
@@ -80,15 +79,19 @@ export const JsonBackReference: JsonBackReferenceDecorator = makeJacksonDecorato
           propertyKey: oppositePropertyKey,
           ...options
         };
-        Reflect.defineMetadata('jackson:JsonBackReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+        defineMetadata('JsonBackReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
         if (prefix === 'set') {
-          Reflect.defineMetadata('jackson:JsonBackReference:' + oppositePrivateOptions.value, oppositePrivateOptions,
-            target.constructor);
+          defineMetadata('JsonBackReference', oppositePrivateOptions,
+            target.constructor, null, {
+              suffix: oppositePrivateOptions.value
+            });
         }
       } else {
-        Reflect.defineMetadata('jackson:JsonBackReference:' + privateOptions.value, privateOptions, target.constructor);
+        defineMetadata('JsonBackReference', privateOptions, target.constructor, null, {
+          suffix: privateOptions.value
+        });
       }
 
-      Reflect.defineMetadata('jackson:JsonBackReference', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonBackReference', privateOptions, target.constructor, propertyKey);
     }
   });

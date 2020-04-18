@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass} from '../util';
-import 'reflect-metadata';
+import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
 import {JsonIncludeDecorator, JsonIncludeOptions} from '../@types';
 
 /**
@@ -82,10 +81,10 @@ export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
   (o: JsonIncludeOptions): JsonIncludeOptions => ({enabled: true, value: JsonIncludeType.ALWAYS, ...o}),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonInclude', options, target);
+      defineMetadata('JsonInclude', options, target);
       return target;
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonInclude', options, target.constructor, propertyKey);
+      defineMetadata('JsonInclude', options, target.constructor, propertyKey);
     }
   });

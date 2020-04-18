@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonAliasDecorator, JsonAliasOptions} from '../@types';
 
 /**
@@ -33,12 +32,16 @@ export const JsonAlias: JsonAliasDecorator = makeJacksonDecorator(
   (o: JsonAliasOptions): JsonAliasOptions => ({enabled: true, ...o}),
   (options: JsonAliasOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonAlias', options, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonAlias:' + propertyKey.toString(), options, target.constructor);
+      defineMetadata('JsonAlias', options, target.constructor, propertyKey);
+      defineMetadata('JsonAlias', options, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata('jackson:JsonAliasParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata('JsonAliasParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
   });

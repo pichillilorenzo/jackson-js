@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, hasMetadata, isClass, makeJacksonDecorator} from '../util';
 import {JsonCreatorDecorator, JsonCreatorOptions} from '../@types';
 import {JsonCreatorPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
@@ -109,10 +108,13 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex !== 'number' &&
       typeof descriptorOrParamIndex.value === 'function') {
       privateOptions.method = descriptorOrParamIndex.value;
-      if (privateOptions.name && Reflect.hasMetadata('jackson:JsonCreator:' + privateOptions.name, target)) {
+      if (privateOptions.name &&
+        hasMetadata('JsonCreator:' + privateOptions.name, target, null, {withContextGroups: options.contextGroups})) {
         throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.name}".`);
       }
-      Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
+      defineMetadata('JsonCreator', privateOptions, target, null, {
+        suffix: privateOptions.name
+      });
     } else if (descriptorOrParamIndex == null && isClass(target)) {
       privateOptions.ctor = target;
       // get original constructor
@@ -120,7 +122,9 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
         privateOptions.ctor = Object.getPrototypeOf(privateOptions.ctor);
       }
 
-      Reflect.defineMetadata('jackson:JsonCreator:' + privateOptions.name, privateOptions, target);
+      defineMetadata('JsonCreator', privateOptions, target, null, {
+        suffix: privateOptions.name
+      });
       return target;
     }
   });

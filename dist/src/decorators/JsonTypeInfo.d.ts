@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonTypeInfoDecorator } from '../@types';
 /**
  * Definition of different type identifiers that can be included in JSON during serialization, and used for deserialization.

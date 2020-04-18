@@ -177,6 +177,10 @@ export interface JsonStringifierParserCommonContext<T> {
      */
     withViews?: () => ClassType<any>[];
     /**
+     * List of context groups used to serialize/deserialize JSON objects.
+     */
+    withContextGroups?: string[];
+    /**
      * Property that defines simple on/off features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
      */
     features?: {
@@ -186,9 +190,18 @@ export interface JsonStringifierParserCommonContext<T> {
          */
         mapper: MapperFeature;
     };
+    /**
+     * Property whose keys are the decorators name that will be enabled/disabled during serialization/deserialization.
+     */
     decoratorsEnabled?: {
         [key: string]: boolean;
     };
+    /**
+     * Property whose keys are JavaScript Classes and its values are contexts to be used only for that JavaScript Classes.
+     *
+     * More specific contexts can be nested one inside the other. In this way, specific contexts can be applied to a
+     * JavaScript Class only if the nested JavaScript Class is found as one of the values of the parent JavaScript Class properties.
+     */
     forType?: WeakMap<ClassType<any>, T>;
 }
 /**
@@ -313,11 +326,16 @@ export declare type ObjectMapperDeserializer = ObjectMapperCustomMapper<Deserial
  */
 export interface JsonDecoratorOptions {
     /**
-     * Option that defines whether this decorator is active or not.
+     * Property that defines whether this decorator is active or not.
      *
      * @default `true`
      */
     enabled?: boolean;
+    /**
+     * Property that defines whether this decorator is part of a context group
+     * or multiple groups.
+     */
+    contextGroups?: string[];
 }
 export declare type JsonDecorator = <T>(options: JsonDecoratorOptions, target: Record<string, any>, propertyKey: string | symbol, descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
 /**

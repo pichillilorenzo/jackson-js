@@ -97,6 +97,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonserializeoptions.html#contentusing" class="tsd-kind-icon">content<wbr>Using</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonserializeoptions.html#contextgroups" class="tsd-kind-icon">context<wbr>Groups</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonserializeoptions.html#enabled" class="tsd-kind-icon">enabled</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonserializeoptions.html#keyusing" class="tsd-kind-icon">key<wbr>Using</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonserializeoptions.html#nullsusing" class="tsd-kind-icon">nulls<wbr>Using</a></li>
@@ -114,7 +115,7 @@
 					<div class="tsd-signature tsd-kind-icon">content<wbr>Using<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L744">src/@types/index.ts:744</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L841">src/@types/index.ts:841</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -158,18 +159,35 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="contextgroups" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context<wbr>Groups</h3>
+					<div class="tsd-signature tsd-kind-icon">context<wbr>Groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="types.jsondecoratoroptions.html">JsonDecoratorOptions</a>.<a href="types.jsondecoratoroptions.html#contextgroups">contextGroups</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L479">src/@types/index.ts:479</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Property that defines whether this decorator is part of a context group
+							or multiple groups.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="enabled" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> enabled</h3>
 					<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsondecoratoroptions.html">JsonDecoratorOptions</a>.<a href="types.jsondecoratoroptions.html#enabled">enabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L389">src/@types/index.ts:389</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L474">src/@types/index.ts:474</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Option that defines whether this decorator is active or not.</p>
+							<p>Property that defines whether this decorator is active or not.</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>default</dt>
@@ -184,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">key<wbr>Using<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L753">src/@types/index.ts:753</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L850">src/@types/index.ts:850</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -233,7 +251,7 @@
 					<div class="tsd-signature tsd-kind-icon">nulls<wbr>Using<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L760">src/@types/index.ts:760</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L857">src/@types/index.ts:857</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -276,7 +294,7 @@
 					<div class="tsd-signature tsd-kind-icon">using<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/cc3a503/src/@types/index.ts#L735">src/@types/index.ts:735</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/2376a44/src/@types/index.ts#L832">src/@types/index.ts:832</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -349,6 +367,9 @@
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="types.jsonserializeoptions.html#contentusing" class="tsd-kind-icon">content<wbr>Using</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="types.jsonserializeoptions.html#contextgroups" class="tsd-kind-icon">context<wbr>Groups</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="types.jsonserializeoptions.html#enabled" class="tsd-kind-icon">enabled</a>

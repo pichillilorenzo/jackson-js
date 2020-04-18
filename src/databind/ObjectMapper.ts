@@ -74,6 +74,7 @@ export class ObjectMapper {
 
     const jsonStringifier = new JsonStringifier<T>();
     return jsonStringifier.stringify(obj, {
+      withContextGroups: [],
       serializers: this.serializers,
       features: {
         mapper: this.features.mapper,
@@ -98,6 +99,7 @@ export class ObjectMapper {
 
     const jsonParser = new JsonParser<T>();
     return jsonParser.parse(text, {
+      withContextGroups: [],
       deserializers: this.deserializers,
       features: {
         mapper: this.features.mapper,

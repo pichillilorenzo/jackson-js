@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {
   JsonAppendDecorator,
   JsonAppendOptions
@@ -53,7 +52,7 @@ export const JsonAppend: JsonAppendDecorator = makeJacksonDecorator(
     }),
   (options: JsonAppendOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonAppend', options, target);
+      defineMetadata('JsonAppend', options, target);
       return target;
     }
   });

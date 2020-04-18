@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass} from '../util';
-import 'reflect-metadata';
+import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
 import {JsonRootNameDecorator, JsonRootNameOptions} from '../@types';
 
 /**
@@ -44,7 +43,7 @@ export const JsonRootName: JsonRootNameDecorator = makeJacksonDecorator(
   (options: JsonRootNameOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
       options.value = (options.value == null) ? (target as ObjectConstructor).name : options.value;
-      Reflect.defineMetadata('jackson:JsonRootName', options, target);
+      defineMetadata('JsonRootName', options, target);
       return target;
     }
   });

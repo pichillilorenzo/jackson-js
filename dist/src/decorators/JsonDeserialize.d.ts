@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonDeserializeDecorator } from '../@types';
 /**
  * Decorator used to indicates the use of a custom deserializer.

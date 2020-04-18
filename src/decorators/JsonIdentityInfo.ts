@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {
   JsonIdentityInfoDecorator,
   JsonIdentityInfoOptions
@@ -100,16 +99,18 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
     }),
   (options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target);
+      defineMetadata('JsonIdentityInfo', options, target);
       return target;
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonIdentityInfoParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonIdentityInfoParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonIdentityInfo', options, target.constructor, propertyKey);
+      defineMetadata('JsonIdentityInfo', options, target.constructor, propertyKey);
     }
   });

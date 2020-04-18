@@ -42,7 +42,7 @@ import {
   isSameConstructor,
   isSameConstructorOrExtensionOf,
   isValueEmpty,
-  isVariablePrimitiveType, mapVirtualPropertiesToClassProperties
+  isVariablePrimitiveType, makeMetadataKeysWithContext, mapVirtualPropertiesToClassProperties
 } from '../util';
 import {JsonTypeInfoAs, JsonTypeInfoId} from '../decorators/JsonTypeInfo';
 import {JsonFormatShape} from '../decorators/JsonFormat';
@@ -127,6 +127,7 @@ export class JsonStringifier<T> {
    */
   deepTransform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
     context = {
+      withContextGroups: [],
       features: {
         mapper: DefaultMapperFeatureValues,
         serialization: DefaultSerializationFeatureValues
@@ -223,14 +224,14 @@ export class JsonStringifier<T> {
 
         let replacement = {};
 
-        const jsonValueOptions: JsonValuePrivateOptions = getMetadata('jackson:JsonValue', context.mainCreator[0], null, context);
+        const jsonValueOptions: JsonValuePrivateOptions = getMetadata('JsonValue', context.mainCreator[0], null, context);
         if (jsonValueOptions) {
           const jsonValue = this.stringifyJsonValue(value, context);
           const newContext: JsonStringifierTransformerContext = cloneDeep(context);
 
           let newMainCreator;
           const jsonClass: JsonClassOptions =
-            getMetadata('jackson:JsonClass', currentMainCreator, jsonValueOptions.propertyKey, context);
+            getMetadata('JsonClass', currentMainCreator, jsonValueOptions.propertyKey, context);
           if (jsonClass && jsonClass.class) {
             newMainCreator = jsonClass.class();
           } else {
@@ -251,7 +252,7 @@ export class JsonStringifier<T> {
           this.stringifyJsonAppend(replacement, value, context);
         }
 
-        let keys = getClassProperties(currentMainCreator, value, {
+        let keys = getClassProperties(currentMainCreator, value, context, {
           withGettersAsProperty: true
         });
 
@@ -265,7 +266,7 @@ export class JsonStringifier<T> {
             !this.stringifyIsIgnoredByJsonPropertyAccess(k, context) &&
             !this.stringifyHasJsonBackReference(value, k, context) &&
             !this.stringifyIsPropertyKeyExcludedByJsonFilter(value, k, context) &&
-            classHasOwnProperty(currentMainCreator, k, value, {withGettersAsProperty: true})) {
+            classHasOwnProperty(currentMainCreator, k, value, context, {withGettersAsProperty: true})) {
 
             let newKey = this.stringifyJsonNaming(replacement, value, k, context);
             namingMap.set(k, newKey);
@@ -275,7 +276,7 @@ export class JsonStringifier<T> {
             if (!this.hasJsonIdentityReferenceAlwaysAsId(value, context)) {
 
               const jsonIdentityInfo: JsonIdentityInfoOptions =
-                getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, context);
+                getMetadata('JsonIdentityInfo', currentMainCreator, null, context);
               if (value === value[k] && jsonIdentityInfo == null) {
                 if (context.features.serialization.FAIL_ON_SELF_REFERENCES) {
                   // eslint-disable-next-line max-len
@@ -342,7 +343,7 @@ export class JsonStringifier<T> {
             newContext._propertyParentCreator = currentMainCreator;
 
             let newMainCreator;
-            const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, oldKey, context);
+            const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
             if (jsonClass && jsonClass.class) {
               newMainCreator = jsonClass.class();
             } else {
@@ -450,18 +451,18 @@ export class JsonStringifier<T> {
    */
   private propagateDecorators(obj: any, key: string, context: JsonStringifierTransformerContext): void {
     const currentMainCreator = context.mainCreator[0];
-    const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, key, context);
+    const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, key, context);
 
     // Decorators list that can be propagated
     const metadataKeys = [
-      'jackson:JsonIgnoreProperties',
-      'jackson:JsonTypeInfo',
-      'jackson:JsonSubTypes',
-      'jackson:JsonTypeIdResolver',
-      'jackson:JsonFilter',
-      'jackson:JsonIdentityInfo',
-      'jackson:JsonIdentityReference',
-      'jackson:JsonPropertyOrder'
+      'JsonIgnoreProperties',
+      'JsonTypeInfo',
+      'JsonSubTypes',
+      'JsonTypeIdResolver',
+      'JsonFilter',
+      'JsonIdentityInfo',
+      'JsonIdentityReference',
+      'JsonPropertyOrder'
     ];
 
     const decoratorsNameFound = [];
@@ -471,21 +472,25 @@ export class JsonStringifier<T> {
     let deepestClass = null;
     if (jsonClass) {
       deepestClass = getDeepestClass(jsonClass.class());
+    } else {
+      deepestClass = (obj[key] != null) ? obj[key].constructor : Object;
     }
 
     for (const metadataKey of metadataKeys) {
       const jsonDecoratorOptions: JsonDecoratorOptions = getMetadata(metadataKey, currentMainCreator, key, context);
       if (jsonDecoratorOptions) {
-        decoratorsNameFound.push(metadataKey.replace('jackson:', ''));
-        decoratorsToBeApplied[metadataKey] = jsonDecoratorOptions;
+        const metadataKeysWithContext =
+          makeMetadataKeysWithContext(metadataKey, {contextGroups: jsonDecoratorOptions.contextGroups});
+        for (const metadataKeyWithContext of metadataKeysWithContext) {
+          decoratorsToBeApplied[metadataKeyWithContext] = jsonDecoratorOptions;
+        }
+
+        decoratorsNameFound.push(metadataKey);
       }
     }
 
     if (deepestClass != null && decoratorsNameFound.length > 0) {
       context._internalDecorators.set(deepestClass, decoratorsToBeApplied);
-    } else if (!jsonClass && decoratorsNameFound.length > 0) {
-      // eslint-disable-next-line max-len
-      throw new JacksonError(`Missing mandatory @JsonClass() for [${decoratorsNameFound.map((ann) => '@' + ann + '()').join(', ')}] at ${currentMainCreator.name}["${key}"]`);
     }
   }
 
@@ -499,10 +504,10 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
-      getMetadata('jackson:JsonVirtualProperty:' + key, currentMainCreator, null, context);
+      getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
     const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
-      getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, context);
+      getMetadata('JsonIgnoreProperties', currentMainCreator, null, context);
     if (jsonVirtualProperty &&
       !(jsonIgnoreProperties && !jsonIgnoreProperties.allowGetters && jsonIgnoreProperties.value.includes(jsonVirtualProperty.value)) ) {
       return (jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') ?
@@ -520,7 +525,7 @@ export class JsonStringifier<T> {
   private stringifyJsonAnyGetter(replacement: any, obj: any, context: JsonStringifierTransformerContext): void {
     const currentMainCreator = context.mainCreator[0];
 
-    const jsonAnyGetter: JsonAnyGetterPrivateOptions = getMetadata('jackson:JsonAnyGetter', currentMainCreator, null, context);
+    const jsonAnyGetter: JsonAnyGetterPrivateOptions = getMetadata('JsonAnyGetter', currentMainCreator, null, context);
     if (jsonAnyGetter && obj[jsonAnyGetter.propertyKey]) {
       const map = (typeof obj[jsonAnyGetter.propertyKey] === 'function') ?
         obj[jsonAnyGetter.propertyKey]() :
@@ -557,17 +562,17 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonPropertyOrder: JsonPropertyOrderOptions =
-      getMetadata('jackson:JsonPropertyOrder', currentMainCreator, null, context);
+      getMetadata('JsonPropertyOrder', currentMainCreator, null, context);
     if (context.features.serialization.SORT_PROPERTIES_ALPHABETICALLY || jsonPropertyOrder) {
       const classProperties = (jsonPropertyOrder) ?
-        mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, {checkGetters: true}) :
+        mapVirtualPropertiesToClassProperties(currentMainCreator, jsonPropertyOrder.value, context, {checkGetters: true}) :
         [];
 
       let remainingKeys = keys.filter(key => !classProperties.includes(key));
 
       if (context.features.serialization.SORT_PROPERTIES_ALPHABETICALLY || jsonPropertyOrder.alphabetic) {
         const remainingKeysToVirtualPropertiesMapping =
-          classPropertiesToVirtualPropertiesMapping(currentMainCreator, remainingKeys);
+          classPropertiesToVirtualPropertiesMapping(currentMainCreator, remainingKeys, context);
         const remainingVirtualKeysOrdered = new Map(
           [...remainingKeysToVirtualPropertiesMapping.entries()]
             .sort((a, b) => a[1] > b[1] ? 1 : -1)
@@ -590,7 +595,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyIsIgnoredByJsonPropertyAccess(oldKey: string, context: JsonStringifierTransformerContext): boolean {
-    const jsonProperty: JsonPropertyOptions = getMetadata('jackson:JsonProperty', context.mainCreator[0], oldKey, context);
+    const jsonProperty: JsonPropertyOptions = getMetadata('JsonProperty', context.mainCreator[0], oldKey, context);
     if (jsonProperty) {
       return jsonProperty.access === JsonPropertyAccess.WRITE_ONLY;
     }
@@ -609,7 +614,7 @@ export class JsonStringifier<T> {
   private stringifyJsonVirtualProperty(replacement: any, obj: any, oldKey: string, newKey: string,
                                        context: JsonStringifierTransformerContext, namingMap: Map<string, string>): string {
     const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
-      getMetadata('jackson:JsonVirtualProperty:' + oldKey, context.mainCreator[0], null, context);
+      getMetadata('JsonVirtualProperty:' + oldKey, context.mainCreator[0], null, context);
 
     if (jsonVirtualProperty && jsonVirtualProperty.value !== oldKey) {
       const newKeyUpdated = this.stringifyJsonNaming(replacement, obj, jsonVirtualProperty.value, context);
@@ -634,7 +639,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonRawValue(replacement: any, obj: any, oldKey: string, newKey: string,
                                 context: JsonStringifierTransformerContext): void {
-    const jsonRawValue = hasMetadata('jackson:JsonRawValue', context.mainCreator[0], oldKey, context);
+    const jsonRawValue = hasMetadata('JsonRawValue', context.mainCreator[0], oldKey, context);
     if (jsonRawValue) {
       replacement[newKey] = JSON.parse(replacement[newKey]);
     }
@@ -646,7 +651,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyJsonValue(obj: any, context: JsonStringifierTransformerContext): null | any  {
-    const jsonValue: JsonValuePrivateOptions = getMetadata('jackson:JsonValue', context.mainCreator[0], null, context);
+    const jsonValue: JsonValuePrivateOptions = getMetadata('JsonValue', context.mainCreator[0], null, context);
     if (jsonValue) {
       return (typeof obj[jsonValue.propertyKey] === 'function') ? obj[jsonValue.propertyKey]() : obj[jsonValue.propertyKey];
     }
@@ -662,7 +667,7 @@ export class JsonStringifier<T> {
   private stringifyJsonRootName(replacement: any, obj: any, context: JsonStringifierTransformerContext): any {
     if (context.features.serialization.WRAP_ROOT_VALUE) {
       const jsonRootName: JsonRootNameOptions =
-        getMetadata('jackson:JsonRootName', context.mainCreator[0], null, context);
+        getMetadata('JsonRootName', context.mainCreator[0], null, context);
       const wrapKey = (jsonRootName && jsonRootName.value) ? jsonRootName.value : context.mainCreator[0].constructor.name;
 
       const newReplacement = {};
@@ -679,7 +684,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonSerializeClass(key: string, obj: any, context: JsonStringifierTransformerContext): any {
     const jsonSerialize: JsonSerializeOptions =
-      getMetadata('jackson:JsonSerialize', context.mainCreator[0], null, context);
+      getMetadata('JsonSerialize', context.mainCreator[0], null, context);
     if (jsonSerialize && jsonSerialize.using) {
       return jsonSerialize.using(obj, context);
     }
@@ -696,7 +701,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonSerializeProperty(replacement: any, obj: any, oldKey: string, newKey: string,
                                          context: JsonStringifierTransformerContext): void {
-    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
+    const jsonSerialize: JsonSerializeOptions = getMetadata('JsonSerialize', context.mainCreator[0], oldKey, context);
     if (jsonSerialize && jsonSerialize.using) {
       replacement[newKey] = jsonSerialize.using(replacement[newKey], context);
     }
@@ -711,7 +716,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonSerializePropertyNull(replacement: any, oldKey: string, newKey: string,
                                              context: JsonStringifierTransformerContext): void {
-    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context.mainCreator[0], oldKey, context);
+    const jsonSerialize: JsonSerializeOptions = getMetadata('JsonSerialize', context.mainCreator[0], oldKey, context);
     if (jsonSerialize && jsonSerialize.nullsUsing) {
       replacement[newKey] = jsonSerialize.nullsUsing(context);
     }
@@ -726,14 +731,14 @@ export class JsonStringifier<T> {
   private stringifyHasJsonIgnore(obj: any, key: string, context: JsonStringifierTransformerContext): boolean {
     const currentMainCreator = context.mainCreator[0];
 
-    const hasJsonIgnore = hasMetadata('jackson:JsonIgnore', currentMainCreator, key, context);
+    const hasJsonIgnore = hasMetadata('JsonIgnore', currentMainCreator, key, context);
 
     if (!hasJsonIgnore) {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
-        getMetadata('jackson:JsonIgnoreProperties', currentMainCreator, null, context);
+        getMetadata('JsonIgnoreProperties', currentMainCreator, null, context);
       if (jsonIgnoreProperties) {
         const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
-          getMetadata('jackson:JsonVirtualProperty:' + key, currentMainCreator, null, context);
+          getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
         if (jsonVirtualProperty && jsonIgnoreProperties.value.includes(jsonVirtualProperty.value)) {
           if (jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function' &&
@@ -759,9 +764,9 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const keyJsonInclude: JsonIncludeOptions =
-      getMetadata('jackson:JsonInclude', currentMainCreator, key, context);
+      getMetadata('JsonInclude', currentMainCreator, key, context);
     const constructorJsonInclude: JsonIncludeOptions =
-      getMetadata('jackson:JsonInclude', currentMainCreator, null, context);
+      getMetadata('JsonInclude', currentMainCreator, null, context);
     const jsonInclude = (keyJsonInclude) ? keyJsonInclude : constructorJsonInclude;
 
     if (jsonInclude) {
@@ -787,7 +792,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyJsonIgnoreType(obj: any, context: JsonStringifierTransformerContext): boolean {
-    return hasMetadata('jackson:JsonIgnoreType', context.mainCreator[0], null, context);
+    return hasMetadata('JsonIgnoreType', context.mainCreator[0], null, context);
   }
 
   /**
@@ -797,7 +802,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyHasJsonBackReference(obj: any, key: string, context: JsonStringifierTransformerContext): boolean {
-    return hasMetadata('jackson:JsonBackReference', context.mainCreator[0], key, context);
+    return hasMetadata('JsonBackReference', context.mainCreator[0], key, context);
   }
 
   /**
@@ -809,19 +814,19 @@ export class JsonStringifier<T> {
   private stringifyJsonTypeInfo(replacement: any, obj: any, context: JsonStringifierTransformerContext): any {
     const currentMainCreator = context.mainCreator[0];
 
-    const jsonTypeInfo: JsonTypeInfoOptions = getMetadata('jackson:JsonTypeInfo', currentMainCreator, null, context);
+    const jsonTypeInfo: JsonTypeInfoOptions = getMetadata('JsonTypeInfo', currentMainCreator, null, context);
     if (jsonTypeInfo) {
       let jsonTypeName: string;
 
       const jsonTypeIdResolver: JsonTypeIdResolverOptions =
-        getMetadata('jackson:JsonTypeIdResolver', currentMainCreator, null, context);
+        getMetadata('JsonTypeIdResolver', currentMainCreator, null, context);
       if (jsonTypeIdResolver && jsonTypeIdResolver.resolver) {
         jsonTypeName = jsonTypeIdResolver.resolver.idFromValue(obj, context);
       }
 
       if (!jsonTypeName) {
         const jsonTypeId: JsonTypeIdPrivateOptions =
-          getMetadata('jackson:JsonTypeId', currentMainCreator, null, context);
+          getMetadata('JsonTypeId', currentMainCreator, null, context);
         if (jsonTypeId) {
           if (typeof obj[jsonTypeId.propertyKey] === 'function') {
             jsonTypeName = obj[jsonTypeId.propertyKey]();
@@ -834,7 +839,7 @@ export class JsonStringifier<T> {
 
       if (!jsonTypeName) {
         const jsonSubTypes: JsonSubTypesOptions =
-          getMetadata('jackson:JsonSubTypes', currentMainCreator, null, context);
+          getMetadata('JsonSubTypes', currentMainCreator, null, context);
         if (jsonSubTypes && jsonSubTypes.types) {
           for (const subType of jsonSubTypes.types) {
             if (subType.name && isSameConstructor(subType.class(), currentMainCreator)) {
@@ -847,7 +852,7 @@ export class JsonStringifier<T> {
 
       if (!jsonTypeName) {
         const jsonTypeNameOptions: JsonTypeNamePrivateOptions =
-          getMetadata('jackson:JsonTypeName', currentMainCreator, null, context);
+          getMetadata('JsonTypeName', currentMainCreator, null, context);
         if (jsonTypeNameOptions && jsonTypeNameOptions.value != null && jsonTypeNameOptions.value.trim() !== '') {
           jsonTypeName = jsonTypeNameOptions.value;
         }
@@ -891,7 +896,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonFormatProperty(replacement: any, obj: any, oldKey: string, newKey: string,
                                       context: JsonStringifierTransformerContext): any {
-    const jsonFormat: JsonFormatOptions = getMetadata('jackson:JsonFormat', context.mainCreator[0], oldKey, context);
+    const jsonFormat: JsonFormatOptions = getMetadata('JsonFormat', context.mainCreator[0], oldKey, context);
     if (jsonFormat) {
       return this.stringifyJsonFormat(jsonFormat, replacement[newKey], context);
     }
@@ -904,7 +909,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyJsonFormatClass(obj: any, context: JsonStringifierTransformerContext): any {
-    const jsonFormat: JsonFormatOptions = getMetadata('jackson:JsonFormat', context.mainCreator[0], null, context);
+    const jsonFormat: JsonFormatOptions = getMetadata('JsonFormat', context.mainCreator[0], null, context);
     if (jsonFormat) {
       return this.stringifyJsonFormat(jsonFormat, obj, context);
     }
@@ -1005,9 +1010,9 @@ export class JsonStringifier<T> {
 
     if (context.withViews) {
       let jsonView: JsonViewOptions =
-        getMetadata('jackson:JsonView', currentMainCreator, key, context);
+        getMetadata('JsonView', currentMainCreator, key, context);
       if (!jsonView) {
-        jsonView = getMetadata('jackson:JsonView', currentMainCreator, null, context);
+        jsonView = getMetadata('JsonView', currentMainCreator, null, context);
       }
 
       if (jsonView && jsonView.value) {
@@ -1039,13 +1044,13 @@ export class JsonStringifier<T> {
   private stringifyJsonUnwrapped(replacement: any, obj: any, oldKey: string, newKey: string,
                                  context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): void {
     const currentMainCreator = context.mainCreator[0];
-    const jsonUnwrapped: JsonUnwrappedPrivateOptions = getMetadata('jackson:JsonUnwrapped', currentMainCreator, oldKey, context);
+    const jsonUnwrapped: JsonUnwrappedPrivateOptions = getMetadata('JsonUnwrapped', currentMainCreator, oldKey, context);
 
     if (jsonUnwrapped) {
       const objValue = (typeof obj[oldKey] === 'function') ? obj[oldKey]() : obj[oldKey];
       const newContext = cloneDeep(context);
       let newMainCreator;
-      const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, oldKey, context);
+      const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
       if (jsonClass && jsonClass.class) {
         newMainCreator = jsonClass.class();
       } else {
@@ -1057,7 +1062,7 @@ export class JsonStringifier<T> {
       newContext.mainCreator = newMainCreator;
 
       const hasJsonTypeInfo = (typeof objValue === 'object') ?
-        hasMetadata('jackson:JsonTypeInfo', newContext.mainCreator, null, newContext) : false;
+        hasMetadata('JsonTypeInfo', newContext.mainCreator, null, newContext) : false;
       if (hasJsonTypeInfo) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`Unwrapped property requires use of type information: cannot serialize (through reference chain: ${currentMainCreator.name}["${oldKey}"])`);
@@ -1088,7 +1093,7 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonIdentityInfo: JsonIdentityInfoOptions =
-      getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, context);
+      getMetadata('JsonIdentityInfo', currentMainCreator, null, context);
 
     if (jsonIdentityInfo) {
 
@@ -1178,9 +1183,9 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonIdentityInfo: JsonIdentityInfoOptions =
-      getMetadata('jackson:JsonIdentityInfo', currentMainCreator, null, context);
+      getMetadata('JsonIdentityInfo', currentMainCreator, null, context);
     const jsonIdentityReference: JsonIdentityReferenceOptions =
-      getMetadata('jackson:JsonIdentityReference', currentMainCreator, null, context);
+      getMetadata('JsonIdentityReference', currentMainCreator, null, context);
     return jsonIdentityReference != null && jsonIdentityReference.alwaysAsId && jsonIdentityInfo != null;
   }
 
@@ -1192,7 +1197,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonIdentityReference(replacement: any, obj: any, context: JsonStringifierTransformerContext): any {
     const jsonIdentityInfo: JsonIdentityInfoOptions =
-      getMetadata('jackson:JsonIdentityInfo', context.mainCreator[0], null, context);
+      getMetadata('JsonIdentityInfo', context.mainCreator[0], null, context);
     return replacement[jsonIdentityInfo.property];
   }
 
@@ -1206,7 +1211,7 @@ export class JsonStringifier<T> {
   private stringifyIterable(key: string, iterableNoString: any,
                             context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any[] {
     const jsonSerialize: JsonSerializeOptions =
-      getMetadata('jackson:JsonSerialize',
+      getMetadata('JsonSerialize',
         context._propertyParentCreator,
         key, context);
 
@@ -1243,16 +1248,16 @@ export class JsonStringifier<T> {
                                     context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any {
     const currentMainCreator = context.mainCreator;
 
-    const jsonSerialize: JsonSerializeOptions = getMetadata('jackson:JsonSerialize', context._propertyParentCreator, key, context);
+    const jsonSerialize: JsonSerializeOptions = getMetadata('JsonSerialize', context._propertyParentCreator, key, context);
 
     let jsonInclude: JsonIncludeOptions =
-      getMetadata('jackson:JsonInclude', context._propertyParentCreator, key, context);
+      getMetadata('JsonInclude', context._propertyParentCreator, key, context);
     if (!jsonInclude) {
-      jsonInclude = getMetadata('jackson:JsonInclude', context._propertyParentCreator, null, context);
+      jsonInclude = getMetadata('JsonInclude', context._propertyParentCreator, null, context);
     }
 
     const newValue = {};
-    let mapKeys = (map instanceof Map) ? [...map.keys()] : getObjectKeysWithPropertyDescriptorNames(map);
+    let mapKeys = (map instanceof Map) ? [...map.keys()] : getObjectKeysWithPropertyDescriptorNames(map, null, context);
     if (context.features.serialization.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS) {
       mapKeys = mapKeys.sort();
     }
@@ -1331,7 +1336,7 @@ export class JsonStringifier<T> {
       return false;
     }
     const jsonProperty: JsonPropertyOptions =
-      getMetadata('jackson:JsonProperty', context.mainCreator[0], key, context);
+      getMetadata('JsonProperty', context.mainCreator[0], key, context);
     switch (filter.type) {
     case JsonFilterType.FILTER_OUT_ALL_EXCEPT:
       return !filter.values.includes(key) && !(jsonProperty && filter.values.includes(jsonProperty.value));
@@ -1350,7 +1355,7 @@ export class JsonStringifier<T> {
    */
   private stringifyIsPropertyKeyExcludedByJsonFilter(obj: any, key: string, context: JsonStringifierTransformerContext): boolean {
     const jsonFilter: JsonFilterOptions =
-      getMetadata('jackson:JsonFilter', context.mainCreator[0], null, context);
+      getMetadata('JsonFilter', context.mainCreator[0], null, context);
     if (jsonFilter) {
       const filter = context.filters[jsonFilter.value];
       if (filter) {
@@ -1370,7 +1375,7 @@ export class JsonStringifier<T> {
    */
   private stringifyJsonFilter(replacement: any, obj: any, oldKey: string, newKey: string, context: JsonStringifierTransformerContext) {
     const currentMainCreator = context.mainCreator[0];
-    const jsonFilter: JsonFilterOptions = getMetadata('jackson:JsonFilter', currentMainCreator, oldKey, context);
+    const jsonFilter: JsonFilterOptions = getMetadata('JsonFilter', currentMainCreator, oldKey, context);
     if (jsonFilter) {
       const filter = context.filters[jsonFilter.value];
       if (filter) {
@@ -1382,7 +1387,7 @@ export class JsonStringifier<T> {
 
           const newContext = cloneDeep(context);
           let newMainCreator;
-          const jsonClass: JsonClassOptions = getMetadata('jackson:JsonClass', currentMainCreator, oldKey, context);
+          const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
           if (jsonClass && jsonClass.class) {
             newMainCreator = jsonClass.class();
           } else {
@@ -1409,7 +1414,7 @@ export class JsonStringifier<T> {
    */
   private isPrependJsonAppend(obj: any, context: JsonStringifierTransformerContext) {
     const jsonAppend: JsonAppendOptions =
-      getMetadata('jackson:JsonAppend', context.mainCreator[0], null, context);
+      getMetadata('JsonAppend', context.mainCreator[0], null, context);
     return jsonAppend && jsonAppend.prepend;
   }
 
@@ -1423,7 +1428,7 @@ export class JsonStringifier<T> {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonAppend: JsonAppendOptions =
-      getMetadata('jackson:JsonAppend', currentMainCreator, null, context);
+      getMetadata('JsonAppend', currentMainCreator, null, context);
     if (jsonAppend) {
       for (const attr of jsonAppend.attrs) {
         const attributeKey = attr.value;
@@ -1467,7 +1472,7 @@ export class JsonStringifier<T> {
    * @param context
    */
   private stringifyJsonNaming(replacement: any, obj: any, key: string, context: JsonStringifierTransformerContext): string {
-    const jsonNamingOptions: JsonNamingOptions = getMetadata('jackson:JsonNaming', context.mainCreator[0], null, context);
+    const jsonNamingOptions: JsonNamingOptions = getMetadata('JsonNaming', context.mainCreator[0], null, context);
     if (jsonNamingOptions && jsonNamingOptions.strategy != null) {
       const tokens = key.split(/(?=[A-Z])/);
       const tokensLength = tokens.length;

@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonGetterDecorator, JsonGetterOptions} from '../@types';
 import {JsonGetterPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
@@ -71,7 +70,9 @@ export const JsonGetter: JsonGetterDecorator = makeJacksonDecorator(
         }
       }
 
-      Reflect.defineMetadata('jackson:JsonGetter', privateOptions, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonVirtualProperty:' + propertyKey.toString(), privateOptions, target.constructor);
+      defineMetadata('JsonGetter', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonVirtualProperty', privateOptions, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
     }
   });

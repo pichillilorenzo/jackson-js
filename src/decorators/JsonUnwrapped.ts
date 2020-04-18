@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonUnwrappedDecorator, JsonUnwrappedOptions} from '../@types';
 import {JsonUnwrappedPrivateOptions} from '../@types/private';
 
@@ -48,7 +47,9 @@ export const JsonUnwrapped: JsonUnwrappedDecorator = makeJacksonDecorator(
     };
 
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonUnwrapped', privateOptions, target.constructor, propertyKey);
-      Reflect.defineMetadata('jackson:JsonUnwrapped:' + propertyKey.toString(), privateOptions, target.constructor);
+      defineMetadata('JsonUnwrapped', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonUnwrapped', privateOptions, target.constructor, null, {
+        suffix: propertyKey.toString()
+      });
     }
   });

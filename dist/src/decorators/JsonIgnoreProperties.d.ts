@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIgnorePropertiesDecorator } from '../@types';
 /**
  * Annotation that can be used to either suppress serialization of properties (during serialization),

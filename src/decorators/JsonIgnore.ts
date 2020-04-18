@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonIgnoreDecorator, JsonIgnoreOptions} from '../@types';
 
 /**
@@ -30,11 +29,13 @@ export const JsonIgnore: JsonIgnoreDecorator = makeJacksonDecorator(
   (o: JsonIgnoreOptions): JsonIgnoreOptions => ({enabled: true, ...o}),
   (options: JsonIgnoreOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonIgnore', options, target.constructor, propertyKey);
+      defineMetadata('JsonIgnore', options, target.constructor, propertyKey);
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata('jackson:JsonIgnoreParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata('JsonIgnoreParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
   });

@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {
   JsonFilterDecorator,
   JsonFilterOptions
@@ -74,10 +73,10 @@ export const JsonFilter: JsonFilterDecorator = makeJacksonDecorator(
   (o: JsonFilterOptions): JsonFilterOptions => ({enabled: true, ...o }),
   (options: JsonFilterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonFilter', options, target);
+      defineMetadata('JsonFilter', options, target);
       return target;
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonFilter', options, target.constructor, propertyKey);
+      defineMetadata('JsonFilter', options, target.constructor, propertyKey);
     }
   });

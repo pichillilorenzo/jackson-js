@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {isClass, makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
 import {JsonTypeIdResolverDecorator, JsonTypeIdResolverOptions} from '../@types';
 
 /**
@@ -57,16 +56,18 @@ export const JsonTypeIdResolver: JsonTypeIdResolverDecorator = makeJacksonDecora
   (o: JsonTypeIdResolverOptions): JsonTypeIdResolverOptions => ({enabled: true, ...o}),
   (options: JsonTypeIdResolverOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
-      Reflect.defineMetadata('jackson:JsonTypeIdResolver', options, target);
+      defineMetadata('JsonTypeIdResolver', options, target);
       return target;
     }
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      Reflect.defineMetadata(
-        'jackson:JsonTypeIdResolverParam:' + descriptorOrParamIndex.toString(),
+      defineMetadata(
+        'JsonTypeIdResolverParam',
         options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
-        (propertyKey) ? propertyKey : 'constructor');
+        (propertyKey) ? propertyKey : 'constructor', {
+          suffix: descriptorOrParamIndex.toString()
+        });
     }
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonTypeIdResolver', options, target.constructor, propertyKey);
+      defineMetadata('JsonTypeIdResolver', options, target.constructor, propertyKey);
     }
   });

@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonClassDecorator } from '../@types';
 /**
  * Decorator used to define the type of a class property or method parameter.

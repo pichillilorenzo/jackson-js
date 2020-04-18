@@ -3,8 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator} from '../util';
-import 'reflect-metadata';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonRawValueDecorator, JsonRawValueOptions} from '../@types';
 
 /**
@@ -43,6 +42,6 @@ export const JsonRawValue: JsonRawValueDecorator = makeJacksonDecorator(
   (o: JsonRawValueOptions): JsonRawValueOptions => ({enabled: true, ...o}),
   (options: JsonRawValueOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      Reflect.defineMetadata('jackson:JsonRawValue', options, target.constructor, propertyKey);
+      defineMetadata('JsonRawValue', options, target.constructor, propertyKey);
     }
   });

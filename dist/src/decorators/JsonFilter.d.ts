@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonFilterDecorator } from '../@types';
 /**
  * {@link JsonFilter} type used to determine whether to serialize property as is, or to filter it out.

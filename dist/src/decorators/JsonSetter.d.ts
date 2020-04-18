@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonSetterDecorator } from '../@types';
 /**
  * Used with {@link JsonSetter} (for properties `nulls` and `contentNulls`) to define
