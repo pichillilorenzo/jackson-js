@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIgnoreDecorator } from '../@types';
 /**
  * Decorator that indicates that the logical property that the accessor

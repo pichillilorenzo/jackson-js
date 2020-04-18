@@ -32,6 +32,20 @@ export interface DeserializationFeature {
     FAIL_ON_NULL_CREATOR_PROPERTIES?: boolean;
     FAIL_ON_UNRESOLVED_OBJECT_IDS?: boolean;
     /**
+     * Feature that determines what happens when type of a polymorphic value (indicated for example by {@link JsonTypeInfo})
+     * cannot be found (missing) or resolved (invalid class name, unmappable id).
+     * If enabled, a {@link JacksonError} is thrown; if disabled, the type will be based on the context.
+     */
+    FAIL_ON_INVALID_SUBTYPE?: boolean;
+    /**
+     * Feature that determines what happens when a type id is missing from the JSON Object
+     * when trying to resolve type or subtype of a class decorated with {@link JsonTypeInfo} and
+     * using {@link JsonTypeInfoAs.PROPERTY} as {@link JsonTypeInfoOptions.include} option value.
+     * If enabled, a {@link JacksonError} is thrown when type id is missing;
+     * if disabled, the type will be based on the context.
+     */
+    FAIL_ON_MISSING_TYPE_ID?: boolean;
+    /**
      * Feature to allow "unwrapping" root-level JSON value, to match setting of {@link SerializationFeature.WRAP_ROOT_VALUE}
      * used for serialization. Will verify that the root JSON value is a JSON Object,
      * and that it has a single property with expected root name.

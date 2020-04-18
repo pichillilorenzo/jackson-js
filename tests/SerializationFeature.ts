@@ -3,6 +3,7 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {JacksonError} from '../src/core/JacksonError';
+import {JsonIncludeType} from "../src/decorators/JsonInclude";
 
 test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
   class Book {
@@ -217,4 +218,37 @@ test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","userRef":null}'));
+});
+
+test('SerializationFeature.DEFAULT_PROPERTY_INCLUSION set to JsonIncludeType.NON_EMPTY', t => {
+  class Employee {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    name: string;
+    @JsonProperty()
+    dept: string;
+    @JsonProperty()
+    address: string;
+    @JsonProperty()
+    phones: string[];
+    @JsonProperty()
+    otherInfo: Map<string, string>;
+
+    constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
+      this.id = id;
+      this.name = name;
+      this.dept = dept;
+      this.address = address;
+      this.phones = phones;
+      this.otherInfo = otherInfo;
+    }
+  }
+
+  const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.DEFAULT_PROPERTY_INCLUSION = JsonIncludeType.NON_EMPTY;
+
+  const jsonData = objectMapper.stringify<Employee>(employee);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John"}'));
 });

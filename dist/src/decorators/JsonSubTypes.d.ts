@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonSubTypesDecorator } from '../@types';
 /**
  * Decorator used with {@link JsonTypeInfo} to indicate sub-types of serializable polymorphic types,

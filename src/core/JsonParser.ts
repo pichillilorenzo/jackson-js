@@ -1252,11 +1252,13 @@ export class JsonParser<T> {
       switch (jsonTypeInfo.include) {
       case JsonTypeInfoAs.PROPERTY:
         jsonTypeInfoProperty = obj[jsonTypeInfo.property];
-        if (jsonTypeInfoProperty == null) {
+        if (jsonTypeInfoProperty == null &&
+          context.features.deserialization.FAIL_ON_MISSING_TYPE_ID && context.features.deserialization.FAIL_ON_INVALID_SUBTYPE) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Missing type id when trying to resolve subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Missing type id when trying to resolve type or subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(obj)}']`);
+        } else {
+          delete obj[jsonTypeInfo.property];
         }
-        delete obj[jsonTypeInfo.property];
         break;
       case JsonTypeInfoAs.WRAPPER_OBJECT:
         if (!(obj instanceof Object) || obj instanceof Array) {
@@ -1291,7 +1293,7 @@ export class JsonParser<T> {
       const jsonSubTypes: JsonSubTypesOptions =
         getMetadata('JsonSubTypes', currentMainCreator, null, context);
 
-      if (!jsonTypeCtor) {
+      if (!jsonTypeCtor && jsonTypeInfoProperty != null) {
         if (jsonSubTypes && jsonSubTypes.types && jsonSubTypes.types.length > 0) {
           for (const subType of jsonSubTypes.types) {
             const subTypeClass = subType.class() as ObjectConstructor;
@@ -1300,7 +1302,7 @@ export class JsonParser<T> {
               jsonTypeCtor = subTypeClass;
             }
           }
-          if (!jsonTypeCtor) {
+          if (!jsonTypeCtor && context.features.deserialization.FAIL_ON_INVALID_SUBTYPE) {
             const ids = [(currentMainCreator).name];
             ids.push(...jsonSubTypes.types.map((subType) => (subType.name) ? subType.name : subType.class().name));
             // eslint-disable-next-line max-len
@@ -1310,21 +1312,24 @@ export class JsonParser<T> {
       }
 
       if (!jsonTypeCtor) {
-        jsonTypeCtor = currentMainCreator;
         switch (jsonTypeInfo.use) {
         case JsonTypeInfoId.NAME:
-          jsonTypeCtor = currentMainCreator;
+          if (jsonTypeInfoProperty != null && jsonTypeInfoProperty === currentMainCreator.name) {
+            jsonTypeCtor = currentMainCreator;
+          }
           break;
         }
       }
 
-      if (!jsonTypeCtor) {
+      if (!jsonTypeCtor && context.features.deserialization.FAIL_ON_INVALID_SUBTYPE && jsonTypeInfoProperty != null) {
         const ids = [(currentMainCreator).name];
         if (jsonSubTypes && jsonSubTypes.types && jsonSubTypes.types.length > 0) {
           ids.push(...jsonSubTypes.types.map((subType) => (subType.name) ? subType.name : subType.class().name));
         }
         // eslint-disable-next-line max-len
         throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
+      } else if (!jsonTypeCtor) {
+        jsonTypeCtor = currentMainCreator;
       }
 
       context.mainCreator = [jsonTypeCtor];

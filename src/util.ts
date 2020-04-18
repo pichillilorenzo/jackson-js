@@ -16,7 +16,6 @@ import 'reflect-metadata';
 import {JsonGetterPrivateOptions, JsonPropertyPrivateOptions, JsonSetterPrivateOptions} from './@types/private';
 import {JacksonError} from './core/JacksonError';
 import {DefaultContextGroup} from './core/DefaultContextGroup';
-import {meta} from "ava";
 
 /**
  * @internal
@@ -240,15 +239,18 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
   for (const metadataKey of metadataKeys) {
     if (metadataKey.startsWith('jackson:')) {
 
-      if (metadataKey.includes(':JsonVirtualProperty:') || (metadataKey.includes(':JsonAlias:') && options.withJsonAliases)) {
+      const metadataKeyWithoutJacksonPrefix = metadataKey.replace('jackson:', '');
+
+      if (metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:') ||
+        (metadataKeyWithoutJacksonPrefix.includes(':JsonAlias:') && options.withJsonAliases)) {
         let metadataKeyFoundInContext = false;
         for (const contextGroup of contextGroupsWithDefault) {
 
-          const suffix = metadataKey
-            .split((metadataKey.includes(':JsonVirtualProperty:')) ? ':JsonVirtualProperty:' : ':JsonAlias:')[1];
+          const suffix = metadataKeyWithoutJacksonPrefix
+            .split((metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:')) ? ':JsonVirtualProperty:' : ':JsonAlias:')[1];
 
           const metadataKeyWithContext = makeMetadataKeyWithContext(
-            (metadataKey.includes(':JsonVirtualProperty:')) ? 'JsonVirtualProperty' : 'JsonAlias', {
+            (metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:')) ? 'JsonVirtualProperty' : 'JsonAlias', {
               contextGroup,
               suffix
             });
@@ -263,7 +265,7 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
         }
       }
 
-      if (metadataKey.includes(':JsonVirtualProperty:')) {
+      if (metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:')) {
         const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
           Reflect.getMetadata(metadataKey, target);
 
@@ -293,9 +295,8 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
         if (options.withJsonVirtualPropertyValues && jsonVirtualProperty.value != null) {
           classProperties.add(jsonVirtualProperty.value);
         }
-      } else if (metadataKey.includes(':JsonAlias:') && options.withJsonAliases) {
-        // const propertyKey = metadataKey.replace('jackson:JsonAlias:', '');
-        const propertyKey = metadataKey.split(':JsonAlias:')[1];
+      } else if (metadataKeyWithoutJacksonPrefix.includes(':JsonAlias:') && options.withJsonAliases) {
+        const propertyKey = metadataKeyWithoutJacksonPrefix.split(':JsonAlias:')[1];
         classProperties.add(propertyKey);
         const jsonAlias: JsonAliasOptions = Reflect.getMetadata(metadataKey, target);
         if (jsonAlias.values != null) {
@@ -374,36 +375,41 @@ export const virtualPropertiesToClassPropertiesMapping =
       let getterOrSetterFound = false;
       for (const metadataKey of metadataKeys) {
 
-        if (metadataKey.startsWith('jackson:') && metadataKey.includes(':JsonVirtualProperty:')) {
-          let metadataKeyFoundInContext = false;
-          for (const contextGroup of contextGroupsWithDefault) {
-            const suffix = metadataKey.split(':JsonVirtualProperty:')[1];
-            const metadataKeyWithContext = makeMetadataKeyWithContext('JsonVirtualProperty', {
-              contextGroup,
-              suffix
-            });
-            if (metadataKeyWithContext === metadataKey) {
-              metadataKeyFoundInContext = true;
-              break;
+        if (metadataKey.startsWith('jackson:')) {
+          const metadataKeyWithoutJacksonPrefix = metadataKey.replace('jackson:', '');
+
+          if (metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:')) {
+            let metadataKeyFoundInContext = false;
+            for (const contextGroup of contextGroupsWithDefault) {
+              const suffix = metadataKeyWithoutJacksonPrefix.split(':JsonVirtualProperty:')[1];
+              const metadataKeyWithContext = makeMetadataKeyWithContext('JsonVirtualProperty', {
+                contextGroup,
+                suffix
+              });
+              if (metadataKeyWithContext === metadataKey) {
+                metadataKeyFoundInContext = true;
+                break;
+              }
             }
-          }
-          if (!metadataKeyFoundInContext) {
-            continue;
-          }
+            if (!metadataKeyFoundInContext) {
+              continue;
+            }
 
-          const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
-            Reflect.getMetadata(metadataKey, target);
+            const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+              Reflect.getMetadata(metadataKey, target);
 
-          if (jsonVirtualProperty.value !== key) {
-            continue;
-          }
+            if (jsonVirtualProperty.value !== key) {
+              continue;
+            }
 
-          if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') {
-            if ((options.checkGetters && jsonVirtualProperty.propertyKey.startsWith('get')) ||
-              (options.checkSetters && jsonVirtualProperty.propertyKey.startsWith('set'))) {
-              propertiesMapping.set(key, jsonVirtualProperty.propertyKey);
-              getterOrSetterFound = true;
-              break;
+            if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null &&
+              typeof jsonVirtualProperty.descriptor.value === 'function') {
+              if ((options.checkGetters && jsonVirtualProperty.propertyKey.startsWith('get')) ||
+                (options.checkSetters && jsonVirtualProperty.propertyKey.startsWith('set'))) {
+                propertiesMapping.set(key, jsonVirtualProperty.propertyKey);
+                getterOrSetterFound = true;
+                break;
+              }
             }
           }
         }
@@ -707,7 +713,10 @@ export const getMetadata = <T extends JsonDecoratorOptions>(metadataKey: string,
 
   if (jsonjsonDecoratorOptions != null && context != null && context.decoratorsEnabled != null) {
     const decoratorKeys = Object.keys(context.decoratorsEnabled);
-    const decoratorKey = decoratorKeys.find((key) => metadataKey.includes(':' + key));
+    const decoratorKey = decoratorKeys.find((key) =>
+      (metadataKey.startsWith('jackson:')) ?
+        metadataKey.replace('jackson:', '').includes(':' + key) :
+        metadataKey.startsWith(key));
     if (decoratorKey && typeof context.decoratorsEnabled[decoratorKey] === 'boolean') {
       jsonjsonDecoratorOptions.enabled = context.decoratorsEnabled[decoratorKey];
     }
@@ -769,7 +778,10 @@ export const getMetadataKeys = <T extends JsonDecoratorOptions>(target: Record<s
   if (context != null && context.decoratorsEnabled != null) {
     const decoratorKeys = Object.keys(context.decoratorsEnabled);
     metadataKeys = metadataKeys.filter((metadataKey) => {
-      const decoratorKey = decoratorKeys.find((key) => metadataKey.includes(':' + key));
+      const decoratorKey = decoratorKeys.find((key) =>
+        (metadataKey.startsWith('jackson:')) ?
+          metadataKey.replace('jackson:', '').includes(':' + key) :
+          metadataKey.startsWith(key));
       return context.decoratorsEnabled[decoratorKey] == null || context.decoratorsEnabled[decoratorKey];
     });
   }

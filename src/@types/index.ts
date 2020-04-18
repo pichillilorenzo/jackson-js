@@ -687,7 +687,7 @@ export interface JsonIgnorePropertiesOptions extends JsonDecoratorOptions {
   /**
    * Names of properties to ignore.
    */
-  value: string[];
+  value?: string[];
   /**
    * Property that can be enabled to allow "getters" to be used
    * (that is, prevent ignoral of getters for properties listed in {@link value}).

@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonTypeNameDecorator } from '../@types';
 /**
  * Decorator used for binding logical name that the decorated class has.

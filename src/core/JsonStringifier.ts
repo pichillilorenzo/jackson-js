@@ -769,9 +769,10 @@ export class JsonStringifier<T> {
       getMetadata('JsonInclude', currentMainCreator, null, context);
     const jsonInclude = (keyJsonInclude) ? keyJsonInclude : constructorJsonInclude;
 
-    if (jsonInclude) {
+    if (jsonInclude || context.features.serialization.DEFAULT_PROPERTY_INCLUSION != null) {
+      const jsonIncludeValue = jsonInclude ? jsonInclude.value : context.features.serialization.DEFAULT_PROPERTY_INCLUSION;
       const value = obj[key];
-      switch (jsonInclude.value) {
+      switch (jsonIncludeValue) {
       case JsonIncludeType.NON_EMPTY:
         return !isValueEmpty(value);
       case JsonIncludeType.NON_NULL:

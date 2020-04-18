@@ -3,6 +3,8 @@
  * @module Databind
  */
 
+import {JsonIncludeType} from '../decorators/JsonInclude';
+
 /**
  * Interface that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
  *
@@ -10,6 +12,15 @@
  * that is, caller must follow "configure-then-use" pattern.
  */
 export interface SerializationFeature {
+  /**
+   * Feature that define global inclusion rules about which properties of a Class are to be included in serialization.
+   *
+   * Possible values are: {@link JsonIncludeType.ALWAYS}, {@link JsonIncludeType.NON_EMPTY},
+   * {@link JsonIncludeType.NON_NULL}, {@link JsonIncludeType.NON_DEFAULT} and `null`.
+   * `null` indicates that no global inclusion rules are defined.
+   */
+  DEFAULT_PROPERTY_INCLUSION: JsonIncludeType.ALWAYS | JsonIncludeType.NON_EMPTY |
+  JsonIncludeType.NON_NULL | JsonIncludeType.NON_DEFAULT | null;
   /**
    * Feature that determines what happens when a direct self-reference is detected by a Class
    * (and no Object Id handling is enabled for it):
@@ -57,6 +68,10 @@ export interface SerializationFeature {
  * Variable that defines default feature values for {@link ObjectMapper} and {@link JsonStringifier}.
  */
 export const DefaultSerializationFeatureValues: SerializationFeature = {
+  /**
+   * {@link SerializationFeature.DEFAULT_PROPERTY_INCLUSION}
+   */
+  DEFAULT_PROPERTY_INCLUSION: null,
   /**
    * {@link SerializationFeature.FAIL_ON_SELF_REFERENCES}
    */
