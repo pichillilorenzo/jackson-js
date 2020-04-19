@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonManagedReferenceDecorator } from '../@types';
 /**
  * Decorator used to indicate that decorated property is part of two-way linkage between fields

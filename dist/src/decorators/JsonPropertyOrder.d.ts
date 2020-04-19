@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonPropertyOrderDecorator } from '../@types';
 /**
  * Decorator that can be used to define ordering (possibly partial) to use when serializing object properties.

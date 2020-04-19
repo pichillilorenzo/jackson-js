@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonUnwrappedDecorator } from '../@types';
 /**
  * Decorator used to indicate that a property should be serialized "unwrapped";

@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonAnySetterDecorator } from '../@types';
 /**
  * Decorator that can be used to define a logical "any setter" mutator using non-static two-argument method

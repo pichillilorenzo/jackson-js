@@ -78,7 +78,11 @@ export enum JsonIncludeType {
  * ```
  */
 export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
-  (o: JsonIncludeOptions): JsonIncludeOptions => ({enabled: true, value: JsonIncludeType.ALWAYS, ...o}),
+  (o: JsonIncludeOptions): JsonIncludeOptions => ({
+    enabled: true,
+    value: JsonIncludeType.ALWAYS,
+    ...o
+  }),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (descriptorOrParamIndex == null && isClass(target)) {
       defineMetadata('JsonInclude', options, target);

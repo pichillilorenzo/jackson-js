@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonRawValueDecorator } from '../@types';
 /**
  * Decorator that indicates that the annotated method or field should be serialized by

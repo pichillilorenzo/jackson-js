@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIgnoreTypeDecorator } from '../@types';
 /**
  * Decorator that indicates that all properties of annotated type

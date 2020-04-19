@@ -3,7 +3,7 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonClass} from '../src/decorators/JsonClass';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonIncludeType} from "../src/decorators/JsonInclude";
+import {JsonIncludeType} from '../src/decorators/JsonInclude';
 
 test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
   class Book {
@@ -247,8 +247,133 @@ test('SerializationFeature.DEFAULT_PROPERTY_INCLUSION set to JsonIncludeType.NON
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.DEFAULT_PROPERTY_INCLUSION = JsonIncludeType.NON_EMPTY;
+  objectMapper.features.serialization.DEFAULT_PROPERTY_INCLUSION = {
+    value: JsonIncludeType.NON_EMPTY
+  };
 
   const jsonData = objectMapper.stringify<Employee>(employee);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":0,"name":"John"}'));
+});
+
+test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    @JsonClass({class: () => [Date]})
+    bithday: Date;
+
+    // eslint-disable-next-line no-shadow
+    constructor(id: number, firstname: string, lastname: string, bithday: Date) {
+      this.id = id;
+      this.firstname = firstname;
+      this.lastname = lastname;
+      this.bithday = bithday;
+    }
+  }
+
+  const bithday = new Date(1994, 11, 14);
+  const user = new User(1, 'John', 'Alfa', bithday);
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRITE_DATES_AS_TIMESTAMPS = false;
+  const jsonData = objectMapper.stringify<User>(user);
+  const jsonDataParsed = JSON.parse(jsonData);
+  t.assert(typeof jsonDataParsed.bithday === 'string');
+  t.is((new Date(jsonDataParsed.bithday)).toString(), bithday.toString());
+});
+
+test('SerializationFeature.WRITE_NAN_AS_ZERO set to true', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    age: number;
+
+    constructor(id: number, firstname: string, lastname: string, age: number) {
+      this.id = id;
+      this.firstname = firstname;
+      this.lastname = lastname;
+      this.age = age;
+    }
+  }
+
+  const user = new User(1, 'John', 'Alfa', NaN);
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRITE_NAN_AS_ZERO = true;
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","age":0}'));
+});
+
+test('Positive Infinity as NUMBER_MAX_VALUE and NUMBER_MAX_SAFE_INTEGER', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    age: number;
+
+    constructor(id: number, firstname: string, lastname: string, age: number) {
+      this.id = id;
+      this.firstname = firstname;
+      this.lastname = lastname;
+      this.age = age;
+    }
+  }
+
+  const user = new User(1, 'John', 'Alfa', Infinity);
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = true;
+  let jsonData = objectMapper.stringify<User>(user);
+  t.assert(isFinite(JSON.parse(jsonData).age));
+
+  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = false;
+  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER = true;
+  jsonData = objectMapper.stringify<User>(user);
+  t.assert(isFinite(JSON.parse(jsonData).age));
+});
+
+test('Negative Infinity as NUMBER_MIN_VALUE and NUMBER_MIN_SAFE_INTEGER', t => {
+  class User {
+    @JsonProperty()
+    id: number;
+    @JsonProperty()
+    firstname: string;
+    @JsonProperty()
+    lastname: string;
+    @JsonProperty()
+    age: number;
+
+    constructor(id: number, firstname: string, lastname: string, age: number) {
+      this.id = id;
+      this.firstname = firstname;
+      this.lastname = lastname;
+      this.age = age;
+    }
+  }
+
+  const user = new User(1, 'John', 'Alfa', -Infinity);
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = true;
+  let jsonData = objectMapper.stringify<User>(user);
+  t.assert(isFinite(JSON.parse(jsonData).age));
+
+  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = false;
+  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER = true;
+  jsonData = objectMapper.stringify<User>(user);
+  t.assert(isFinite(JSON.parse(jsonData).age));
 });

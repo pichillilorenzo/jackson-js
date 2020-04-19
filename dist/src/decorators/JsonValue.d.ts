@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonValueDecorator } from '../@types';
 /**
  * Decorator that indicates that the value of annotated accessor (either field or "getter" method)

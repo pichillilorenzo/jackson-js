@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonTypeIdResolverDecorator } from '../@types';
 /**
  * Decorator that can be used to plug a custom type identifier handler ({@link TypeIdResolver})

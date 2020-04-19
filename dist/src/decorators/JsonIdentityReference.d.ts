@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonIdentityReferenceDecorator } from '../@types';
 /**
  * Decorator that can be used for customizing details of a reference to Objects for

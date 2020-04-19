@@ -12,7 +12,6 @@ import { JsonFilterType } from '../decorators/JsonFilter';
 import { PropertyNamingStrategy } from '../decorators/JsonNaming';
 import { JsonCreatorMode } from '../decorators/JsonCreator';
 import { JsonSetterNulls } from '../decorators/JsonSetter';
-import { MapperFeature } from '../databind/MapperFeature';
 import { SerializationFeature } from '../databind/SerializationFeature';
 import { DeserializationFeature } from '../databind/DeserializationFeature';
 export declare type ClassType<T> = (new () => T) | (new (...args: any[]) => T) | ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
@@ -183,13 +182,7 @@ export interface JsonStringifierParserCommonContext<T> {
     /**
      * Property that defines simple on/off features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
      */
-    features?: {
-        /**
-         * Property that defines simple on/off common features to set for {@link ObjectMapper},
-         * {@link JsonParser} and {@link JsonStringifier}.
-         */
-        mapper: MapperFeature;
-    };
+    features?: {};
     /**
      * Property whose keys are the decorators name that will be enabled/disabled during serialization/deserialization.
      */
@@ -208,13 +201,22 @@ export interface JsonStringifierParserCommonContext<T> {
  * Filter options used during serialization.
  */
 export interface JsonStringifierFilterOptions {
+    /**
+     * Type used to determine whether to serialize property as is, or to filter it out.
+     */
     type: JsonFilterType;
+    /**
+     * The list of the properties that are affected by the filter type.
+     */
     values?: string[];
 }
 /**
  * Context properties used during serialization without {@link JsonStringifierContext.mainCreator}.
  */
 export interface JsonStringifierContextWithoutMainCreatorContext extends JsonStringifierParserCommonContext<JsonStringifierContextWithoutMainCreatorContext> {
+    /**
+     * An Object Literal containing attributes values to be assigned during serialization for {@link JsonAppend} attributes.
+     */
     attributes?: {
         [key: string]: any;
     };
@@ -223,19 +225,31 @@ export interface JsonStringifierContextWithoutMainCreatorContext extends JsonStr
      */
     features?: {
         /**
-         * Property that defines simple on/off common features to set for {@link ObjectMapper},
-         * {@link JsonParser} and {@link JsonStringifier}.
-         */
-        mapper: MapperFeature;
-        /**
          * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonStringifier}.
          */
         serialization: SerializationFeature;
     };
+    /**
+     * An Object Literal containing filter options used by {@link JsonFilter} during serialization.
+     * Object keys are simple string that refers to the name of the corresponding {@link JsonFilterOptions.value}.
+     */
     filters?: {
         [key: string]: JsonStringifierFilterOptions;
     };
-    format?: string;
+    /**
+     * A `String` or `Number` object that's used to insert white space into the output JSON string for readability purposes.
+     *
+     * If this is a Number, it indicates the number of space characters to use as white space;
+     * this number is capped at 10 (if it is greater, the value is just 10).
+     * Values less than 1 indicate that no space should be used.
+     *
+     * If this is a String, the string (or the first 10 characters of the string, if it's longer than that)
+     * is used as white space. If this parameter is not provided (or is null), no white space is used.
+     */
+    format?: string | number;
+    /**
+     * Array of custom user-defined serializers.
+     */
     serializers?: ObjectMapperSerializer[];
 }
 /**
@@ -268,11 +282,6 @@ export interface JsonParserBaseWithoutMainCreatorContext extends JsonStringifier
      */
     features?: {
         /**
-         * Property that defines simple on/off common features to set for {@link ObjectMapper},
-         * {@link JsonParser} and {@link JsonStringifier}.
-         */
-        mapper: MapperFeature;
-        /**
          * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonParser}.
          */
         deserialization: DeserializationFeature;
@@ -281,7 +290,13 @@ export interface JsonParserBaseWithoutMainCreatorContext extends JsonStringifier
      * Define which {@link JsonCreator} should be used during deserialization through its name.
      */
     withCreatorName?: string;
+    /**
+     * Array of custom user-defined deserializers.
+     */
     deserializers?: ObjectMapperDeserializer[];
+    /**
+     * An Object Literal that stores the values to inject during deserialization, identified by simple String keys.
+     */
     injectableValues?: {
         [key: string]: any;
     };
@@ -307,19 +322,54 @@ export declare type JsonParserTransformerContext = Modify<JsonParserContext, {
      */
     mainCreator?: ClassList<ClassType<any>>;
 }>;
+/**
+ * Serializer type.
+ */
 export declare type Serializer = (key: string, value: any, context?: JsonStringifierTransformerContext) => any;
+/**
+ * Deserializer type.
+ */
 export declare type Deserializer = (key: string, value: any, context?: JsonParserTransformerContext) => any;
+/**
+ * Interface that defines features to set for {@link ObjectMapper}.
+ */
 export interface ObjectMapperFeatures {
-    mapper: MapperFeature;
+    /**
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+     */
     serialization: SerializationFeature;
+    /**
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
+     */
     deserialization: DeserializationFeature;
 }
+/**
+ * Interface that represents a serializer/deserializer used by {@link ObjectMapper}.
+ */
 export interface ObjectMapperCustomMapper<T> {
+    /**
+     * The serializer/deserializer.
+     */
     mapper: T;
+    /**
+     * A JavaScript type, that could be:
+     * - a class;
+     * - a string such as "string" or "number" as if you were using the "typeof" operator.
+     */
     type?: () => any;
+    /**
+     * The order in which the serializer/deserializer should be executed.
+     * `0` has the highest precedence.
+     */
     order?: number;
 }
+/**
+ * Serializer type used by {@link ObjectMapper.serializers}.
+ */
 export declare type ObjectMapperSerializer = ObjectMapperCustomMapper<Serializer>;
+/**
+ * Deserializer type used by {@link ObjectMapper.deserializers}.
+ */
 export declare type ObjectMapperDeserializer = ObjectMapperCustomMapper<Deserializer>;
 /**
  * Basic decorator options.
@@ -337,7 +387,14 @@ export interface JsonDecoratorOptions {
      */
     contextGroups?: string[];
 }
-export declare type JsonDecorator = <T>(options: JsonDecoratorOptions, target: Record<string, any>, propertyKey: string | symbol, descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
+/**
+ * Decorator type.
+ */
+export declare type JsonDecorator = <T>(
+/**
+ * Decorator options.
+ */
+options: JsonDecoratorOptions, target: Record<string, any>, propertyKey: string | symbol, descriptorOrParamIndex: number | TypedPropertyDescriptor<T>) => TypedPropertyDescriptor<T> | void;
 /**
  * Decorator options for {@link JsonAnyGetter}.
  */
@@ -517,7 +574,7 @@ export interface JsonIgnorePropertiesOptions extends JsonDecoratorOptions {
     /**
      * Names of properties to ignore.
      */
-    value: string[];
+    value?: string[];
     /**
      * Property that can be enabled to allow "getters" to be used
      * (that is, prevent ignoral of getters for properties listed in {@link value}).
@@ -545,9 +602,9 @@ export interface JsonIgnorePropertiesOptions extends JsonDecoratorOptions {
  */
 export declare type JsonIgnoreTypeOptions = JsonDecoratorOptions;
 /**
- * Decorator options for {@link JsonInclude}.
+ * Decorator base options for {@link JsonInclude}.
  */
-export interface JsonIncludeOptions extends JsonDecoratorOptions {
+export interface JsonIncludeBaseOptions {
     /**
      * Inclusion rule to use for instances (values) of types (Classes) or properties decorated.
      *
@@ -577,6 +634,10 @@ export interface JsonIncludeOptions extends JsonDecoratorOptions {
      */
     contentFilter?: (value: any) => boolean;
 }
+/**
+ * Decorator options for {@link JsonInclude}.
+ */
+export declare type JsonIncludeOptions = JsonIncludeBaseOptions & JsonDecoratorOptions;
 /**
  * Decorator options for {@link JsonManagedReference}.
  */

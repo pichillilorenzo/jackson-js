@@ -12,7 +12,6 @@ import {JsonFilterType} from '../decorators/JsonFilter';
 import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {JsonCreatorMode} from '../decorators/JsonCreator';
 import {JsonSetterNulls} from '../decorators/JsonSetter';
-import {MapperFeature} from '../databind/MapperFeature';
 import {SerializationFeature} from '../databind/SerializationFeature';
 import {DeserializationFeature} from '../databind/DeserializationFeature';
 import {InternalDecorators} from './private';
@@ -25,6 +24,9 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 // before typescript@3.5
 // type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
 
+/**
+ * Helper type that represents a general JavaScript type.
+ */
 export type ClassType<T> = (new () => T) | (new (...args: any[]) => T) |
 ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 
@@ -39,6 +41,9 @@ Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
   [Symbol.iterator]: () => IterableIterator<T>;
 };
 
+/**
+ * Helper interface used to declare a List of ClassType recursively.
+ */
 export interface ClassList<T> extends Array<any> {
   [index: number]: T | ClassList<T>;
   0: T;
@@ -228,15 +233,9 @@ export interface JsonStringifierParserCommonContext<T> {
    */
   withContextGroups?: string[];
   /**
-   * Property that defines simple on/off features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
+   * Property that defines features to set for {@link ObjectMapper}, {@link JsonStringifier} and {@link JsonParser}.
    */
-  features?: {
-    /**
-     * Property that defines simple on/off common features to set for {@link ObjectMapper},
-     * {@link JsonParser} and {@link JsonStringifier}.
-     */
-    mapper: MapperFeature;
-  };
+  features?: {};
   /**
    * Property whose keys are the decorators name that will be enabled/disabled during serialization/deserialization.
    */
@@ -284,16 +283,11 @@ export interface JsonStringifierContextWithoutMainCreatorContext
     [key: string]: any;
   };
   /**
-   * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+   * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
    */
   features?: {
     /**
-     * Property that defines simple on/off common features to set for {@link ObjectMapper},
-     * {@link JsonParser} and {@link JsonStringifier}.
-     */
-    mapper: MapperFeature;
-    /**
-     * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonStringifier}.
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
      */
     serialization: SerializationFeature;
   };
@@ -350,16 +344,11 @@ export type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
 export interface JsonParserBaseWithoutMainCreatorContext
   extends JsonStringifierParserCommonContext<JsonParserBaseWithoutMainCreatorContext> {
   /**
-   * Property that defines simple on/off features to set for {@link ObjectMapper} and {@link JsonParser}.
+   * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
    */
   features?: {
     /**
-     * Property that defines simple on/off common features to set for {@link ObjectMapper},
-     * {@link JsonParser} and {@link JsonStringifier}.
-     */
-    mapper: MapperFeature;
-    /**
-     * Property that defines simple on/off common features to set for {@link ObjectMapper} and {@link JsonParser}.
+     * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
      */
     deserialization: DeserializationFeature;
   };
@@ -416,11 +405,6 @@ export type Deserializer = (key: string, value: any, context?: JsonParserTransfo
  * Interface that defines features to set for {@link ObjectMapper}.
  */
 export interface ObjectMapperFeatures {
-  /**
-   * Property that defines common features to set for {@link ObjectMapper},
-   * {@link JsonParser} and {@link JsonStringifier}.
-   */
-  mapper: MapperFeature;
   /**
    * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
    */
@@ -480,7 +464,7 @@ export interface JsonDecoratorOptions {
 }
 
 /**
- * Decorator type.
+ * General decorator type.
  */
 export type JsonDecorator = <T>(
   /**
@@ -587,6 +571,9 @@ export interface JsonFormatAny extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.ARRAY}.
  */
 export interface JsonFormatArray extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that (JSON) Array type should be used.
+   */
   shape: JsonFormatShape.ARRAY;
 }
 
@@ -594,6 +581,9 @@ export interface JsonFormatArray extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.BOOLEAN}.
  */
 export interface JsonFormatBoolean extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that (JSON) boolean type (true, false) should be used.
+   */
   shape: JsonFormatShape.BOOLEAN;
 }
 
@@ -601,6 +591,9 @@ export interface JsonFormatBoolean extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.NUMBER_FLOAT}.
  */
 export interface JsonFormatNumberFloat extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that floating-point numeric type should be used.
+   */
   shape: JsonFormatShape.NUMBER_FLOAT;
 }
 
@@ -608,6 +601,9 @@ export interface JsonFormatNumberFloat extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.NUMBER_INT}.
  */
 export interface JsonFormatNumberInt extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that integer number type should be used.
+   */
   shape: JsonFormatShape.NUMBER_INT;
 }
 
@@ -615,6 +611,9 @@ export interface JsonFormatNumberInt extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.OBJECT}.
  */
 export interface JsonFormatObject extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that (JSON) Object type should be used.
+   */
   shape: JsonFormatShape.OBJECT;
 }
 
@@ -622,6 +621,9 @@ export interface JsonFormatObject extends JsonFormatBaseOptions {
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.SCALAR}.
  */
 export interface JsonFormatScalar extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates shape should not be structural.
+   */
   shape: JsonFormatShape.SCALAR;
 }
 
@@ -631,6 +633,9 @@ export interface JsonFormatScalar extends JsonFormatBaseOptions {
  * When formatting a `Date`, the {@link https://github.com/iamkun/dayjs} date library is used.
  */
 export interface JsonFormatString extends JsonFormatBaseOptions {
+  /**
+   * Value that indicates that (JSON) String type should be used.
+   */
   shape: JsonFormatShape.STRING;
   /**
    * Pattern to be used to format a `Date` during serialization.
@@ -717,9 +722,9 @@ export interface JsonIgnorePropertiesOptions extends JsonDecoratorOptions {
 export type JsonIgnoreTypeOptions = JsonDecoratorOptions;
 
 /**
- * Decorator options for {@link JsonInclude}.
+ * Decorator base options for {@link JsonInclude}.
  */
-export interface JsonIncludeOptions extends JsonDecoratorOptions {
+export interface JsonIncludeBaseOptions {
   /**
    * Inclusion rule to use for instances (values) of types (Classes) or properties decorated.
    *
@@ -749,6 +754,11 @@ export interface JsonIncludeOptions extends JsonDecoratorOptions {
    */
   contentFilter?: (value: any) => boolean;
 }
+
+/**
+ * Decorator options for {@link JsonInclude}.
+ */
+export type JsonIncludeOptions = JsonIncludeBaseOptions & JsonDecoratorOptions;
 
 /**
  * Decorator options for {@link JsonManagedReference}.
@@ -827,7 +837,6 @@ export interface JsonSerializeOptions extends JsonDecoratorOptions {
    *
    * @param obj
    * @param context
-   * @returns any
    */
   using?: (obj: any, context?: JsonStringifierTransformerContext) => any;
   /**
@@ -836,7 +845,6 @@ export interface JsonSerializeOptions extends JsonDecoratorOptions {
    *
    * @param obj
    * @param context
-   * @returns any
    */
   contentUsing?: (obj: any, context?: JsonStringifierTransformerContext) => any;
   /**
@@ -845,14 +853,12 @@ export interface JsonSerializeOptions extends JsonDecoratorOptions {
    *
    * @param key
    * @param context
-   * @returns any
    */
   keyUsing?: (key: any, context?: JsonStringifierTransformerContext) => any;
   /**
    * Serializer function to use for serializing nulls for properties that are decorated.
    *
    * @param context
-   * @returns any
    */
   nullsUsing?: (context?: JsonStringifierTransformerContext) => any;
 }
@@ -862,7 +868,7 @@ export interface JsonSerializeOptions extends JsonDecoratorOptions {
  */
 export interface JsonSubTypeOptions extends JsonDecoratorOptions {
   /**
-   * Class of the subtype.
+   * A function that returns the JavaScript Class of the subtype.
    */
   class: () => ClassType<any>;
   /**
@@ -923,7 +929,7 @@ export type JsonValueOptions = JsonDecoratorOptions;
  */
 export interface JsonViewOptions extends JsonDecoratorOptions {
   /**
-   * View or views that decorated element is part of.
+   * A function that returns the view or a list of views that decorated element is part of.
    */
   value: () => ClassType<any>[];
 }
@@ -938,10 +944,25 @@ export interface JsonAliasOptions extends JsonDecoratorOptions {
   values: string[];
 }
 
+/**
+ * Helper type used in {@link JsonClass} to declare a ClassType and apply decorators to it.
+ */
 export type ClassTypeWithDecoratorDefinitions = () => ({
+  /**
+   * JavaScript type.
+   */
   target: ClassType<any>;
+  /**
+   * Property that contains the list of decorators to be applied.
+   */
   decorators: {
+    /**
+     * Name of the decorator.
+     */
     name: string;
+    /**
+     * Decorator options.
+     */
     options: JsonDecoratorOptions;
   }[];
 });

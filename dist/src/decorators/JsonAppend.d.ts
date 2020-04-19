@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonAppendDecorator } from '../@types';
 /**
  * Decorator that may be used to add "virtual" properties to be written after regular properties

@@ -82,7 +82,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">SerializationFeature</span>
+						<a href="databind.commonfeature.html" class="tsd-signature-type">CommonFeature</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">SerializationFeature</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -94,8 +99,14 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#default_property_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>PROPERTY_<wbr>INCLUSION</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#fail_on_self_references" class="tsd-kind-icon">FAIL_<wbr>ON_<wbr>SELF_<wbr>REFERENCES</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#order_map_and_object_literal_entries_by_keys" class="tsd-kind-icon">ORDER_<wbr>MAP_<wbr>AND_<wbr>OBJECT_<wbr>LITERAL_<wbr>ENTRIES_<wbr>BY_<wbr>KEYS</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="databind.serializationfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#sort_properties_alphabetically" class="tsd-kind-icon">SORT_<wbr>PROPERTIES_<wbr>ALPHABETICALLY</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#wrap_root_value" class="tsd-kind-icon">WRAP_<wbr>ROOT_<wbr>VALUE</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.serializationfeature.html#write_dates_as_timestamps" class="tsd-kind-icon">WRITE_<wbr>DATES_<wbr>AS_<wbr>TIMESTAMPS</a></li>
@@ -116,19 +127,38 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="default_property_inclusion" class="tsd-anchor"></a>
 					<h3>DEFAULT_<wbr>PROPERTY_<wbr>INCLUSION</h3>
-					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>PROPERTY_<wbr>INCLUSION<span class="tsd-signature-symbol">:</span> <a href="../enums/decorators.jsonincludetype.html#always" class="tsd-signature-type">ALWAYS</a><span class="tsd-signature-symbol"> | </span><a href="../enums/decorators.jsonincludetype.html#non_empty" class="tsd-signature-type">NON_EMPTY</a><span class="tsd-signature-symbol"> | </span><a href="../enums/decorators.jsonincludetype.html#non_null" class="tsd-signature-type">NON_NULL</a><span class="tsd-signature-symbol"> | </span><a href="../enums/decorators.jsonincludetype.html#non_default" class="tsd-signature-type">NON_DEFAULT</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>PROPERTY_<wbr>INCLUSION<span class="tsd-signature-symbol">:</span> <a href="types.jsonincludebaseoptions.html" class="tsd-signature-type">JsonIncludeBaseOptions</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L22">src/databind/SerializationFeature.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L21">src/databind/SerializationFeature.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Feature that define global inclusion rules about which properties of a Class are to be included in serialization.</p>
 						</div>
-						<p>Possible values are: <a href="../enums/decorators.jsonincludetype.html#always">JsonIncludeType.ALWAYS</a>, <a href="../enums/decorators.jsonincludetype.html#non_empty">JsonIncludeType.NON_EMPTY</a>,
-							<a href="../enums/decorators.jsonincludetype.html#non_null">JsonIncludeType.NON_NULL</a>, <a href="../enums/decorators.jsonincludetype.html#non_default">JsonIncludeType.NON_DEFAULT</a> and <code>null</code>.
-						<code>null</code> indicates that no global inclusion rules are defined.</p>
+						<p><code>null</code> indicates that no global inclusion rules are defined.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="default_view_inclusion" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> DEFAULT_<wbr>VIEW_<wbr>INCLUSION</h3>
+					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#default_view_inclusion">DEFAULT_VIEW_INCLUSION</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L23">src/databind/CommonFeature.ts:23</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether properties that have no view decorators are included
+							in JSON serialization views (see <a href="../modules/decorators.html#jsonview">JsonView</a> for more details on JSON Views).</p>
+						</div>
+						<p>If enabled, non-decorated properties will be included; when disabled, they will be excluded.
+						So this feature changes between &quot;opt-in&quot; (feature disabled) and &quot;opt-out&quot; (feature enabled) modes.</p>
+						<p>Default value is enabled, meaning that non-decorated properties are included
+						in all views if there is no JsonView annotation.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
@@ -137,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">FAIL_<wbr>ON_<wbr>SELF_<wbr>REFERENCES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L29">src/databind/SerializationFeature.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L27">src/databind/SerializationFeature.ts:27</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -154,7 +184,7 @@
 					<div class="tsd-signature tsd-kind-icon">ORDER_<wbr>MAP_<wbr>AND_<wbr>OBJECT_<wbr>LITERAL_<wbr>ENTRIES_<wbr>BY_<wbr>KEYS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L34">src/databind/SerializationFeature.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L32">src/databind/SerializationFeature.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -164,13 +194,120 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="set_default_value_for_bigint_on_null" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#set_default_value_for_bigint_on_null">SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L73">src/databind/CommonFeature.ts:73</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether BigInt primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default BigInt value is <code>0n</code>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="set_default_value_for_boolean_on_null" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#set_default_value_for_boolean_on_null">SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L64">src/databind/CommonFeature.ts:64</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether Boolean primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default Boolean value is <code>false</code>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="set_default_value_for_number_on_null" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#set_default_value_for_number_on_null">SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L46">src/databind/CommonFeature.ts:46</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether Number primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default Number value is <code>0</code>.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="set_default_value_for_primitives_on_null" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#set_default_value_for_primitives_on_null">SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L37">src/databind/CommonFeature.ts:37</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>Default values are:</p>
+						<ul>
+							<li>Number: <code>0</code>;</li>
+							<li>String: <code>&quot;&quot;</code>;</li>
+							<li>Boolean: <code>false</code>;</li>
+							<li>BigInt: <code>0n</code>;</li>
+							<li><code>null</code> for all other JavaScript types.</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="set_default_value_for_string_on_null" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</h3>
+					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="databind.commonfeature.html">CommonFeature</a>.<a href="databind.commonfeature.html#set_default_value_for_string_on_null">SET_DEFAULT_VALUE_FOR_STRING_ON_NULL</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L55">src/databind/CommonFeature.ts:55</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether String primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default String value is <code>&quot;&quot;</code>.</p>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="sort_properties_alphabetically" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> SORT_<wbr>PROPERTIES_<wbr>ALPHABETICALLY</h3>
 					<div class="tsd-signature tsd-kind-icon">SORT_<wbr>PROPERTIES_<wbr>ALPHABETICALLY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L42">src/databind/SerializationFeature.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L40">src/databind/SerializationFeature.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -189,7 +326,7 @@
 					<div class="tsd-signature tsd-kind-icon">WRAP_<wbr>ROOT_<wbr>VALUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L46">src/databind/SerializationFeature.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L44">src/databind/SerializationFeature.ts:44</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -204,9 +341,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>DATES_<wbr>AS_<wbr>TIMESTAMPS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L52">src/databind/SerializationFeature.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L68">src/databind/SerializationFeature.ts:68</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether <code>Date</code> values are to be serialized as numeric time stamps or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_date_keys_as_timestamps" class="tsd-anchor"></a>
@@ -214,7 +356,7 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>DATE_<wbr>KEYS_<wbr>AS_<wbr>TIMESTAMPS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L57">src/databind/SerializationFeature.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L73">src/databind/SerializationFeature.ts:73</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -230,9 +372,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>NAN_<wbr>AS_<wbr>ZERO<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L47">src/databind/SerializationFeature.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L48">src/databind/SerializationFeature.ts:48</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether <code>NaN</code> values should be serialized as <code>0</code> or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_negative_infinity_as_number_min_safe_integer" class="tsd-anchor"></a>
@@ -240,9 +387,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>NEGATIVE_<wbr>INFINITY_<wbr>AS_<wbr>NUMBER_<wbr>MIN_<wbr>SAFE_<wbr>INTEGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L50">src/databind/SerializationFeature.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L60">src/databind/SerializationFeature.ts:60</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether negative <code>Infinity</code> values should be serialized as <code>Number.MIN_SAFE_INTEGER</code> or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_negative_infinity_as_number_min_value" class="tsd-anchor"></a>
@@ -250,9 +402,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>NEGATIVE_<wbr>INFINITY_<wbr>AS_<wbr>NUMBER_<wbr>MIN_<wbr>VALUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L51">src/databind/SerializationFeature.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L64">src/databind/SerializationFeature.ts:64</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether negative <code>Infinity</code> values should be serialized as <code>Number.MIN_VALUE</code> or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_positive_infinity_as_number_max_safe_integer" class="tsd-anchor"></a>
@@ -260,9 +417,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>POSITIVE_<wbr>INFINITY_<wbr>AS_<wbr>NUMBER_<wbr>MAX_<wbr>SAFE_<wbr>INTEGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L48">src/databind/SerializationFeature.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L52">src/databind/SerializationFeature.ts:52</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether positive <code>Infinity</code> values should be serialized as <code>Number.MAX_SAFE_INTEGER</code> or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_positive_infinity_as_number_max_value" class="tsd-anchor"></a>
@@ -270,9 +432,14 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>POSITIVE_<wbr>INFINITY_<wbr>AS_<wbr>NUMBER_<wbr>MAX_<wbr>VALUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L49">src/databind/SerializationFeature.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L56">src/databind/SerializationFeature.ts:56</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether positive <code>Infinity</code> values should be serialized as <code>Number.MAX_VALUE</code> or not.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="write_self_references_as_null" class="tsd-anchor"></a>
@@ -280,13 +447,13 @@
 					<div class="tsd-signature tsd-kind-icon">WRITE_<wbr>SELF_<wbr>REFERENCES_<wbr>AS_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/SerializationFeature.ts#L64">src/databind/SerializationFeature.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/SerializationFeature.ts#L80">src/databind/SerializationFeature.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Feature that determines what happens when a direct self-reference is detected by
-								a Class (and no Object Id handling is enabled for it): if enabled write that reference as null;
+								a Class (and no Object Id handling is enabled for it): if enabled write that reference as <code>null</code>;
 								if disabled, default behavior is used (which will try to serialize usually resulting in exception).
 							But if <a href="databind.serializationfeature.html#fail_on_self_references">FAIL_ON_SELF_REFERENCES</a> is enabled, this property is ignored.</p>
 						</div>
@@ -320,10 +487,10 @@
 						<a href="../classes/databind.objectmapper.html" class="tsd-kind-icon">Object<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
+						<a href="databind.commonfeature.html" class="tsd-kind-icon">Common<wbr>Feature</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="databind.mapperfeature.html" class="tsd-kind-icon">Mapper<wbr>Feature</a>
+						<a href="databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
 					</li>
 				</ul>
 				<ul class="current">
@@ -333,11 +500,29 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="databind.serializationfeature.html#default_property_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>PROPERTY_<wbr>INCLUSION</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="databind.serializationfeature.html#fail_on_self_references" class="tsd-kind-icon">FAIL_<wbr>ON_<wbr>SELF_<wbr>REFERENCES</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="databind.serializationfeature.html#order_map_and_object_literal_entries_by_keys" class="tsd-kind-icon">ORDER_<wbr>MAP_<wbr>AND_<wbr>OBJECT_<wbr>LITERAL_<wbr>ENTRIES_<wbr>BY_<wbr>KEYS</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="databind.serializationfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="databind.serializationfeature.html#sort_properties_alphabetically" class="tsd-kind-icon">SORT_<wbr>PROPERTIES_<wbr>ALPHABETICALLY</a>
@@ -374,10 +559,10 @@
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
-						<a href="../modules/databind.html#defaultdeserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Deserialization<wbr>Feature<wbr>Values</a>
+						<a href="../modules/databind.html#defaultcommonfeaturevalues" class="tsd-kind-icon">Default<wbr>Common<wbr>Feature<wbr>Values</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
-						<a href="../modules/databind.html#defaultmapperfeaturevalues" class="tsd-kind-icon">Default<wbr>Mapper<wbr>Feature<wbr>Values</a>
+						<a href="../modules/databind.html#defaultdeserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Deserialization<wbr>Feature<wbr>Values</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
 						<a href="../modules/databind.html#defaultserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Serialization<wbr>Feature<wbr>Values</a>

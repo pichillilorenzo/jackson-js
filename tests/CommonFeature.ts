@@ -2,8 +2,9 @@ import test from 'ava';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonView} from '../src/decorators/JsonView';
+import {JsonClass} from '../src/decorators/JsonClass';
 
-test('MapperFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
+test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   class Views {
     static public = class Public {};
     static internal = class Internal {};
@@ -40,7 +41,8 @@ test('MapperFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'rtJ9FrqP!rCE', 'John', 'Alfa', '75afe654-695e-11ea-bc55-0242ac130003');
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.mapper.DEFAULT_VIEW_INCLUSION = false;
+  objectMapper.features.serialization.DEFAULT_VIEW_INCLUSION = false;
+  objectMapper.features.deserialization.DEFAULT_VIEW_INCLUSION = false;
 
   const jsonData = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1}'));
@@ -57,4 +59,46 @@ test('MapperFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   t.is(userParsed.firstname, null);
   t.is(userParsed.lastname, null);
   t.is(userParsed.activationCode, null);
+});
+
+test('CommonFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL set to true', t => {
+  class User {
+    @JsonProperty()
+    @JsonClass({class: () => [BigInt]})
+    id: BigInt;
+    @JsonProperty()
+    @JsonClass({class: () => [String]})
+    name: string;
+    @JsonProperty()
+    @JsonClass({class: () => [Number]})
+    age: number;
+    @JsonProperty()
+    @JsonClass({class: () => [Boolean]})
+    deleted: boolean;
+
+    constructor(id: BigInt, name: string, age: number, deleted: boolean) {
+      this.id = id;
+      this.name = name;
+      this.age = age;
+      this.deleted = deleted;
+    }
+  }
+
+  const user = new User(null, null, null, null);
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.features.serialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
+  objectMapper.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
+
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":"0n","name":"","age":0,"deleted":false}'));
+
+  const userParsed = objectMapper.parse<User>('{"id":null,"name":null,"age":null,"deleted":null}', {
+    mainCreator: () => [User]
+  });
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, BigInt(0));
+  t.is(userParsed.name, '');
+  t.is(userParsed.age, 0);
+  t.is(userParsed.deleted, false);
 });

@@ -13,7 +13,6 @@ import {
   getMetadataKeys,
   hasMetadata,
   isClassIterable,
-  isClassIterableNoMapNoString,
   isConstructorPrimitiveType,
   isFloat,
   isIterableNoMapNoString,
@@ -63,7 +62,6 @@ import {defaultCreatorName, JsonCreatorMode} from '../decorators/JsonCreator';
 import * as cloneDeep from 'lodash.clonedeep';
 import {JsonSetterNulls} from '../decorators/JsonSetter';
 import {DefaultDeserializationFeatureValues} from '../databind/DeserializationFeature';
-import {DefaultMapperFeatureValues} from '../databind/MapperFeature';
 
 /**
  *
@@ -126,7 +124,6 @@ export class JsonParser<T> {
     context = {
       withContextGroups: [],
       features: {
-        mapper: DefaultMapperFeatureValues,
         deserialization: DefaultDeserializationFeatureValues
       },
       deserializers: [],
@@ -204,6 +201,15 @@ export class JsonParser<T> {
       value = this.getDefaultValue(context);
     }
 
+    if (value == null && context.features.deserialization.FAIL_ON_NULL_FOR_PRIMITIVES &&
+      isConstructorPrimitiveType(currentMainCreator)) {
+      // eslint-disable-next-line max-len
+      throw new JacksonError(`Cannot map "${value}" into primitive type ${(currentMainCreator as ObjectConstructor).name}` +
+        ( (context._propertyParentCreator != null && context._propertyParentCreator !== Object && key !== '') ?
+          ` for ${context._propertyParentCreator.name}["${key}"]` :
+          (key !== '' ? ' for property ' + key : '') ));
+    }
+
     if ( (value instanceof Array && value.length === 0 &&
       context.features.deserialization.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT) ||
       (value != null && value.constructor === String && value.length === 0 &&
@@ -211,20 +217,15 @@ export class JsonParser<T> {
       value = null;
     }
 
-    if (value == null && context.features.deserialization.FAIL_ON_NULL_FOR_PRIMITIVES &&
-      isConstructorPrimitiveType(currentMainCreator)) {
-      throw new JacksonError(`Cannot map "${value}" into primitive type ${(currentMainCreator as ObjectConstructor).name}`);
-    }
-
-    if (value != null && value.constructor === Number &&
-      context.features.deserialization.ACCEPT_FLOAT_AS_INT && isFloat(value)) {
-      value = parseInt(value + '', 10);
-    }
+    // if (value != null && value.constructor === Number &&
+    //   context.features.deserialization.ACCEPT_FLOAT_AS_INT && isFloat(value)) {
+    //   value = parseInt(value + '', 10);
+    // }
 
     if (value != null) {
 
       let instance = this.getInstanceAlreadySeen(key, value, context);
-      if (instance != null) {
+      if (instance !== undefined) {
         return instance;
       }
 
@@ -239,8 +240,10 @@ export class JsonParser<T> {
           currentMainCreator(value.substring(0, value.length - 1)) :
           // @ts-ignore
           currentMainCreator(value);
-      } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, RegExp) ||
-        isSameConstructorOrExtensionOfNoObject(currentMainCreator, Date)) {
+      } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, RegExp)) {
+        // @ts-ignore
+        return new currentMainCreator(value);
+      } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Date)) {
         // @ts-ignore
         return new currentMainCreator(value);
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
@@ -326,20 +329,20 @@ export class JsonParser<T> {
     let defaultValue = null;
     const currentMainCreator = context.mainCreator[0];
     if (currentMainCreator === String &&
-      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
-        context.features.mapper.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL) ) {
+      (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.deserialization.SET_DEFAULT_VALUE_FOR_STRING_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(String);
     } else if (currentMainCreator === Number &&
-      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
-        context.features.mapper.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL) ) {
+      (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.deserialization.SET_DEFAULT_VALUE_FOR_NUMBER_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Number);
     } else if (currentMainCreator === Boolean &&
-      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
-        context.features.mapper.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL) ) {
+      (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.deserialization.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Boolean);
     } else if (BigInt && currentMainCreator === BigInt &&
-      (context.features.mapper.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
-        context.features.mapper.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL) ) {
+      (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
+        context.features.deserialization.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);
     }
     return defaultValue;
@@ -525,7 +528,7 @@ export class JsonParser<T> {
    * @param value
    * @param context
    */
-  private getInstanceAlreadySeen(key: string, value: any, context: JsonParserTransformerContext): null | any {
+  private getInstanceAlreadySeen(key: string, value: any, context: JsonParserTransformerContext): undefined | null | any {
     const currentMainCreator = context.mainCreator[0];
     const jsonIdentityInfo: JsonIdentityInfoOptions =
       getMetadata('JsonIdentityInfo', currentMainCreator, null, context);
@@ -546,10 +549,13 @@ export class JsonParser<T> {
         return instance;
       } else if (typeof value !== 'object') {
         this._globalUnresolvedValueAlreadySeen.add(scopedId);
+        if (!context.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
+          return null;
+        }
       }
     }
 
-    return null;
+    return undefined;
   }
 
   /**
@@ -864,7 +870,8 @@ export class JsonParser<T> {
         } else if (Object.hasOwnProperty.call(obj, key)) {
           args.push(this.parseJsonClass(context, obj, key, methodName, argIndex));
         } else {
-          if (isJsonCreator && context.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES) {
+          if (isJsonCreator && context.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES &&
+            (!jsonInject || (jsonInject && !(jsonInject.value in context.injectableValues)))) {
             // eslint-disable-next-line max-len
             throw new JacksonError(`Missing @JsonCreator() parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
           }
@@ -1013,15 +1020,6 @@ export class JsonParser<T> {
     if (jsonClass && jsonClass.class) {
       newContext.mainCreator = jsonClass.class();
       this._addInternalDecoratorsFromJsonClass(newContext.mainCreator, newContext);
-      if (obj[key] == null) {
-        return obj[key];
-      }
-
-      const newCreator = newContext.mainCreator[0];
-
-      if (isClassIterableNoMapNoString(newCreator)) {
-        return this.parseIterable(obj[key], key, newContext);
-      }
     } else {
       const newCreator = (obj[key] != null) ? obj[key].constructor : Object;
       newContext.mainCreator = [newCreator];
@@ -1358,7 +1356,7 @@ export class JsonParser<T> {
         return this.parseIsIncludedByJsonView(jsonView, context);
       }
 
-      return context.features.mapper.DEFAULT_VIEW_INCLUSION;
+      return context.features.deserialization.DEFAULT_VIEW_INCLUSION;
     }
     return true;
   }
@@ -1380,7 +1378,7 @@ export class JsonParser<T> {
         return this.parseIsIncludedByJsonView(jsonView, context);
       }
 
-      return context.features.mapper.DEFAULT_VIEW_INCLUSION;
+      return context.features.deserialization.DEFAULT_VIEW_INCLUSION;
     }
     return true;
   }
@@ -1550,7 +1548,6 @@ export class JsonParser<T> {
     let map: Map<any, any> | Record<any, any>;
 
     const newContext = cloneDeep(context);
-
     if (currentCreators.length > 1 && currentCreators[1] instanceof Array) {
       newContext.mainCreator = currentCreators[1] as [ClassType<any>];
     } else {
@@ -1563,32 +1560,48 @@ export class JsonParser<T> {
       map = {};
     }
 
-    let keyNewContext = cloneDeep(newContext);
-    let valueNewContext = cloneDeep(newContext);
-
     const mapCurrentCreators = newContext.mainCreator;
-    keyNewContext.mainCreator = [mapCurrentCreators[0]];
-    if (mapCurrentCreators.length > 1) {
-      if (mapCurrentCreators[1] instanceof Array) {
-        valueNewContext.mainCreator = mapCurrentCreators[1] as [ClassType<any>];
-      } else {
-        valueNewContext.mainCreator = [mapCurrentCreators[1]] as [ClassType<any>];
-      }
-    } else {
-      valueNewContext.mainCreator = [Object];
-    }
 
-    keyNewContext = cloneDeep(keyNewContext);
-    valueNewContext = cloneDeep(valueNewContext);
-
-    // eslint-disable-next-line guard-for-in
-    for (let mapKey in obj) {
+    const mapKeys = Object.getOwnPropertyNames(obj);
+    for (let mapKey of mapKeys) {
       let mapValue = obj[mapKey];
 
+      const keyNewContext = cloneDeep(newContext);
+      const valueNewContext = cloneDeep(newContext);
+
+      if (mapCurrentCreators[0] instanceof Array) {
+        keyNewContext.mainCreator = mapCurrentCreators[0] as [ClassType<any>];
+      } else {
+        keyNewContext.mainCreator = [mapCurrentCreators[0]] as [ClassType<any>];
+      }
+      if (keyNewContext.mainCreator[0] === Object) {
+        keyNewContext.mainCreator[0] = mapKey.constructor;
+      }
+
+      if (mapCurrentCreators.length > 1) {
+        if (mapCurrentCreators[1] instanceof Array) {
+          valueNewContext.mainCreator = mapCurrentCreators[1] as [ClassType<any>];
+        } else {
+          valueNewContext.mainCreator = [mapCurrentCreators[1]] as [ClassType<any>];
+        }
+      } else {
+        valueNewContext.mainCreator = [Object];
+      }
+      if (mapValue != null && mapValue.constructor !== Object && valueNewContext.mainCreator[0] === Object) {
+        valueNewContext.mainCreator[0] = mapValue.constructor;
+      }
+
       if (jsonDeserialize && (jsonDeserialize.contentUsing || jsonDeserialize.keyUsing)) {
-        mapKey = (jsonDeserialize.keyUsing) ? jsonDeserialize.keyUsing(mapKey, context) : mapKey;
+        mapKey = (jsonDeserialize.keyUsing) ? jsonDeserialize.keyUsing(mapKey, keyNewContext) : mapKey;
         mapValue = (jsonDeserialize.contentUsing) ?
-          jsonDeserialize.contentUsing(mapValue, context) : mapValue;
+          jsonDeserialize.contentUsing(mapValue, valueNewContext) : mapValue;
+
+        if (mapKey != null && mapKey.constructor !== Object) {
+          keyNewContext.mainCreator[0] = mapKey.constructor;
+        }
+        if (mapValue != null && mapValue.constructor !== Object) {
+          valueNewContext.mainCreator[0] = mapValue.constructor;
+        }
       }
 
       const mapKeyParsed = this.deepTransform('', mapKey, keyNewContext);

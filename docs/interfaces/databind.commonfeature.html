@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>MapperFeature | jackson-js</title>
+	<title>CommonFeature | jackson-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -59,10 +59,10 @@
 					<a href="../modules/databind.html">Databind</a>
 				</li>
 				<li>
-					<a href="databind.mapperfeature.html">MapperFeature</a>
+					<a href="databind.commonfeature.html">CommonFeature</a>
 				</li>
 			</ul>
-			<h1>Interface MapperFeature</h1>
+			<h1>Interface CommonFeature</h1>
 		</div>
 	</div>
 </header>
@@ -72,8 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Interface that defines common features to set for <a href="../classes/databind.objectmapper.html">ObjectMapper</a>,
-						<a href="../classes/core.jsonparser.html">JsonParser</a> and <a href="../classes/core.jsonstringifier.html">JsonStringifier</a>.</p>
+						<p>Interface that defines common features to set for <a href="../classes/databind.objectmapper.html">ObjectMapper</a>, <a href="../classes/core.jsonparser.html">JsonParser</a> and <a href="../classes/core.jsonstringifier.html">JsonStringifier</a>.</p>
 					</div>
 					<p>Changes only take effect when done before any serialization or deserialization calls --
 					that is, caller must follow &quot;configure-then-use&quot; pattern.</p>
@@ -83,7 +82,15 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">MapperFeature</span>
+						<span class="target">CommonFeature</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="databind.serializationfeature.html" class="tsd-signature-type">SerializationFeature</a>
+							</li>
+							<li>
+								<a href="databind.deserializationfeature.html" class="tsd-signature-type">DeserializationFeature</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -94,12 +101,12 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.mapperfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="databind.commonfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,17 +120,17 @@
 					<div class="tsd-signature tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L24">src/databind/MapperFeature.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L23">src/databind/CommonFeature.ts:23</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Feature that determines whether properties that have no view annotations are included
+							<p>Feature that determines whether properties that have no view decorators are included
 							in JSON serialization views (see <a href="../modules/decorators.html#jsonview">JsonView</a> for more details on JSON Views).</p>
 						</div>
-						<p>If enabled, non-annotated properties will be included; when disabled, they will be excluded.
+						<p>If enabled, non-decorated properties will be included; when disabled, they will be excluded.
 						So this feature changes between &quot;opt-in&quot; (feature disabled) and &quot;opt-out&quot; (feature enabled) modes.</p>
-						<p>Default value is enabled, meaning that non-annotated properties are included
+						<p>Default value is enabled, meaning that non-decorated properties are included
 						in all views if there is no JsonView annotation.</p>
 					</div>
 				</section>
@@ -133,9 +140,18 @@
 					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L29">src/databind/MapperFeature.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L73">src/databind/CommonFeature.ts:73</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether BigInt primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default BigInt value is <code>0n</code>.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="set_default_value_for_boolean_on_null" class="tsd-anchor"></a>
@@ -143,9 +159,18 @@
 					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L28">src/databind/MapperFeature.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L64">src/databind/CommonFeature.ts:64</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether Boolean primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default Boolean value is <code>false</code>.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="set_default_value_for_number_on_null" class="tsd-anchor"></a>
@@ -153,9 +178,18 @@
 					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L26">src/databind/MapperFeature.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L46">src/databind/CommonFeature.ts:46</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether Number primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default Number value is <code>0</code>.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="set_default_value_for_primitives_on_null" class="tsd-anchor"></a>
@@ -163,9 +197,25 @@
 					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L25">src/databind/MapperFeature.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L37">src/databind/CommonFeature.ts:37</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>Default values are:</p>
+						<ul>
+							<li>Number: <code>0</code>;</li>
+							<li>String: <code>&quot;&quot;</code>;</li>
+							<li>Boolean: <code>false</code>;</li>
+							<li>BigInt: <code>0n</code>;</li>
+							<li><code>null</code> for all other JavaScript types.</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="set_default_value_for_string_on_null" class="tsd-anchor"></a>
@@ -173,9 +223,18 @@
 					<div class="tsd-signature tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/604cb83/src/databind/MapperFeature.ts#L27">src/databind/MapperFeature.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/databind/CommonFeature.ts#L55">src/databind/CommonFeature.ts:55</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Feature that determines whether String primitive type properties that contains <code>null</code> value should
+								be serialized/deserialized with its default value or not.
+								If enabled, during serialization, the property will be serialized with its default value.
+							Instead, during deserialization, the <code>null</code> value will be substituted with its default value.</p>
+						</div>
+						<p>The default String value is <code>&quot;&quot;</code>.</p>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -204,44 +263,44 @@
 					<li class=" tsd-kind-class tsd-parent-kind-module">
 						<a href="../classes/databind.objectmapper.html" class="tsd-kind-icon">Object<wbr>Mapper</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module">
-						<a href="databind.mapperfeature.html" class="tsd-kind-icon">Mapper<wbr>Feature</a>
+						<a href="databind.commonfeature.html" class="tsd-kind-icon">Common<wbr>Feature</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a>
+								<a href="databind.commonfeature.html#default_view_inclusion" class="tsd-kind-icon">DEFAULT_<wbr>VIEW_<wbr>INCLUSION</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a>
+								<a href="databind.commonfeature.html#set_default_value_for_bigint_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BIGINT_<wbr>ON_<wbr>NULL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a>
+								<a href="databind.commonfeature.html#set_default_value_for_boolean_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>BOOLEAN_<wbr>ON_<wbr>NULL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a>
+								<a href="databind.commonfeature.html#set_default_value_for_number_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>NUMBER_<wbr>ON_<wbr>NULL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a>
+								<a href="databind.commonfeature.html#set_default_value_for_primitives_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>PRIMITIVES_<wbr>ON_<wbr>NULL</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="databind.mapperfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a>
+								<a href="databind.commonfeature.html#set_default_value_for_string_on_null" class="tsd-kind-icon">SET_<wbr>DEFAULT_<wbr>VALUE_<wbr>FOR_<wbr>STRING_<wbr>ON_<wbr>NULL</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="databind.deserializationfeature.html" class="tsd-kind-icon">Deserialization<wbr>Feature</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="databind.serializationfeature.html" class="tsd-kind-icon">Serialization<wbr>Feature</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
-						<a href="../modules/databind.html#defaultdeserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Deserialization<wbr>Feature<wbr>Values</a>
+						<a href="../modules/databind.html#defaultcommonfeaturevalues" class="tsd-kind-icon">Default<wbr>Common<wbr>Feature<wbr>Values</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
-						<a href="../modules/databind.html#defaultmapperfeaturevalues" class="tsd-kind-icon">Default<wbr>Mapper<wbr>Feature<wbr>Values</a>
+						<a href="../modules/databind.html#defaultdeserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Deserialization<wbr>Feature<wbr>Values</a>
 					</li>
 					<li class=" tsd-kind-object-literal tsd-parent-kind-module">
 						<a href="../modules/databind.html#defaultserializationfeaturevalues" class="tsd-kind-icon">Default<wbr>Serialization<wbr>Feature<wbr>Values</a>

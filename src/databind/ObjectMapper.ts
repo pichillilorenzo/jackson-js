@@ -15,7 +15,6 @@ import {
 import {JsonParser} from '../core/JsonParser';
 import {DefaultSerializationFeatureValues} from './SerializationFeature';
 import {DefaultDeserializationFeatureValues} from './DeserializationFeature';
-import {DefaultMapperFeatureValues} from './MapperFeature';
 import * as cloneDeep from 'lodash.clonedeep';
 
 /**
@@ -31,11 +30,6 @@ export class ObjectMapper {
    * Property that defines features to set for {@link ObjectMapper}.
    */
   features: ObjectMapperFeatures = {
-    /**
-     * Property that defines common features to set for {@link ObjectMapper},
-     * {@link JsonParser} and {@link JsonStringifier}.
-     */
-    mapper: cloneDeep(DefaultMapperFeatureValues),
     /**
      * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
      */
@@ -77,7 +71,6 @@ export class ObjectMapper {
       withContextGroups: [],
       serializers: this.serializers,
       features: {
-        mapper: this.features.mapper,
         serialization: this.features.serialization
       },
       filters: {},
@@ -102,7 +95,6 @@ export class ObjectMapper {
       withContextGroups: [],
       deserializers: this.deserializers,
       features: {
-        mapper: this.features.mapper,
         deserialization: this.features.deserialization
       },
       injectableValues: {},

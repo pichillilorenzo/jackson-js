@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonGetterDecorator } from '../@types';
 /**
  * Decorator that can be used to define a non-static,

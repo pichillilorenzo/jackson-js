@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonTypeIdDecorator } from '../@types';
 /**
  * Decorator that can be used on a property accessor (field, getter or setter, constructor parameter)

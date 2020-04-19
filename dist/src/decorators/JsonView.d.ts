@@ -2,7 +2,6 @@
  * @packageDocumentation
  * @module Decorators
  */
-import 'reflect-metadata';
 import { JsonViewDecorator } from '../@types';
 /**
  * Decorator used for indicating view(s) that the property that is defined by method or field annotated is part of.
