@@ -64,16 +64,21 @@ import {JsonSetterNulls} from '../decorators/JsonSetter';
 import {DefaultDeserializationFeatureValues} from '../databind/DeserializationFeature';
 
 /**
- *
+ * JsonParser provides functionality for reading JSON.
+ * It is also highly customizable to work both with different styles of JSON content,
+ * and to support more advanced Object concepts such as polymorphism and Object identity.
  */
 export class JsonParser<T> {
 
   /**
-   * Map used to restore object circular references defined with @JsonIdentityInfo()
+   * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
    */
   private _globalValueAlreadySeen = new Map<string, any>();
 
-  private _globalUnresolvedValueAlreadySeen = new Set<string>();
+  /**
+   * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
+   */
+  private _globalUnresolvedObjectIdentities = new Set<string>();
 
   /**
    *
@@ -82,43 +87,47 @@ export class JsonParser<T> {
   }
 
   /**
+   * Method for deserializing a JSON string into a JavaScript object or value.
    *
-   * @param text
-   * @param context
+   * @param text - the JSON string to be deserialized.
+   * @param context - the context to be used during deserialization.
    */
   parse(text: string, context: JsonParserContext = {}): T {
     const value = JSON.parse(text);
-    const newContext: JsonParserTransformerContext = this.convertParserContextToTransformerContext(context);
-    const result = this.transform('', value, newContext);
+    const result = this.transform(value, context);
     return result;
   }
 
   /**
+   * Method for applying json decorators to a JavaScript object/value parsed.
+   * It returns a JavaScript object/value with json decorators applied.
    *
-   * @param key
-   * @param value
-   * @param context
+   * @param value - the JavaScript object or value to be postprocessed.
+   * @param context - the context to be used during deserialization postprocessing.
    */
-  transform(key: string, value: any, context: JsonParserTransformerContext = {}): any {
-    context.mainCreator = (context.mainCreator && context.mainCreator[0] !== Object) ?
-      context.mainCreator : [(value != null) ? value.constructor : Object];
-    context._propertyParentCreator = context.mainCreator[0];
-    context._internalDecorators = new Map();
-    context = cloneDeep(context);
+  transform(value: any, context: JsonParserContext = {}): any {
+    let newContext: JsonParserTransformerContext = this.convertParserContextToTransformerContext(context);
 
-    const result = this.deepTransform('', value, context);
-    if (this._globalUnresolvedValueAlreadySeen.size > 0 &&
-      context.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
-      throw new JacksonError(`Found unresolved Object Ids: ${[...this._globalUnresolvedValueAlreadySeen].join(', ')}`);
+    newContext.mainCreator = (newContext.mainCreator && newContext.mainCreator[0] !== Object) ?
+      newContext.mainCreator : [(value != null) ? value.constructor : Object];
+    newContext._propertyParentCreator = newContext.mainCreator[0];
+    newContext._internalDecorators = new Map();
+    newContext = cloneDeep(newContext);
+
+    const result = this.deepTransform('', value, newContext);
+    if (this._globalUnresolvedObjectIdentities.size > 0 &&
+      newContext.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
+      throw new JacksonError(`Found unresolved Object Ids: ${[...this._globalUnresolvedObjectIdentities].join(', ')}`);
     }
     return result;
   }
 
   /**
+   * Recursive {@link JsonParser.transform}.
    *
-   * @param key
-   * @param value
-   * @param context
+   * @param key - key name representing the object property being postprocessed.
+   * @param value - the JavaScript object or value to postprocessed.
+   * @param context - the context to be used during deserialization postprocessing.
    */
   private deepTransform(key: string, value: any, context: JsonParserTransformerContext): any {
     context = {
@@ -544,11 +553,11 @@ export class JsonParser<T> {
         if (instance.constructor !== currentMainCreator) {
           throw new JacksonError(`Already had Class "${instance.constructor.name}" for id ${id}.`);
         }
-        this._globalUnresolvedValueAlreadySeen.delete(scopedId);
+        this._globalUnresolvedObjectIdentities.delete(scopedId);
 
         return instance;
       } else if (typeof value !== 'object') {
-        this._globalUnresolvedValueAlreadySeen.add(scopedId);
+        this._globalUnresolvedObjectIdentities.add(scopedId);
         if (!context.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
           return null;
         }

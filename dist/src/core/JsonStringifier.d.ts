@@ -2,17 +2,19 @@
  * @packageDocumentation
  * @module Core
  */
-import { JsonStringifierContext, JsonStringifierTransformerContext } from '../@types';
+import { JsonStringifierContext } from '../@types';
 /**
- *
+ * JsonStringifier provides functionality for writing JSON.
+ * It is also highly customizable to work both with different styles of JSON content,
+ * and to support more advanced Object concepts such as polymorphism and Object identity.
  */
 export declare class JsonStringifier<T> {
     /**
-     * WeakMap used to track all objects about @JsonIdentityInfo()
+     * WeakMap used to track all objects by {@link JsonIdentityInfo}.
      */
     private _globalValueAlreadySeen;
     /**
-     *
+     * Integer sequence generator counter used by {@link JsonIdentityInfo}.
      */
     private _intSequenceGenerator;
     /**
@@ -20,27 +22,29 @@ export declare class JsonStringifier<T> {
      */
     constructor();
     /**
+     * Method for serializing a JavaScript object or a value to a JSON string.
      *
-     * @param obj
-     * @param context
+     * @param obj - the JavaScript object or value to be serialized.
+     * @param context - the context to be used during serialization.
      */
     stringify(obj: T, context?: JsonStringifierContext): string;
     /**
+     * Method for applying json decorators to a JavaScript object/value.
+     * It returns a JavaScript object/value with json decorators applied and ready to be JSON serialized.
      *
-     * @param key
-     * @param value
-     * @param context
-     * @param valueAlreadySeen: Map used to manage object circular references
+     * @param value - the JavaScript object or value to be preprocessed.
+     * @param context - the context to be used during serialization preprocessing.
      */
-    transform(key: string, value: any, context?: JsonStringifierTransformerContext, valueAlreadySeen?: Map<any, any>): any;
+    transform(value: any, context?: JsonStringifierContext): any;
     /**
+     * Recursive {@link JsonStringifier.transform}.
      *
-     * @param key
-     * @param value
-     * @param context
-     * @param valueAlreadySeen: Map used to manage object circular references
+     * @param key - key name representing the object property being preprocessed.
+     * @param value - the JavaScript object or value to preprocessed.
+     * @param context - the context to be used during serialization preprocessing.
+     * @param valueAlreadySeen - Map used to manage object circular references.
      */
-    deepTransform(key: string, value: any, context: JsonStringifierTransformerContext, valueAlreadySeen: Map<any, any>): any;
+    private deepTransform;
     /**
      *
      * @param context

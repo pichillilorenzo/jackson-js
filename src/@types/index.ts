@@ -249,11 +249,16 @@ export interface JsonStringifierParserCommonContext<T> {
    * JavaScript Class only if the nested JavaScript Class is found as one of the values of the parent JavaScript Class properties.
    */
   forType?: WeakMap<ClassType<any>, T>;
-
-  /** @internal */
+  /**
+   * Map containing decorators to be applied to Iterable values or Class properties
+   * only at the first depth of the next pre/post transform process step.
+   * @internal
+   */
   _internalDecorators?: Map<ClassType<any>, InternalDecorators>;
-
-  /** @internal */
+  /**
+   * JavaScript Class of the upper level of depth of the current pre/post transform process step.
+   * @internal
+   */
   _propertyParentCreator?: ClassType<any>;
 }
 
@@ -274,8 +279,8 @@ export interface JsonStringifierFilterOptions {
 /**
  * Context properties used during serialization without {@link JsonStringifierContext.mainCreator}.
  */
-export interface JsonStringifierContextWithoutMainCreatorContext
-  extends JsonStringifierParserCommonContext<JsonStringifierContextWithoutMainCreatorContext> {
+export interface JsonStringifierForTypeContext
+  extends JsonStringifierParserCommonContext<JsonStringifierForTypeContext> {
   /**
    * An Object Literal containing attributes values to be assigned during serialization for {@link JsonAppend} attributes.
    */
@@ -318,7 +323,7 @@ export interface JsonStringifierContextWithoutMainCreatorContext
 /**
  * Context properties used by {@link JsonStringifier.stringify} during serialization.
  */
-export interface JsonStringifierContext extends JsonStringifierContextWithoutMainCreatorContext {
+export interface JsonStringifierContext extends JsonStringifierForTypeContext {
   /**
    * Function that returns a list of JavaScript Classes.
    *
@@ -341,8 +346,8 @@ export type JsonStringifierTransformerContext = Modify<JsonStringifierContext, {
 /**
  * Context properties used during deserialization without {@link JsonParserContext.mainCreator}.
  */
-export interface JsonParserBaseWithoutMainCreatorContext
-  extends JsonStringifierParserCommonContext<JsonParserBaseWithoutMainCreatorContext> {
+export interface JsonParserForTypeContext
+  extends JsonStringifierParserCommonContext<JsonParserForTypeContext> {
   /**
    * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
    */
@@ -371,7 +376,7 @@ export interface JsonParserBaseWithoutMainCreatorContext
 /**
  * Context properties used by {@link JsonParser.parse} during deserialization.
  */
-export interface JsonParserContext extends JsonParserBaseWithoutMainCreatorContext {
+export interface JsonParserContext extends JsonParserForTypeContext {
   /**
    * Function that returns a list of JavaScript Classes.
    *

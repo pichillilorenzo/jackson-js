@@ -265,26 +265,26 @@ test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
     lastname: string;
     @JsonProperty()
     @JsonClass({class: () => [Date]})
-    bithday: Date;
+    birthday: Date;
 
     // eslint-disable-next-line no-shadow
-    constructor(id: number, firstname: string, lastname: string, bithday: Date) {
+    constructor(id: number, firstname: string, lastname: string, birthday: Date) {
       this.id = id;
       this.firstname = firstname;
       this.lastname = lastname;
-      this.bithday = bithday;
+      this.birthday = birthday;
     }
   }
 
-  const bithday = new Date(1994, 11, 14);
-  const user = new User(1, 'John', 'Alfa', bithday);
+  const birthday = new Date(1994, 11, 14);
+  const user = new User(1, 'John', 'Alfa', birthday);
 
   const objectMapper = new ObjectMapper();
   objectMapper.features.serialization.WRITE_DATES_AS_TIMESTAMPS = false;
   const jsonData = objectMapper.stringify<User>(user);
   const jsonDataParsed = JSON.parse(jsonData);
-  t.assert(typeof jsonDataParsed.bithday === 'string');
-  t.is((new Date(jsonDataParsed.bithday)).toString(), bithday.toString());
+  t.assert(typeof jsonDataParsed.birthday === 'string');
+  t.is((new Date(jsonDataParsed.birthday)).toString(), birthday.toString());
 });
 
 test('SerializationFeature.WRITE_NAN_AS_ZERO set to true', t => {

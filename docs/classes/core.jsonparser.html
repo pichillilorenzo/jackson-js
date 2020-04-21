@@ -69,6 +69,15 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>JsonParser provides functionality for reading JSON.
+							It is also highly customizable to work both with different styles of JSON content,
+						and to support more advanced Object concepts such as polymorphism and Object identity.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-type-parameters">
 				<h3>Type parameters</h3>
 				<ul class="tsd-type-parameters">
@@ -117,7 +126,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/core/JsonParser.ts#L76">src/core/JsonParser.ts:76</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/62449e7/src/core/JsonParser.ts#L81">src/core/JsonParser.ts:81</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <a href="core.jsonparser.html" class="tsd-signature-type">JsonParser</a></h4>
@@ -137,19 +146,26 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/core/JsonParser.ts#L89">src/core/JsonParser.ts:89</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/62449e7/src/core/JsonParser.ts#L95">src/core/JsonParser.ts:95</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method for deserializing a JSON string into a JavaScript object or value.</p>
+								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>text: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the JSON string to be deserialized.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> context: <a href="../interfaces/types.jsonparsercontext.html" class="tsd-signature-type">JsonParserContext</a><span class="tsd-signature-symbol"> = {}</span></h5>
 									<div class="tsd-comment tsd-typography">
+										<p>the context to be used during deserialization.</p>
 									</div>
 								</li>
 							</ul>
@@ -161,28 +177,33 @@
 					<a name="transform" class="tsd-anchor"></a>
 					<h3>transform</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../modules/types.html#jsonparsertransformercontext" class="tsd-signature-type">JsonParserTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="../interfaces/types.jsonparsercontext.html" class="tsd-signature-type">JsonParserContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/98ff8d2/src/core/JsonParser.ts#L102">src/core/JsonParser.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/62449e7/src/core/JsonParser.ts#L108">src/core/JsonParser.ts:108</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Method for applying json decorators to a JavaScript object/value parsed.
+									It returns a JavaScript object/value with json decorators applied.</p>
+								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>key: <span class="tsd-signature-type">string</span></h5>
-								</li>
-								<li>
 									<h5>value: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>the JavaScript object or value to be postprocessed.</p>
+									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> context: <a href="../modules/types.html#jsonparsertransformercontext" class="tsd-signature-type">JsonParserTransformerContext</a><span class="tsd-signature-symbol"> = {}</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> context: <a href="../interfaces/types.jsonparsercontext.html" class="tsd-signature-type">JsonParserContext</a><span class="tsd-signature-symbol"> = {}</span></h5>
 									<div class="tsd-comment tsd-typography">
+										<p>the context to be used during deserialization postprocessing.</p>
 									</div>
 								</li>
 							</ul>

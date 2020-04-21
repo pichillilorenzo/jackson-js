@@ -2,38 +2,46 @@
  * @packageDocumentation
  * @module Core
  */
-import { JsonParserContext, JsonParserTransformerContext } from '../@types';
+import { JsonParserContext } from '../@types';
 /**
- *
+ * JsonParser provides functionality for reading JSON.
+ * It is also highly customizable to work both with different styles of JSON content,
+ * and to support more advanced Object concepts such as polymorphism and Object identity.
  */
 export declare class JsonParser<T> {
     /**
-     * Map used to restore object circular references defined with @JsonIdentityInfo()
+     * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
      */
     private _globalValueAlreadySeen;
-    private _globalUnresolvedValueAlreadySeen;
+    /**
+     * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
+     */
+    private _globalUnresolvedObjectIdentities;
     /**
      *
      */
     constructor();
     /**
+     * Method for deserializing a JSON string into a JavaScript object or value.
      *
-     * @param text
-     * @param context
+     * @param text - the JSON string to be deserialized.
+     * @param context - the context to be used during deserialization.
      */
     parse(text: string, context?: JsonParserContext): T;
     /**
+     * Method for applying json decorators to a JavaScript object/value parsed.
+     * It returns a JavaScript object/value with json decorators applied.
      *
-     * @param key
-     * @param value
-     * @param context
+     * @param value - the JavaScript object or value to be postprocessed.
+     * @param context - the context to be used during deserialization postprocessing.
      */
-    transform(key: string, value: any, context?: JsonParserTransformerContext): any;
+    transform(value: any, context?: JsonParserContext): any;
     /**
+     * Recursive {@link JsonParser.transform}.
      *
-     * @param key
-     * @param value
-     * @param context
+     * @param key - key name representing the object property being postprocessed.
+     * @param value - the JavaScript object or value to postprocessed.
+     * @param context - the context to be used during deserialization postprocessing.
      */
     private deepTransform;
     /**
