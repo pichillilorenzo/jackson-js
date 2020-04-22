@@ -4,7 +4,7 @@
  */
 
 /**
- *
+ * Exception used to signal fatal problems during JSON serialization/deserialization.
  */
 export class JacksonError extends Error {
   constructor(message) {

@@ -210,7 +210,7 @@ export class JsonStringifier<T> {
         return replacement.substring(1, replacement.length - 1);
       } else if (value instanceof Date) {
         return value;
-      } else if (value instanceof Map || isObjLiteral(value)) {
+      } else if (value instanceof Map || (isObjLiteral(value) && currentMainCreator === Object)) {
         value = this.stringifyMapAndObjLiteral(key, value, context, valueAlreadySeen);
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 

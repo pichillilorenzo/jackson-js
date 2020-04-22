@@ -19,7 +19,6 @@ import {InternalDecorators} from './private';
 /**
  * https://stackoverflow.com/a/55032655/4637638
  */
-/** @internal */
 export type Modify<T, R> = Omit<T, keyof R> & R;
 // before typescript@3.5
 // type Modify<T, R> = Pick<T, Exclude<keyof T, keyof R>> & R;
@@ -30,9 +29,8 @@ export type Modify<T, R> = Omit<T, keyof R> & R;
 export type ClassType<T> = (new () => T) | (new (...args: any[]) => T) |
 ((...args: any[]) => T) | ((...args: any[]) => ((cls: any) => T));
 
-/** @internal */
 export type ArrayLengthMutationKeys = 'splice' | 'push' | 'pop' | 'shift' |  'unshift';
-/** @internal */
+
 export type FixedLengthArray<T, L extends number, TObj = [T, ...Array<T>]> =
 Pick<TObj, Exclude<keyof TObj, ArrayLengthMutationKeys>>
 & {
