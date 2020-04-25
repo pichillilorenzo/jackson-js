@@ -235,7 +235,6 @@ export declare class JsonStringifier<T> {
     private stringifyJsonIdentityInfo;
     /**
      *
-     * @param obj
      * @param context
      */
     private hasJsonIdentityReferenceAlwaysAsId;
@@ -263,14 +262,12 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param filter
-     * @param obj
      * @param key
      * @param context
      */
     private isPropertyKeyExcludedByJsonFilter;
     /**
      *
-     * @param obj
      * @param key
      * @param context
      */
@@ -286,7 +283,6 @@ export declare class JsonStringifier<T> {
     private stringifyJsonFilter;
     /**
      *
-     * @param obj
      * @param context
      */
     private isPrependJsonAppend;
@@ -300,7 +296,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param key
      * @param context
      */

@@ -4,11 +4,11 @@
  */
 import { JsonViewDecorator } from '../@types';
 /**
- * Decorator used for indicating view(s) that the property that is defined by method or field annotated is part of.
+ * Decorator used for indicating view(s) that the property that is defined by method or field decorated is part of.
  * If multiple View class identifiers are included, property will be part of all of them.
  *
- * It is also possible to use this annotation on classes to indicate the default view(s)
- * for properties of the type, unless overridden by per-property annotation.
+ * It is also possible to use this decorator on classes to indicate the default view(s)
+ * for properties of the type, unless overridden by per-property decorator.
  *
  * @example
  * ```typescript

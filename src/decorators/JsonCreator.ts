@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, hasMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonCreatorDecorator, JsonCreatorOptions} from '../@types';
 import {JsonCreatorPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
@@ -115,7 +115,7 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
       defineMetadata('JsonCreator', privateOptions, target, null, {
         suffix: privateOptions.name
       });
-    } else if (descriptorOrParamIndex == null && isClass(target)) {
+    } else if (descriptorOrParamIndex == null && propertyKey == null) {
       privateOptions.ctor = target;
       // get original constructor
       while (privateOptions.ctor.toString().trim().startsWith('class extends target {')) {

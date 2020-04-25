@@ -8,7 +8,7 @@ import {JsonIgnoreDecorator, JsonIgnoreOptions} from '../@types';
 
 /**
  * Decorator that indicates that the logical property that the accessor
- * (field, getter/setter method or Creator parameter [of JsonCreator-annotated constructor or factory method])
+ * (field, getter/setter method or Creator parameter [of JsonCreator-decorated constructor or factory method])
  * is to be ignored during serialization and deserialization functionality.
  *
  * @example

@@ -11,8 +11,8 @@ import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} fro
 /**
  * Decorator used to indicate that decorated property is part of two-way linkage between fields
  * and that its role is "parent" (or "forward") link.
- * Value type (class) of property must have a single compatible property annotated with {@link JsonBackReference}.
- * Linkage is handled such that the property annotated with this annotation is handled normally
+ * Value type (class) of property must have a single compatible property decorated with {@link JsonBackReference}.
+ * Linkage is handled such that the property decorated with this decorator is handled normally
  * (serialized normally, no special handling for deserialization);
  * it is the matching back reference that requires special handling.
  *

@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {
   JsonFilterDecorator,
   JsonFilterOptions
@@ -72,7 +72,7 @@ export enum JsonFilterType {
 export const JsonFilter: JsonFilterDecorator = makeJacksonDecorator(
   (o: JsonFilterOptions): JsonFilterOptions => ({enabled: true, ...o }),
   (options: JsonFilterOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonFilter', options, target);
       return target;
     }

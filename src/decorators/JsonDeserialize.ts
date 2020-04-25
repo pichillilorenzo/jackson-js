@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonDeserializeDecorator, JsonDeserializeOptions} from '../@types';
 
 /**
@@ -42,7 +42,7 @@ import {JsonDeserializeDecorator, JsonDeserializeOptions} from '../@types';
 export const JsonDeserialize: JsonDeserializeDecorator = makeJacksonDecorator(
   (o: JsonDeserializeOptions): JsonDeserializeOptions => ({enabled: true, ...o}),
   (options: JsonDeserializeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonDeserialize', options, target);
       return target;
     }

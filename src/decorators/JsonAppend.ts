@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {
   JsonAppendDecorator,
   JsonAppendOptions
@@ -11,7 +11,7 @@ import {
 
 /**
  * Decorator that may be used to add "virtual" properties to be written after regular properties
- * (although ordering may be changed using both standard {@link JsonPropertyOrder} annotation, and properties of this annotation).
+ * (although ordering may be changed using both standard {@link JsonPropertyOrder} decorator, and properties of this decorator).
  *
  * @example
  * ```typescript
@@ -51,7 +51,7 @@ export const JsonAppend: JsonAppendDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonAppendOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonAppend', options, target);
       return target;
     }

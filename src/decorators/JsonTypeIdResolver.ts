@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonTypeIdResolverDecorator, JsonTypeIdResolverOptions} from '../@types';
 
 /**
@@ -55,7 +55,7 @@ import {JsonTypeIdResolverDecorator, JsonTypeIdResolverOptions} from '../@types'
 export const JsonTypeIdResolver: JsonTypeIdResolverDecorator = makeJacksonDecorator(
   (o: JsonTypeIdResolverOptions): JsonTypeIdResolverOptions => ({enabled: true, ...o}),
   (options: JsonTypeIdResolverOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonTypeIdResolver', options, target);
       return target;
     }

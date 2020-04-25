@@ -45,7 +45,7 @@ test('@JsonAnySetter', t => {
   t.is(screenInfo.otherInfo.get('yLocation'), 200);
 });
 
-test('Fail multi @JsonAnySetter annotations', t => {
+test('Fail multi @JsonAnySetter decorators', t => {
 
   const err = t.throws<JacksonError>(() => {
     class ScreenInfoWithMultiJsonAnySetter {

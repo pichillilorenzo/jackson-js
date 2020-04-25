@@ -12,7 +12,7 @@ import {JsonBackReferencePrivateOptions} from '../@types/private';
  * Decorator used to indicate that associated property is part of two-way linkage between fields;
  * and that its role is "child" (or "back") link. Value type of the property must be a Class:
  * it can not be an `Iterable` or a `Map`.
- * Linkage is handled such that the property annotated with this annotation is not serialized;
+ * Linkage is handled such that the property decorated with this decorator is not serialized;
  * and during deserialization, its value is set to instance that has
  * the "managed" (forward) link (see {@link JsonManagedReference}).
  *

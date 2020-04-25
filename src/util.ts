@@ -223,7 +223,7 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
 
   let objKeys = [];
   if (obj != null) {
-    objKeys = Object.getOwnPropertyNames(obj);
+    objKeys = Object.keys(obj);
     if (objKeys.includes('constructor') &&
       typeof obj.constructor === 'function' &&
       !obj.constructor.toString().endsWith('{ [native code] }') &&
@@ -504,9 +504,9 @@ export const getArgumentNames = (method): string[] => {
 
   let nodes: Node[] = [];
   if (code.startsWith('class ')) {
-    nodes = (body[0] as ClassDeclaration).body.body;
+    const classDeclarationNodes = (body[0] as ClassDeclaration).body.body;
     // find constructor
-    for (const propertyOrMethod of nodes) {
+    for (const propertyOrMethod of classDeclarationNodes) {
       if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
         nodes = [propertyOrMethod as ClassMethod];
         break;
@@ -870,7 +870,7 @@ export const getObjectKeysWithPropertyDescriptorNames = (obj: any, ctor: any,
   if (obj == null) {
     return [];
   }
-  const keys = Object.getOwnPropertyNames(obj);
+  const keys = Object.keys(obj);
   const classProperties = getClassProperties(ctor != null ? ctor : obj.constructor, null, context, options);
 
   if (keys.includes('constructor') &&
@@ -894,3 +894,27 @@ export const objectHasOwnPropertyWithPropertyDescriptorNames =
     }
     return getObjectKeysWithPropertyDescriptorNames(obj, ctor, context, options).includes(key);
   };
+
+/**
+ * @internal
+ */
+export const castObjLiteral = (ctor: any, value: any): any => {
+  if (isObjLiteral(value) && ctor !== Object) {
+    let parent = ctor;
+    while (parent.name && parent !== Object) {
+      const propertyDescriptors = Object.getOwnPropertyDescriptors(parent.prototype);
+      // eslint-disable-next-line guard-for-in
+      for (const property in propertyDescriptors) {
+        if (!Object.hasOwnProperty.call(value, property)) {
+          const ownPropertyDescriptor = {
+            ...propertyDescriptors[property]
+          };
+          ownPropertyDescriptor.enumerable = false;
+          Object.defineProperty(value, property, ownPropertyDescriptor);
+        }
+      }
+      parent = Object.getPrototypeOf(parent);
+    }
+  }
+  return value;
+};

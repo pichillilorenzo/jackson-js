@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {
   JsonNamingDecorator,
   JsonNamingOptions
@@ -69,7 +69,7 @@ export const JsonNaming: JsonNamingDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonNamingOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonNaming', options, target);
       return target;
     }

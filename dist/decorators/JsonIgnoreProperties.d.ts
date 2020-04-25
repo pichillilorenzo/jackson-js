@@ -4,7 +4,7 @@
  */
 import { JsonIgnorePropertiesDecorator } from '../@types';
 /**
- * Annotation that can be used to either suppress serialization of properties (during serialization),
+ * Decorator that can be used to either suppress serialization of properties (during serialization),
  * or ignore processing of JSON properties read (during deserialization).
  *
  * When used for properties (fields, methods), this decorator applies to values:

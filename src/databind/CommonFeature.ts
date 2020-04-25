@@ -18,7 +18,7 @@ export interface CommonFeature {
    * So this feature changes between "opt-in" (feature disabled) and "opt-out" (feature enabled) modes.
    *
    * Default value is enabled, meaning that non-decorated properties are included
-   * in all views if there is no JsonView annotation.
+   * in all views if there is no JsonView decorator.
    */
   DEFAULT_VIEW_INCLUSION?: boolean;
   /**

@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {
   JsonIdentityReferenceDecorator,
   JsonIdentityReferenceOptions
@@ -54,7 +54,7 @@ export const JsonIdentityReference: JsonIdentityReferenceDecorator = makeJackson
       ...o
     }),
   (options: JsonIdentityReferenceOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonIdentityReference', options, target);
       return target;
     }

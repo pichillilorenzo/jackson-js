@@ -3,11 +3,11 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata} from '../util';
 import {JsonIgnoreTypeDecorator, JsonIgnoreTypeOptions} from '../@types';
 
 /**
- * Decorator that indicates that all properties of annotated type
+ * Decorator that indicates that all properties of decorated type
  * are to be ignored during serialization and deserialization.
  *
  * @example
@@ -45,7 +45,7 @@ import {JsonIgnoreTypeDecorator, JsonIgnoreTypeOptions} from '../@types';
 export const JsonIgnoreType: JsonIgnoreTypeDecorator = makeJacksonDecorator(
   (o: JsonIgnoreTypeOptions): JsonIgnoreTypeOptions => ({enabled: true, ...o}),
   (options: JsonIgnoreTypeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonIgnoreType', options, target);
       return target;
     }

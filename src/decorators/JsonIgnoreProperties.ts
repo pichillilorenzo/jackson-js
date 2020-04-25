@@ -3,11 +3,11 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonIgnorePropertiesDecorator, JsonIgnorePropertiesOptions} from '../@types';
 
 /**
- * Annotation that can be used to either suppress serialization of properties (during serialization),
+ * Decorator that can be used to either suppress serialization of properties (during serialization),
  * or ignore processing of JSON properties read (during deserialization).
  *
  * When used for properties (fields, methods), this decorator applies to values:
@@ -41,7 +41,7 @@ export const JsonIgnoreProperties: JsonIgnorePropertiesDecorator = makeJacksonDe
       ...o
     }),
   (options: JsonIgnorePropertiesOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonIgnoreProperties', options, target);
       return target;
     }

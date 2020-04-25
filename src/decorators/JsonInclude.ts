@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata} from '../util';
 import {JsonIncludeDecorator, JsonIncludeOptions} from '../@types';
 
 /**
@@ -48,13 +48,13 @@ export enum JsonIncludeType {
 }
 
 /**
- * Decorator used to indicate when value of the annotated property
+ * Decorator used to indicate when value of the decorated property
  * or all properties of the decorated class, is to be serialized.
- * Without annotation property values are always included,
+ * Without decorator property values are always included,
  * but by using this decorator one can specify simple exclusion rules to reduce amount of properties to write out.
  *
  * Note that the main inclusion criteria is checked on JavaScript object level,
- * for the annotated type, and NOT on JSON output.
+ * for the decorated type, and NOT on JSON output.
  * So, even with {@link JsonIncludeType.NON_NULL} it is possible that JSON null values are output,
  * if object reference in question is not `null`.
  *
@@ -84,7 +84,7 @@ export const JsonInclude: JsonIncludeDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonInclude', options, target);
       return target;
     }

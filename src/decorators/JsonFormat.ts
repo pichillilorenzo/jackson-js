@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonFormatDecorator, JsonFormatOptions} from '../@types';
 
 /**
@@ -106,7 +106,7 @@ export const JsonFormat: JsonFormatDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonFormat', options, target);
       return target;
     }

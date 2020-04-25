@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {
   JsonIdentityInfoDecorator,
   JsonIdentityInfoOptions
@@ -49,7 +49,7 @@ export enum ObjectIdGenerator {
 }
 
 /**
- * Decorator used for indicating that values of annotated type or property should be serializing
+ * Decorator used for indicating that values of decorated type or property should be serializing
  * so that instances either contain additional object identifier (in addition actual object properties),
  * or as a reference that consists of an object id that refers to a full serialization.
  * In practice this is done by serializing the first instance as full object and object identity,
@@ -98,7 +98,7 @@ export const JsonIdentityInfo: JsonIdentityInfoDecorator = makeJacksonDecorator(
       ...o
     }),
   (options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonIdentityInfo', options, target);
       return target;
     }

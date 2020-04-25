@@ -7,7 +7,7 @@ import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonRawValueDecorator, JsonRawValueOptions} from '../@types';
 
 /**
- * Decorator that indicates that the annotated method or field should be serialized by
+ * Decorator that indicates that the decorated method or field should be serialized by
  * including literal String value of the property as is, without quoting of characters.
  * This can be useful for injecting values already serialized in JSON or
  * passing javascript function definitions from server to a javascript client.

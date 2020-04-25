@@ -1,13 +1,18 @@
 {
   "name": "jackson-js",
   "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "keywords": [],
   "scripts": {
     "clean": "rimraf ./dist",
     "build:doc": "typedoc --out ./docs ./src --excludePrivate --exclude \"**/*+(util|private).ts\" --custom-tags-config typedoc-tags-config.json",
     "build:dev": "npm run clean && ./node_modules/.bin/webpack --config webpack.dev.js",
     "build:prod": "npm run clean && ./node_modules/.bin/webpack --config webpack.prod.js",
     "start:node:dev": "node dist/lib.node",
-    "test": "ava --concurrency=8 --timeout=2m --verbose"
+    "test-es5": "TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=2m --verbose",
+    "test-es6": "TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=2m --verbose",
+    "test": "npm run test-es5 && npm run test-es6"
   },
   "main": "./dist/lib.node.js",
   "browser": "./dist/lib.js",
@@ -29,6 +34,7 @@
     "@typescript-eslint/parser": "^2.26.0",
     "ava": "^3.5.2",
     "codelyzer": "^5.2.2",
+    "cross-env": "^7.0.2",
     "eslint": "^6.8.0",
     "eslint-loader": "^3.0.4",
     "eslint-plugin-import": "^2.20.2",

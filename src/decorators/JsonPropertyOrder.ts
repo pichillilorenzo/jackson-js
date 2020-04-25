@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata} from '../util';
 import {JsonPropertyOrderDecorator, JsonPropertyOrderOptions} from '../@types';
 
 /**
@@ -38,7 +38,7 @@ export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorato
     ...o
   }),
   (options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonPropertyOrder', options, target);
       return target;
     }

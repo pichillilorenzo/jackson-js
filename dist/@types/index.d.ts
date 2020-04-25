@@ -716,12 +716,12 @@ export interface JsonPropertyOptions extends JsonDecoratorOptions {
  */
 export interface JsonPropertyOrderOptions extends JsonDecoratorOptions {
     /**
-     * Property that defines what to do regarding ordering of properties not explicitly included in annotation instance.
+     * Property that defines what to do regarding ordering of properties not explicitly included in decorator instance.
      * If set to true, they will be alphabetically ordered; if false, order is undefined (default setting).
      */
     alphabetic?: boolean;
     /**
-     * Order in which properties of annotated object are to be serialized in.
+     * Order in which properties of decorated object are to be serialized in.
      */
     value?: string[];
 }
@@ -819,7 +819,7 @@ export interface JsonTypeInfoOptions extends JsonDecoratorOptions {
  */
 export interface JsonTypeNameOptions extends JsonDecoratorOptions {
     /**
-     * Logical type name for annotated type.
+     * Logical type name for decorated type.
      * If missing (or defined as Empty String), defaults to using class name as the type.
      */
     value?: string;

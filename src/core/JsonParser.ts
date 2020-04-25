@@ -60,6 +60,7 @@ import {
 import {PropertyNamingStrategy} from '../decorators/JsonNaming';
 import {defaultCreatorName, JsonCreatorMode} from '../decorators/JsonCreator';
 import * as cloneDeep from 'lodash.clonedeep';
+import * as clone from 'lodash.clone';
 import {JsonSetterNulls} from '../decorators/JsonSetter';
 import {DefaultDeserializationFeatureValues} from '../databind/DeserializationFeature';
 
@@ -261,7 +262,7 @@ export class JsonParser<T> {
           return null;
         }
 
-        let replacement = value;
+        let replacement = clone(value);
         replacement = this.parseJsonRootName(replacement, context);
 
         this.parseJsonUnwrapped(replacement, context);
@@ -825,7 +826,7 @@ export class JsonParser<T> {
     argNames = (method) ? getArgumentNames(method) : argNames;
 
     if (context.features.deserialization.ACCEPT_CASE_INSENSITIVE_PROPERTIES) {
-      const objKeys = Object.getOwnPropertyNames(obj);
+      const objKeys = Object.keys(obj);
       const caseInsesitiveObjKeys = objKeys.map((k) => k.toLowerCase());
       for (const argName of argNames) {
         const index = caseInsesitiveObjKeys.indexOf(argName.toLowerCase());
@@ -994,11 +995,11 @@ export class JsonParser<T> {
       const jsonRootName: JsonRootNameOptions =
         getMetadata('JsonRootName', context.mainCreator[0], null, context);
       const wrapKey = (jsonRootName && jsonRootName.value) ? jsonRootName.value : context.mainCreator[0].constructor.name;
-      if (!(wrapKey in replacement) || Object.getOwnPropertyNames(replacement).length !== 1) {
+      if (!(wrapKey in replacement) || Object.keys(replacement).length !== 1) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`No JSON Object with single property as root name "${wrapKey}" found to unwrap value at [Source "${JSON.stringify(replacement)}"]`);
       }
-      return replacement[wrapKey];
+      return clone(replacement[wrapKey]);
     }
     return replacement;
   }
@@ -1254,40 +1255,40 @@ export class JsonParser<T> {
     if (jsonTypeInfo) {
       let jsonTypeCtor: ClassType<any>;
       let jsonTypeInfoProperty: string;
-      let newObj = obj;
+      let newObj = clone(obj);
 
       switch (jsonTypeInfo.include) {
       case JsonTypeInfoAs.PROPERTY:
-        jsonTypeInfoProperty = obj[jsonTypeInfo.property];
+        jsonTypeInfoProperty = newObj[jsonTypeInfo.property];
         if (jsonTypeInfoProperty == null &&
           context.features.deserialization.FAIL_ON_MISSING_TYPE_ID && context.features.deserialization.FAIL_ON_INVALID_SUBTYPE) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Missing type id when trying to resolve type or subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Missing type id when trying to resolve type or subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(newObj)}']`);
         } else {
-          delete obj[jsonTypeInfo.property];
+          delete newObj[jsonTypeInfo.property];
         }
         break;
       case JsonTypeInfoAs.WRAPPER_OBJECT:
-        if (!(obj instanceof Object) || obj instanceof Array) {
+        if (!(newObj instanceof Object) || newObj instanceof Array) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Expected "Object", got "${obj.constructor.name}": need JSON Object to contain JsonTypeInfoAs.WRAPPER_OBJECT type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "Object", got "${newObj.constructor.name}": need JSON Object to contain JsonTypeInfoAs.WRAPPER_OBJECT type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(newObj)}']`);
         }
-        jsonTypeInfoProperty = Object.keys(obj)[0];
-        newObj = obj[jsonTypeInfoProperty];
+        jsonTypeInfoProperty = Object.keys(newObj)[0];
+        newObj = newObj[jsonTypeInfoProperty];
         break;
       case JsonTypeInfoAs.WRAPPER_ARRAY:
-        if (!(obj instanceof Array)) {
+        if (!(newObj instanceof Array)) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Expected "Array", got "${obj.constructor.name}": need JSON Array to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
-        } else if (obj.length > 2 || obj.length === 0) {
+          throw new JacksonError(`Expected "Array", got "${newObj.constructor.name}": need JSON Array to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(newObj)}']`);
+        } else if (newObj.length > 2 || newObj.length === 0) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Expected "Array" of length 1 or 2, got "Array" of length ${obj.length}: need JSON Array of length 1 or 2 to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(obj)}']`);
-        } else if (obj[0] == null || obj[0].constructor !== String) {
+          throw new JacksonError(`Expected "Array" of length 1 or 2, got "Array" of length ${newObj.length}: need JSON Array of length 1 or 2 to contain JsonTypeInfoAs.WRAPPER_ARRAY type information for class "${currentMainCreator.name}" at [Source '${JSON.stringify(newObj)}']`);
+        } else if (newObj[0] == null || newObj[0].constructor !== String) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Expected "String", got "${obj[0] ? obj[0].constructor.name : obj[0]}": need JSON String that contains type id (for subtype of "${currentMainCreator.name}") at [Source '${JSON.stringify(obj)}']`);
+          throw new JacksonError(`Expected "String", got "${newObj[0] ? newObj[0].constructor.name : newObj[0]}": need JSON String that contains type id (for subtype of "${currentMainCreator.name}") at [Source '${JSON.stringify(newObj)}']`);
         }
-        jsonTypeInfoProperty = obj[0];
-        newObj = obj[1];
+        jsonTypeInfoProperty = newObj[0];
+        newObj = newObj[1];
         break;
       }
 
@@ -1313,7 +1314,7 @@ export class JsonParser<T> {
             const ids = [(currentMainCreator).name];
             ids.push(...jsonSubTypes.types.map((subType) => (subType.name) ? subType.name : subType.class().name));
             // eslint-disable-next-line max-len
-            throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
+            throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(newObj)}']`);
           }
         }
       }
@@ -1334,7 +1335,7 @@ export class JsonParser<T> {
           ids.push(...jsonSubTypes.types.map((subType) => (subType.name) ? subType.name : subType.class().name));
         }
         // eslint-disable-next-line max-len
-        throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(obj)}']`);
+        throw new JacksonError(`Could not resolve type id "${jsonTypeInfoProperty}" as a subtype of "${currentMainCreator.name}": known type ids = [${ids.join(', ')}] at [Source '${JSON.stringify(newObj)}']`);
       } else if (!jsonTypeCtor) {
         jsonTypeCtor = currentMainCreator;
       }
@@ -1571,7 +1572,7 @@ export class JsonParser<T> {
 
     const mapCurrentCreators = newContext.mainCreator;
 
-    const mapKeys = Object.getOwnPropertyNames(obj);
+    const mapKeys = Object.keys(obj);
     for (let mapKey of mapKeys) {
       let mapValue = obj[mapKey];
 

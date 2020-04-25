@@ -9,11 +9,11 @@ import {JsonValuePrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
 
 /**
- * Decorator that indicates that the value of annotated accessor (either field or "getter" method)
+ * Decorator that indicates that the value of decorated accessor (either field or "getter" method)
  * is to be used as the single value to serialize for the instance,
  * instead of the usual method of collecting properties of value.
  *
- * At most one accessor of a Class can be annotated with this annotation;
+ * At most one accessor of a Class can be decorated with this decorator;
  * if more than one is found, an exception may be thrown.
  *
  * @example

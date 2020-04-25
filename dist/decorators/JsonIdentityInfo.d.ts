@@ -42,7 +42,7 @@ export declare enum ObjectIdGenerator {
     UUIDv1Generator = 6
 }
 /**
- * Decorator used for indicating that values of annotated type or property should be serializing
+ * Decorator used for indicating that values of decorated type or property should be serializing
  * so that instances either contain additional object identifier (in addition actual object properties),
  * or as a reference that consists of an object id that refers to a full serialization.
  * In practice this is done by serializing the first instance as full object and object identity,

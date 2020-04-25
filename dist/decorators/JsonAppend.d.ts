@@ -5,7 +5,7 @@
 import { JsonAppendDecorator } from '../@types';
 /**
  * Decorator that may be used to add "virtual" properties to be written after regular properties
- * (although ordering may be changed using both standard {@link JsonPropertyOrder} annotation, and properties of this annotation).
+ * (although ordering may be changed using both standard {@link JsonPropertyOrder} decorator, and properties of this decorator).
  *
  * @example
  * ```typescript

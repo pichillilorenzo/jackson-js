@@ -72,7 +72,7 @@ test('@JsonAnyGetter with value', t => {
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":"TradeDetails","title":"Trade Details","width":500,"height":300,"xLocation":400,"yLocation":200}'));
 });
 
-test('Fail multi @JsonAnyGetter annotations', t => {
+test('Fail multi @JsonAnyGetter decorators', t => {
 
   const err = t.throws<JacksonError>(() => {
     class ScreenInfoWithMultiJsonAnyGetter {

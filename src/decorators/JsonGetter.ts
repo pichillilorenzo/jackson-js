@@ -11,7 +11,7 @@ import {JacksonError} from '../core/JacksonError';
 /**
  * Decorator that can be used to define a non-static,
  * no-argument value-returning (non-void) method to be used as a "getter" for a logical property.
- * It can be used as an alternative to more general {@link JsonProperty} annotation
+ * It can be used as an alternative to more general {@link JsonProperty} decorator
  * (which is the recommended choice in general case).
  *
  * Getter means that when serializing Object instance of class that has this method

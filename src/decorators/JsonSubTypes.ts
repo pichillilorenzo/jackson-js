@@ -3,14 +3,14 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, isClass, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata} from '../util';
 import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
 
 /**
  * Decorator used with {@link JsonTypeInfo} to indicate sub-types of serializable polymorphic types,
  * and to associate logical names used within JSON content.
  *
- * Note that just decorating a property or base type with this annotation does NOT enable polymorphic type handling:
+ * Note that just decorating a property or base type with this decorator does NOT enable polymorphic type handling:
  * in addition, {@link JsonTypeInfo} decorator is needed, and only in such case is subtype information used.
  *
  * @example
@@ -44,7 +44,7 @@ import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
 export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
   (o: JsonSubTypesOptions): JsonSubTypesOptions => ({enabled: true, ...o}),
   (options: JsonSubTypesOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       defineMetadata('JsonSubTypes', options, target);
       return target;
     }

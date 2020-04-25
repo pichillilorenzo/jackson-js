@@ -10,8 +10,8 @@ import { JsonAnyGetterDecorator } from '../@types';
  * This typically serves as a counterpart to "any setter" mutators (see {@link JsonAnySetter}).
  * Note that the return type of decorated methods must be a `Map` or an `Object Literal`).
  *
- * As with {@link JsonAnySetter}, only one property should be annotated with this annotation;
- * if multiple methods are annotated, an exception may be thrown.
+ * As with {@link JsonAnySetter}, only one property should be decorated with this decorator;
+ * if multiple methods are decorated, an exception may be thrown.
  *
  * @example
  * ```typescript

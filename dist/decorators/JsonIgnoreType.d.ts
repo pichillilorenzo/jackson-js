@@ -4,7 +4,7 @@
  */
 import { JsonIgnoreTypeDecorator } from '../@types';
 /**
- * Decorator that indicates that all properties of annotated type
+ * Decorator that indicates that all properties of decorated type
  * are to be ignored during serialization and deserialization.
  *
  * @example

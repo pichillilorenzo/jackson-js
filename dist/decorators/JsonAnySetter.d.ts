@@ -10,8 +10,8 @@ import { JsonAnySetterDecorator } from '../@types';
  *
  * If used, all otherwise unmapped key-value pairs from JSON Object values are added using mutator.
  *
- * As with {@link JsonAnyGetter}, only one property should be annotated with this annotation;
- * if multiple methods are annotated, an exception may be thrown.
+ * As with {@link JsonAnyGetter}, only one property should be decorated with this decorator;
+ * if multiple methods are decorated, an exception may be thrown.
  *
  * @example
  * ```typescript

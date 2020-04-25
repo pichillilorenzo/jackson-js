@@ -25,7 +25,7 @@ export declare enum JsonSetterNulls {
 }
 /**
  * Decorator that can be used to define a non-static, single-argument method to be used as a "setter"
- * for a logical property as an alternative to recommended {@link JsonProperty} annotation.
+ * for a logical property as an alternative to recommended {@link JsonProperty} decorator.
  *
  * Setter means that when deserializing Object instance of class that has this method
  * (possibly inherited from a super class), a call is made through the method.

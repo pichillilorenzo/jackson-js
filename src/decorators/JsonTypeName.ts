@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, isClass, makeJacksonDecorator} from '../util';
+import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonTypeNameDecorator, JsonTypeNameOptions} from '../@types';
 import {JsonTypeNamePrivateOptions} from '../@types/private';
 
@@ -42,7 +42,7 @@ import {JsonTypeNamePrivateOptions} from '../@types/private';
 export const JsonTypeName: JsonTypeNameDecorator = makeJacksonDecorator(
   (o: JsonTypeNameOptions): JsonTypeNameOptions => ({enabled: true, ...o}),
   (options: JsonTypeNameOptions, target, propertyKey, descriptorOrParamIndex) => {
-    if (descriptorOrParamIndex == null && isClass(target)) {
+    if (descriptorOrParamIndex == null && propertyKey == null) {
       const privateOptions: JsonTypeNamePrivateOptions = {
         ctor: target,
         ...options
