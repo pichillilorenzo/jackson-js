@@ -17,7 +17,7 @@ import { JsonUnwrappedDecorator } from '../@types';
  *   id: number;
  *   @JsonProperty()
  *   @JsonUnwrapped()
- *   @JsonClass({class: () => [Name]})
+ *   @JsonClassType({type: () => [Name]})
  *   name: Name;
  * }
  *

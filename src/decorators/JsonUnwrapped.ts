@@ -21,7 +21,7 @@ import {JsonUnwrappedPrivateOptions} from '../@types/private';
  *   id: number;
  *   @JsonProperty()
  *   @JsonUnwrapped()
- *   @JsonClass({class: () => [Name]})
+ *   @JsonClassType({type: () => [Name]})
  *   name: Name;
  * }
  *

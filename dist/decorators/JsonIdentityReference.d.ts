@@ -23,7 +23,7 @@ import { JsonIdentityReferenceDecorator } from '../@types';
  *   lastname: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [Array, [Item]]})
+ *   @JsonClassType({type: () => [Array, [Item]]})
  *   items: Item[] = [];
  * }
  *
@@ -36,7 +36,7 @@ import { JsonIdentityReferenceDecorator } from '../@types';
  *   name: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [User]})
+ *   @JsonClassType({type: () => [User]})
  *   owner: User;
  * }
  * ```

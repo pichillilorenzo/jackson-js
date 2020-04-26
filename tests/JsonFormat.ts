@@ -1,6 +1,6 @@
 import test from 'ava';
 import {JsonFormat, JsonFormatShape} from '../src/decorators/JsonFormat';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
@@ -16,7 +16,7 @@ test('@JsonFormat at property level', t => {
       shape: JsonFormatShape.STRING,
       pattern: 'YYYY-MM-DD hh:mm:ss',
     })
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     startDate: Date;
 
     @JsonProperty()
@@ -77,7 +77,7 @@ test('@JsonFormat at method level', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     startDate: Date;
     @JsonProperty()
     price: number;
@@ -103,7 +103,7 @@ test('@JsonFormat at method level', t => {
       shape: JsonFormatShape.STRING,
       pattern: 'YYYY-MM-DD hh:mm:ss',
     })
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     getStartDate(): Date {
       return this.startDate;
     }
@@ -166,7 +166,7 @@ test('@JsonFormat JsonFormatShape.OBJECT at property level', t => {
     @JsonProperty()
     @JsonFormat({shape: JsonFormatShape.OBJECT})
     @JsonDeserialize({using: (value: {wrapper: number[]}) => value.wrapper})
-    @JsonClass({class: () => [ArrayEx]})
+    @JsonClassType({type: () => [ArrayEx]})
     numbers: ArrayEx<number>;
   }
 
@@ -201,7 +201,7 @@ test('@JsonFormat JsonFormatShape.OBJECT at class level', t => {
   class Example {
     @JsonProperty()
     @JsonDeserialize({using: (value: {wrapper: number[]}) => value.wrapper})
-    @JsonClass({class: () => [ArrayEx]})
+    @JsonClassType({type: () => [ArrayEx]})
     numbers: ArrayEx<number>;
   }
 

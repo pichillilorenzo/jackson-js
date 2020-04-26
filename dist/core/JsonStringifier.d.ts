@@ -75,6 +75,12 @@ export declare class JsonStringifier<T> {
     private propagateDecorators;
     /**
      *
+     * @param key
+     * @param context
+     */
+    private stringifyHasVirtualPropertyGetter;
+    /**
+     *
      * @param obj
      * @param key
      * @param context

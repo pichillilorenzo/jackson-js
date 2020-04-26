@@ -1,7 +1,7 @@
 import test from 'ava';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonIgnore} from '../src/decorators/JsonIgnore';
 import {JsonFormat, JsonFormatShape} from '../src/decorators/JsonFormat';
 import {JsonView} from '../src/decorators/JsonView';
@@ -29,7 +29,7 @@ test('decoratorsEnabled context option', t => {
       shape: JsonFormatShape.STRING,
       pattern: 'YYYY-MM-DD hh:mm:ss',
     })
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     birthday: Date;
 
     // eslint-disable-next-line no-shadow
@@ -85,7 +85,7 @@ test('forType context option', t => {
     name: string;
     @JsonProperty()
     @JsonIgnore()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     date: Date;
 
     // eslint-disable-next-line no-shadow
@@ -103,11 +103,11 @@ test('forType context option', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
     @JsonProperty()
     @JsonIgnore()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     birthday: Date;
 
     // eslint-disable-next-line no-shadow

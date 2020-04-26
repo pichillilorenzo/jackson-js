@@ -31,7 +31,7 @@ import { JsonSerializeDecorator } from '../@types';
  *   @JsonProperty()
  *   @JsonSerialize({using: DateSerializer.serializeDate})
  *   @JsonDeserialize({using: DateSerializer.deserializeDate})
- *   @JsonClass({class: () => [Date]})
+ *   @JsonClassType({type: () => [Date]})
  *   date: Date;
  * }
  * ```

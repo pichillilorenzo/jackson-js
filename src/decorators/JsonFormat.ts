@@ -61,7 +61,7 @@ export enum JsonFormatShape {
  *     shape: JsonFormatShape.STRING,
  *     pattern: 'YYYY-MM-DD hh:mm:ss',
  *   })
- *   @JsonClass({class: () => [Date]})
+ *   @JsonClassType({type: () => [Date]})
  *   startDate: Date;
  *
  *   @JsonProperty()

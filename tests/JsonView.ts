@@ -4,7 +4,7 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonGetter} from '../src/decorators/JsonGetter';
 import {JsonSetter} from '../src/decorators/JsonSetter';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 class Views {
   static public = class Public {};
@@ -294,12 +294,12 @@ test('@JsonView at parameter level', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Employee]]})
+    @JsonClassType({type: () => [Array, [Employee]]})
     employees: Employee[] = [];
 
     constructor(name: string,
       @JsonView({value: () => [Views.internal]})
-      @JsonClass({class: () => [Array, [Employee]]}) employees: Employee[] ) {
+      @JsonClassType({type: () => [Array, [Employee]]}) employees: Employee[] ) {
       this.name = name;
       this.employees = employees;
     }

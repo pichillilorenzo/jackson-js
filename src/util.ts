@@ -898,14 +898,24 @@ export const objectHasOwnPropertyWithPropertyDescriptorNames =
 /**
  * @internal
  */
-export const castObjLiteral = (ctor: any, value: any): any => {
-  if (isObjLiteral(value) && ctor !== Object) {
-    let parent = ctor;
+export const castObjLiteral = (target: any, value: any): any => {
+  if (isObjLiteral(value) && target !== Object) {
+    let parent = target;
     while (parent.name && parent !== Object) {
       const propertyDescriptors = Object.getOwnPropertyDescriptors(parent.prototype);
       // eslint-disable-next-line guard-for-in
       for (const property in propertyDescriptors) {
         if (!Object.hasOwnProperty.call(value, property)) {
+
+          const jsonPropertyMetadataKey = Reflect.getMetadataKeys(target, property)
+            .find((metadataKey: string) => metadataKey.endsWith(':JsonProperty'));
+          if (jsonPropertyMetadataKey != null) {
+            const jsonPropertyOptions: JsonPropertyPrivateOptions = Reflect.getMetadata(jsonPropertyMetadataKey, target, property);
+            if (jsonPropertyOptions && jsonPropertyOptions.descriptor == null) {
+              continue;
+            }
+          }
+
           const ownPropertyDescriptor = {
             ...propertyDescriptors[property]
           };

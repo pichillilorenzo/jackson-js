@@ -5,7 +5,7 @@ import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from '../src/decorators/Js
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonTypeId} from '../src/decorators/JsonTypeId';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {
   ClassType,
@@ -133,7 +133,7 @@ test('@JsonTypeInfo and @JsonSubTypes at property level with JsonTypeInfoAs.PROP
       ]
     })
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
   }
 
@@ -148,10 +148,10 @@ test('@JsonTypeInfo and @JsonSubTypes at property level with JsonTypeInfoAs.PROP
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -189,7 +189,7 @@ test('@JsonTypeInfo and @JsonSubTypes at property level with JsonTypeInfoAs.PROP
 test('@JsonTypeInfo and @JsonSubTypes at method level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     @JsonGetter()
@@ -203,7 +203,7 @@ test('@JsonTypeInfo and @JsonSubTypes at method level with JsonTypeInfoAs.PROPER
         {class: () => Cat},
       ]
     })
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     getAnimals(): Animal[] {
       return this.animals;
     }
@@ -219,7 +219,7 @@ test('@JsonTypeInfo and @JsonSubTypes at method level with JsonTypeInfoAs.PROPER
         {class: () => Cat},
       ]
     })
-    setAnimals(@JsonClass({class: () => [Array, [Animal]]}) animals) {
+    setAnimals(@JsonClassType({type: () => [Array, [Animal]]}) animals) {
       this.animals = animals;
     }
   }
@@ -288,7 +288,7 @@ test('@JsonTypeInfo at property level with JsonTypeInfoAs.PROPERTY without subty
     })
     @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
   }
 
@@ -303,10 +303,10 @@ test('@JsonTypeInfo at property level with JsonTypeInfoAs.PROPERTY without subty
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -364,7 +364,7 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
 
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     @JsonGetter()
@@ -373,7 +373,7 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
       include: JsonTypeInfoAs.PROPERTY
     })
     @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     getAnimals(): Animal[] {
       return this.animals;
     }
@@ -384,7 +384,7 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
       include: JsonTypeInfoAs.PROPERTY
     })
     @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
-    setAnimals(@JsonClass({class: () => [Array, [Animal]]}) animals) {
+    setAnimals(@JsonClassType({type: () => [Array, [Animal]]}) animals) {
       this.animals = animals;
     }
   }
@@ -400,10 +400,10 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -441,7 +441,7 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
 test('@JsonTypeInfo and @JsonSubTypes at parameter level with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     constructor(
@@ -455,7 +455,7 @@ test('@JsonTypeInfo and @JsonSubTypes at parameter level with JsonTypeInfoAs.PRO
         {class: () => Cat},
       ]
     })
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
       animals: Animal[]) {
       this.animals = animals;
     }
@@ -472,10 +472,10 @@ test('@JsonTypeInfo and @JsonSubTypes at parameter level with JsonTypeInfoAs.PRO
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -523,7 +523,7 @@ test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subt
 
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     constructor(
@@ -532,7 +532,7 @@ test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subt
       include: JsonTypeInfoAs.PROPERTY
     })
     @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
       animals: Animal[]) {
       this.animals = animals;
     }
@@ -549,10 +549,10 @@ test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subt
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -580,11 +580,11 @@ test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subt
 test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.PROPERTY without subtypes name', t => {
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     constructor(
-    @JsonClass({class: () => [Array, [
+    @JsonClassType({type: () => [Array, [
       () => ({
         target: Animal,
         decorators: [
@@ -624,10 +624,10 @@ test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.P
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 
@@ -676,11 +676,11 @@ test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.P
 
   class Zoo {
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Animal]]})
+    @JsonClassType({type: () => [Array, [Animal]]})
     animals: Animal[] = [];
 
     constructor(
-    @JsonClass({class: () => [Array, [
+    @JsonClassType({type: () => [Array, [
       () => ({
         target: Animal,
         decorators: [
@@ -717,10 +717,10 @@ test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.P
 
   class Dog extends Animal {
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     father: Dog;
     @JsonProperty()
-    @JsonClass({class: () => [Dog]})
+    @JsonClassType({type: () => [Dog]})
     mother: Dog;
   }
 

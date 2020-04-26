@@ -1,7 +1,7 @@
 import test from 'ava';
 import {JsonGetter} from '../src/decorators/JsonGetter';
 import {JsonSetter} from '../src/decorators/JsonSetter';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonIgnoreProperties} from '../src/decorators/JsonIgnoreProperties';
 import {JsonProperty} from '../src/decorators/JsonProperty';
@@ -18,7 +18,7 @@ test('@JsonIgnoreProperties', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -41,10 +41,10 @@ test('@JsonIgnoreProperties', t => {
     category: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -98,7 +98,7 @@ test('@JsonIgnoreProperties at property level', t => {
       value: ['owner']
     })
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -118,10 +118,10 @@ test('@JsonIgnoreProperties at property level', t => {
     category: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -173,7 +173,7 @@ test('@JsonIgnoreProperties at method level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -184,7 +184,7 @@ test('@JsonIgnoreProperties at method level', t => {
     }
 
     @JsonGetter()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     @JsonIgnoreProperties({
       value: ['owner']
     })
@@ -196,7 +196,7 @@ test('@JsonIgnoreProperties at method level', t => {
     @JsonIgnoreProperties({
       value: ['owner']
     })
-    setItems(@JsonClass({class: () => [Array, [Item]]}) items: Item[]) {
+    setItems(@JsonClassType({type: () => [Array, [Item]]}) items: Item[]) {
       this.items = items;
     }
   }
@@ -210,10 +210,10 @@ test('@JsonIgnoreProperties at method level', t => {
     category: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -262,11 +262,11 @@ test('@JsonIgnoreProperties at parameter level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string,
-      @JsonIgnoreProperties({value: ['owner']}) @JsonClass({class: () => [Array, [Item]]}) items: Item[]) {
+      @JsonIgnoreProperties({value: ['owner']}) @JsonClassType({type: () => [Array, [Item]]}) items: Item[]) {
       this.id = id;
       this.email = email;
       this.firstname = firstname;
@@ -284,10 +284,10 @@ test('@JsonIgnoreProperties at parameter level', t => {
     category: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;
@@ -333,11 +333,11 @@ test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string,
-      @JsonClass({class: () => [Array, [
+      @JsonClassType({type: () => [Array, [
         () => ({
           target: Item,
           decorators: [
@@ -366,10 +366,10 @@ test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
     category: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.category = category;

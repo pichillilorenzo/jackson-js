@@ -56,9 +56,9 @@ export declare type JsonAliasDecorator = JacksonDecoratorWithOptions<JsonAliasOp
  */
 export declare type JsonAppendDecorator = JacksonDecoratorWithOptions<JsonAppendOptions, ClassDecorator>;
 /**
- * Decorator type for {@link JsonClass}.
+ * Decorator type for {@link JsonClassType}.
  */
-export declare type JsonClassDecorator = JacksonDecoratorWithOptions<JsonClassOptions, PropertyDecorator & ParameterDecorator & MethodDecorator>;
+export declare type JsonClassTypeDecorator = JacksonDecoratorWithOptions<JsonClassTypeOptions, PropertyDecorator & ParameterDecorator & MethodDecorator>;
 /**
  * Decorator type for {@link JsonDeserialize}.
  */
@@ -847,7 +847,7 @@ export interface JsonAliasOptions extends JsonDecoratorOptions {
     values: string[];
 }
 /**
- * Helper type used in {@link JsonClass} to declare a ClassType and apply decorators to it.
+ * Helper type used in {@link JsonClassType} to declare a ClassType and apply decorators to it.
  */
 export declare type ClassTypeWithDecoratorDefinitions = () => ({
     /**
@@ -869,13 +869,13 @@ export declare type ClassTypeWithDecoratorDefinitions = () => ({
     }[];
 });
 /**
- * Decorator options for {@link JsonClass}.
+ * Decorator options for {@link JsonClassType}.
  */
-export interface JsonClassOptions extends JsonDecoratorOptions {
+export interface JsonClassTypeOptions extends JsonDecoratorOptions {
     /**
      * Function used to get the type of a class property or method parameter.
      */
-    class: () => ClassList<ClassType<any> | ClassTypeWithDecoratorDefinitions>;
+    type: () => ClassList<ClassType<any> | ClassTypeWithDecoratorDefinitions>;
 }
 /**
  * Decorator options for {@link JsonUnwrapped}.

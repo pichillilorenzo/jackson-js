@@ -1,7 +1,7 @@
 import test from 'ava';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from '../src/decorators/JsonTypeInfo';
 import {JsonSubTypes} from '../src/decorators/JsonSubTypes';
 import {JacksonError} from '../src/core/JacksonError';
@@ -41,19 +41,19 @@ test('DeserializationFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES set to true', t 
 test('DeserializationFeature.ALLOW_COERCION_OF_SCALARS set to true', t => {
   class User {
     @JsonProperty()
-    @JsonClass({class: () => [Number]})
+    @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
-    @JsonClass({class: () => [String]})
+    @JsonClassType({type: () => [String]})
     email: string;
     @JsonProperty()
-    @JsonClass({class: () => [BigInt]})
+    @JsonClassType({type: () => [BigInt]})
     age: BigInt;
     @JsonProperty()
-    @JsonClass({class: () => [Boolean]})
+    @JsonClassType({type: () => [Boolean]})
     active: boolean;
     @JsonProperty()
-    @JsonClass({class: () => [Boolean]})
+    @JsonClassType({type: () => [Boolean]})
     deleted: boolean;
   }
 
@@ -184,7 +184,7 @@ test('DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT set to true', t =
     @JsonProperty()
     lastname: string;
     @JsonProperty()
-    @JsonClass({class: () => [Array, [String]]})
+    @JsonClassType({type: () => [Array, [String]]})
     otherInfo: Array<string>;
   }
 
@@ -210,10 +210,10 @@ test('DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT set to true', t 
     @JsonProperty()
     lastname: string;
     @JsonProperty()
-    @JsonClass({class: () => [Map, [String, String]]})
+    @JsonClassType({type: () => [Map, [String, String]]})
     otherInfoMap: Map<string, string> = new Map();
     @JsonProperty()
-    @JsonClass({class: () => [Object, [String, String]]})
+    @JsonClassType({type: () => [Object, [String, String]]})
     otherInfoObjLiteral: {phone?: string; address?: string} = {};
   }
 
@@ -259,13 +259,13 @@ test('DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES set to false', t => {
 test('DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES set to true', t => {
   class User {
     @JsonProperty()
-    @JsonClass({class: () => [Number]})
+    @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
-    @JsonClass({class: () => [String]})
+    @JsonClassType({type: () => [String]})
     firstname: string;
     @JsonProperty()
-    @JsonClass({class: () => [String]})
+    @JsonClassType({type: () => [String]})
     lastname: string;
   }
 
@@ -349,7 +349,7 @@ test('DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS set to false', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -368,10 +368,10 @@ test('DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS set to false', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;

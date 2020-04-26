@@ -25,6 +25,7 @@ const defaultConfig = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  devtool: 'inline-source-map',
   mode: 'development',
   plugins: []
 };

@@ -34,7 +34,7 @@ import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} fro
  *   lastname: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [Array, [Item]]})
+ *   @JsonClassType({type: () => [Array, [Item]]})
  *   @JsonManagedReference()
  *   items: Item[] = [];
  * }
@@ -46,7 +46,7 @@ import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} fro
  *   name: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [User]})
+ *   @JsonClassType({type: () => [User]})
  *   @JsonBackReference()
  *   owner: User;
  * }

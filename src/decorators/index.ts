@@ -3,7 +3,7 @@ export * from './JsonAnyGetter';
 export * from './JsonAnySetter';
 export * from './JsonAppend';
 export * from './JsonBackReference';
-export * from './JsonClass';
+export * from './JsonClassType';
 export * from './JsonCreator';
 export * from './JsonDeserialize';
 export * from './JsonFilter';

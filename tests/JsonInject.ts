@@ -1,6 +1,6 @@
 import test from 'ava';
 import {JsonInject} from '../src/decorators/JsonInject';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonSetter} from "../src/decorators/JsonSetter";
@@ -14,7 +14,7 @@ test('@JsonInject at property level', t => {
 
     @JsonInject()
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     lastUpdated: Date;
   }
 
@@ -42,12 +42,12 @@ test('@JsonInject at method level', t => {
     rate: number;
 
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     lastUpdated: Date;
 
     @JsonSetter()
     @JsonInject()
-    setLastUpdated(@JsonClass({class: () => [Date]}) lastUpdated: Date) {
+    setLastUpdated(@JsonClassType({type: () => [Date]}) lastUpdated: Date) {
       this.lastUpdated = lastUpdated;
     }
   }
@@ -77,7 +77,7 @@ test('@JsonInject with useInput false', t => {
 
     @JsonInject({useInput: false})
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     lastUpdated: Date;
   }
 
@@ -106,7 +106,7 @@ test('@JsonInject with useInput true', t => {
 
     @JsonInject({useInput: true})
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     lastUpdated: Date;
   }
 
@@ -134,7 +134,7 @@ test('@JsonInject on constructor parameter and different value', t => {
     rate: number;
 
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     lastUpdated: Date;
 
     constructor(pair: string, rate: number, @JsonInject({value: 'lastValue'}) lastUpdated: Date) {

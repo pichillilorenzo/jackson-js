@@ -1,7 +1,7 @@
 import test from 'ava';
 import {JsonSerialize} from '../src/decorators/JsonSerialize';
 import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 
@@ -79,15 +79,15 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
     @JsonProperty()
     @JsonSerialize({using: DateSerializer.serializeDate})
     @JsonDeserialize({using: DateSerializer.deserializeDate})
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     date: Date;
 
     @JsonProperty()
-    @JsonClass({class: () => [Writer]})
+    @JsonClassType({type: () => [Writer]})
     writer: Writer;
 
     // eslint-disable-next-line no-shadow
-    constructor(id: number, name: string, date: Date, @JsonClass({class: () => [Writer]}) writer: Writer) {
+    constructor(id: number, name: string, date: Date, @JsonClassType({type: () => [Writer]}) writer: Writer) {
       this.id = id;
       this.name = name;
       this.date = date;
@@ -102,7 +102,7 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     @JsonSerialize({using: customBookListSerializer})
     books: Book[] = [];
 
@@ -162,23 +162,23 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     date: Date;
 
     @JsonProperty()
-    @JsonClass({class: () => [Writer]})
+    @JsonClassType({type: () => [Writer]})
     writer: Writer;
 
     @JsonProperty()
     @JsonSerialize({using: DateSerializer.serializeDate})
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     getDate(): Date {
       return this.date;
     }
 
     @JsonProperty()
     @JsonDeserialize({using: DateSerializer.deserializeDate})
-    setDate(@JsonClass({class: () => [Date]}) date: Date) {
+    setDate(@JsonClassType({type: () => [Date]}) date: Date) {
       this.date = date;
     }
   }
@@ -190,7 +190,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
     constructor(id: number, name: string) {
@@ -199,7 +199,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
     }
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     @JsonSerialize({using: customBookListSerializer})
     getBooks(): Book[] {
       return this.books;
@@ -233,7 +233,7 @@ test('@JsonDeserialize at parameter level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Person]})
+    @JsonClassType({type: () => [Person]})
     ceo: Person;
 
     constructor(name: string,
@@ -241,7 +241,7 @@ test('@JsonDeserialize at parameter level', t => {
         delete person.otherInfo;
         return person;
         // eslint-disable-next-line no-shadow
-      }}) @JsonClass({class: () => [Person]}) ceo: Person) {
+      }}) @JsonClassType({type: () => [Person]}) ceo: Person) {
       this.name = name;
       this.ceo = ceo;
     }
@@ -296,11 +296,11 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     date: Date;
 
     @JsonProperty()
-    @JsonClass({class: () => [Writer]})
+    @JsonClassType({type: () => [Writer]})
     writer: Writer;
 
     // eslint-disable-next-line no-shadow
@@ -319,7 +319,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
     constructor(id: number, name: string) {
@@ -385,11 +385,11 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     date: Date;
 
     @JsonProperty()
-    @JsonClass({class: () => [Writer]})
+    @JsonClassType({type: () => [Writer]})
     writer: Writer;
 
     // eslint-disable-next-line no-shadow
@@ -408,7 +408,7 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     @JsonSerialize({
       // eslint-disable-next-line no-shadow
       contentUsing: (book: Book, context) => {
@@ -428,7 +428,7 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     books: Book[] = [];
 
     @JsonProperty()
-    @JsonClass({class: () => [Map]})
+    @JsonClassType({type: () => [Map]})
     @JsonSerialize({
       keyUsing: (key: string, context) => 'newMapKey-' + key,
       contentUsing: (obj: string, context) => 'newMapValue: ' + obj

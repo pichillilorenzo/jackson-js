@@ -1,7 +1,7 @@
 import test from 'ava';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JacksonError} from '../src/core/JacksonError';
 import {JsonIncludeType} from '../src/decorators/JsonInclude';
 
@@ -23,7 +23,7 @@ test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
 
   class Writer {
     @JsonProperty()
-    @JsonClass({class: () => [Map, [String, Book]]})
+    @JsonClassType({type: () => [Map, [String, Book]]})
     bookMap: Map<string, Book> = new Map<string, Book>();
     @JsonProperty()
     name: string;
@@ -72,10 +72,10 @@ test('SerializationFeature.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS set to t
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Map, [String, Book]]})
+    @JsonClassType({type: () => [Map, [String, Book]]})
     bookMap: Map<string, Book> = new Map<string, Book>();
     @JsonProperty()
-    @JsonClass({class: () => [Object, [String, Book]]})
+    @JsonClassType({type: () => [Object, [String, Book]]})
     bookObjLiteral: {[key: string]: Book} = {};
 
     constructor(id: number, name: string) {
@@ -167,10 +167,10 @@ test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Map, [Date, String]]})
+    @JsonClassType({type: () => [Map, [Date, String]]})
     infoMap: Map<Date, string> = new Map<Date, string>();
     @JsonProperty()
-    @JsonClass({class: () => [Object, [Date, String]]})
+    @JsonClassType({type: () => [Object, [Date, String]]})
     infoObjLiteral = {};
 
     constructor(name: string) {
@@ -264,7 +264,7 @@ test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
     @JsonProperty()
     lastname: string;
     @JsonProperty()
-    @JsonClass({class: () => [Date]})
+    @JsonClassType({type: () => [Date]})
     birthday: Date;
 
     // eslint-disable-next-line no-shadow

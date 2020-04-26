@@ -6,7 +6,7 @@
 import {
   ClassType,
   JsonAppendOptions,
-  JsonClassOptions,
+  JsonClassTypeOptions,
   JsonDecoratorOptions,
   JsonFilterOptions,
   JsonFormatOptions,
@@ -120,6 +120,7 @@ export class JsonStringifier<T> {
 
     const currentMainCreator = newContext.mainCreator[0];
     value = castObjLiteral(currentMainCreator, value);
+
 
     const preProcessedObj = this.deepTransform('', value, newContext, new Map());
     return preProcessedObj;
@@ -238,10 +239,10 @@ export class JsonStringifier<T> {
           const newContext: JsonStringifierTransformerContext = cloneDeep(context);
 
           let newMainCreator;
-          const jsonClass: JsonClassOptions =
-            getMetadata('JsonClass', currentMainCreator, jsonValueOptions.propertyKey, context);
-          if (jsonClass && jsonClass.class) {
-            newMainCreator = jsonClass.class();
+          const jsonClass: JsonClassTypeOptions =
+            getMetadata('JsonClassType', currentMainCreator, jsonValueOptions.propertyKey, context);
+          if (jsonClass && jsonClass.type) {
+            newMainCreator = jsonClass.type();
           } else {
             newMainCreator = [Object];
           }
@@ -273,6 +274,7 @@ export class JsonStringifier<T> {
 
         for (const k of keys) {
           if (!this.stringifyHasJsonIgnore(k, context) &&
+            this.stringifyHasVirtualPropertyGetter(k, context) &&
             this.stringifyHasJsonView(k, context) &&
             !this.stringifyIsIgnoredByJsonPropertyAccess(k, context) &&
             !this.stringifyHasJsonBackReference(k, context) &&
@@ -301,6 +303,7 @@ export class JsonStringifier<T> {
               this.propagateDecorators(value, k, context);
 
               replacement[newKey] = this.stringifyJsonGetter(value, k, context);
+
               if (!this.stringifyJsonInclude(replacement, newKey, context)) {
                 namingMap.delete(k);
                 delete replacement[newKey];
@@ -355,9 +358,9 @@ export class JsonStringifier<T> {
             newContext._propertyParentCreator = currentMainCreator;
 
             let newMainCreator;
-            const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
-            if (jsonClass && jsonClass.class) {
-              newMainCreator = jsonClass.class();
+            const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', currentMainCreator, oldKey, context);
+            if (jsonClass && jsonClass.type) {
+              newMainCreator = jsonClass.type();
             } else {
               newMainCreator = [Object];
             }
@@ -466,7 +469,7 @@ export class JsonStringifier<T> {
    */
   private propagateDecorators(obj: any, key: string, context: JsonStringifierTransformerContext): void {
     const currentMainCreator = context.mainCreator[0];
-    const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, key, context);
+    const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', currentMainCreator, key, context);
 
     // Decorators list that can be propagated
     const metadataKeys = [
@@ -486,7 +489,7 @@ export class JsonStringifier<T> {
     };
     let deepestClass = null;
     if (jsonClass) {
-      deepestClass = getDeepestClass(jsonClass.class());
+      deepestClass = getDeepestClass(jsonClass.type());
     } else {
       deepestClass = (obj[key] != null) ? obj[key].constructor : Object;
     }
@@ -507,6 +510,23 @@ export class JsonStringifier<T> {
     if (deepestClass != null && decoratorsNameFound.length > 0) {
       context._internalDecorators.set(deepestClass, decoratorsToBeApplied);
     }
+  }
+
+  /**
+   *
+   * @param key
+   * @param context
+   */
+  private stringifyHasVirtualPropertyGetter(key: string, context: JsonStringifierTransformerContext): any {
+    const currentMainCreator = context.mainCreator[0];
+
+    const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
+      getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
+
+    if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null) {
+      return typeof jsonVirtualProperty.descriptor.value === 'function' || jsonVirtualProperty.descriptor.get != null;
+    }
+    return true;
   }
 
   /**
@@ -1066,9 +1086,9 @@ export class JsonStringifier<T> {
       let objValue = (typeof obj[oldKey] === 'function') ? obj[oldKey]() : obj[oldKey];
       const newContext = cloneDeep(context);
       let newMainCreator;
-      const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
-      if (jsonClass && jsonClass.class) {
-        newMainCreator = jsonClass.class();
+      const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', currentMainCreator, oldKey, context);
+      if (jsonClass && jsonClass.type) {
+        newMainCreator = jsonClass.type();
       } else {
         newMainCreator = [Object];
       }
@@ -1436,9 +1456,9 @@ export class JsonStringifier<T> {
 
           const newContext = cloneDeep(context);
           let newMainCreator;
-          const jsonClass: JsonClassOptions = getMetadata('JsonClass', currentMainCreator, oldKey, context);
-          if (jsonClass && jsonClass.class) {
-            newMainCreator = jsonClass.class();
+          const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', currentMainCreator, oldKey, context);
+          if (jsonClass && jsonClass.type) {
+            newMainCreator = jsonClass.type();
           } else {
             newMainCreator = [Object];
           }

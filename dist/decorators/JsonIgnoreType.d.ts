@@ -20,7 +20,7 @@ import { JsonIgnoreTypeDecorator } from '../@types';
  *   lastname: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [Array, [Item]]})
+ *   @JsonClassType({type: () => [Array, [Item]]})
  *   items: Item[] = [];
  * }
  *
@@ -34,7 +34,7 @@ import { JsonIgnoreTypeDecorator } from '../@types';
  *   category: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [User]})
+ *   @JsonClassType({type: () => [User]})
  *   owner: User;
  * }
  * ```

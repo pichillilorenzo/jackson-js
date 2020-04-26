@@ -22,7 +22,7 @@ import {JacksonError} from '../core/JacksonError';
  *   @JsonProperty()
  *   name: string;
  *   @JsonProperty()
- *   @JsonClass({class: () => [Array, [Employee]]})
+ *   @JsonClassType({type: () => [Array, [Employee]]})
  *   employees: Employee[] = [];
  * }
  *

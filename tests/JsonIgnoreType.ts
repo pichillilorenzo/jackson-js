@@ -1,6 +1,6 @@
 import test from 'ava';
 import {JsonIgnoreType} from '../src/decorators/JsonIgnoreType';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 
@@ -15,7 +15,7 @@ class User {
   lastname: string;
 
   @JsonProperty()
-  @JsonClass({class: () => [Array, [Item]]})
+  @JsonClassType({type: () => [Array, [Item]]})
   items: Item[] = [];
 
   constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -35,10 +35,10 @@ class Item {
   @JsonProperty()
   category: string;
   @JsonProperty()
-  @JsonClass({class: () => [User]})
+  @JsonClassType({type: () => [User]})
   owner: User;
 
-  constructor(id: number, name: string, category: string, @JsonClass({class: () => [User]}) owner: User) {
+  constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
     this.id = id;
     this.name = name;
     this.category = category;

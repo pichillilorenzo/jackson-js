@@ -17,7 +17,7 @@ import { JsonInjectDecorator } from '../@types';
  *
  *   @JsonInject()
  *   @JsonProperty()
- *   @JsonClass({class: () => [Date]})
+ *   @JsonClassType({type: () => [Date]})
  *   lastUpdated: Date;
  * }
  *

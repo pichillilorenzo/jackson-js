@@ -1,7 +1,7 @@
 import test from 'ava';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonFilter, JsonFilterType} from '../src/decorators/JsonFilter';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonGetter} from '../src/decorators/JsonGetter';
 
@@ -66,11 +66,11 @@ test('@JsonFilter at property level', t => {
 
     @JsonProperty()
     @JsonFilter({value: 'ceoFilter'})
-    @JsonClass({class: () => [Employee]})
+    @JsonClassType({type: () => [Employee]})
     ceo: Employee;
 
     // eslint-disable-next-line no-shadow
-    constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
+    constructor(name: string, @JsonClassType({type: () => [Employee]}) ceo: Employee) {
       this.name = name;
       this.ceo = ceo;
     }
@@ -129,18 +129,18 @@ test('@JsonFilter at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Employee]})
+    @JsonClassType({type: () => [Employee]})
     ceo: Employee;
 
     // eslint-disable-next-line no-shadow
-    constructor(name: string, @JsonClass({class: () => [Employee]}) ceo: Employee) {
+    constructor(name: string, @JsonClassType({type: () => [Employee]}) ceo: Employee) {
       this.name = name;
       this.ceo = ceo;
     }
 
     @JsonGetter()
     @JsonFilter({value: 'ceoFilter'})
-    @JsonClass({class: () => [Employee]})
+    @JsonClassType({type: () => [Employee]})
     getCeo(): Employee {
       return this.ceo;
     }
@@ -200,10 +200,10 @@ test('@JsonFilter at property level of type Array', t => {
 
     @JsonProperty()
     @JsonFilter({value: 'employeeFilter'})
-    @JsonClass({class: () => [Array, [Employee]]})
+    @JsonClassType({type: () => [Array, [Employee]]})
     employees: Employee[] = [];
 
-    constructor(name: string, @JsonClass({class: () => [Array, [Employee]]}) employees: Employee[]) {
+    constructor(name: string, @JsonClassType({type: () => [Array, [Employee]]}) employees: Employee[]) {
       this.name = name;
       this.employees = employees;
     }

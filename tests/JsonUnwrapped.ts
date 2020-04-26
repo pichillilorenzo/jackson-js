@@ -1,5 +1,5 @@
 import test from 'ava';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonUnwrapped} from '../src/decorators/JsonUnwrapped';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
@@ -12,7 +12,7 @@ test('@JsonUnwrapped at property level', t => {
     id: number;
     @JsonProperty()
     @JsonUnwrapped()
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     name: Name;
 
     // eslint-disable-next-line no-shadow
@@ -57,7 +57,7 @@ test('@JsonUnwrapped at property level with prefix', t => {
     id: number;
     @JsonProperty()
     @JsonUnwrapped({prefix: 'parent-'})
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     name: Name;
 
     // eslint-disable-next-line no-shadow
@@ -102,7 +102,7 @@ test('@JsonUnwrapped at property level with suffix', t => {
     id: number;
     @JsonProperty()
     @JsonUnwrapped({suffix: '-parent'})
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     name: Name;
 
     // eslint-disable-next-line no-shadow
@@ -147,7 +147,7 @@ test('@JsonUnwrapped at property level with prefix and suffix', t => {
     id: number;
     @JsonProperty()
     @JsonUnwrapped({prefix: 'parentPrefix-', suffix: '-parentSuffix'})
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     name: Name;
 
     // eslint-disable-next-line no-shadow
@@ -192,7 +192,7 @@ test('@JsonUnwrapped at method level', t => {
     @JsonProperty()
     id: number;
     @JsonProperty()
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     name: Name;
 
     constructor(id: number) {
@@ -201,7 +201,7 @@ test('@JsonUnwrapped at method level', t => {
 
     @JsonGetter()
     @JsonUnwrapped()
-    @JsonClass({class: () => [Name]})
+    @JsonClassType({type: () => [Name]})
     getName(): Name {
       return this.name;
     }
@@ -209,7 +209,7 @@ test('@JsonUnwrapped at method level', t => {
     @JsonSetter()
     @JsonUnwrapped()
     // eslint-disable-next-line no-shadow
-    setName(@JsonClass({class: () => [Name]}) name: Name) {
+    setName(@JsonClassType({type: () => [Name]}) name: Name) {
       this.name = name;
     }
   }

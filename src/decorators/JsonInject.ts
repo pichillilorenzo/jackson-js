@@ -21,7 +21,7 @@ import {JacksonError} from '../core/JacksonError';
  *
  *   @JsonInject()
  *   @JsonProperty()
- *   @JsonClass({class: () => [Date]})
+ *   @JsonClassType({type: () => [Date]})
  *   lastUpdated: Date;
  * }
  *

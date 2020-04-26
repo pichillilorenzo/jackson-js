@@ -3,7 +3,7 @@ import {JsonGetter} from '../src/decorators/JsonGetter';
 import {JsonSetter, JsonSetterNulls} from '../src/decorators/JsonSetter';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JacksonError} from '../src/core/JacksonError';
 
 test('@JsonGetter and @JsonSetter', t => {
@@ -103,7 +103,7 @@ test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.FAI
     @JsonProperty()
     otherInfoArray: string[] = [];
     @JsonProperty()
-    @JsonClass({class: () => [Map]})
+    @JsonClassType({type: () => [Map]})
     otherInfoMap: Map<string, string> = new Map();
     @JsonProperty()
     otherInfoObjLiteral = {};
@@ -115,12 +115,12 @@ test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.FAI
     }
 
     @JsonSetter({nulls: JsonSetterNulls.FAIL, contentNulls: JsonSetterNulls.FAIL})
-    setOtherInfoArray(@JsonClass({class: () => [Array]}) otherInfoArray: string[]) {
+    setOtherInfoArray(@JsonClassType({type: () => [Array]}) otherInfoArray: string[]) {
       this.otherInfoArray = otherInfoArray;
     }
 
     @JsonSetter({nulls: JsonSetterNulls.FAIL, contentNulls: JsonSetterNulls.FAIL})
-    setOtherInfoMap(@JsonClass({class: () => [Map]}) otherInfoMap: Map<string, string>) {
+    setOtherInfoMap(@JsonClassType({type: () => [Map]}) otherInfoMap: Map<string, string>) {
       this.otherInfoMap = otherInfoMap;
     }
 
@@ -180,7 +180,7 @@ test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.SKI
     @JsonProperty()
     otherInfoArray: string[] = [];
     @JsonProperty()
-    @JsonClass({class: () => [Map]})
+    @JsonClassType({type: () => [Map]})
     otherInfoMap: Map<string, string> = new Map();
     @JsonProperty()
     otherInfoObjLiteral = {};
@@ -192,12 +192,12 @@ test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.SKI
     }
 
     @JsonSetter({nulls: JsonSetterNulls.SKIP, contentNulls: JsonSetterNulls.SKIP})
-    setOtherInfoArray(@JsonClass({class: () => [Array]}) otherInfoArray: string[]) {
+    setOtherInfoArray(@JsonClassType({type: () => [Array]}) otherInfoArray: string[]) {
       this.otherInfoArray = otherInfoArray;
     }
 
     @JsonSetter({nulls: JsonSetterNulls.SKIP, contentNulls: JsonSetterNulls.SKIP})
-    setOtherInfoMap(@JsonClass({class: () => [Map]}) otherInfoMap: Map<string, string>) {
+    setOtherInfoMap(@JsonClassType({type: () => [Map]}) otherInfoMap: Map<string, string>) {
       this.otherInfoMap = otherInfoMap;
     }
 

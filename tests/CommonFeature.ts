@@ -2,7 +2,7 @@ import test from 'ava';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonView} from '../src/decorators/JsonView';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   class Views {
@@ -64,16 +64,16 @@ test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
 test('CommonFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL set to true', t => {
   class User {
     @JsonProperty()
-    @JsonClass({class: () => [BigInt]})
+    @JsonClassType({type: () => [BigInt]})
     id: BigInt;
     @JsonProperty()
-    @JsonClass({class: () => [String]})
+    @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Number]})
+    @JsonClassType({type: () => [Number]})
     age: number;
     @JsonProperty()
-    @JsonClass({class: () => [Boolean]})
+    @JsonClassType({type: () => [Boolean]})
     deleted: boolean;
 
     constructor(id: BigInt, name: string, age: number, deleted: boolean) {

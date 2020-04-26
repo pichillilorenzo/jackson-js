@@ -4,7 +4,7 @@ import {JsonIdentityInfo, ObjectIdGenerator} from '../src/decorators/JsonIdentit
 import {JsonManagedReference} from '../src/decorators/JsonManagedReference';
 import {JsonBackReference} from '../src/decorators/JsonBackReference';
 import {JsonIdentityReference} from '../src/decorators/JsonIdentityReference';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonGetter} from '../src/decorators/JsonGetter';
@@ -23,7 +23,7 @@ test('Fail Infinite recursion', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -41,10 +41,10 @@ test('Fail Infinite recursion', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -77,7 +77,7 @@ test('@JsonManagedReference And @JsonBackReference at property level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     @JsonManagedReference()
     items: Item[] = [];
 
@@ -96,11 +96,11 @@ test('@JsonManagedReference And @JsonBackReference at property level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     @JsonBackReference()
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -138,7 +138,7 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -150,13 +150,13 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
 
     @JsonGetter()
     @JsonManagedReference()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     getItems(): Item[] {
       return this.items;
     }
 
     @JsonSetter()
-    setItems(@JsonClass({class: () => [Array, [Item]]}) items: Item[]) {
+    setItems(@JsonClassType({type: () => [Array, [Item]]}) items: Item[]) {
       this.items = items;
     }
   }
@@ -168,10 +168,10 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -179,13 +179,13 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
 
     @JsonGetter()
     @JsonBackReference()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     getOwner(): User {
       return this.owner;
     }
 
     @JsonSetter()
-    setOwner(@JsonClass({class: () => [User]}) owner: User) {
+    setOwner(@JsonClassType({type: () => [User]}) owner: User) {
       this.owner = owner;
     }
   }
@@ -222,7 +222,7 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -241,10 +241,10 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -282,7 +282,7 @@ test('@JsonIdentityInfo One To Many', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -301,10 +301,10 @@ test('@JsonIdentityInfo One To Many', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
-    constructor(id: number, name: string, @JsonClass({class: () => [User]}) owner: User) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [User]}) owner: User) {
       this.id = id;
       this.name = name;
       this.owner = owner;
@@ -342,7 +342,7 @@ test('@JsonIdentityInfo One To Many at property level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -362,7 +362,7 @@ test('@JsonIdentityInfo One To Many at property level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
     owner: User;
 
@@ -408,7 +408,7 @@ test('@JsonIdentityInfo One To Many at method level', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -428,7 +428,7 @@ test('@JsonIdentityInfo One To Many at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
     constructor(id: number, name: string) {
@@ -438,14 +438,14 @@ test('@JsonIdentityInfo One To Many at method level', t => {
 
     @JsonGetter()
     @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     getOwner(): User {
       return this.owner;
     }
 
     @JsonSetter()
     @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
-    setOwner(@JsonClass({class: () => [User]}) owner: User) {
+    setOwner(@JsonClassType({type: () => [User]}) owner: User) {
       this.owner = owner;
     }
   }
@@ -486,7 +486,7 @@ test('@JsonIdentityInfo Many To Many', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -505,7 +505,7 @@ test('@JsonIdentityInfo Many To Many', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [User]]})
+    @JsonClassType({type: () => [Array, [User]]})
     owners: User[] = [];
 
     constructor(id: number, name: string) {
@@ -553,7 +553,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -573,7 +573,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
     constructor(id: number, name: string) {
@@ -609,7 +609,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     @JsonIdentityReference({alwaysAsId: true})
     items: Item[] = [];
 
@@ -629,7 +629,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
     constructor(id: number, name: string) {
@@ -665,7 +665,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level'
     lastname: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     items: Item[] = [];
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -676,7 +676,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level'
     }
 
     @JsonGetter()
-    @JsonClass({class: () => [Array, [Item]]})
+    @JsonClassType({type: () => [Array, [Item]]})
     @JsonIdentityReference({alwaysAsId: true})
     getItems() {
       return this.items;
@@ -691,7 +691,7 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level'
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [User]})
+    @JsonClassType({type: () => [User]})
     owner: User;
 
     constructor(id: number, name: string) {

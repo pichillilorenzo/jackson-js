@@ -1,6 +1,6 @@
 import test from 'ava';
 import {JsonAlias} from '../src/decorators/JsonAlias';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonSetter} from '../src/decorators/JsonSetter';
@@ -27,10 +27,10 @@ test('@JsonAlias at property level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
-    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [Array, [Book]]}) books: Book[]) {
       this.id = id;
       this.name = name;
       this.books = books;
@@ -80,10 +80,10 @@ test('@JsonAlias at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
-    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [Array, [Book]]}) books: Book[]) {
       this.id = id;
       this.name = name;
       this.books = books;
@@ -126,10 +126,10 @@ test('@JsonAlias at parameter level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
-    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [Array, [Book]]}) books: Book[]) {
       this.id = id;
       this.name = name;
       this.books = books;

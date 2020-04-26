@@ -29,7 +29,7 @@ import {
  *   lastname: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [Array, [Item]]})
+ *   @JsonClassType({type: () => [Array, [Item]]})
  *   items: Item[] = [];
  * }
  *
@@ -42,7 +42,7 @@ import {
  *   name: string;
  *
  *   @JsonProperty()
- *   @JsonClass({class: () => [User]})
+ *   @JsonClassType({type: () => [User]})
  *   owner: User;
  * }
  * ```

@@ -126,7 +126,7 @@ export declare class JsonParser<T> {
      * @param methodName
      * @param argumentIndex
      */
-    private parseJsonClass;
+    private parseJsonClassType;
     /**
      *
      * @param mainCreator

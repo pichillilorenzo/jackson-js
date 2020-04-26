@@ -3,7 +3,7 @@ import {JsonPropertyOrder} from '../src/decorators/JsonPropertyOrder';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonRootName} from '../src/decorators/JsonRootName';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonGetter} from '../src/decorators/JsonGetter';
 
 test('class without @JsonPropertyOrder', t => {
@@ -173,10 +173,10 @@ test('@JsonPropertyOrder at property level on Array', t => {
 
     @JsonProperty()
     @JsonPropertyOrder({value: ['category', 'id', 'name']})
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
-    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [Array, [Book]]}) books: Book[]) {
       this.id = id;
       this.name = name;
       this.books = books;
@@ -216,7 +216,7 @@ test('@JsonPropertyOrder at property level on Map', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Map, [String, Book]]})
+    @JsonClassType({type: () => [Map, [String, Book]]})
     @JsonPropertyOrder({value: ['category', 'id', 'name']})
     bookMap: Map<string, Book> = new Map<string, Book>();
 
@@ -265,10 +265,10 @@ test('@JsonPropertyOrder at method level', t => {
     name: string;
 
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     books: Book[] = [];
 
-    constructor(id: number, name: string, @JsonClass({class: () => [Array, [Book]]}) books: Book[]) {
+    constructor(id: number, name: string, @JsonClassType({type: () => [Array, [Book]]}) books: Book[]) {
       this.id = id;
       this.name = name;
       this.books = books;
@@ -276,7 +276,7 @@ test('@JsonPropertyOrder at method level', t => {
 
     @JsonGetter()
     @JsonPropertyOrder({value: ['category', 'id', 'name']})
-    @JsonClass({class: () => [Array, [Book]]})
+    @JsonClassType({type: () => [Array, [Book]]})
     getBooks(): Book[] {
       return this.books;
     }

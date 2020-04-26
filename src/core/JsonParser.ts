@@ -28,7 +28,7 @@ import {
   ClassTypeWithDecoratorDefinitions,
   JsonAliasOptions,
   JsonAppendOptions,
-  JsonClassOptions,
+  JsonClassTypeOptions,
   JsonDecoratorOptions,
   JsonDeserializeOptions,
   JsonIdentityInfoOptions,
@@ -288,7 +288,7 @@ export class JsonParser<T> {
 
         for (const k of keys) {
           if (classHasOwnProperty(currentMainCreator, k, replacement, context, {withSettersAsProperty: true})) {
-            const jsonClass: JsonClassOptions = getMetadata('JsonClass', context.mainCreator[0], k, context);
+            const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', context.mainCreator[0], k, context);
             this.propagateDecorators(jsonClass, replacement, k, context);
 
             if (this.parseHasJsonIgnore(context, k) || !this.parseIsIncludedByJsonViewProperty(context, k)) {
@@ -371,7 +371,7 @@ export class JsonParser<T> {
    * @param methodName
    * @param argumentIndex
    */
-  private propagateDecorators(jsonClass: JsonClassOptions,
+  private propagateDecorators(jsonClass: JsonClassTypeOptions,
                               obj: any,
                               key: string,
                               context: JsonParserTransformerContext,
@@ -410,8 +410,8 @@ export class JsonParser<T> {
     };
 
     if (jsonClass) {
-      firstClass = jsonClass.class()[0];
-      deepestClass = getDeepestClass(jsonClass.class());
+      firstClass = jsonClass.type()[0];
+      deepestClass = getDeepestClass(jsonClass.type());
     } else {
       firstClass = (obj[key] != null) ? obj[key].constructor : Object;
       deepestClass = (obj[key] != null) ? obj[key].constructor : Object;
@@ -424,8 +424,8 @@ export class JsonParser<T> {
 
       if (jsonDecoratorOptions) {
         if (metadataKey.includes('Param:') && deepestClass != null && methodName != null && argumentIndex != null) {
-          const jsonClassParam: JsonClassOptions =
-            getMetadata('JsonClassParam:' + argumentIndex, currentMainCreator, methodName, context);
+          const jsonClassParam: JsonClassTypeOptions =
+            getMetadata('JsonClassTypeParam:' + argumentIndex, currentMainCreator, methodName, context);
 
           const metadataKeysWithContext =
             makeMetadataKeysWithContext(metadataKey.substring(0, metadataKey.indexOf('Param:')),
@@ -438,7 +438,7 @@ export class JsonParser<T> {
             deepestClass = null;
           } else {
             const jsonClassMetadataKeysWithContext =
-              makeMetadataKeysWithContext('JsonClass', {contextGroups: jsonClassParam.contextGroups});
+              makeMetadataKeysWithContext('JsonClassType', {contextGroups: jsonClassParam.contextGroups});
             for (const metadataKeyWithContext of jsonClassMetadataKeysWithContext) {
               decoratorsToBeAppliedForDeepestClass[metadataKeyWithContext] = jsonClassParam;
             }
@@ -464,8 +464,8 @@ export class JsonParser<T> {
 
       if (jsonDecoratorOptions) {
         if (metadataKey.includes('Param:') && firstClass != null && methodName != null && argumentIndex != null) {
-          const jsonClassParam: JsonClassOptions =
-            getMetadata('JsonClassParam:' + argumentIndex, currentMainCreator, methodName, context);
+          const jsonClassParam: JsonClassTypeOptions =
+            getMetadata('JsonClassTypeParam:' + argumentIndex, currentMainCreator, methodName, context);
 
           const metadataKeysWithContext =
             makeMetadataKeysWithContext(metadataKey.substring(0, metadataKey.indexOf('Param:')),
@@ -478,7 +478,7 @@ export class JsonParser<T> {
             firstClass = null;
           } else {
             const jsonClassMetadataKeysWithContext =
-              makeMetadataKeysWithContext('JsonClass', {contextGroups: jsonClassParam.contextGroups});
+              makeMetadataKeysWithContext('JsonClassType', {contextGroups: jsonClassParam.contextGroups});
             for (const metadataKeyWithContext of jsonClassMetadataKeysWithContext) {
               decoratorsToBeAppliedForFirstClass[metadataKeyWithContext] = jsonClassParam;
             }
@@ -660,12 +660,17 @@ export class JsonParser<T> {
           const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonSetterPrivateOptions =
             getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
-          if ( jsonVirtualProperty && jsonVirtualProperty.descriptor != null &&
-            (typeof jsonVirtualProperty.descriptor.value === 'function' || jsonVirtualProperty.descriptor.set != null) ) {
-            this.parseJsonSetter(instance, obj, key, context);
+          if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null) {
+            if (typeof jsonVirtualProperty.descriptor.value === 'function' || jsonVirtualProperty.descriptor.set != null) {
+              this.parseJsonSetter(instance, obj, key, context);
+            } else {
+              // if property has a descriptor but is not a function and doesn't have a setter,
+              // then this property has only getter, so we can skip it.
+              continue;
+            }
           } else if ((Object.hasOwnProperty.call(obj, key) && classHasOwnProperty(currentMainCreator, key, null, context)) ||
             currentMainCreator.name === 'Object') {
-            instance[key] = this.parseJsonClass(context, obj, key);
+            instance[key] = this.parseJsonClassType(context, obj, key);
           } else if (hasJsonAnySetter && Object.hasOwnProperty.call(obj, key)) {
             // for any other unrecognized properties found
             this.parseJsonAnySetter(instance, obj, key, context);
@@ -738,7 +743,7 @@ export class JsonParser<T> {
         parsedValue = this.parseMethodArguments(key, null, obj, context, [jsonVirtualProperty.value], false)
           .args[0];
       } else {
-        parsedValue = this.parseJsonClass(context, obj, key);
+        parsedValue = this.parseJsonClassType(context, obj, key);
       }
 
       if ('nulls' in jsonVirtualProperty || 'contentNulls' in jsonVirtualProperty) {
@@ -872,13 +877,13 @@ export class JsonParser<T> {
         }
 
         if (mappedKey && Object.hasOwnProperty.call(obj, mappedKey)) {
-          args.push(this.parseJsonClass(context, obj, mappedKey, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, obj, mappedKey, methodName, argIndex));
           argNamesAliasToBeExcluded.push(mappedKey);
         } else if (mappedKey && jsonProperty.required) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Required property "${mappedKey}" not found on parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
         } else if (Object.hasOwnProperty.call(obj, key)) {
-          args.push(this.parseJsonClass(context, obj, key, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, obj, key, methodName, argIndex));
         } else {
           if (isJsonCreator && context.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES &&
             (!jsonInject || (jsonInject && !(jsonInject.value in context.injectableValues)))) {
@@ -1012,23 +1017,23 @@ export class JsonParser<T> {
    * @param methodName
    * @param argumentIndex
    */
-  private parseJsonClass(context: JsonParserTransformerContext, obj: any, key: string,
-                         methodName?: string, argumentIndex?: number): any {
-    let jsonClass: JsonClassOptions;
+  private parseJsonClassType(context: JsonParserTransformerContext, obj: any, key: string,
+                             methodName?: string, argumentIndex?: number): any {
+    let jsonClass: JsonClassTypeOptions;
     if (methodName != null && argumentIndex != null) {
       jsonClass =
-        getMetadata('JsonClassParam:' + argumentIndex, context.mainCreator[0], methodName, context);
+        getMetadata('JsonClassTypeParam:' + argumentIndex, context.mainCreator[0], methodName, context);
     }
     if (!jsonClass) {
       // if @JsonClass() is not found at parameter level, try to get it from the class properties
-      jsonClass = getMetadata('JsonClass', context.mainCreator[0], key, context);
+      jsonClass = getMetadata('JsonClassType', context.mainCreator[0], key, context);
     }
     this.propagateDecorators(jsonClass, obj, key, context, methodName, argumentIndex);
 
     const newContext = cloneDeep(context);
 
-    if (jsonClass && jsonClass.class) {
-      newContext.mainCreator = jsonClass.class();
+    if (jsonClass && jsonClass.type) {
+      newContext.mainCreator = jsonClass.type();
       this._addInternalDecoratorsFromJsonClass(newContext.mainCreator, newContext);
     } else {
       const newCreator = (obj[key] != null) ? obj[key].constructor : Object;
@@ -1084,15 +1089,15 @@ export class JsonParser<T> {
 
     let jsonManagedReference: JsonManagedReferenceOptions =
       getMetadata('JsonManagedReference', currentMainCreator, key, context);
-    let jsonClassManagedReference: JsonClassOptions =
-      getMetadata('JsonClass', currentMainCreator, key, context);
+    let jsonClassManagedReference: JsonClassTypeOptions =
+      getMetadata('JsonClassType', currentMainCreator, key, context);
 
     if (!jsonManagedReference) {
       const propertySetter = mapVirtualPropertyToClassProperty(currentMainCreator, key, context, {checkSetters: true});
       jsonManagedReference =
         getMetadata('JsonManagedReference', currentMainCreator, propertySetter, context);
       jsonClassManagedReference =
-        getMetadata('JsonClassParam:0', currentMainCreator, propertySetter, context);
+        getMetadata('JsonClassTypeParam:0', currentMainCreator, propertySetter, context);
 
       if (jsonManagedReference && !jsonClassManagedReference) {
         // eslint-disable-next-line max-len
@@ -1102,15 +1107,15 @@ export class JsonParser<T> {
 
     if (jsonManagedReference && jsonClassManagedReference) {
 
-      const jsonClassConstructors =  jsonClassManagedReference.class();
+      const jsonClassConstructors =  jsonClassManagedReference.type();
       const childConstructor = jsonClassConstructors[0];
       if (isClassIterable(childConstructor)) {
         const backReferenceConstructor = (jsonClassConstructors.length === 1) ?
           Object :
           (
             (!isSameConstructorOrExtensionOfNoObject(childConstructor, Map)) ?
-              jsonClassManagedReference.class()[1][0] :
-              jsonClassManagedReference.class()[1][1]
+              jsonClassManagedReference.type()[1][0] :
+              jsonClassManagedReference.type()[1][1]
           );
 
         const jsonBackReference: JsonBackReferencePrivateOptions =
@@ -1431,8 +1436,8 @@ export class JsonParser<T> {
           continue;
         }
 
-        const jsonClass: JsonClassOptions =
-          getMetadata('JsonClass', currentMainCreator, realKey, context);
+        const jsonClass: JsonClassTypeOptions =
+          getMetadata('JsonClassType', currentMainCreator, realKey, context);
         if (!jsonClass) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`@JsonUnwrapped() requires use of @JsonClass() for deserialization at ${currentMainCreator.name}["${realKey}"])`);
@@ -1443,7 +1448,7 @@ export class JsonParser<T> {
 
         replacement[realKey] = {};
 
-        const properties = getClassProperties(jsonClass.class()[0], null, context, {
+        const properties = getClassProperties(jsonClass.type()[0], null, context, {
           withJsonVirtualPropertyValues: true,
           withJsonAliases: true
         });

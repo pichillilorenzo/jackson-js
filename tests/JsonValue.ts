@@ -2,7 +2,7 @@ import test from 'ava';
 import {JsonValue} from '../src/decorators/JsonValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonClass} from '../src/decorators/JsonClass';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JacksonError} from '../src/core/JacksonError';
 
 test('@JsonValue at property level', t => {
@@ -10,7 +10,7 @@ test('@JsonValue at property level', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Employee]]})
+    @JsonClassType({type: () => [Array, [Employee]]})
     employees: Employee[] = [];
 
     constructor(name: string) {
@@ -53,7 +53,7 @@ test('@JsonValue at method level', t => {
     @JsonProperty()
     name: string;
     @JsonProperty()
-    @JsonClass({class: () => [Array, [Employee]]})
+    @JsonClassType({type: () => [Array, [Employee]]})
     employees: Employee[] = [];
 
     constructor(name: string) {
@@ -97,7 +97,7 @@ test('Fail multiple @JsonValue on the same class', t => {
       @JsonProperty()
       name: string;
       @JsonProperty()
-      @JsonClass({class: () => [Array, [Employee]]})
+      @JsonClassType({type: () => [Array, [Employee]]})
       employees: Employee[] = [];
 
       constructor(name: string) {
