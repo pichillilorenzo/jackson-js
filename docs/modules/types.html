@@ -74,6 +74,7 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/types.classlist.html" class="tsd-kind-icon">Class<wbr>List</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/types.custommapper.html" class="tsd-kind-icon">Custom<wbr>Mapper</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsonaliasoptions.html" class="tsd-kind-icon">Json<wbr>Alias<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsonanygetteroptions.html" class="tsd-kind-icon">Json<wbr>Any<wbr>Getter<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsonappendoptions.html" class="tsd-kind-icon">Json<wbr>Append<wbr>Options</a></li>
@@ -119,8 +120,6 @@
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsontypenameoptions.html" class="tsd-kind-icon">Json<wbr>Type<wbr>Name<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsonunwrappedoptions.html" class="tsd-kind-icon">Json<wbr>Unwrapped<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.jsonviewoptions.html" class="tsd-kind-icon">Json<wbr>View<wbr>Options</a></li>
-								<li class="tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter"><a href="../interfaces/types.objectmappercustommapper.html" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Custom<wbr>Mapper</a></li>
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.objectmapperfeatures.html" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Features</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.typeidresolver.html" class="tsd-kind-icon">Type<wbr>IdResolver</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.uuidv1generatoroptions.html" class="tsd-kind-icon">UUIDv1<wbr>Generator<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/types.uuidv3generatoroptions.html" class="tsd-kind-icon">UUIDv3<wbr>Generator<wbr>Options</a></li>
@@ -185,8 +184,6 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="types.html#jsonvalueoptions" class="tsd-kind-icon">Json<wbr>Value<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="types.html#jsonviewdecorator" class="tsd-kind-icon">Json<wbr>View<wbr>Decorator</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="types.html#modify" class="tsd-kind-icon">Modify</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="types.html#objectmapperdeserializer" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Deserializer</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="types.html#objectmapperserializer" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Serializer</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="types.html#serializer" class="tsd-kind-icon">Serializer</a></li>
 							</ul>
 						</section>
@@ -201,7 +198,7 @@
 					<div class="tsd-signature tsd-kind-icon">Array<wbr>Length<wbr>Mutation<wbr>Keys<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"splice"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"push"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"pop"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"shift"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"unshift"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L32">src/@types/index.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L32">src/@types/index.ts:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -211,7 +208,7 @@
 					<div class="tsd-signature tsd-kind-icon">Class<wbr>Type&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">(</span>cls<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L29">src/@types/index.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L29">src/@types/index.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -232,7 +229,7 @@
 					<div class="tsd-signature tsd-kind-icon">Class<wbr>Type<wbr>With<wbr>Decorator<wbr>Definitions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-symbol">{ </span>decorators<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>target<span class="tsd-signature-symbol">: </span><a href="types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L954">src/@types/index.ts:954</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L930">src/@types/index.ts:930</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -280,7 +277,7 @@
 					<div class="tsd-signature tsd-kind-icon">Deserializer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="types.html#jsonparsertransformercontext" class="tsd-signature-type">JsonParserTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L406">src/@types/index.ts:406</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L406">src/@types/index.ts:406</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -322,7 +319,7 @@
 					<div class="tsd-signature tsd-kind-icon">Fixed<wbr>Length<wbr>Array&lt;T, L, TObj&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">TObj</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Exclude</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">TObj</span><span class="tsd-signature-symbol">, </span><a href="types.html#arraylengthmutationkeys" class="tsd-signature-type">ArrayLengthMutationKeys</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>[Symbol.iterator]<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">IterableIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">L</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L34">src/@types/index.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L34">src/@types/index.ts:34</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -344,7 +341,7 @@
 					<div class="tsd-signature tsd-kind-icon">Jackson<wbr>Decorator&lt;T, TDecorator&gt;<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TDecorator</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">TDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L61">src/@types/index.ts:61</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L61">src/@types/index.ts:61</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -368,7 +365,7 @@
 					<div class="tsd-signature tsd-kind-icon">Jackson<wbr>Decorator<wbr>With<wbr>Optional<wbr>Options&lt;T, TDecorator&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDecorator</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L57">src/@types/index.ts:57</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L57">src/@types/index.ts:57</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -413,7 +410,7 @@
 					<div class="tsd-signature tsd-kind-icon">Jackson<wbr>Decorator<wbr>With<wbr>Options&lt;T, TDecorator&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TDecorator</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L53">src/@types/index.ts:53</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L53">src/@types/index.ts:53</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -458,7 +455,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Alias<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonaliasoptions.html" class="tsd-signature-type">JsonAliasOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L67">src/@types/index.ts:67</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L67">src/@types/index.ts:67</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -473,7 +470,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Any<wbr>Getter<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonanygetteroptions.html" class="tsd-signature-type">JsonAnyGetterOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L141">src/@types/index.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L141">src/@types/index.ts:141</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -488,7 +485,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Any<wbr>Setter<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonanysetteroptions" class="tsd-signature-type">JsonAnySetterOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L145">src/@types/index.ts:145</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L145">src/@types/index.ts:145</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -503,7 +500,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Any<wbr>Setter<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L496">src/@types/index.ts:496</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L472">src/@types/index.ts:472</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -518,7 +515,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Append<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonappendoptions.html" class="tsd-signature-type">JsonAppendOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L71">src/@types/index.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L71">src/@types/index.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -533,7 +530,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Back<wbr>Reference<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonbackreferenceoptions.html" class="tsd-signature-type">JsonBackReferenceOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L149">src/@types/index.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L149">src/@types/index.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -548,7 +545,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Class<wbr>Type<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonclasstypeoptions.html" class="tsd-signature-type">JsonClassTypeOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L75">src/@types/index.ts:75</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L75">src/@types/index.ts:75</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -563,7 +560,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Creator<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsoncreatoroptions.html" class="tsd-signature-type">JsonCreatorOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L153">src/@types/index.ts:153</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L153">src/@types/index.ts:153</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -578,7 +575,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Decorator<span class="tsd-signature-symbol">:</span> &lt;T&gt;<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a>, target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span>, propertyKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span>, descriptorOrParamIndex<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TypedPropertyDescriptor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">TypedPropertyDescriptor</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L473">src/@types/index.ts:473</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L449">src/@types/index.ts:449</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -629,7 +626,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Deserialize<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsondeserializeoptions.html" class="tsd-signature-type">JsonDeserializeOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L80">src/@types/index.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L80">src/@types/index.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -644,7 +641,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Filter<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonfilteroptions.html" class="tsd-signature-type">JsonFilterOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L85">src/@types/index.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L85">src/@types/index.ts:85</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -659,7 +656,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Format<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonformatoptions" class="tsd-signature-type">JsonFormatOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L157">src/@types/index.ts:157</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L157">src/@types/index.ts:157</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -674,7 +671,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Format<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsonformatany.html" class="tsd-signature-type">JsonFormatAny</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatarray.html" class="tsd-signature-type">JsonFormatArray</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatboolean.html" class="tsd-signature-type">JsonFormatBoolean</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatnumberfloat.html" class="tsd-signature-type">JsonFormatNumberFloat</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatnumberint.html" class="tsd-signature-type">JsonFormatNumberInt</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatobject.html" class="tsd-signature-type">JsonFormatObject</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatscalar.html" class="tsd-signature-type">JsonFormatScalar</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/types.jsonformatstring.html" class="tsd-signature-type">JsonFormatString</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L684">src/@types/index.ts:684</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L660">src/@types/index.ts:660</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -694,7 +691,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Getter<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsongetteroptions.html" class="tsd-signature-type">JsonGetterOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L162">src/@types/index.ts:162</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L162">src/@types/index.ts:162</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -709,7 +706,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Identity<wbr>Info<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonidentityinfooptions.html" class="tsd-signature-type">JsonIdentityInfoOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L90">src/@types/index.ts:90</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L90">src/@types/index.ts:90</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -724,7 +721,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Identity<wbr>Reference<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonidentityreferenceoptions.html" class="tsd-signature-type">JsonIdentityReferenceOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L95">src/@types/index.ts:95</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L95">src/@types/index.ts:95</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -739,7 +736,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonignoreoptions" class="tsd-signature-type">JsonIgnoreOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L170">src/@types/index.ts:170</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L170">src/@types/index.ts:170</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -754,7 +751,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L690">src/@types/index.ts:690</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L666">src/@types/index.ts:666</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -769,7 +766,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Properties<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonignorepropertiesoptions.html" class="tsd-signature-type">JsonIgnorePropertiesOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L119">src/@types/index.ts:119</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L119">src/@types/index.ts:119</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -784,7 +781,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Type<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonignoretypeoptions" class="tsd-signature-type">JsonIgnoreTypeOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L175">src/@types/index.ts:175</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L175">src/@types/index.ts:175</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -799,7 +796,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Type<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L726">src/@types/index.ts:726</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L702">src/@types/index.ts:702</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -814,7 +811,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Include<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonincludeoptions" class="tsd-signature-type">JsonIncludeOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L179">src/@types/index.ts:179</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L179">src/@types/index.ts:179</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -829,7 +826,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Include<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsonincludebaseoptions.html" class="tsd-signature-type">JsonIncludeBaseOptions</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L765">src/@types/index.ts:765</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L741">src/@types/index.ts:741</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -844,7 +841,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Inject<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsoninjectoptions.html" class="tsd-signature-type">JsonInjectOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L184">src/@types/index.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L184">src/@types/index.ts:184</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -859,7 +856,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Managed<wbr>Reference<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonmanagedreferenceoptions.html" class="tsd-signature-type">JsonManagedReferenceOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L189">src/@types/index.ts:189</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L189">src/@types/index.ts:189</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -874,7 +871,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Naming<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonnamingoptions.html" class="tsd-signature-type">JsonNamingOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L100">src/@types/index.ts:100</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L100">src/@types/index.ts:100</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -889,7 +886,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Parser<wbr>Transformer<wbr>Context<span class="tsd-signature-symbol">:</span> <a href="types.html#modify" class="tsd-signature-type">Modify</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonparsercontext.html" class="tsd-signature-type">JsonParserContext</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>mainCreator<span class="tsd-signature-symbol">?: </span><a href="../interfaces/types.classlist.html" class="tsd-signature-type">ClassList</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L390">src/@types/index.ts:390</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L390">src/@types/index.ts:390</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -904,7 +901,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Property<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonpropertyoptions.html" class="tsd-signature-type">JsonPropertyOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L194">src/@types/index.ts:194</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L194">src/@types/index.ts:194</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -919,7 +916,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Property<wbr>Order<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonpropertyorderoptions.html" class="tsd-signature-type">JsonPropertyOrderOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L124">src/@types/index.ts:124</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L124">src/@types/index.ts:124</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -934,7 +931,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Raw<wbr>Value<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonrawvalueoptions" class="tsd-signature-type">JsonRawValueOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L199">src/@types/index.ts:199</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L199">src/@types/index.ts:199</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -949,7 +946,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Raw<wbr>Value<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L823">src/@types/index.ts:823</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L799">src/@types/index.ts:799</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -964,7 +961,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Root<wbr>Name<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonrootnameoptions.html" class="tsd-signature-type">JsonRootNameOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L203">src/@types/index.ts:203</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L203">src/@types/index.ts:203</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -979,7 +976,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Serialize<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonserializeoptions.html" class="tsd-signature-type">JsonSerializeOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L104">src/@types/index.ts:104</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L104">src/@types/index.ts:104</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -994,7 +991,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Setter<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonsetteroptions.html" class="tsd-signature-type">JsonSetterOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L166">src/@types/index.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L166">src/@types/index.ts:166</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1009,7 +1006,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Stringifier<wbr>Transformer<wbr>Context<span class="tsd-signature-symbol">:</span> <a href="types.html#modify" class="tsd-signature-type">Modify</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonstringifiercontext.html" class="tsd-signature-type">JsonStringifierContext</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>mainCreator<span class="tsd-signature-symbol">?: </span><a href="../interfaces/types.classlist.html" class="tsd-signature-type">ClassList</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#classtype" class="tsd-signature-type">ClassType</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L337">src/@types/index.ts:337</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L337">src/@types/index.ts:337</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1024,7 +1021,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Sub<wbr>Types<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonsubtypesoptions.html" class="tsd-signature-type">JsonSubTypesOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L109">src/@types/index.ts:109</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L109">src/@types/index.ts:109</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1039,7 +1036,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>IdDecorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsontypeidoptions" class="tsd-signature-type">JsonTypeIdOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L220">src/@types/index.ts:220</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L220">src/@types/index.ts:220</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1054,7 +1051,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>IdOptions<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L1217">src/@types/index.ts:1217</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L1193">src/@types/index.ts:1193</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1069,7 +1066,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>IdResolver<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsontypeidresolveroptions.html" class="tsd-signature-type">JsonTypeIdResolverOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L129">src/@types/index.ts:129</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L129">src/@types/index.ts:129</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1084,7 +1081,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>Info<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsontypeinfooptions.html" class="tsd-signature-type">JsonTypeInfoOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L114">src/@types/index.ts:114</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L114">src/@types/index.ts:114</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1099,7 +1096,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>Name<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsontypenameoptions.html" class="tsd-signature-type">JsonTypeNameOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L207">src/@types/index.ts:207</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L207">src/@types/index.ts:207</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1114,7 +1111,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Unwrapped<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonunwrappedoptions.html" class="tsd-signature-type">JsonUnwrappedOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L211">src/@types/index.ts:211</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L211">src/@types/index.ts:211</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1129,7 +1126,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Value<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptionaloptions" class="tsd-signature-type">JacksonDecoratorWithOptionalOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#jsonvalueoptions" class="tsd-signature-type">JsonValueOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L216">src/@types/index.ts:216</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L216">src/@types/index.ts:216</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1144,7 +1141,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Value<wbr>Options<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.jsondecoratoroptions.html" class="tsd-signature-type">JsonDecoratorOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L929">src/@types/index.ts:929</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L905">src/@types/index.ts:905</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1159,7 +1156,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>View<wbr>Decorator<span class="tsd-signature-symbol">:</span> <a href="types.html#jacksondecoratorwithoptions" class="tsd-signature-type">JacksonDecoratorWithOptions</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/types.jsonviewoptions.html" class="tsd-signature-type">JsonViewOptions</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">ClassDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">MethodDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">PropertyDecorator</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">ParameterDecorator</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L134">src/@types/index.ts:134</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L134">src/@types/index.ts:134</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1174,7 +1171,7 @@
 					<div class="tsd-signature tsd-kind-icon">Modify&lt;T, R&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Omit</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">R</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L22">src/@types/index.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L22">src/@types/index.ts:22</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1193,42 +1190,12 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="objectmapperdeserializer" class="tsd-anchor"></a>
-					<h3>Object<wbr>Mapper<wbr>Deserializer</h3>
-					<div class="tsd-signature tsd-kind-icon">Object<wbr>Mapper<wbr>Deserializer<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.objectmappercustommapper.html" class="tsd-signature-type">ObjectMapperCustomMapper</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#deserializer" class="tsd-signature-type">Deserializer</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L451">src/@types/index.ts:451</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Deserializer type used by <a href="../classes/databind.objectmapper.html#deserializers">ObjectMapper.deserializers</a>.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="objectmapperserializer" class="tsd-anchor"></a>
-					<h3>Object<wbr>Mapper<wbr>Serializer</h3>
-					<div class="tsd-signature tsd-kind-icon">Object<wbr>Mapper<wbr>Serializer<span class="tsd-signature-symbol">:</span> <a href="../interfaces/types.objectmappercustommapper.html" class="tsd-signature-type">ObjectMapperCustomMapper</a><span class="tsd-signature-symbol">&lt;</span><a href="types.html#serializer" class="tsd-signature-type">Serializer</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L446">src/@types/index.ts:446</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Serializer type used by <a href="../classes/databind.objectmapper.html#serializers">ObjectMapper.serializers</a>.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="serializer" class="tsd-anchor"></a>
 					<h3>Serializer</h3>
 					<div class="tsd-signature tsd-kind-icon">Serializer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, context<span class="tsd-signature-symbol">?: </span><a href="types.html#jsonstringifiertransformercontext" class="tsd-signature-type">JsonStringifierTransformerContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/abee0bb/src/@types/index.ts#L401">src/@types/index.ts:401</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/87d2d5d/src/@types/index.ts#L401">src/@types/index.ts:401</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1302,6 +1269,9 @@
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../interfaces/types.classlist.html" class="tsd-kind-icon">Class<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="../interfaces/types.custommapper.html" class="tsd-kind-icon">Custom<wbr>Mapper</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/types.jsonaliasoptions.html" class="tsd-kind-icon">Json<wbr>Alias<wbr>Options</a>
@@ -1437,12 +1407,6 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/types.jsonviewoptions.html" class="tsd-kind-icon">Json<wbr>View<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="../interfaces/types.objectmappercustommapper.html" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Custom<wbr>Mapper</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="../interfaces/types.objectmapperfeatures.html" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Features</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/types.typeidresolver.html" class="tsd-kind-icon">Type<wbr>IdResolver</a>
@@ -1620,12 +1584,6 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="types.html#modify" class="tsd-kind-icon">Modify</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="types.html#objectmapperdeserializer" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Deserializer</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="types.html#objectmapperserializer" class="tsd-kind-icon">Object<wbr>Mapper<wbr>Serializer</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="types.html#serializer" class="tsd-kind-icon">Serializer</a>

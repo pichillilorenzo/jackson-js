@@ -5,8 +5,8 @@ import {JsonClassType} from '../src/decorators/JsonClassType';
 import {JsonTypeInfo, JsonTypeInfoAs, JsonTypeInfoId} from '../src/decorators/JsonTypeInfo';
 import {JsonSubTypes} from '../src/decorators/JsonSubTypes';
 import {JacksonError} from '../src/core/JacksonError';
-import {JsonCreator} from "../src/decorators/JsonCreator";
-import {JsonIdentityInfo, ObjectIdGenerator} from "../src/decorators/JsonIdentityInfo";
+import {JsonCreator} from '../src/decorators/JsonCreator';
+import {JsonIdentityInfo, ObjectIdGenerator} from '../src/decorators/JsonIdentityInfo';
 
 test('DeserializationFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES set to true', t => {
   class User {
@@ -25,7 +25,7 @@ test('DeserializationFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES set to true', t 
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.ACCEPT_CASE_INSENSITIVE_PROPERTIES = true;
+  objectMapper.defaultParserContext.features.deserialization.ACCEPT_CASE_INSENSITIVE_PROPERTIES = true;
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"USERID":1,"eMaIl":"john.alfa@gmail.com","firstName":"John","lastName":"Alfa"}', {
@@ -58,7 +58,7 @@ test('DeserializationFeature.ALLOW_COERCION_OF_SCALARS set to true', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.ALLOW_COERCION_OF_SCALARS = true;
+  objectMapper.defaultParserContext.features.deserialization.ALLOW_COERCION_OF_SCALARS = true;
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"id":"1","email":"john.alfa@gmail.com","age":45,"active":"false","deleted":1}', {
@@ -101,7 +101,7 @@ test('DeserializationFeature.FAIL_ON_INVALID_SUBTYPE set to false', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_INVALID_SUBTYPE = false;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_INVALID_SUBTYPE = false;
 
   const animalsParsed = objectMapper.parse<Array<Animal>>(
     '[{"name":"Arthur","@type":"WrongTypeDog"},{"name":"Merlin","@type":"Cat"}]',
@@ -114,7 +114,7 @@ test('DeserializationFeature.FAIL_ON_INVALID_SUBTYPE set to false', t => {
   t.assert(animalsParsed[1] instanceof Cat);
   t.is(animalsParsed[1].name, 'Merlin');
 
-  objectMapper.features.deserialization.FAIL_ON_INVALID_SUBTYPE = true;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_INVALID_SUBTYPE = true;
   const errFailOnInvalidSubtype = t.throws<JacksonError>(() => {
     objectMapper.parse<Array<Animal>>(
       '[{"name":"Arthur","@type":"WrongTypeDog"},{"name":"Merlin","@type":"Cat"}]',
@@ -152,7 +152,7 @@ test('DeserializationFeature.FAIL_ON_MISSING_TYPE_ID set to false', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_MISSING_TYPE_ID = false;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_MISSING_TYPE_ID = false;
 
   const animalsParsed = objectMapper.parse<Array<Animal>>(
     '[{"name":"Arthur"},{"name":"Merlin"}]',
@@ -166,7 +166,7 @@ test('DeserializationFeature.FAIL_ON_MISSING_TYPE_ID set to false', t => {
   t.assert(!(animalsParsed[1] instanceof Cat));
   t.is(animalsParsed[1].name, 'Merlin');
 
-  objectMapper.features.deserialization.FAIL_ON_MISSING_TYPE_ID = true;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_MISSING_TYPE_ID = true;
   const errFailOnMissinTypeId = t.throws<JacksonError>(() => {
     objectMapper.parse<Array<Animal>>(
       '[{"name":"Arthur"},{"name":"Merlin"}]',
@@ -189,7 +189,7 @@ test('DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT set to true', t =
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT = true;
+  objectMapper.defaultParserContext.features.deserialization.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT = true;
 
   const userParsed = objectMapper.parse<User>('{"id":1,"firstname":"John","lastname":"Alfa","otherInfo":[]}', {
     mainCreator: () => [User]
@@ -218,7 +218,7 @@ test('DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT set to true', t 
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT = true;
+  objectMapper.defaultParserContext.features.deserialization.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT = true;
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"id":1,"firstname":"John","lastname":"","otherInfoMap":{"phone":""},"otherInfoObjLiteral":{"address":""}}', {
@@ -244,7 +244,7 @@ test('DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES set to false', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_UNKNOWN_PROPERTIES = false;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_UNKNOWN_PROPERTIES = false;
 
   const userParsed = objectMapper.parse<User>('{"id":1,"firstname":"John","lastname":"Alfa","unknownProperty": true}', {
     mainCreator: () => [User]
@@ -270,7 +270,7 @@ test('DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES set to true', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_NULL_FOR_PRIMITIVES = true;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_NULL_FOR_PRIMITIVES = true;
 
   const errFailOnNullForPrimitives = t.throws<JacksonError>(() => {
     objectMapper.parse<User>('{"id":null,"firstname":"John","lastname":"Alfa"}', {
@@ -298,7 +298,7 @@ test('DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES set to true', t 
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES = true;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES = true;
 
   const errFailOnNullForPrimitives = t.throws<JacksonError>(() => {
     objectMapper.parse<User>('{"firstname":"John","lastname":"Alfa"}', {
@@ -326,7 +326,7 @@ test('DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES set to true', t => 
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_NULL_CREATOR_PROPERTIES = true;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_NULL_CREATOR_PROPERTIES = true;
 
   const errFailOnNullForPrimitives = t.throws<JacksonError>(() => {
     objectMapper.parse<User>('{"id":null,"firstname":"John","lastname":"Alfa"}', {
@@ -379,7 +379,7 @@ test('DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS set to false', t => {
   }
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS = false;
+  objectMapper.defaultParserContext.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS = false;
 
   // eslint-disable-next-line max-len
   const userParsed = objectMapper.parse<User>('{"items":[{"id":1,"name":"Book","owner":2}],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}', {

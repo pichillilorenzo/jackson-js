@@ -289,7 +289,7 @@ test('@JsonDeserialize at parameter level', t => {
   t.assert(!Object.hasOwnProperty.call(companyParsed.ceo, 'otherInfo'));
 });
 
-test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
+test('Custom serializers and deserializers', t => {
   class Book {
     @JsonProperty()
     id: number;
@@ -335,7 +335,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
   writer.books.push(null);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.serializers.push({
+  objectMapper.defaultStringifierContext.serializers.push({
     mapper: (key, value: Book, context) => {
       if (value != null) {
         return {
@@ -355,7 +355,7 @@ test('ObjectMapper.serializers and ObjectMapper.deserializers', t => {
     type: () => Book
   });
 
-  objectMapper.deserializers.push({
+  objectMapper.defaultParserContext.deserializers.push({
     mapper: (key, value: any, context) => {
       if (value != null) {
         return new Book(value.id, value.name, new Date(value.date.formatted), value.writer);

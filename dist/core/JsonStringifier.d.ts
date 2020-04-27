@@ -10,6 +10,10 @@ import { JsonStringifierContext } from '../@types';
  */
 export declare class JsonStringifier<T> {
     /**
+     * Default context to use during serialization.
+     */
+    defaultContext: JsonStringifierContext;
+    /**
      * WeakMap used to track all objects by {@link JsonIdentityInfo}.
      */
     private _globalValueAlreadySeen;
@@ -19,8 +23,21 @@ export declare class JsonStringifier<T> {
     private _intSequenceGenerator;
     /**
      *
+     * @param defaultContext - Default context to use during serialization.
      */
-    constructor();
+    constructor(defaultContext?: JsonStringifierContext);
+    /**
+     * Make a default {@link JsonStringifierContext}.
+     */
+    static makeDefaultContext(): JsonStringifierContext;
+    /**
+     * Merge multiple {@link JsonStringifierContext} into one.
+     * Array direct properties will be concatenated, instead, Map and Object Literal direct properties will be merged.
+     * All the other properties, such as {@link JsonStringifierContext.mainCreator}, will be completely replaced.
+     *
+     * @param contexts - list of contexts to be merged.
+     */
+    static mergeContexts(contexts: JsonStringifierContext[]): JsonStringifierContext;
     /**
      * Method for serializing a JavaScript object or a value to a JSON string.
      *
@@ -108,7 +125,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param oldKey
      * @param newKey
      * @param context
@@ -118,7 +134,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param oldKey
      * @param newKey
      * @param context
@@ -133,7 +148,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param context
      */
     private stringifyJsonRootName;
@@ -146,7 +160,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param oldKey
      * @param newKey
      * @param context
@@ -162,7 +175,6 @@ export declare class JsonStringifier<T> {
     private stringifyJsonSerializePropertyNull;
     /**
      *
-     * @param obj
      * @param key
      * @param context
      */
@@ -176,13 +188,11 @@ export declare class JsonStringifier<T> {
     private stringifyJsonInclude;
     /**
      *
-     * @param obj
      * @param context
      */
     private stringifyJsonIgnoreType;
     /**
      *
-     * @param obj
      * @param key
      * @param context
      */
@@ -197,7 +207,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param oldKey
      * @param newKey
      * @param context
@@ -218,7 +227,6 @@ export declare class JsonStringifier<T> {
     private stringifyJsonFormat;
     /**
      *
-     * @param obj
      * @param key
      * @param context
      */
@@ -227,7 +235,8 @@ export declare class JsonStringifier<T> {
      *
      * @param replacement
      * @param obj
-     * @param key
+     * @param oldKey
+     * @param newKey
      * @param context
      * @param valueAlreadySeen
      */
@@ -247,7 +256,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param context
      */
     private stringifyJsonIdentityReference;
@@ -261,8 +269,10 @@ export declare class JsonStringifier<T> {
     private stringifyIterable;
     /**
      *
+     * @param key
      * @param map
      * @param context
+     * @param valueAlreadySeen
      */
     private stringifyMapAndObjLiteral;
     /**
@@ -295,7 +305,6 @@ export declare class JsonStringifier<T> {
     /**
      *
      * @param replacement
-     * @param obj
      * @param context
      */
     private stringifyJsonAppend;

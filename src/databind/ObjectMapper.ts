@@ -4,18 +4,13 @@
  */
 
 import {
-  JsonStringifier
-} from '../core/JsonStringifier';
+  JsonStringifier,
+  JsonParser
+} from '../core';
 import {
   JsonParserContext,
-  JsonStringifierContext,
-  ObjectMapperDeserializer,
-  ObjectMapperFeatures, ObjectMapperCustomMapper, ObjectMapperSerializer
+  JsonStringifierContext
 } from '../@types';
-import {JsonParser} from '../core/JsonParser';
-import {DefaultSerializationFeatureValues} from './SerializationFeature';
-import {DefaultDeserializationFeatureValues} from './DeserializationFeature';
-import * as cloneDeep from 'lodash.clonedeep';
 
 /**
  * ObjectMapper provides functionality for reading and writing JSON.
@@ -27,89 +22,51 @@ import * as cloneDeep from 'lodash.clonedeep';
  */
 export class ObjectMapper {
   /**
-   * Property that defines features to set for {@link ObjectMapper}.
+   * Default context to use during serialization.
    */
-  features: ObjectMapperFeatures = {
-    /**
-     * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
-     */
-    serialization: cloneDeep(DefaultSerializationFeatureValues),
-    /**
-     * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
-     */
-    deserialization: cloneDeep(DefaultDeserializationFeatureValues)
-  };
-
+  defaultStringifierContext: JsonStringifierContext;
   /**
-   * Array of custom user-defined serializers.
+   * Default context to use during deserialization.
    */
-  serializers: ObjectMapperSerializer[] = [];
-
-  /**
-   * Array of custom user-defined deserializers.
-   */
-  deserializers: ObjectMapperDeserializer[] = [];
+  defaultParserContext: JsonParserContext;
 
   /**
    *
+   * @param defaultStringifierContext - Default context to use during serialization.
+   * @param defaultParserContext - Default context to use during deserialization.
    */
-  constructor() {
-
+  constructor(
+    defaultStringifierContext: JsonStringifierContext = JsonStringifier.makeDefaultContext(),
+    defaultParserContext: JsonParserContext = JsonParser.makeDefaultContext()) {
+    this.defaultStringifierContext = defaultStringifierContext;
+    this.defaultParserContext = defaultParserContext;
   }
 
   /**
    * Method for serializing a JavaScript object or a value to a JSON string.
+   * Context will be merged using {@link JsonStringifier.mergeContexts} with {@link defaultStringifierContext}.
    *
    * @param obj - the JavaScript object or value to be serialized.
    * @param context - the context to be used during serialization.
    */
   stringify<T>(obj: T, context?: JsonStringifierContext): string {
-    this.serializers = this.sortMappersByOrder(this.serializers);
+    context = JsonStringifier.mergeContexts([this.defaultStringifierContext, context]);
 
     const jsonStringifier = new JsonStringifier<T>();
-    return jsonStringifier.stringify(obj, {
-      withContextGroups: [],
-      serializers: this.serializers,
-      features: {
-        serialization: this.features.serialization
-      },
-      filters: {},
-      attributes: {},
-      decoratorsEnabled: {},
-      _internalDecorators: new Map(),
-      ...context
-    });
+    return jsonStringifier.stringify(obj, context);
   }
 
   /**
    * Method for deserializing a JSON string into a JavaScript object or value.
+   * Context will be merged using {@link JsonParser.mergeContexts} with {@link defaultParserContext}.
    *
    * @param text - the JSON string to be deserialized.
    * @param context - the context to be used during deserialization.
    */
   parse<T>(text: string, context?: JsonParserContext): T {
-    this.deserializers = this.sortMappersByOrder(this.deserializers);
+    context = JsonParser.mergeContexts([this.defaultParserContext, context]);
 
     const jsonParser = new JsonParser<T>();
-    return jsonParser.parse(text, {
-      withContextGroups: [],
-      deserializers: this.deserializers,
-      features: {
-        deserialization: this.features.deserialization
-      },
-      injectableValues: {},
-      decoratorsEnabled: {},
-      _internalDecorators: new Map(),
-      ...context
-    });
-  }
-
-  /**
-   * Sort custom user-defined serializers/deserializers by its order.
-   *
-   * @param mappers
-   */
-  private sortMappersByOrder<T>(mappers: ObjectMapperCustomMapper<T>[]): ObjectMapperCustomMapper<T>[] {
-    return mappers.sort((a, b) => a.order - b.order > 0 ? 1 : -1);
+    return jsonParser.parse(text, context);
   }
 }

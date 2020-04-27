@@ -16,7 +16,7 @@ export interface SerializationFeature extends CommonFeature {
      *
      * `null` indicates that no global inclusion rules are defined.
      */
-    DEFAULT_PROPERTY_INCLUSION: JsonIncludeBaseOptions | null;
+    DEFAULT_PROPERTY_INCLUSION?: JsonIncludeBaseOptions | null;
     /**
      * Feature that determines what happens when a direct self-reference is detected by a Class
      * (and no Object Id handling is enabled for it):

@@ -126,7 +126,7 @@ test('forType context option', t => {
 
   const objectMapper = new ObjectMapper();
 
-  const stringifierForTypeContext = new WeakMap<ClassType<any>, JsonStringifierForTypeContext>();
+  const stringifierForTypeContext = new Map<ClassType<any>, JsonStringifierForTypeContext>();
   stringifierForTypeContext.set(Book, {
     withViews: () => [Views.public, Views.internal],
     decoratorsEnabled: {
@@ -157,7 +157,7 @@ test('forType context option', t => {
   // eslint-disable-next-line max-len
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354575600000}}],"name":"George R. R. Martin"}'));
 
-  const parserForTypeContext = new WeakMap<ClassType<any>, JsonParserForTypeContext>();
+  const parserForTypeContext = new Map<ClassType<any>, JsonParserForTypeContext>();
   parserForTypeContext.set(Book, {
     withViews: () => [Views.public, Views.internal],
     decoratorsEnabled: {

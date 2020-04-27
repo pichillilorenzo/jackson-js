@@ -7,7 +7,7 @@ import {
   Node
 } from '@babel/types';
 import {
-  ClassType, JsonAliasOptions,
+  ClassType, CustomMapper, JsonAliasOptions,
   JsonDecorator,
   JsonDecoratorOptions,
   JsonStringifierParserCommonContext,
@@ -928,3 +928,12 @@ export const castObjLiteral = (target: any, value: any): any => {
   }
   return value;
 };
+
+/**
+ * Sort custom user-defined serializers/deserializers by its order.
+ *
+ * @param mappers
+ * @internal
+ */
+export const sortMappersByOrder = <T>(mappers: CustomMapper<T>[]): CustomMapper<T>[] =>
+  mappers.sort((a, b) => a.order - b.order > 0 ? 1 : -1);

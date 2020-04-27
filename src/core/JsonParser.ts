@@ -14,14 +14,14 @@ import {
   hasMetadata,
   isClassIterable,
   isConstructorPrimitiveType,
-  isFloat,
   isIterableNoMapNoString,
   isSameConstructor,
   isSameConstructorOrExtensionOf,
-  isSameConstructorOrExtensionOfNoObject, makeMetadataKeysWithContext,
+  isSameConstructorOrExtensionOfNoObject,
+  makeMetadataKeysWithContext,
   mapClassPropertyToVirtualProperty,
   mapVirtualPropertiesToClassProperties,
-  mapVirtualPropertyToClassProperty
+  mapVirtualPropertyToClassProperty, sortMappersByOrder
 } from '../util';
 import {
   ClassType,
@@ -45,8 +45,15 @@ import {
   JsonTypeInfoOptions,
   JsonViewOptions
 } from '../@types';
-import {JsonPropertyAccess} from '../decorators/JsonProperty';
-import {JsonTypeInfoAs, JsonTypeInfoId} from '../decorators/JsonTypeInfo';
+import {
+  JsonPropertyAccess,
+  JsonTypeInfoAs,
+  JsonTypeInfoId,
+  PropertyNamingStrategy,
+  defaultCreatorName,
+  JsonCreatorMode,
+  JsonSetterNulls
+} from '../decorators';
 import {JacksonError} from './JacksonError';
 import {
   InternalDecorators,
@@ -55,14 +62,12 @@ import {
   JsonCreatorPrivateOptions,
   JsonGetterPrivateOptions,
   JsonPropertyPrivateOptions,
-  JsonSetterPrivateOptions, JsonUnwrappedPrivateOptions
+  JsonSetterPrivateOptions,
+  JsonUnwrappedPrivateOptions
 } from '../@types/private';
-import {PropertyNamingStrategy} from '../decorators/JsonNaming';
-import {defaultCreatorName, JsonCreatorMode} from '../decorators/JsonCreator';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as clone from 'lodash.clone';
-import {JsonSetterNulls} from '../decorators/JsonSetter';
-import {DefaultDeserializationFeatureValues} from '../databind/DeserializationFeature';
+import {DefaultDeserializationFeatureValues} from '../databind';
 
 /**
  * JsonParser provides functionality for reading JSON.
@@ -70,12 +75,14 @@ import {DefaultDeserializationFeatureValues} from '../databind/DeserializationFe
  * and to support more advanced Object concepts such as polymorphism and Object identity.
  */
 export class JsonParser<T> {
-
+  /**
+   * Default context to use during deserialization.
+   */
+  defaultContext: JsonParserContext = {};
   /**
    * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
    */
   private _globalValueAlreadySeen = new Map<string, any>();
-
   /**
    * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
    */
@@ -83,8 +90,99 @@ export class JsonParser<T> {
 
   /**
    *
+   * @param defaultContext - Default context to use during deserialization.
    */
-  constructor() {
+  constructor(defaultContext: JsonParserContext = {}) {
+    this.defaultContext = defaultContext;
+  }
+
+  /**
+   * Make a default {@link JsonParserContext}.
+   */
+  static makeDefaultContext(): JsonParserContext {
+    return {
+      mainCreator: null,
+      features: {
+        deserialization: {
+          ...DefaultDeserializationFeatureValues
+        }
+      },
+      deserializers: [],
+      decoratorsEnabled: {},
+      withViews: null,
+      forType: new Map(),
+      withContextGroups: [],
+      _internalDecorators: new Map(),
+      _propertyParentCreator: null,
+      injectableValues: {},
+      withCreatorName: null
+    };
+  }
+
+  /**
+   * Merge multiple {@link JsonParserContext} into one.
+   * Array direct properties will be concatenated, instead, Map and Object Literal direct properties will be merged.
+   * All the other properties, such as {@link JsonParserContext.mainCreator}, will be completely replaced.
+   *
+   * @param contexts - list of contexts to be merged.
+   */
+  static mergeContexts(contexts: JsonParserContext[]): JsonParserContext {
+    const finalContext = JsonParser.makeDefaultContext();
+    for (const context of contexts) {
+      if (context == null) {
+        continue;
+      }
+      if (context.mainCreator != null) {
+        finalContext.mainCreator = context.mainCreator;
+      }
+      if (context.decoratorsEnabled != null) {
+        finalContext.decoratorsEnabled = {
+          ...finalContext.decoratorsEnabled,
+          ...context.decoratorsEnabled
+        };
+      }
+      if (context.withViews != null) {
+        finalContext.withViews = context.withViews;
+      }
+      if (context.withContextGroups != null) {
+        finalContext.withContextGroups = finalContext.withContextGroups.concat(context.withContextGroups);
+      }
+      if (context.deserializers != null) {
+        finalContext.deserializers = finalContext.deserializers.concat(context.deserializers);
+      }
+      if (context.features != null && context.features.deserialization != null) {
+        finalContext.features.deserialization = {
+          ...finalContext.features.deserialization,
+          ...context.features.deserialization
+        };
+      }
+      if (context.forType != null) {
+        finalContext.forType = new Map([
+          ...finalContext.forType,
+          ...context.forType]
+        );
+      }
+      if (context.injectableValues != null) {
+        finalContext.injectableValues = {
+          ...finalContext.injectableValues,
+          ...context.injectableValues
+        };
+      }
+      if (context.withCreatorName != null) {
+        finalContext.withCreatorName = context.withCreatorName;
+      }
+      if (context._internalDecorators != null) {
+        finalContext._internalDecorators = new Map([
+          ...finalContext._internalDecorators,
+          ...context._internalDecorators]
+        );
+      }
+      if (context._propertyParentCreator != null) {
+        finalContext._propertyParentCreator = context._propertyParentCreator;
+      }
+    }
+    finalContext.deserializers = sortMappersByOrder(finalContext.deserializers);
+    return finalContext;
   }
 
   /**
@@ -93,10 +191,9 @@ export class JsonParser<T> {
    * @param text - the JSON string to be deserialized.
    * @param context - the context to be used during deserialization.
    */
-  parse(text: string, context: JsonParserContext = {}): T {
+  parse(text: string, context?: JsonParserContext): T {
     const value = JSON.parse(text);
-    const result = this.transform(value, context);
-    return result;
+    return this.transform(value, context);
   }
 
   /**
@@ -106,7 +203,12 @@ export class JsonParser<T> {
    * @param value - the JavaScript object or value to be postprocessed.
    * @param context - the context to be used during deserialization postprocessing.
    */
-  transform(value: any, context: JsonParserContext = {}): any {
+  transform(value: any, context?: JsonParserContext): any {
+    this._globalValueAlreadySeen = new Map<string, any>();
+    this._globalUnresolvedObjectIdentities = new Set<string>();
+
+    context = JsonParser.mergeContexts([this.defaultContext, context]);
+
     let newContext: JsonParserTransformerContext = this.convertParserContextToTransformerContext(context);
 
     newContext.mainCreator = (newContext.mainCreator && newContext.mainCreator[0] !== Object) ?
@@ -115,12 +217,12 @@ export class JsonParser<T> {
     newContext._internalDecorators = new Map();
     newContext = cloneDeep(newContext);
 
-    const result = this.deepTransform('', value, newContext);
+    const postProcessedObj = this.deepTransform('', value, newContext);
     if (this._globalUnresolvedObjectIdentities.size > 0 &&
       newContext.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
       throw new JacksonError(`Found unresolved Object Ids: ${[...this._globalUnresolvedObjectIdentities].join(', ')}`);
     }
-    return result;
+    return postProcessedObj;
   }
 
   /**
@@ -134,7 +236,7 @@ export class JsonParser<T> {
     context = {
       withContextGroups: [],
       features: {
-        deserialization: DefaultDeserializationFeatureValues
+        deserialization: {}
       },
       deserializers: [],
       injectableValues: {},

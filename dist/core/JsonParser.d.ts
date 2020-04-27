@@ -10,6 +10,10 @@ import { JsonParserContext } from '../@types';
  */
 export declare class JsonParser<T> {
     /**
+     * Default context to use during deserialization.
+     */
+    defaultContext: JsonParserContext;
+    /**
      * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
      */
     private _globalValueAlreadySeen;
@@ -19,8 +23,21 @@ export declare class JsonParser<T> {
     private _globalUnresolvedObjectIdentities;
     /**
      *
+     * @param defaultContext - Default context to use during deserialization.
      */
-    constructor();
+    constructor(defaultContext?: JsonParserContext);
+    /**
+     * Make a default {@link JsonParserContext}.
+     */
+    static makeDefaultContext(): JsonParserContext;
+    /**
+     * Merge multiple {@link JsonParserContext} into one.
+     * Array direct properties will be concatenated, instead, Map and Object Literal direct properties will be merged.
+     * All the other properties, such as {@link JsonParserContext.mainCreator}, will be completely replaced.
+     *
+     * @param contexts - list of contexts to be merged.
+     */
+    static mergeContexts(contexts: JsonParserContext[]): JsonParserContext;
     /**
      * Method for deserializing a JSON string into a JavaScript object or value.
      *

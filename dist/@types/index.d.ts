@@ -211,7 +211,7 @@ export interface JsonStringifierParserCommonContext<T> {
      * More specific contexts can be nested one inside the other. In this way, specific contexts can be applied to a
      * JavaScript Class only if the nested JavaScript Class is found as one of the values of the parent JavaScript Class properties.
      */
-    forType?: WeakMap<ClassType<any>, T>;
+    forType?: Map<ClassType<any>, T>;
 }
 /**
  * Filter options used during serialization.
@@ -266,7 +266,7 @@ export interface JsonStringifierForTypeContext extends JsonStringifierParserComm
     /**
      * Array of custom user-defined serializers.
      */
-    serializers?: ObjectMapperSerializer[];
+    serializers?: CustomMapper<Serializer>[];
 }
 /**
  * Context properties used by {@link JsonStringifier.stringify} during serialization.
@@ -309,7 +309,7 @@ export interface JsonParserForTypeContext extends JsonStringifierParserCommonCon
     /**
      * Array of custom user-defined deserializers.
      */
-    deserializers?: ObjectMapperDeserializer[];
+    deserializers?: CustomMapper<Deserializer>[];
     /**
      * An Object Literal that stores the values to inject during deserialization, identified by simple String keys.
      */
@@ -347,22 +347,9 @@ export declare type Serializer = (key: string, value: any, context?: JsonStringi
  */
 export declare type Deserializer = (key: string, value: any, context?: JsonParserTransformerContext) => any;
 /**
- * Interface that defines features to set for {@link ObjectMapper}.
- */
-export interface ObjectMapperFeatures {
-    /**
-     * Property that defines features to set for {@link ObjectMapper} and {@link JsonStringifier}.
-     */
-    serialization: SerializationFeature;
-    /**
-     * Property that defines features to set for {@link ObjectMapper} and {@link JsonParser}.
-     */
-    deserialization: DeserializationFeature;
-}
-/**
  * Interface that represents a serializer/deserializer used by {@link ObjectMapper}.
  */
-export interface ObjectMapperCustomMapper<T> {
+export interface CustomMapper<T> {
     /**
      * The serializer/deserializer.
      */
@@ -379,14 +366,6 @@ export interface ObjectMapperCustomMapper<T> {
      */
     order?: number;
 }
-/**
- * Serializer type used by {@link ObjectMapper.serializers}.
- */
-export declare type ObjectMapperSerializer = ObjectMapperCustomMapper<Serializer>;
-/**
- * Deserializer type used by {@link ObjectMapper.deserializers}.
- */
-export declare type ObjectMapperDeserializer = ObjectMapperCustomMapper<Deserializer>;
 /**
  * Basic decorator options.
  */

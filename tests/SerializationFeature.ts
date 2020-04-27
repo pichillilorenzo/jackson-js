@@ -43,7 +43,7 @@ test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
   writer.bookMap.set('book 1', book1);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.SORT_PROPERTIES_ALPHABETICALLY = true;
+  objectMapper.defaultStringifierContext.features.serialization.SORT_PROPERTIES_ALPHABETICALLY = true;
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
@@ -95,7 +95,7 @@ test('SerializationFeature.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS set to t
   };
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS = true;
+  objectMapper.defaultStringifierContext.features.serialization.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS = true;
 
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
@@ -155,7 +155,7 @@ test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
     const user = new User(1, 'John', 'Alfa');
     user.userRef = user;
     const objectMapper = new ObjectMapper();
-    objectMapper.features.serialization.FAIL_ON_SELF_REFERENCES = false;
+    objectMapper.defaultStringifierContext.features.serialization.FAIL_ON_SELF_REFERENCES = false;
     objectMapper.stringify<User>(user);
   });
 
@@ -184,7 +184,7 @@ test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
   event.infoObjLiteral[eventDate] = 'info obj literal';
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.WRITE_DATE_KEYS_AS_TIMESTAMPS = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_DATE_KEYS_AS_TIMESTAMPS = true;
 
   const jsonData = objectMapper.stringify<Event>(event);
   // eslint-disable-next-line max-len
@@ -212,8 +212,8 @@ test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
   const user = new User(1, 'John', 'Alfa');
   user.userRef = user;
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.FAIL_ON_SELF_REFERENCES = false;
-  objectMapper.features.serialization.WRITE_SELF_REFERENCES_AS_NULL = true;
+  objectMapper.defaultStringifierContext.features.serialization.FAIL_ON_SELF_REFERENCES = false;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_SELF_REFERENCES_AS_NULL = true;
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
@@ -247,7 +247,7 @@ test('SerializationFeature.DEFAULT_PROPERTY_INCLUSION set to JsonIncludeType.NON
 
   const employee = new Employee(0, 'John', '', null, [], new Map<string, string>());
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.DEFAULT_PROPERTY_INCLUSION = {
+  objectMapper.defaultStringifierContext.features.serialization.DEFAULT_PROPERTY_INCLUSION = {
     value: JsonIncludeType.NON_EMPTY
   };
 
@@ -280,7 +280,7 @@ test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
   const user = new User(1, 'John', 'Alfa', birthday);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.WRITE_DATES_AS_TIMESTAMPS = false;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_DATES_AS_TIMESTAMPS = false;
   const jsonData = objectMapper.stringify<User>(user);
   const jsonDataParsed = JSON.parse(jsonData);
   t.assert(typeof jsonDataParsed.birthday === 'string');
@@ -309,7 +309,7 @@ test('SerializationFeature.WRITE_NAN_AS_ZERO set to true', t => {
   const user = new User(1, 'John', 'Alfa', NaN);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.WRITE_NAN_AS_ZERO = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_NAN_AS_ZERO = true;
   const jsonData = objectMapper.stringify<User>(user);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"firstname":"John","lastname":"Alfa","age":0}'));
 });
@@ -336,12 +336,12 @@ test('Positive Infinity as NUMBER_MAX_VALUE and NUMBER_MAX_SAFE_INTEGER', t => {
   const user = new User(1, 'John', 'Alfa', Infinity);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = true;
   let jsonData = objectMapper.stringify<User>(user);
   t.assert(isFinite(JSON.parse(jsonData).age));
 
-  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = false;
-  objectMapper.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_VALUE = false;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER = true;
   jsonData = objectMapper.stringify<User>(user);
   t.assert(isFinite(JSON.parse(jsonData).age));
 });
@@ -368,12 +368,12 @@ test('Negative Infinity as NUMBER_MIN_VALUE and NUMBER_MIN_SAFE_INTEGER', t => {
   const user = new User(1, 'John', 'Alfa', -Infinity);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = true;
   let jsonData = objectMapper.stringify<User>(user);
   t.assert(isFinite(JSON.parse(jsonData).age));
 
-  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = false;
-  objectMapper.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER = true;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_VALUE = false;
+  objectMapper.defaultStringifierContext.features.serialization.WRITE_NEGATIVE_INFINITY_AS_NUMBER_MIN_SAFE_INTEGER = true;
   jsonData = objectMapper.stringify<User>(user);
   t.assert(isFinite(JSON.parse(jsonData).age));
 });

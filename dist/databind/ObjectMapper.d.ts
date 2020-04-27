@@ -2,7 +2,7 @@
  * @packageDocumentation
  * @module Databind
  */
-import { JsonParserContext, JsonStringifierContext, ObjectMapperDeserializer, ObjectMapperFeatures, ObjectMapperSerializer } from '../@types';
+import { JsonParserContext, JsonStringifierContext } from '../@types';
 /**
  * ObjectMapper provides functionality for reading and writing JSON.
  * It is also highly customizable to work both with different styles of JSON content,
@@ -13,23 +13,22 @@ import { JsonParserContext, JsonStringifierContext, ObjectMapperDeserializer, Ob
  */
 export declare class ObjectMapper {
     /**
-     * Property that defines features to set for {@link ObjectMapper}.
+     * Default context to use during serialization.
      */
-    features: ObjectMapperFeatures;
+    defaultStringifierContext: JsonStringifierContext;
     /**
-     * Array of custom user-defined serializers.
+     * Default context to use during deserialization.
      */
-    serializers: ObjectMapperSerializer[];
-    /**
-     * Array of custom user-defined deserializers.
-     */
-    deserializers: ObjectMapperDeserializer[];
+    defaultParserContext: JsonParserContext;
     /**
      *
+     * @param defaultStringifierContext - Default context to use during serialization.
+     * @param defaultParserContext - Default context to use during deserialization.
      */
-    constructor();
+    constructor(defaultStringifierContext?: JsonStringifierContext, defaultParserContext?: JsonParserContext);
     /**
      * Method for serializing a JavaScript object or a value to a JSON string.
+     * Context will be merged using {@link JsonStringifier.mergeContexts} with {@link defaultStringifierContext}.
      *
      * @param obj - the JavaScript object or value to be serialized.
      * @param context - the context to be used during serialization.
@@ -37,15 +36,10 @@ export declare class ObjectMapper {
     stringify<T>(obj: T, context?: JsonStringifierContext): string;
     /**
      * Method for deserializing a JSON string into a JavaScript object or value.
+     * Context will be merged using {@link JsonParser.mergeContexts} with {@link defaultParserContext}.
      *
      * @param text - the JSON string to be deserialized.
      * @param context - the context to be used during deserialization.
      */
     parse<T>(text: string, context?: JsonParserContext): T;
-    /**
-     * Sort custom user-defined serializers/deserializers by its order.
-     *
-     * @param mappers
-     */
-    private sortMappersByOrder;
 }

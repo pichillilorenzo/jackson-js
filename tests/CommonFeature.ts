@@ -41,8 +41,8 @@ test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   const user = new User(1, 'john.alfa@gmail.com', 'rtJ9FrqP!rCE', 'John', 'Alfa', '75afe654-695e-11ea-bc55-0242ac130003');
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.DEFAULT_VIEW_INCLUSION = false;
-  objectMapper.features.deserialization.DEFAULT_VIEW_INCLUSION = false;
+  objectMapper.defaultStringifierContext.features.serialization.DEFAULT_VIEW_INCLUSION = false;
+  objectMapper.defaultParserContext.features.deserialization.DEFAULT_VIEW_INCLUSION = false;
 
   const jsonData = objectMapper.stringify<User>(user, {withViews: () => [Views.public]});
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1}'));
@@ -87,8 +87,8 @@ test('CommonFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL set to true', t => 
   const user = new User(null, null, null, null);
 
   const objectMapper = new ObjectMapper();
-  objectMapper.features.serialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
-  objectMapper.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
+  objectMapper.defaultStringifierContext.features.serialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
+  objectMapper.defaultParserContext.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL = true;
 
   const jsonData = objectMapper.stringify<User>(user);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":"0n","name":"","age":0,"deleted":false}'));
