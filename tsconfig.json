@@ -9,7 +9,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES6",
+    "target": "ES5",
     "typeRoots": [
       "node_modules/@types"
     ],

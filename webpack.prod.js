@@ -40,7 +40,7 @@ const serverConfig = {
 };
 
 const clientConfig = {
-  target: 'web', // <=== can be omitted as default is 'web'
+  target: 'web',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'lib.js',

@@ -10,8 +10,8 @@
     "build:dev": "npm run clean && ./node_modules/.bin/webpack --config webpack.dev.js",
     "build:prod": "npm run clean && ./node_modules/.bin/webpack --config webpack.prod.js",
     "start:node:dev": "node dist/lib.node",
-    "test-es5": "TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=2m --verbose",
-    "test-es6": "TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=2m --verbose",
+    "test-es5": "TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=3m --verbose",
+    "test-es6": "TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=3m --verbose",
     "test": "npm run test-es5 && npm run test-es6"
   },
   "main": "./dist/lib.node.js",

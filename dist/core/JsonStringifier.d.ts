@@ -14,14 +14,6 @@ export declare class JsonStringifier<T> {
      */
     defaultContext: JsonStringifierContext;
     /**
-     * WeakMap used to track all objects by {@link JsonIdentityInfo}.
-     */
-    private _globalValueAlreadySeen;
-    /**
-     * Integer sequence generator counter used by {@link JsonIdentityInfo}.
-     */
-    private _intSequenceGenerator;
-    /**
      *
      * @param defaultContext - Default context to use during serialization.
      */
@@ -59,6 +51,7 @@ export declare class JsonStringifier<T> {
      * @param key - key name representing the object property being preprocessed.
      * @param value - the JavaScript object or value to preprocessed.
      * @param context - the context to be used during serialization preprocessing.
+     * @param globalContext - the global context to be used during serialization preprocessing.
      * @param valueAlreadySeen - Map used to manage object circular references.
      */
     private deepTransform;
@@ -238,6 +231,7 @@ export declare class JsonStringifier<T> {
      * @param oldKey
      * @param newKey
      * @param context
+     * @param globalContext
      * @param valueAlreadySeen
      */
     private stringifyJsonUnwrapped;
@@ -246,6 +240,7 @@ export declare class JsonStringifier<T> {
      * @param replacement
      * @param obj
      * @param context
+     * @param globalContext
      */
     private stringifyJsonIdentityInfo;
     /**
@@ -264,6 +259,7 @@ export declare class JsonStringifier<T> {
      * @param key
      * @param iterableNoString
      * @param context
+     * @param globalContext
      * @param valueAlreadySeen
      */
     private stringifyIterable;
@@ -272,6 +268,7 @@ export declare class JsonStringifier<T> {
      * @param key
      * @param map
      * @param context
+     * @param globalContext
      * @param valueAlreadySeen
      */
     private stringifyMapAndObjLiteral;

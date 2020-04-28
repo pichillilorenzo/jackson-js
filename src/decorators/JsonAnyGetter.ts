@@ -6,7 +6,6 @@
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonAnyGetterDecorator, JsonAnyGetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-import {JsonAnyGetterPrivateOptions} from '../@types/private';
 
 /**
  * Decorator that can be used to define a non-static, no-argument method to be an "any getter";
@@ -43,32 +42,28 @@ export const JsonAnyGetter: JsonAnyGetterDecorator = makeJacksonDecorator(
   (o: JsonAnyGetterOptions): JsonAnyGetterOptions => ({enabled: true, ...o}),
   (options: JsonAnyGetterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      const privateOptions: JsonAnyGetterPrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-      if (hasMetadata('JsonAnyGetter', target.constructor, null, {withContextGroups: privateOptions.contextGroups})) {
+      if (hasMetadata('JsonAnyGetter', target.constructor, null, {withContextGroups: options.contextGroups})) {
         throw new JacksonError(`Multiple 'any-getters' defined for "${target.constructor.name}".`);
       }
 
-      if (!privateOptions.value) {
+      if (!options.value) {
         if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
           const methodName = propertyKey.toString();
           if (methodName.startsWith('get')) {
-            privateOptions.value = methodName.substring(3);
-            if (privateOptions.value.length > 0) {
-              privateOptions.value = privateOptions.value.charAt(0).toLowerCase() + privateOptions.value.substring(1);
+            options.value = methodName.substring(3);
+            if (options.value.length > 0) {
+              options.value = options.value.charAt(0).toLowerCase() + options.value.substring(1);
             }
           }
-          if (!privateOptions.value) {
+          if (!options.value) {
             // eslint-disable-next-line max-len
             throw new JacksonError(`Invalid usage of @JsonAnyGetter() on ${target.constructor.name}.${propertyKey.toString()}. You must either define a non-empty @JsonAnyGetter() option value or change the method name starting with "get".`);
           }
         } else {
-          privateOptions.value = propertyKey.toString();
+          options.value = propertyKey.toString();
         }
       }
 
-      defineMetadata('JsonAnyGetter', privateOptions, target.constructor);
+      defineMetadata('JsonAnyGetter', options, target.constructor);
     }
   });

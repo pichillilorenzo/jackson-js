@@ -5,7 +5,6 @@
 
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonCreatorDecorator, JsonCreatorOptions} from '../@types';
-import {JsonCreatorPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
 
 /**
@@ -98,32 +97,27 @@ export const JsonCreator: JsonCreatorDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonCreatorOptions, target, propertyKey, descriptorOrParamIndex) => {
-    const privateOptions: JsonCreatorPrivateOptions = {
-      ctor: null,
-      method: null,
-      propertyKey: (propertyKey) ? propertyKey.toString() : 'constructor',
-      ...options
-    };
+    options._propertyKey = (options._propertyKey != null) ? options._propertyKey : 'constructor';
 
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex !== 'number' &&
       typeof descriptorOrParamIndex.value === 'function') {
-      privateOptions.method = descriptorOrParamIndex.value;
-      if (privateOptions.name &&
-        hasMetadata('JsonCreator:' + privateOptions.name, target, null, {withContextGroups: options.contextGroups})) {
-        throw new JacksonError(`Already had a @JsonCreator() with name "${privateOptions.name}" for Class "${target.name}".`);
+      options._method = descriptorOrParamIndex.value;
+      if (options.name &&
+        hasMetadata('JsonCreator:' + options.name, target, null, {withContextGroups: options.contextGroups})) {
+        throw new JacksonError(`Already had a @JsonCreator() with name "${options.name}" for Class "${target.name}".`);
       }
-      defineMetadata('JsonCreator', privateOptions, target, null, {
-        suffix: privateOptions.name
+      defineMetadata('JsonCreator', options, target, null, {
+        suffix: options.name
       });
     } else if (descriptorOrParamIndex == null && propertyKey == null) {
-      privateOptions.ctor = target;
+      options._ctor = target;
       // get original constructor
-      while (privateOptions.ctor.toString().trim().startsWith('class extends target {')) {
-        privateOptions.ctor = Object.getPrototypeOf(privateOptions.ctor);
+      while (options._ctor.toString().trim().startsWith('class extends target {')) {
+        options._ctor = Object.getPrototypeOf(options._ctor);
       }
 
-      defineMetadata('JsonCreator', privateOptions, target, null, {
-        suffix: privateOptions.name
+      defineMetadata('JsonCreator', options, target, null, {
+        suffix: options.name
       });
       return target;
     }

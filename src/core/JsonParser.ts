@@ -43,7 +43,13 @@ import {
   JsonSubTypesOptions,
   JsonTypeIdResolverOptions,
   JsonTypeInfoOptions,
-  JsonViewOptions
+  JsonViewOptions,
+  InternalDecorators,
+  JsonUnwrappedOptions,
+  JsonCreatorOptions,
+  JsonSetterOptions,
+  JsonBackReferenceOptions,
+  JsonAnySetterOptions, JsonGetterOptions
 } from '../@types';
 import {
   JsonPropertyAccess,
@@ -55,19 +61,23 @@ import {
   JsonSetterNulls
 } from '../decorators';
 import {JacksonError} from './JacksonError';
-import {
-  InternalDecorators,
-  JsonAnySetterPrivateOptions,
-  JsonBackReferencePrivateOptions,
-  JsonCreatorPrivateOptions,
-  JsonGetterPrivateOptions,
-  JsonPropertyPrivateOptions,
-  JsonSetterPrivateOptions,
-  JsonUnwrappedPrivateOptions
-} from '../@types/private';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as clone from 'lodash.clone';
 import {DefaultDeserializationFeatureValues} from '../databind';
+
+/**
+ * Json Parser Global Context used by {@link JsonParser.transform} to store global information.
+ */
+interface JsonParserGlobalContext {
+  /**
+   * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
+   */
+  globalValueAlreadySeen: Map<string, any>;
+  /**
+   * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
+   */
+  globalUnresolvedObjectIdentities: Set<string>;
+}
 
 /**
  * JsonParser provides functionality for reading JSON.
@@ -79,20 +89,12 @@ export class JsonParser<T> {
    * Default context to use during deserialization.
    */
   defaultContext: JsonParserContext = {};
-  /**
-   * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
-   */
-  private _globalValueAlreadySeen = new Map<string, any>();
-  /**
-   * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
-   */
-  private _globalUnresolvedObjectIdentities = new Set<string>();
 
   /**
    *
    * @param defaultContext - Default context to use during deserialization.
    */
-  constructor(defaultContext: JsonParserContext = {}) {
+  constructor(defaultContext: JsonParserContext = JsonParser.makeDefaultContext()) {
     this.defaultContext = defaultContext;
   }
 
@@ -204,8 +206,10 @@ export class JsonParser<T> {
    * @param context - the context to be used during deserialization postprocessing.
    */
   transform(value: any, context?: JsonParserContext): any {
-    this._globalValueAlreadySeen = new Map<string, any>();
-    this._globalUnresolvedObjectIdentities = new Set<string>();
+    const globalContext: JsonParserGlobalContext = {
+      globalValueAlreadySeen: new Map<string, any>(),
+      globalUnresolvedObjectIdentities: new Set<string>()
+    };
 
     context = JsonParser.mergeContexts([this.defaultContext, context]);
 
@@ -217,10 +221,10 @@ export class JsonParser<T> {
     newContext._internalDecorators = new Map();
     newContext = cloneDeep(newContext);
 
-    const postProcessedObj = this.deepTransform('', value, newContext);
-    if (this._globalUnresolvedObjectIdentities.size > 0 &&
+    const postProcessedObj = this.deepTransform('', value, newContext, globalContext);
+    if (globalContext.globalUnresolvedObjectIdentities.size > 0 &&
       newContext.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
-      throw new JacksonError(`Found unresolved Object Ids: ${[...this._globalUnresolvedObjectIdentities].join(', ')}`);
+      throw new JacksonError(`Found unresolved Object Ids: ${[...globalContext.globalUnresolvedObjectIdentities].join(', ')}`);
     }
     return postProcessedObj;
   }
@@ -231,8 +235,9 @@ export class JsonParser<T> {
    * @param key - key name representing the object property being postprocessed.
    * @param value - the JavaScript object or value to postprocessed.
    * @param context - the context to be used during deserialization postprocessing.
+   * @param globalContext - the global context to be used during deserialization postprocessing.
    */
-  private deepTransform(key: string, value: any, context: JsonParserTransformerContext): any {
+  private deepTransform(key: string, value: any, context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext): any {
     context = {
       withContextGroups: [],
       features: {
@@ -336,7 +341,7 @@ export class JsonParser<T> {
 
     if (value != null) {
 
-      let instance = this.getInstanceAlreadySeen(key, value, context);
+      let instance = this.getInstanceAlreadySeen(key, value, context, globalContext);
       if (instance !== undefined) {
         return instance;
       }
@@ -345,7 +350,7 @@ export class JsonParser<T> {
 
       if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Map) ||
           (typeof value === 'object' && !isIterableNoMapNoString(value) && currentMainCreator === Object)) {
-        return this.parseMapAndObjLiteral(key, value, context);
+        return this.parseMapAndObjLiteral(key, value, context, globalContext);
       } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
         return (value != null && value.constructor === String && value.endsWith('n')) ?
           // @ts-ignore
@@ -402,14 +407,14 @@ export class JsonParser<T> {
             }
           }
         }
-        instance = this.parseJsonCreator(context, replacement, classPropertiesToBeExcluded);
+        instance = this.parseJsonCreator(context, globalContext, replacement, classPropertiesToBeExcluded);
         if (instance) {
           replacement = instance;
         }
 
         return replacement;
       } else if (isIterableNoMapNoString(value)) {
-        const replacement = this.parseIterable(value, key, context);
+        const replacement = this.parseIterable(value, key, context, globalContext);
         return replacement;
       }
     }
@@ -639,8 +644,10 @@ export class JsonParser<T> {
    * @param key
    * @param value
    * @param context
+   * @param globalContext
    */
-  private getInstanceAlreadySeen(key: string, value: any, context: JsonParserTransformerContext): undefined | null | any {
+  private getInstanceAlreadySeen(key: string, value: any, context: JsonParserTransformerContext,
+                                 globalContext: JsonParserGlobalContext): undefined | null | any {
     const currentMainCreator = context.mainCreator[0];
     const jsonIdentityInfo: JsonIdentityInfoOptions =
       getMetadata('JsonIdentityInfo', currentMainCreator, null, context);
@@ -651,16 +658,16 @@ export class JsonParser<T> {
       const scope: string = jsonIdentityInfo.scope || '';
       const scopedId = this.generateScopedId(scope, id);
 
-      if (this._globalValueAlreadySeen.has(scopedId)) {
-        const instance = this._globalValueAlreadySeen.get(scopedId);
+      if (globalContext.globalValueAlreadySeen.has(scopedId)) {
+        const instance = globalContext.globalValueAlreadySeen.get(scopedId);
         if (instance.constructor !== currentMainCreator) {
           throw new JacksonError(`Already had Class "${instance.constructor.name}" for id ${id}.`);
         }
-        this._globalUnresolvedObjectIdentities.delete(scopedId);
+        globalContext.globalUnresolvedObjectIdentities.delete(scopedId);
 
         return instance;
       } else if (typeof value !== 'object') {
-        this._globalUnresolvedObjectIdentities.add(scopedId);
+        globalContext.globalUnresolvedObjectIdentities.add(scopedId);
         if (!context.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
           return null;
         }
@@ -673,9 +680,12 @@ export class JsonParser<T> {
   /**
    *
    * @param context
+   * @param globalContext
    * @param obj
+   * @param classPropertiesToBeExcluded
    */
-  private parseJsonCreator(context: JsonParserTransformerContext, obj: any, classPropertiesToBeExcluded: string[]): any {
+  private parseJsonCreator(context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext,
+                           obj: any, classPropertiesToBeExcluded: string[]): any {
     if (obj != null) {
 
       const currentMainCreator = context.mainCreator[0];
@@ -688,7 +698,7 @@ export class JsonParser<T> {
       const hasJsonCreator =
         hasMetadata(jsonCreatorMetadataKey, currentMainCreator, null, context);
 
-      const jsonCreator: JsonCreatorPrivateOptions | ClassType<any> = (hasJsonCreator) ?
+      const jsonCreator: JsonCreatorOptions | ClassType<any> = (hasJsonCreator) ?
         getMetadata(jsonCreatorMetadataKey, currentMainCreator, null, context) :
         currentMainCreator;
 
@@ -696,9 +706,9 @@ export class JsonParser<T> {
         getMetadata('JsonIgnoreProperties', currentMainCreator, null, context);
 
       const method: any = (hasJsonCreator) ?
-        (((jsonCreator as JsonCreatorPrivateOptions).ctor) ?
-          (jsonCreator as JsonCreatorPrivateOptions).ctor :
-          (jsonCreator as JsonCreatorPrivateOptions).method)
+        (((jsonCreator as JsonCreatorOptions)._ctor) ?
+          (jsonCreator as JsonCreatorOptions)._ctor :
+          (jsonCreator as JsonCreatorOptions)._method)
         : jsonCreator;
 
       let args;
@@ -708,24 +718,24 @@ export class JsonParser<T> {
       let instance;
 
       if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
-        const methodName = ('propertyKey' in jsonCreator && jsonCreator.propertyKey) ? jsonCreator.propertyKey : 'constructor';
-        const result = this.parseMethodArguments(methodName, method, obj, context, null, true);
+        const methodName = ('_propertyKey' in jsonCreator && jsonCreator._propertyKey) ? jsonCreator._propertyKey : 'constructor';
+        const result = this.parseMethodArguments(methodName, method, obj, context, globalContext, null, true);
         args = result.args != null && result.args.length > 0 ? result.args : [obj];
         argNames = result.argNames;
         argNamesAliasToBeExcluded = result.argNamesAliasToBeExcluded;
 
-        instance = ('method' in jsonCreator && jsonCreator.method) ?
+        instance = ('_method' in jsonCreator && jsonCreator._method) ?
           (method as Function)(...args) : new (method as ObjectConstructor)(...args);
       } else if ('mode' in jsonCreator) {
         switch (jsonCreator.mode) {
         case JsonCreatorMode.DELEGATING:
-          instance = ('method' in jsonCreator && jsonCreator.method) ?
+          instance = ('_method' in jsonCreator && jsonCreator._method) ?
             (method as Function)(obj) : new (method as ObjectConstructor)(obj);
           break;
         }
       }
 
-      this.parseJsonIdentityInfo(instance, obj, context);
+      this.parseJsonIdentityInfo(instance, obj, context, globalContext);
 
       const jsonAppendAttributesToBeExcluded = [];
       const jsonAppend: JsonAppendOptions =
@@ -759,12 +769,12 @@ export class JsonParser<T> {
           hasMetadata('JsonAnySetter', currentMainCreator, null, context);
         // add remaining properties and ignore the ones that are not part of "instance"
         for (const key of remainingKeys) {
-          const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonSetterPrivateOptions =
+          const jsonVirtualProperty: JsonPropertyOptions | JsonSetterOptions =
             getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
-          if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null) {
-            if (typeof jsonVirtualProperty.descriptor.value === 'function' || jsonVirtualProperty.descriptor.set != null) {
-              this.parseJsonSetter(instance, obj, key, context);
+          if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null) {
+            if (typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.set != null) {
+              this.parseJsonSetter(instance, obj, key, context, globalContext);
             } else {
               // if property has a descriptor but is not a function and doesn't have a setter,
               // then this property has only getter, so we can skip it.
@@ -772,7 +782,7 @@ export class JsonParser<T> {
             }
           } else if ((Object.hasOwnProperty.call(obj, key) && classHasOwnProperty(currentMainCreator, key, null, context)) ||
             currentMainCreator.name === 'Object') {
-            instance[key] = this.parseJsonClassType(context, obj, key);
+            instance[key] = this.parseJsonClassType(context, globalContext, obj, key);
           } else if (hasJsonAnySetter && Object.hasOwnProperty.call(obj, key)) {
             // for any other unrecognized properties found
             this.parseJsonAnySetter(instance, obj, key, context);
@@ -796,7 +806,7 @@ export class JsonParser<T> {
         }
         */
 
-        this.parseJsonInject(instance, obj, classProperty, context);
+        this.parseJsonInject(instance, obj, classProperty, context, globalContext);
         // if there is a reference, convert the reference property to the corresponding Class
         this.parseJsonManagedReference(instance, context, obj, classProperty);
       }
@@ -805,7 +815,16 @@ export class JsonParser<T> {
     }
   }
 
-  private parseJsonInject(replacement: any, obj: any, key: string, context: JsonParserTransformerContext) {
+  /**
+   *
+   * @param replacement
+   * @param obj
+   * @param key
+   * @param context
+   * @param globalContext
+   */
+  private parseJsonInject(replacement: any, obj: any, key: string, context: JsonParserTransformerContext,
+                          globalContext: JsonParserGlobalContext) {
     const currentMainCreator = context.mainCreator[0];
 
     let propertySetter;
@@ -825,27 +844,36 @@ export class JsonParser<T> {
     }
   }
 
-  private parseJsonSetter(replacement: any, obj: any, key: string, context: JsonParserTransformerContext) {
+  /**
+   *
+   * @param replacement
+   * @param obj
+   * @param key
+   * @param context
+   * @param globalContext
+   */
+  private parseJsonSetter(replacement: any, obj: any, key: string, context: JsonParserTransformerContext,
+                          globalContext: JsonParserGlobalContext) {
     const currentMainCreator = context.mainCreator[0];
 
-    const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonSetterPrivateOptions =
+    const jsonVirtualProperty: JsonPropertyOptions | JsonSetterOptions =
       getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
     if (('access' in jsonVirtualProperty && jsonVirtualProperty.access !== JsonPropertyAccess.READ_ONLY) ||
       !('access' in jsonVirtualProperty)) {
 
       if ('required' in jsonVirtualProperty && jsonVirtualProperty.required &&
-        !Object.hasOwnProperty.call(obj, jsonVirtualProperty.propertyKey)) {
+        !Object.hasOwnProperty.call(obj, jsonVirtualProperty._propertyKey)) {
         // eslint-disable-next-line max-len
         throw new JacksonError(`Required value "${jsonVirtualProperty.value}" not found for ${currentMainCreator.name}.${key} at [Source '${JSON.stringify(obj)}']`);
       }
 
       let parsedValue;
-      if (typeof jsonVirtualProperty.descriptor.value === 'function') {
-        parsedValue = this.parseMethodArguments(key, null, obj, context, [jsonVirtualProperty.value], false)
+      if (typeof jsonVirtualProperty._descriptor.value === 'function') {
+        parsedValue = this.parseMethodArguments(key, null, obj, context, globalContext, [jsonVirtualProperty.value], false)
           .args[0];
       } else {
-        parsedValue = this.parseJsonClassType(context, obj, key);
+        parsedValue = this.parseJsonClassType(context, globalContext, obj, key);
       }
 
       if ('nulls' in jsonVirtualProperty || 'contentNulls' in jsonVirtualProperty) {
@@ -902,7 +930,7 @@ export class JsonParser<T> {
         }
       }
 
-      if (typeof jsonVirtualProperty.descriptor.value === 'function') {
+      if (typeof jsonVirtualProperty._descriptor.value === 'function') {
         replacement[key](parsedValue);
       } else {
         replacement[key] = parsedValue;
@@ -916,12 +944,15 @@ export class JsonParser<T> {
    * @param method
    * @param obj
    * @param context
+   * @param globalContext
+   * @param argNames
    * @param isJsonCreator
    */
   private parseMethodArguments(methodName: string,
                                method: any,
                                obj: any,
                                context: JsonParserTransformerContext,
+                               globalContext: JsonParserGlobalContext,
                                argNames: string[],
                                isJsonCreator: boolean): {
       args: Array<any>;
@@ -979,13 +1010,13 @@ export class JsonParser<T> {
         }
 
         if (mappedKey && Object.hasOwnProperty.call(obj, mappedKey)) {
-          args.push(this.parseJsonClassType(context, obj, mappedKey, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, globalContext, obj, mappedKey, methodName, argIndex));
           argNamesAliasToBeExcluded.push(mappedKey);
         } else if (mappedKey && jsonProperty.required) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Required property "${mappedKey}" not found on parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
         } else if (Object.hasOwnProperty.call(obj, key)) {
-          args.push(this.parseJsonClassType(context, obj, key, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, globalContext, obj, key, methodName, argIndex));
         } else {
           if (isJsonCreator && context.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES &&
             (!jsonInject || (jsonInject && !(jsonInject.value in context.injectableValues)))) {
@@ -1034,12 +1065,12 @@ export class JsonParser<T> {
 
         const realKey = metadataKey.split(
           metadataKey.includes(':JsonVirtualProperty:') ? ':JsonVirtualProperty:' : ':JsonAlias:')[1];
-        const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonSetterPrivateOptions =
+        const jsonVirtualProperty: JsonPropertyOptions | JsonSetterOptions =
           getMetadata(metadataKey, currentMainCreator, null, context);
 
-        if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null &&
-          typeof jsonVirtualProperty.descriptor.value === 'function' &&
-          jsonVirtualProperty.propertyKey.startsWith('get')) {
+        if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null &&
+          typeof jsonVirtualProperty._descriptor.value === 'function' &&
+          jsonVirtualProperty._propertyKey.startsWith('get')) {
           continue;
         }
 
@@ -1114,12 +1145,13 @@ export class JsonParser<T> {
   /**
    *
    * @param context
+   * @param globalContext
    * @param obj
    * @param key
    * @param methodName
    * @param argumentIndex
    */
-  private parseJsonClassType(context: JsonParserTransformerContext, obj: any, key: string,
+  private parseJsonClassType(context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext, obj: any, key: string,
                              methodName?: string, argumentIndex?: number): any {
     let jsonClass: JsonClassTypeOptions;
     if (methodName != null && argumentIndex != null) {
@@ -1141,7 +1173,7 @@ export class JsonParser<T> {
       const newCreator = (obj[key] != null) ? obj[key].constructor : Object;
       newContext.mainCreator = [newCreator];
     }
-    return this.deepTransform(key, obj[key], newContext);
+    return this.deepTransform(key, obj[key], newContext, globalContext);
   }
 
   /**
@@ -1220,38 +1252,38 @@ export class JsonParser<T> {
               jsonClassManagedReference.type()[1][1]
           );
 
-        const jsonBackReference: JsonBackReferencePrivateOptions =
+        const jsonBackReference: JsonBackReferenceOptions =
           getMetadata('JsonBackReference:' + jsonManagedReference.value,
             backReferenceConstructor, null, context);
 
         if (jsonBackReference) {
           if (isSameConstructorOrExtensionOfNoObject(childConstructor, Map)) {
             for (const [k, value] of replacement[key]) {
-              if (typeof value[jsonBackReference.propertyKey] === 'function') {
-                value[jsonBackReference.propertyKey](replacement);
+              if (typeof value[jsonBackReference._propertyKey] === 'function') {
+                value[jsonBackReference._propertyKey](replacement);
               } else {
-                value[jsonBackReference.propertyKey] = replacement;
+                value[jsonBackReference._propertyKey] = replacement;
               }
             }
           } else {
             for (const value of replacement[key]) {
-              if (typeof value[jsonBackReference.propertyKey] === 'function') {
-                value[jsonBackReference.propertyKey](replacement);
+              if (typeof value[jsonBackReference._propertyKey] === 'function') {
+                value[jsonBackReference._propertyKey](replacement);
               } else {
-                value[jsonBackReference.propertyKey] = replacement;
+                value[jsonBackReference._propertyKey] = replacement;
               }
             }
           }
         }
       } else {
-        const jsonBackReference: JsonBackReferencePrivateOptions =
+        const jsonBackReference: JsonBackReferenceOptions =
           getMetadata('JsonBackReference:' + jsonManagedReference.value,
             childConstructor, null, context);
         if (jsonBackReference) {
-          if (typeof replacement[key][jsonBackReference.propertyKey] === 'function') {
-            replacement[key][jsonBackReference.propertyKey](replacement);
+          if (typeof replacement[key][jsonBackReference._propertyKey] === 'function') {
+            replacement[key][jsonBackReference._propertyKey](replacement);
           } else {
-            replacement[key][jsonBackReference.propertyKey] = replacement;
+            replacement[key][jsonBackReference._propertyKey] = replacement;
           }
         }
       }
@@ -1269,13 +1301,13 @@ export class JsonParser<T> {
    * @param context
    */
   private parseJsonAnySetter(replacement: any, obj: any, key: string, context: JsonParserTransformerContext): void {
-    const jsonAnySetter: JsonAnySetterPrivateOptions =
+    const jsonAnySetter: JsonAnySetterOptions =
       getMetadata('JsonAnySetter', replacement.constructor, null, context);
-    if (jsonAnySetter && replacement[jsonAnySetter.propertyKey]) {
-      if (typeof replacement[jsonAnySetter.propertyKey] === 'function') {
-        replacement[jsonAnySetter.propertyKey](key, obj[key]);
+    if (jsonAnySetter && replacement[jsonAnySetter._propertyKey]) {
+      if (typeof replacement[jsonAnySetter._propertyKey] === 'function') {
+        replacement[jsonAnySetter._propertyKey](key, obj[key]);
       } else {
-        replacement[jsonAnySetter.propertyKey][key] = obj[key];
+        replacement[jsonAnySetter._propertyKey][key] = obj[key];
       }
     }
   }
@@ -1325,11 +1357,11 @@ export class JsonParser<T> {
       const jsonIgnoreProperties: JsonIgnorePropertiesOptions =
         getMetadata('JsonIgnoreProperties', currentMainCreator, null, context);
       if (jsonIgnoreProperties) {
-        const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions =
+        const jsonVirtualProperty: JsonPropertyOptions | JsonGetterOptions =
           getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
         if (jsonVirtualProperty && jsonIgnoreProperties.value.includes(jsonVirtualProperty.value)) {
-          if (jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function' &&
+          if (jsonVirtualProperty._descriptor != null && typeof jsonVirtualProperty._descriptor.value === 'function' &&
             jsonIgnoreProperties.allowSetters) {
             return false;
           }
@@ -1530,10 +1562,10 @@ export class JsonParser<T> {
       if (metadataKey.includes(':JsonUnwrapped:')) {
         const realKey = metadataKey.split(':JsonUnwrapped:')[1];
 
-        const jsonUnwrapped: JsonUnwrappedPrivateOptions =
+        const jsonUnwrapped: JsonUnwrappedOptions =
           getMetadata(metadataKey, currentMainCreator, null, context);
-        if (jsonUnwrapped.descriptor != null &&
-          typeof jsonUnwrapped.descriptor.value === 'function' &&
+        if (jsonUnwrapped._descriptor != null &&
+          typeof jsonUnwrapped._descriptor.value === 'function' &&
           !realKey.startsWith('set')) {
           continue;
         }
@@ -1570,8 +1602,10 @@ export class JsonParser<T> {
    * @param replacement
    * @param obj
    * @param context
+   * @param globalContext
    */
-  private parseJsonIdentityInfo(replacement: any, obj: any, context: JsonParserTransformerContext): void {
+  private parseJsonIdentityInfo(replacement: any, obj: any, context: JsonParserTransformerContext,
+                                globalContext: JsonParserGlobalContext): void {
     const jsonIdentityInfo: JsonIdentityInfoOptions =
       getMetadata('JsonIdentityInfo', context.mainCreator[0], null, context);
 
@@ -1579,8 +1613,8 @@ export class JsonParser<T> {
       const id: string = obj[jsonIdentityInfo.property];
       const scope: string = jsonIdentityInfo.scope || '';
       const scopedId = this.generateScopedId(scope, id);
-      if (!this._globalValueAlreadySeen.has(scopedId)) {
-        this._globalValueAlreadySeen.set(scopedId, replacement);
+      if (!globalContext.globalValueAlreadySeen.has(scopedId)) {
+        globalContext.globalValueAlreadySeen.set(scopedId, replacement);
       }
 
       delete obj[jsonIdentityInfo.property];
@@ -1592,8 +1626,10 @@ export class JsonParser<T> {
    * @param iterable
    * @param key
    * @param context
+   * @param globalContext
    */
-  private parseIterable(iterable: any, key: string, context: JsonParserTransformerContext): any {
+  private parseIterable(iterable: any, key: string, context: JsonParserTransformerContext,
+                        globalContext: JsonParserGlobalContext): any {
     const jsonDeserialize: JsonDeserializeOptions =
       getMetadata('JsonDeserialize',
         context._propertyParentCreator,
@@ -1626,7 +1662,7 @@ export class JsonParser<T> {
           value = jsonDeserialize.contentUsing(value, newContext);
         }
 
-        (newIterable as Set<any>).add(this.deepTransform(key, value, newContext));
+        (newIterable as Set<any>).add(this.deepTransform(key, value, newContext, globalContext));
       }
     } else {
       newIterable = [];
@@ -1639,7 +1675,7 @@ export class JsonParser<T> {
           value = jsonDeserialize.contentUsing(value, newContext);
         }
 
-        (newIterable as Array<any>).push(this.deepTransform(key, value, newContext));
+        (newIterable as Array<any>).push(this.deepTransform(key, value, newContext, globalContext));
       }
       if (!isSameConstructor(currentCreator, Array)) {
         // @ts-ignore
@@ -1652,10 +1688,13 @@ export class JsonParser<T> {
 
   /**
    *
+   * @param key
    * @param obj
    * @param context
+   * @param globalContext
    */
-  private parseMapAndObjLiteral(key: string, obj: any, context: JsonParserTransformerContext): Map<any, any> | Record<any, any> {
+  private parseMapAndObjLiteral(key: string, obj: any, context: JsonParserTransformerContext,
+                                globalContext: JsonParserGlobalContext): Map<any, any> | Record<any, any> {
     const currentCreators = context.mainCreator;
     const currentCreator = currentCreators[0];
 
@@ -1721,8 +1760,8 @@ export class JsonParser<T> {
         }
       }
 
-      const mapKeyParsed = this.deepTransform('', mapKey, keyNewContext);
-      const mapValueParsed = this.deepTransform(mapKey, mapValue, valueNewContext);
+      const mapKeyParsed = this.deepTransform('', mapKey, keyNewContext, globalContext);
+      const mapValueParsed = this.deepTransform(mapKey, mapValue, valueNewContext, globalContext);
       if (map instanceof Map) {
         map.set(mapKeyParsed, mapValueParsed);
       } else {
@@ -1731,15 +1770,6 @@ export class JsonParser<T> {
     }
 
     return map;
-  }
-
-  /**
-   *
-   * @param scope
-   * @param id
-   */
-  private generateScopedId(scope: string, id: string): string {
-    return scope + ': ' + id;
   }
 
   /**
@@ -1807,5 +1837,14 @@ export class JsonParser<T> {
         }
       }
     }
+  }
+
+  /**
+   *
+   * @param scope
+   * @param id
+   */
+  private generateScopedId(scope: string, id: string): string {
+    return scope + ': ' + id;
   }
 }

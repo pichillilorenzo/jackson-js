@@ -134,32 +134,32 @@ test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
 
   t.assert(errFailOnSelfReferences instanceof JacksonError);
 
-  const errInfiniteRecursion = t.throws<Error>(() => {
-    class User {
-      @JsonProperty()
-      id: number;
-      @JsonProperty()
-      firstname: string;
-      @JsonProperty()
-      lastname: string;
-      @JsonProperty()
-      userRef: User;
-
-      constructor(id: number, firstname: string, lastname: string) {
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-      }
-    }
-
-    const user = new User(1, 'John', 'Alfa');
-    user.userRef = user;
-    const objectMapper = new ObjectMapper();
-    objectMapper.defaultStringifierContext.features.serialization.FAIL_ON_SELF_REFERENCES = false;
-    objectMapper.stringify<User>(user);
-  });
-
-  t.assert(errInfiniteRecursion instanceof Error);
+  // const errInfiniteRecursion = t.throws<Error>(() => {
+  //   class User {
+  //     @JsonProperty()
+  //     id: number;
+  //     @JsonProperty()
+  //     firstname: string;
+  //     @JsonProperty()
+  //     lastname: string;
+  //     @JsonProperty()
+  //     userRef: User;
+  //
+  //     constructor(id: number, firstname: string, lastname: string) {
+  //       this.id = id;
+  //       this.firstname = firstname;
+  //       this.lastname = lastname;
+  //     }
+  //   }
+  //
+  //   const user = new User(1, 'John', 'Alfa');
+  //   user.userRef = user;
+  //   const objectMapper = new ObjectMapper();
+  //   objectMapper.defaultStringifierContext.features.serialization.FAIL_ON_SELF_REFERENCES = false;
+  //   objectMapper.stringify<User>(user);
+  // });
+  //
+  // t.assert(errInfiniteRecursion instanceof Error);
 });
 
 test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {

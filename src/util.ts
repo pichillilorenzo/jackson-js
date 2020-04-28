@@ -9,13 +9,16 @@ import {
 import {
   ClassType, CustomMapper, JsonAliasOptions,
   JsonDecorator,
-  JsonDecoratorOptions,
+  JsonDecoratorOptions, JsonGetterOptions, JsonPropertyOptions, JsonSetterOptions,
   JsonStringifierParserCommonContext,
 } from './@types';
 import 'reflect-metadata';
-import {JsonGetterPrivateOptions, JsonPropertyPrivateOptions, JsonSetterPrivateOptions} from './@types/private';
-import {JacksonError} from './core/JacksonError';
-import {DefaultContextGroup} from './core/DefaultContextGroup';
+import {
+  JacksonError
+} from './core/JacksonError';
+import {
+  DefaultContextGroup
+} from './core/DefaultContextGroup';
 
 /**
  * @internal
@@ -37,10 +40,10 @@ export const makeMetadataKeyWithContext = (key: string, options: MakeMetadataKey
   }
 
   return 'jackson:' +
-  (options.contextGroup != null ? options.contextGroup : DefaultContextGroup) + ':' +
-  (options.prefix != null ? options.prefix + ':' : '') +
-  key +
-  (options.suffix != null ? ':' + options.suffix : '');
+    (options.contextGroup != null ? options.contextGroup : DefaultContextGroup) + ':' +
+    (options.prefix != null ? options.prefix + ':' : '') +
+    key +
+    (options.suffix != null ? ':' + options.suffix : '');
 };
 
 /**
@@ -94,7 +97,7 @@ export const defineMetadata =
  */
 export const isClass = (obj): boolean => {
   const isCtorClass = obj.constructor
-      && obj.constructor.toString().substring(0, 5) === 'class';
+    && obj.constructor.toString().substring(0, 5) === 'class';
 
   if (obj.prototype === undefined) {
     return isCtorClass || !isFunction(obj);
@@ -146,6 +149,14 @@ export const makeJacksonDecorator = <T>(
   decorator: JsonDecorator): any => makeDecorator<T>(
   options,
   (o: JsonDecoratorOptions, target, propertyKey, descriptorOrParamIndex) => {
+
+    if (propertyKey != null) {
+      o._propertyKey = propertyKey.toString();
+    }
+    if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex !== 'number') {
+      o._descriptor = descriptorOrParamIndex;
+    }
+
     const value = decorator(o, target, propertyKey, descriptorOrParamIndex);
     if (value != null) {
       return value;
@@ -266,11 +277,11 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
       }
 
       if (metadataKeyWithoutJacksonPrefix.includes(':JsonVirtualProperty:')) {
-        const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+        const jsonVirtualProperty: JsonPropertyOptions | JsonGetterOptions | JsonSetterOptions =
           Reflect.getMetadata(metadataKey, target);
 
-        if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null && typeof jsonVirtualProperty.descriptor.value === 'function') {
-          if (jsonVirtualProperty.propertyKey.startsWith('get')) {
+        if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null && typeof jsonVirtualProperty._descriptor.value === 'function') {
+          if (jsonVirtualProperty._propertyKey.startsWith('get')) {
             if (options.withGetterVirtualProperties) {
               classProperties.add(jsonVirtualProperty.value);
             }
@@ -280,7 +291,7 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
               keysToBeDeleted.add(jsonVirtualProperty.value);
             }
           }
-          if (jsonVirtualProperty.propertyKey.startsWith('set')) {
+          if (jsonVirtualProperty._propertyKey.startsWith('set')) {
             if (options.withSetterVirtualProperties) {
               classProperties.add(jsonVirtualProperty.value);
             }
@@ -291,7 +302,7 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
             }
           }
         }
-        classProperties.add(jsonVirtualProperty.propertyKey);
+        classProperties.add(jsonVirtualProperty._propertyKey);
         if (options.withJsonVirtualPropertyValues && jsonVirtualProperty.value != null) {
           classProperties.add(jsonVirtualProperty.value);
         }
@@ -395,18 +406,18 @@ export const virtualPropertiesToClassPropertiesMapping =
               continue;
             }
 
-            const jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions =
+            const jsonVirtualProperty: JsonPropertyOptions | JsonGetterOptions | JsonSetterOptions =
               Reflect.getMetadata(metadataKey, target);
 
             if (jsonVirtualProperty.value !== key) {
               continue;
             }
 
-            if (jsonVirtualProperty && jsonVirtualProperty.descriptor != null &&
-              typeof jsonVirtualProperty.descriptor.value === 'function') {
-              if ((options.checkGetters && jsonVirtualProperty.propertyKey.startsWith('get')) ||
-                (options.checkSetters && jsonVirtualProperty.propertyKey.startsWith('set'))) {
-                propertiesMapping.set(key, jsonVirtualProperty.propertyKey);
+            if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null &&
+              typeof jsonVirtualProperty._descriptor.value === 'function') {
+              if ((options.checkGetters && jsonVirtualProperty._propertyKey.startsWith('get')) ||
+                (options.checkSetters && jsonVirtualProperty._propertyKey.startsWith('set'))) {
+                propertiesMapping.set(key, jsonVirtualProperty._propertyKey);
                 getterOrSetterFound = true;
                 break;
               }
@@ -449,7 +460,7 @@ export const classPropertiesToVirtualPropertiesMapping =
     const propertiesMapping: Map<string, string> = new Map();
 
     for (const classProperty of classProperties) {
-      let jsonVirtualProperty: JsonPropertyPrivateOptions | JsonGetterPrivateOptions | JsonSetterPrivateOptions = null;
+      let jsonVirtualProperty: JsonPropertyOptions | JsonGetterOptions | JsonSetterOptions = null;
 
       for (const contextGroup of contextGroupsWithDefault) {
         const metadataKeyWithContext = makeMetadataKeyWithContext('JsonVirtualProperty', {
@@ -910,8 +921,8 @@ export const castObjLiteral = (target: any, value: any): any => {
           const jsonPropertyMetadataKey = Reflect.getMetadataKeys(target, property)
             .find((metadataKey: string) => metadataKey.endsWith(':JsonProperty'));
           if (jsonPropertyMetadataKey != null) {
-            const jsonPropertyOptions: JsonPropertyPrivateOptions = Reflect.getMetadata(jsonPropertyMetadataKey, target, property);
-            if (jsonPropertyOptions && jsonPropertyOptions.descriptor == null) {
+            const jsonPropertyOptions: JsonPropertyOptions = Reflect.getMetadata(jsonPropertyMetadataKey, target, property);
+            if (jsonPropertyOptions && jsonPropertyOptions._descriptor == null) {
               continue;
             }
           }

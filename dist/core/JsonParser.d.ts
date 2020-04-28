@@ -14,14 +14,6 @@ export declare class JsonParser<T> {
      */
     defaultContext: JsonParserContext;
     /**
-     * Map used to restore object circular references defined by {@link JsonIdentityInfo}.
-     */
-    private _globalValueAlreadySeen;
-    /**
-     * Map used to store unresolved object identities defined by {@link JsonIdentityInfo}.
-     */
-    private _globalUnresolvedObjectIdentities;
-    /**
      *
      * @param defaultContext - Default context to use during deserialization.
      */
@@ -59,6 +51,7 @@ export declare class JsonParser<T> {
      * @param key - key name representing the object property being postprocessed.
      * @param value - the JavaScript object or value to postprocessed.
      * @param context - the context to be used during deserialization postprocessing.
+     * @param globalContext - the global context to be used during deserialization postprocessing.
      */
     private deepTransform;
     /**
@@ -97,15 +90,34 @@ export declare class JsonParser<T> {
      * @param key
      * @param value
      * @param context
+     * @param globalContext
      */
     private getInstanceAlreadySeen;
     /**
      *
      * @param context
+     * @param globalContext
      * @param obj
+     * @param classPropertiesToBeExcluded
      */
     private parseJsonCreator;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param key
+     * @param context
+     * @param globalContext
+     */
     private parseJsonInject;
+    /**
+     *
+     * @param replacement
+     * @param obj
+     * @param key
+     * @param context
+     * @param globalContext
+     */
     private parseJsonSetter;
     /**
      *
@@ -113,6 +125,8 @@ export declare class JsonParser<T> {
      * @param method
      * @param obj
      * @param context
+     * @param globalContext
+     * @param argNames
      * @param isJsonCreator
      */
     private parseMethodArguments;
@@ -138,6 +152,7 @@ export declare class JsonParser<T> {
     /**
      *
      * @param context
+     * @param globalContext
      * @param obj
      * @param key
      * @param methodName
@@ -227,6 +242,7 @@ export declare class JsonParser<T> {
      * @param replacement
      * @param obj
      * @param context
+     * @param globalContext
      */
     private parseJsonIdentityInfo;
     /**
@@ -234,24 +250,27 @@ export declare class JsonParser<T> {
      * @param iterable
      * @param key
      * @param context
+     * @param globalContext
      */
     private parseIterable;
     /**
      *
+     * @param key
      * @param obj
      * @param context
+     * @param globalContext
      */
     private parseMapAndObjLiteral;
-    /**
-     *
-     * @param scope
-     * @param id
-     */
-    private generateScopedId;
     /**
      *
      * @param obj
      * @param context
      */
     private parseJsonNaming;
+    /**
+     *
+     * @param scope
+     * @param id
+     */
+    private generateScopedId;
 }

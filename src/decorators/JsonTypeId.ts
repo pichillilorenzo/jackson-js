@@ -5,7 +5,6 @@
 
 import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonTypeIdDecorator, JsonTypeIdOptions} from '../@types';
-import {JsonTypeIdPrivateOptions} from '../@types/private';
 
 /**
  * Decorator that can be used on a property accessor (field, getter or setter, constructor parameter)
@@ -54,10 +53,6 @@ export const JsonTypeId: JsonTypeIdDecorator = makeJacksonDecorator(
   (o: JsonTypeIdOptions = {}): JsonTypeIdOptions => ({enabled: true, ...o}),
   (options: JsonTypeIdOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      const privateOptions: JsonTypeIdPrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-      defineMetadata('JsonTypeId', privateOptions, target.constructor);
+      defineMetadata('JsonTypeId', options, target.constructor);
     }
   });

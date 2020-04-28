@@ -6,7 +6,6 @@
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonManagedReferenceDecorator, JsonManagedReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-import {JsonBackReferencePrivateOptions, JsonManagedReferencePrivateOptions} from '../@types/private';
 
 /**
  * Decorator used to indicate that decorated property is part of two-way linkage between fields
@@ -65,22 +64,17 @@ export const JsonManagedReference: JsonManagedReferenceDecorator = makeJacksonDe
         throw new JacksonError(`Multiple managed-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
       }
 
-      const privateOptions: JsonManagedReferencePrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-
       if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
         const methodName = propertyKey.toString();
         const prefix = methodName.startsWith('get') ? 'set' : 'get';
         const oppositePropertyKey = prefix + methodName.substring(3);
-        const oppositePrivateOptions: JsonBackReferencePrivateOptions = {
-          propertyKey: oppositePropertyKey,
-          ...options
+        const oppositeOptions: JsonManagedReferenceOptions = {
+          ...options,
+          _propertyKey: oppositePropertyKey
         };
-        defineMetadata('JsonManagedReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+        defineMetadata('JsonManagedReference', oppositeOptions, target.constructor, oppositePropertyKey);
       }
 
-      defineMetadata('JsonManagedReference', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonManagedReference', options, target.constructor, propertyKey);
     }
   });

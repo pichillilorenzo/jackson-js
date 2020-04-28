@@ -4,9 +4,11 @@
  */
 
 import {
-  JsonStringifier,
+  JsonStringifier
+} from '../core/JsonStringifier';
+import {
   JsonParser
-} from '../core';
+} from '../core/JsonParser';
 import {
   JsonParserContext,
   JsonStringifierContext

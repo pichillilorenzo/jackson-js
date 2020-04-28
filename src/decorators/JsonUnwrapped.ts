@@ -5,7 +5,6 @@
 
 import {defineMetadata, makeJacksonDecorator} from '../util';
 import {JsonUnwrappedDecorator, JsonUnwrappedOptions} from '../@types';
-import {JsonUnwrappedPrivateOptions} from '../@types/private';
 
 /**
  * Decorator used to indicate that a property should be serialized "unwrapped";
@@ -41,14 +40,9 @@ export const JsonUnwrapped: JsonUnwrappedDecorator = makeJacksonDecorator(
     ...o
   }),
   (options: JsonUnwrappedOptions, target, propertyKey, descriptorOrParamIndex) => {
-    const privateOptions: JsonUnwrappedPrivateOptions = {
-      descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
-      ...options
-    };
-
     if (propertyKey != null) {
-      defineMetadata('JsonUnwrapped', privateOptions, target.constructor, propertyKey);
-      defineMetadata('JsonUnwrapped', privateOptions, target.constructor, null, {
+      defineMetadata('JsonUnwrapped', options, target.constructor, propertyKey);
+      defineMetadata('JsonUnwrapped', options, target.constructor, null, {
         suffix: propertyKey.toString()
       });
     }

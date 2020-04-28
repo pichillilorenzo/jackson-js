@@ -5,7 +5,6 @@
 
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonValueDecorator, JsonValueOptions} from '../@types';
-import {JsonValuePrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
 
 /**
@@ -46,11 +45,6 @@ export const JsonValue: JsonValueDecorator = makeJacksonDecorator(
       if (hasMetadata('JsonValue', target.constructor, null, {withContextGroups: options.contextGroups})) {
         throw new JacksonError(`Multiple @JsonValue() decorators for ${target.constructor}.'`);
       }
-
-      const privateOptions: JsonValuePrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-      defineMetadata('JsonValue', privateOptions, target.constructor);
+      defineMetadata('JsonValue', options, target.constructor);
     }
   });

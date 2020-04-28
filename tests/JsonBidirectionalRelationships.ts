@@ -10,7 +10,6 @@ import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonGetter} from '../src/decorators/JsonGetter';
 import {JsonSetter} from '../src/decorators/JsonSetter';
 
-
 test('Fail Infinite recursion', t => {
   class User {
     @JsonProperty()

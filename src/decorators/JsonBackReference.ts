@@ -6,7 +6,6 @@
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonBackReferenceDecorator, JsonBackReferenceOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-import {JsonBackReferencePrivateOptions} from '../@types/private';
 
 /**
  * Decorator used to indicate that associated property is part of two-way linkage between fields;
@@ -66,32 +65,27 @@ export const JsonBackReference: JsonBackReferenceDecorator = makeJacksonDecorato
         throw new JacksonError(`Multiple back-reference properties with name "${options.value}" at ${target.constructor}["${propertyKey.toString()}"].'`);
       }
 
-      const privateOptions: JsonBackReferencePrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-
       if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
         const methodName = propertyKey.toString();
         const prefix = methodName.startsWith('get') ? 'set' : 'get';
         const oppositePropertyKey = prefix + methodName.substring(3);
-        const oppositePrivateOptions: JsonBackReferencePrivateOptions = {
-          propertyKey: oppositePropertyKey,
-          ...options
+        const oppositeOptions: JsonBackReferenceOptions = {
+          ...options,
+          _propertyKey: oppositePropertyKey
         };
-        defineMetadata('JsonBackReference', oppositePrivateOptions, target.constructor, oppositePropertyKey);
+        defineMetadata('JsonBackReference', oppositeOptions, target.constructor, oppositePropertyKey);
         if (prefix === 'set') {
-          defineMetadata('JsonBackReference', oppositePrivateOptions,
+          defineMetadata('JsonBackReference', oppositeOptions,
             target.constructor, null, {
-              suffix: oppositePrivateOptions.value
+              suffix: oppositeOptions.value
             });
         }
       } else {
-        defineMetadata('JsonBackReference', privateOptions, target.constructor, null, {
-          suffix: privateOptions.value
+        defineMetadata('JsonBackReference', options, target.constructor, null, {
+          suffix: options.value
         });
       }
 
-      defineMetadata('JsonBackReference', privateOptions, target.constructor, propertyKey);
+      defineMetadata('JsonBackReference', options, target.constructor, propertyKey);
     }
   });

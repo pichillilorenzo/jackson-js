@@ -39,7 +39,7 @@ export declare enum JsonPropertyAccess {
  * otherwise deserialization and serialization will not work!
  * That's because, for example, given a JavaScript class, there isn't any way or API
  * (such as Reflection API for Java - {@link https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html})
- * to get all the class properties and its types (see {@link JsonClass}).
+ * to get all the class properties and its types (see {@link JsonClassType}).
  *
  * @example
  * ```typescript

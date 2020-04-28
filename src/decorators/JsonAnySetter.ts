@@ -6,7 +6,6 @@
 import {defineMetadata, hasMetadata, makeJacksonDecorator} from '../util';
 import {JsonAnySetterDecorator, JsonAnySetterOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
-import {JsonAnySetterPrivateOptions} from '../@types/private';
 
 /**
  * Decorator that can be used to define a logical "any setter" mutator using non-static two-argument method
@@ -43,13 +42,9 @@ export const JsonAnySetter: JsonAnySetterDecorator = makeJacksonDecorator(
   (o: JsonAnySetterOptions): JsonAnySetterOptions => ({enabled: true, ...o}),
   (options: JsonAnySetterOptions, target, propertyKey, descriptorOrParamIndex) => {
     if (propertyKey != null) {
-      const privateOptions: JsonAnySetterPrivateOptions = {
-        propertyKey: propertyKey.toString(),
-        ...options
-      };
-      if (hasMetadata('JsonAnySetter', target.constructor, null, {withContextGroups: privateOptions.contextGroups})) {
+      if (hasMetadata('JsonAnySetter', target.constructor, null, {withContextGroups: options.contextGroups})) {
         throw new JacksonError(`Multiple 'any-setters' defined for "${target.constructor.name}".`);
       }
-      defineMetadata('JsonAnySetter', privateOptions, target.constructor);
+      defineMetadata('JsonAnySetter', options, target.constructor);
     }
   });

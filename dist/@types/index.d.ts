@@ -3,17 +3,8 @@
  * @module Types
  */
 /// <reference types="node" />
-import { JsonTypeInfoAs, JsonTypeInfoId } from '../decorators/JsonTypeInfo';
-import { JsonIncludeType } from '../decorators/JsonInclude';
-import { JsonFormatShape } from '../decorators/JsonFormat';
-import { JsonPropertyAccess } from '../decorators/JsonProperty';
-import { ObjectIdGenerator } from '../decorators/JsonIdentityInfo';
-import { JsonFilterType } from '../decorators/JsonFilter';
-import { PropertyNamingStrategy } from '../decorators/JsonNaming';
-import { JsonCreatorMode } from '../decorators/JsonCreator';
-import { JsonSetterNulls } from '../decorators/JsonSetter';
-import { SerializationFeature } from '../databind/SerializationFeature';
-import { DeserializationFeature } from '../databind/DeserializationFeature';
+import { JsonTypeInfoAs, JsonTypeInfoId, JsonIncludeType, JsonFormatShape, JsonPropertyAccess, ObjectIdGenerator, JsonFilterType, PropertyNamingStrategy, JsonCreatorMode, JsonSetterNulls } from '../decorators';
+import { DeserializationFeature, SerializationFeature } from '../databind';
 /**
  * https://stackoverflow.com/a/55032655/4637638
  */

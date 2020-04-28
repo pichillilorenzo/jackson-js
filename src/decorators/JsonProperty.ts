@@ -5,7 +5,6 @@
 
 import {defineMetadata, getArgumentNames, makeJacksonDecorator} from '../util';
 import {JsonPropertyDecorator, JsonPropertyOptions} from '../@types';
-import {JsonPropertyPrivateOptions} from '../@types/private';
 import {JacksonError} from '../core/JacksonError';
 
 /**
@@ -45,7 +44,7 @@ export enum JsonPropertyAccess {
  * otherwise deserialization and serialization will not work!
  * That's because, for example, given a JavaScript class, there isn't any way or API
  * (such as Reflection API for Java - {@link https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html})
- * to get all the class properties and its types (see {@link JsonClass}).
+ * to get all the class properties and its types (see {@link JsonClassType}).
  *
  * @example
  * ```typescript
@@ -80,51 +79,45 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
   }),
 
   (options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) => {
-    const privateOptions: JsonPropertyPrivateOptions = {
-      descriptor: (typeof descriptorOrParamIndex !== 'number') ? descriptorOrParamIndex : null,
-      propertyKey: (propertyKey != null) ? propertyKey.toString() : null,
-      ...options
-    };
-
-    if (propertyKey != null && !privateOptions.value) {
+    if (propertyKey != null && !options.value) {
       if (descriptorOrParamIndex != null && typeof (descriptorOrParamIndex as TypedPropertyDescriptor<any>).value === 'function') {
         const methodName = propertyKey.toString();
         if (methodName.startsWith('get') || methodName.startsWith('set')) {
-          privateOptions.value = methodName.substring(3);
-          if (privateOptions.value.length > 0) {
-            privateOptions.value = privateOptions.value.charAt(0).toLowerCase() + privateOptions.value.substring(1);
+          options.value = methodName.substring(3);
+          if (options.value.length > 0) {
+            options.value = options.value.charAt(0).toLowerCase() + options.value.substring(1);
           }
         }
-        if (!privateOptions.value) {
+        if (!options.value) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Invalid usage of @JsonProperty() on ${((target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonProperty() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
         }
       } else {
-        privateOptions.value = propertyKey.toString();
+        options.value = propertyKey.toString();
       }
     }
 
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
-      if (!privateOptions.value || (propertyKey != null && privateOptions.value === propertyKey.toString())) {
+      if (!options.value || (propertyKey != null && options.value === propertyKey.toString())) {
         const method = (propertyKey) ? target[propertyKey.toString()] : target;
         const argNames = getArgumentNames(method);
-        privateOptions.value = argNames[descriptorOrParamIndex];
+        options.value = argNames[descriptorOrParamIndex];
       }
 
       defineMetadata(
         'JsonPropertyParam',
-        privateOptions, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });
     }
 
     if (propertyKey != null) {
-      defineMetadata('JsonProperty', privateOptions, target.constructor, propertyKey);
-      defineMetadata('JsonProperty', privateOptions, target.constructor, null, {
+      defineMetadata('JsonProperty', options, target.constructor, propertyKey);
+      defineMetadata('JsonProperty', options, target.constructor, null, {
         suffix: propertyKey.toString()
       });
-      defineMetadata('JsonVirtualProperty', privateOptions, target.constructor, null, {
+      defineMetadata('JsonVirtualProperty', options, target.constructor, null, {
         suffix: propertyKey.toString()
       });
     }
