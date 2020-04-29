@@ -17,13 +17,13 @@ test('@JsonSerialize and @JsonDeserialize at class level', t => {
     return user;
   }})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -71,9 +71,9 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
   }
 
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -96,9 +96,9 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -156,9 +156,9 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
   }
 
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -184,9 +184,9 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -229,7 +229,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
 
 test('@JsonDeserialize at parameter level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -253,13 +253,13 @@ test('@JsonDeserialize at parameter level', t => {
     ...person
   })})
   class Person {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -291,9 +291,9 @@ test('@JsonDeserialize at parameter level', t => {
 
 test('Custom serializers and deserializers', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Date]})
@@ -313,9 +313,9 @@ test('Custom serializers and deserializers', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -380,9 +380,9 @@ test('Custom serializers and deserializers', t => {
 
 test('@JsonSerialize and @JsonDeserialize at property level with contentUsing and keyUsing option values', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Date]})
@@ -402,9 +402,9 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -428,7 +428,7 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     books: Book[] = [];
 
     @JsonProperty()
-    @JsonClassType({type: () => [Map]})
+    @JsonClassType({type: () => [Map, [String, String]]})
     @JsonSerialize({
       keyUsing: (key: string, context) => 'newMapKey-' + key,
       contentUsing: (obj: string, context) => 'newMapValue: ' + obj
@@ -440,6 +440,7 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     otherInfoMap: Map<string, string> = new Map();
 
     @JsonProperty()
+    @JsonClassType({type: () => [Object, [String, String]]})
     @JsonSerialize({
       keyUsing: (key: string, context) => 'newObjKey-' + key,
       contentUsing: (obj: string, context) => 'newObjValue: ' + obj

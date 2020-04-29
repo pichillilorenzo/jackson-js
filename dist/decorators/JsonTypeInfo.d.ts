@@ -57,7 +57,7 @@ export declare enum JsonTypeInfoAs {
  *   ]
  * })
  * class Animal {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  * }
  *

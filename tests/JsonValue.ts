@@ -7,7 +7,7 @@ import {JacksonError} from '../src/core/JacksonError';
 
 test('@JsonValue at property level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Array, [Employee]]})
@@ -19,13 +19,13 @@ test('@JsonValue at property level', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     @JsonValue()
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     employeeInfo = '';
 
     constructor(name: string, age: number) {
@@ -50,7 +50,7 @@ test('@JsonValue at property level', t => {
 
 test('@JsonValue at method level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Array, [Employee]]})
@@ -62,9 +62,9 @@ test('@JsonValue at method level', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(name: string, age: number) {
@@ -94,7 +94,7 @@ test('@JsonValue at method level', t => {
 test('Fail multiple @JsonValue on the same class', t => {
   const err = t.throws<JacksonError>(() => {
     class Company {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       name: string;
       @JsonProperty()
       @JsonClassType({type: () => [Array, [Employee]]})
@@ -106,13 +106,13 @@ test('Fail multiple @JsonValue on the same class', t => {
     }
 
     class Employee {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       name: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       age: number;
 
       @JsonValue()
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       employeeInfo = '';
 
       constructor(name: string, age: number) {

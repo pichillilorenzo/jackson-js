@@ -3,13 +3,14 @@ import {JsonRootName} from '../src/decorators/JsonRootName';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JacksonError} from '../src/core/JacksonError';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonRootName without value', t => {
   @JsonRootName()
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -35,9 +36,9 @@ test('@JsonRootName without value', t => {
 test('@JsonRootName with value', t => {
   @JsonRootName({value: 'userRoot'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -63,9 +64,9 @@ test('@JsonRootName with value', t => {
 test('Fail @JsonRootName on deserialization expecting root name "User"', t => {
   @JsonRootName()
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {

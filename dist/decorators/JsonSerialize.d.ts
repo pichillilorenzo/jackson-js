@@ -23,9 +23,9 @@ import { JsonSerializeDecorator } from '../@types';
  * }
  *
  * class Book {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *
  *   @JsonProperty()

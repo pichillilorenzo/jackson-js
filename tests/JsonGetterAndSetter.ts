@@ -8,13 +8,13 @@ import {JacksonError} from '../src/core/JacksonError';
 
 test('@JsonGetter and @JsonSetter', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -23,7 +23,7 @@ test('@JsonGetter and @JsonSetter', t => {
       this.lastname = lastname;
     }
 
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -51,13 +51,13 @@ test('@JsonGetter and @JsonSetter', t => {
 
 test('@JsonGetter and @JsonSetter with value', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -66,7 +66,7 @@ test('@JsonGetter and @JsonSetter with value', t => {
       this.lastname = lastname;
     }
 
-    @JsonGetter({value: 'fullname'})
+    @JsonGetter({value: 'fullname'}) @JsonClassType({type: () => [String]})
     getMyFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -94,18 +94,18 @@ test('@JsonGetter and @JsonSetter with value', t => {
 
 test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.FAIL', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     otherInfoArray: string[] = [];
     @JsonProperty()
-    @JsonClassType({type: () => [Map]})
+    @JsonClassType({type: () => [Map, [String, String]]})
     otherInfoMap: Map<string, string> = new Map();
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
     otherInfoObjLiteral = {};
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -171,18 +171,18 @@ test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.FAI
 
 test('@JsonSetter with nulls and contentNulls options set to JsonSetterNulls.SKIP', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     otherInfoArray: string[] = [];
     @JsonProperty()
-    @JsonClassType({type: () => [Map]})
+    @JsonClassType({type: () => [Map, [String, String]]})
     otherInfoMap: Map<string, string> = new Map();
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
     otherInfoObjLiteral = {};
 
     constructor(id: number, firstname: string, lastname: string) {

@@ -14,21 +14,21 @@ class Views {
 test('@JsonView at class level', t => {
   @JsonView({value: () => [Views.internal]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonView({value: () => [Views.public]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.public]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     password: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.public]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.public]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     activationCode: string;
 
     // eslint-disable-next-line no-shadow
@@ -99,18 +99,18 @@ test('@JsonView at class level', t => {
 
 test('@JsonView at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     password: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     activationCode: string;
 
@@ -182,17 +182,17 @@ test('@JsonView at property level', t => {
 
 test('@JsonView at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     password: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     activationCode: string;
 
     // eslint-disable-next-line no-shadow
@@ -205,7 +205,7 @@ test('@JsonView at method level', t => {
       this.activationCode = activationCode;
     }
 
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     getPassword(): string {
       return this.password;
@@ -218,7 +218,7 @@ test('@JsonView at method level', t => {
       this.password = password;
     }
 
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     getActivationCode(): string {
       return this.activationCode;
@@ -291,7 +291,7 @@ test('@JsonView at method level', t => {
 
 test('@JsonView at parameter level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Array, [Employee]]})
@@ -306,9 +306,9 @@ test('@JsonView at parameter level', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(name: string, age: number) {

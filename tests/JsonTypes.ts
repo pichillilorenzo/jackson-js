@@ -29,7 +29,7 @@ test('@JsonTypeInfo and @JsonSubTypes at class level with JsonTypeInfoAs.PROPERT
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -88,7 +88,7 @@ test('@JsonTypeInfo at class level with JsonTypeInfoAs.PROPERTY without subtypes
   })
   @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -138,7 +138,7 @@ test('@JsonTypeInfo and @JsonSubTypes at property level with JsonTypeInfoAs.PROP
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -225,7 +225,7 @@ test('@JsonTypeInfo and @JsonSubTypes at method level with JsonTypeInfoAs.PROPER
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -293,7 +293,7 @@ test('@JsonTypeInfo at property level with JsonTypeInfoAs.PROPERTY without subty
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -390,7 +390,7 @@ test('@JsonTypeInfo at method level with JsonTypeInfoAs.PROPERTY without subtype
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -462,7 +462,7 @@ test('@JsonTypeInfo and @JsonSubTypes at parameter level with JsonTypeInfoAs.PRO
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -539,7 +539,7 @@ test('@JsonTypeInfo at parameter level with JsonTypeInfoAs.PROPERTY without subt
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -614,7 +614,7 @@ test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.P
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -707,7 +707,7 @@ test('@JsonTypeInfo at parameter level (inside @JsonClass) with JsonTypeInfoAs.P
   }
 
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -757,7 +757,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with subtypes name', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -803,7 +803,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -813,13 +813,13 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
 
   @JsonTypeName({value: 'dog'})
   class Dog extends Animal {
-    @JsonTypeId()
+    @JsonTypeId() @JsonClassType({type: () => [String]})
     typeId: string;
   }
 
   @JsonTypeName({value: 'cat'})
   class Cat extends Animal {
-    @JsonTypeId()
+    @JsonTypeId() @JsonClassType({type: () => [String]})
     getTypeId(): string {
       return 'CatTypeId';
     }
@@ -877,7 +877,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY and custom property value', t =
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -923,7 +923,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_OBJECT', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -969,7 +969,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_ARRAY', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {

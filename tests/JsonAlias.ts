@@ -7,10 +7,10 @@ import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonAlias at property level', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonAlias({values: ['bkcat', 'mybkcat']})
     category: string;
 
@@ -21,9 +21,9 @@ test('@JsonAlias at property level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -55,10 +55,10 @@ test('@JsonAlias at property level', t => {
 
 test('@JsonAlias at method level', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     constructor(name: string, category: string) {
@@ -74,9 +74,9 @@ test('@JsonAlias at method level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -108,9 +108,9 @@ test('@JsonAlias at method level', t => {
 
 test('@JsonAlias at parameter level', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     constructor(name: string, @JsonAlias({values: ['bkcat', 'mybkcat']}) category: string) {
@@ -120,9 +120,9 @@ test('@JsonAlias at parameter level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()

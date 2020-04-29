@@ -58,17 +58,17 @@ export declare enum JsonIncludeType {
  * ```typescript
  * @JsonInclude({value: JsonIncludeType.NON_EMPTY})
  * class Employee {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   dept: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   address: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
  *   phones: string[];
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
  *   otherInfo: Map<string, string>;
  * }
  * ```

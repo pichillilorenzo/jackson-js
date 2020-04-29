@@ -4,6 +4,7 @@ import {JsonAppend} from '../src/decorators/JsonAppend';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonAppend with value', t => {
   @JsonAppend({attrs: [
@@ -12,9 +13,9 @@ test('@JsonAppend with value', t => {
     }
   ]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -45,9 +46,9 @@ test('@JsonAppend with prepend', t => {
     }
   ]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -79,9 +80,9 @@ test('@JsonAppend with userVersion', t => {
     }
   ]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -114,9 +115,9 @@ test('@JsonAppend fail with value required', t => {
     }
   ]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {
@@ -143,9 +144,9 @@ test('@JsonAppend include only if value is non null', t => {
     }
   ]})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string) {

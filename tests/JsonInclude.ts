@@ -3,21 +3,22 @@ import {JsonInclude, JsonIncludeType} from '../src/decorators/JsonInclude';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonGetter} from '../src/decorators/JsonGetter';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonInclude at class level with JsonIncludeType.NON_EMPTY', t => {
   @JsonInclude({value: JsonIncludeType.NON_EMPTY})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -40,17 +41,17 @@ test('@JsonInclude at class level with JsonIncludeType.NON_EMPTY', t => {
 test('@JsonInclude at class level with JsonIncludeType.NON_NULL', t => {
   @JsonInclude({value: JsonIncludeType.NON_NULL})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -73,17 +74,17 @@ test('@JsonInclude at class level with JsonIncludeType.NON_NULL', t => {
 test('@JsonInclude at class level with JsonIncludeType.NON_DEFAULT', t => {
   @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -106,17 +107,17 @@ test('@JsonInclude at class level with JsonIncludeType.NON_DEFAULT', t => {
 test('@JsonInclude at class level with JsonIncludeType.ALWAYS', t => {
   @JsonInclude({value: JsonIncludeType.ALWAYS})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -139,17 +140,17 @@ test('@JsonInclude at class level with JsonIncludeType.ALWAYS', t => {
 test('@JsonInclude at class level with JsonIncludeType.CUSTOM value filter', t => {
   @JsonInclude({value: JsonIncludeType.CUSTOM, valueFilter: (value: any) => value == null || value === ''})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -171,17 +172,17 @@ test('@JsonInclude at class level with JsonIncludeType.CUSTOM value filter', t =
 
 test('@JsonInclude at method level with JsonIncludeType.NON_EMPTY', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -193,32 +194,32 @@ test('@JsonInclude at method level with JsonIncludeType.NON_EMPTY', t => {
       this.otherInfo = otherInfo;
     }
 
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [Number]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getId(): number {
       return this.id;
     }
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getName(): string {
       return this.name;
     }
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getDept(): string {
       return this.dept;
     }
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getAddress(): string {
       return this.address;
     }
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [Array, [String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getPhones(): string[] {
       return this.phones;
     }
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     getOtherInfo(): Map<string, string> {
       return this.otherInfo;
@@ -234,22 +235,22 @@ test('@JsonInclude at method level with JsonIncludeType.NON_EMPTY', t => {
 
 test('@JsonInclude at property level with JsonIncludeType.NON_EMPTY', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY})
     otherInfo: Map<string, string>;
 
@@ -272,22 +273,22 @@ test('@JsonInclude at property level with JsonIncludeType.NON_EMPTY', t => {
 
 test('@JsonInclude at property level with JsonIncludeType.NON_NULL', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_NULL})
     otherInfo: Map<string, string>;
 
@@ -310,22 +311,22 @@ test('@JsonInclude at property level with JsonIncludeType.NON_NULL', t => {
 
 test('@JsonInclude at property level with JsonIncludeType.NON_DEFAULT', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_DEFAULT})
     otherInfo: Map<string, string>;
 
@@ -348,22 +349,22 @@ test('@JsonInclude at property level with JsonIncludeType.NON_DEFAULT', t => {
 
 test('@JsonInclude at property level with JsonIncludeType.ALWAYS', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.ALWAYS})
     otherInfo: Map<string, string>;
 
@@ -386,11 +387,11 @@ test('@JsonInclude at property level with JsonIncludeType.ALWAYS', t => {
 
 test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
     otherInfo: Map<string, string>;
 
@@ -416,11 +417,11 @@ test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and cont
 
 test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_EMPTY and content JsonIncludeType.NON_NULL', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
     @JsonInclude({value: JsonIncludeType.NON_EMPTY, content: JsonIncludeType.NON_NULL})
     otherInfo: Record<string, string>;
 
@@ -446,11 +447,11 @@ test('@JsonInclude on "Object Literal" property with value JsonIncludeType.NON_E
 
 test('@JsonInclude on Map property with value JsonIncludeType.NON_EMPTY and JsonIncludeType.CUSTOM content filter', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     @JsonInclude({
       value: JsonIncludeType.NON_EMPTY,
       content: JsonIncludeType.CUSTOM,

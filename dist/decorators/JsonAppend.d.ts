@@ -15,9 +15,9 @@ import { JsonAppendDecorator } from '../@types';
  *   }
  * ]})
  * class User {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   email: string;
  *
  *   constructor(id: number, email: string) {

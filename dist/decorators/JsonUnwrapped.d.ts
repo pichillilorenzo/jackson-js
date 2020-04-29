@@ -13,7 +13,7 @@ import { JsonUnwrappedDecorator } from '../@types';
  * @example
  * ```typescript
  * class User {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
  *   @JsonProperty()
  *   @JsonUnwrapped()
@@ -22,9 +22,9 @@ import { JsonUnwrappedDecorator } from '../@types';
  * }
  *
  * class Name {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   first: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   last: string;
  * }
  * ```

@@ -37,11 +37,11 @@ export declare enum JsonCreatorMode {
  * ```typescript
  * @JsonCreator()
  * class Employee {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   department: string;
  *
  *   constructor(id: number,
@@ -54,11 +54,11 @@ export declare enum JsonCreatorMode {
  * }
  *
  * class Employee {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   department: string;
  *
  *   constructor(id: number, name: string, department: string) {

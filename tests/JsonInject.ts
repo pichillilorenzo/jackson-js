@@ -7,9 +7,9 @@ import {JsonSetter} from "../src/decorators/JsonSetter";
 
 test('@JsonInject at property level', t => {
   class CurrencyRate {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     pair: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     rate: number;
 
     @JsonInject()
@@ -36,9 +36,9 @@ test('@JsonInject at property level', t => {
 
 test('@JsonInject at method level', t => {
   class CurrencyRate {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     pair: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     rate: number;
 
     @JsonProperty()
@@ -70,9 +70,9 @@ test('@JsonInject at method level', t => {
 
 test('@JsonInject with useInput false', t => {
   class CurrencyRate {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     pair: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     rate: number;
 
     @JsonInject({useInput: false})
@@ -99,9 +99,9 @@ test('@JsonInject with useInput false', t => {
 
 test('@JsonInject with useInput true', t => {
   class CurrencyRate {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     pair: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     rate: number;
 
     @JsonInject({useInput: true})
@@ -128,9 +128,9 @@ test('@JsonInject with useInput true', t => {
 
 test('@JsonInject on constructor parameter and different value', t => {
   class CurrencyRate {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     pair: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     rate: number;
 
     @JsonProperty()

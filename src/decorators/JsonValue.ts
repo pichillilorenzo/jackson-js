@@ -18,7 +18,7 @@ import {JacksonError} from '../core/JacksonError';
  * @example
  * ```typescript
  * class Company {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *   @JsonProperty()
  *   @JsonClassType({type: () => [Array, [Employee]]})
@@ -26,9 +26,9 @@ import {JacksonError} from '../core/JacksonError';
  * }
  *
  * class Employee {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   age: number;
  *
  *   @JsonValue()

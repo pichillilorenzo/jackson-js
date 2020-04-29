@@ -8,13 +8,13 @@ import {JsonProperty} from '../src/decorators/JsonProperty';
 
 test('@JsonIgnoreProperties', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -33,11 +33,11 @@ test('@JsonIgnoreProperties', t => {
     value: ['owner']
   })
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -85,13 +85,13 @@ test('@JsonIgnoreProperties at property level', t => {
     value: ['firstname']
   })
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonIgnoreProperties({
@@ -110,11 +110,11 @@ test('@JsonIgnoreProperties at property level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -163,13 +163,13 @@ test('@JsonIgnoreProperties at method level', t => {
     value: ['firstname']
   })
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -202,11 +202,11 @@ test('@JsonIgnoreProperties at method level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -252,13 +252,13 @@ test('@JsonIgnoreProperties at method level', t => {
 
 test('@JsonIgnoreProperties at parameter level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -276,11 +276,11 @@ test('@JsonIgnoreProperties at parameter level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -323,13 +323,13 @@ test('@JsonIgnoreProperties at parameter level', t => {
 
 test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -358,11 +358,11 @@ test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -406,13 +406,13 @@ test('@JsonIgnoreProperties at parameter level (inside @JsonClass)', t => {
 test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
   @JsonIgnoreProperties({value: ['fullname']})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -421,7 +421,7 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
       this.lastname = lastname;
     }
 
-    @JsonGetter({value: 'fullname'})
+    @JsonGetter({value: 'fullname'}) @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -449,13 +449,13 @@ test('@JsonIgnoreProperties with @JsonGetter and @JsonSetter', t => {
 test('@JsonIgnoreProperties with allowGetters "true"', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -464,7 +464,7 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
       this.lastname = lastname;
     }
 
-    @JsonGetter({value: 'fullname'})
+    @JsonGetter({value: 'fullname'}) @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -492,13 +492,13 @@ test('@JsonIgnoreProperties with allowGetters "true"', t => {
 test('@JsonIgnoreProperties with allowSetters "true"', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true, allowSetters: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -507,7 +507,7 @@ test('@JsonIgnoreProperties with allowSetters "true"', t => {
       this.lastname = lastname;
     }
 
-    @JsonGetter({value: 'fullname'})
+    @JsonGetter({value: 'fullname'}) @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -535,20 +535,20 @@ test('@JsonIgnoreProperties with allowSetters "true"', t => {
 test('@JsonIgnoreProperties with @JsonProperty as getters and setters', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname']})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -582,20 +582,20 @@ test('@JsonIgnoreProperties with @JsonProperty as getters and setters', t => {
 test('@JsonIgnoreProperties with allowGetters and @JsonProperty as getters and setters', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -629,20 +629,20 @@ test('@JsonIgnoreProperties with allowGetters and @JsonProperty as getters and s
 test('@JsonIgnoreProperties with allowSetters and @JsonProperty as getters and setters', t => {
   @JsonIgnoreProperties({value: ['fullname', 'firstname'], allowGetters: true, allowSetters: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     fullname: string[];
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -675,11 +675,11 @@ test('@JsonIgnoreProperties with allowSetters and @JsonProperty as getters and s
 test('@JsonIgnoreProperties with ignoreUnknown "true"', t => {
   @JsonIgnoreProperties({value: ['firstname'], ignoreUnknown: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, firstname: string, lastname: string) {

@@ -8,11 +8,11 @@ import {JsonGetter} from '../src/decorators/JsonGetter';
 
 test('class without @JsonPropertyOrder', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, email: string, name: string) {
@@ -31,11 +31,11 @@ test('class without @JsonPropertyOrder', t => {
 test('@JsonPropertyOrder at class level with value', t => {
   @JsonPropertyOrder({value: ['email', 'id', 'name']})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, email: string, name: string) {
@@ -54,13 +54,13 @@ test('@JsonPropertyOrder at class level with value', t => {
 test('@JsonPropertyOrder at class level with partial order', t => {
   @JsonPropertyOrder({value: ['email', 'lastname']})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, email: string, firstname: string, lastname: string) {
@@ -81,11 +81,11 @@ test('@JsonPropertyOrder at class level with partial order', t => {
 test('@JsonPropertyOrder at class level with alphabetic order', t => {
   @JsonPropertyOrder({alphabetic: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, email: string, name: string) {
@@ -104,11 +104,11 @@ test('@JsonPropertyOrder at class level with alphabetic order', t => {
 test('@JsonPropertyOrder at class level with value and alphabetic order', t => {
   @JsonPropertyOrder({value: ['name'], alphabetic: true})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
 
     constructor(id: number, email: string, name: string) {
@@ -128,11 +128,11 @@ test('@JsonPropertyOrder at class level with value and @JsonRootName', t => {
   @JsonRootName()
   @JsonPropertyOrder({value: ['email', 'id', 'name']})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, email: string, name: string) {
@@ -151,11 +151,11 @@ test('@JsonPropertyOrder at class level with value and @JsonRootName', t => {
 
 test('@JsonPropertyOrder at property level on Array', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string, category: string) {
@@ -166,9 +166,9 @@ test('@JsonPropertyOrder at property level on Array', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -195,11 +195,11 @@ test('@JsonPropertyOrder at property level on Array', t => {
 
 test('@JsonPropertyOrder at property level on Map', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string, category: string) {
@@ -210,9 +210,9 @@ test('@JsonPropertyOrder at property level on Map', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -244,11 +244,11 @@ test('@JsonPropertyOrder at property level on Map', t => {
 
 test('@JsonPropertyOrder at method level', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string, category: string) {
@@ -259,9 +259,9 @@ test('@JsonPropertyOrder at method level', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()

@@ -40,11 +40,11 @@ export declare enum PropertyNamingStrategy {
  * ```typescript
  * @JsonNaming({strategy: PropertyNamingStrategy.SNAKE_CASE})
  * class Book {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   bookName: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   bookCategory: string;
  *
  *   constructor(id: number, name: string, category: string) {

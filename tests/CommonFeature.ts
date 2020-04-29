@@ -11,19 +11,19 @@ test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
   }
 
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonView({value: () => [Views.public]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     password: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonView({value: () => [Views.internal]})
     activationCode: string;
 
@@ -63,16 +63,16 @@ test('CommonFeature.DEFAULT_VIEW_INCLUSION set to false', t => {
 
 test('CommonFeature.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [BigInt]})
     @JsonClassType({type: () => [BigInt]})
     id: BigInt;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonClassType({type: () => [Number]})
     age: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Boolean]})
     @JsonClassType({type: () => [Boolean]})
     deleted: boolean;
 

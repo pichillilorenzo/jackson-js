@@ -10,9 +10,9 @@ import { JsonInjectDecorator } from '../@types';
  * @example
  * ```typescript
  * class CurrencyRate {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   pair: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   rate: number;
  *
  *   @JsonInject()

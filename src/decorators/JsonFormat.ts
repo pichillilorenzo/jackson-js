@@ -53,7 +53,7 @@ export enum JsonFormatShape {
  * @example
  * ```typescript
  * class Event {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *
  *   @JsonProperty()
@@ -64,7 +64,7 @@ export enum JsonFormatShape {
  *   @JsonClassType({type: () => [Date]})
  *   startDate: Date;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   @JsonFormat({
  *     shape: JsonFormatShape.STRING,
  *     toFixed: 2
@@ -72,14 +72,14 @@ export enum JsonFormatShape {
  *   @JsonDeserialize({using: (value: string) => parseFloat(value)})
  *   price: number;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   @JsonFormat({
  *     shape: JsonFormatShape.BOOLEAN
  *   })
  *   @JsonDeserialize({using: (value: boolean) => value ? 1 : 0})
  *   canceled: number;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
  *   @JsonFormat({
  *     shape: JsonFormatShape.ARRAY
  *   })

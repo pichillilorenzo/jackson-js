@@ -14,14 +14,14 @@ import {
 
 test('decoratorsEnabled context option', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonIgnore()
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonIgnore()
     lastname: string;
     @JsonProperty()
@@ -78,10 +78,10 @@ test('forType context option', t => {
   }
 
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonView({value: () => [Views.internal]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonIgnore()
@@ -97,10 +97,10 @@ test('forType context option', t => {
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     @JsonView({value: () => [Views.internal]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Array, [Book]]})

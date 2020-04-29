@@ -2,15 +2,16 @@ import test from 'ava';
 import {JsonNaming, PropertyNamingStrategy} from '../src/decorators/JsonNaming';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.SNAKE_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -36,11 +37,11 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.LOWER_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -66,11 +67,11 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.KEBAB_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.KEBAB_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -96,11 +97,11 @@ test('@JsonNaming with JsonNamingStrategy.KEBAB_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_CAMEL_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.LOWER_CAMEL_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -126,11 +127,11 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_CAMEL_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.UPPER_CAMEL_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.UPPER_CAMEL_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -156,11 +157,11 @@ test('@JsonNaming with JsonNamingStrategy.UPPER_CAMEL_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.LOWER_DOT_CASE', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.LOWER_DOT_CASE})
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     bookCategory: string;
 
     constructor(id: number, name: string, category: string) {
@@ -186,18 +187,18 @@ test('@JsonNaming with JsonNamingStrategy.LOWER_DOT_CASE', t => {
 test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE and @JsonProperty for a virtual property', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.SNAKE_CASE})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastName: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     getFullName(): string {
       return this.firstName + ' ' + this.lastName;
     }
@@ -230,18 +231,18 @@ test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE and @JsonProperty for a vir
 test('@JsonNaming with JsonNamingStrategy.SNAKE_CASE and @JsonProperty with value for a virtual property', t => {
   @JsonNaming({strategy: PropertyNamingStrategy.SNAKE_CASE})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstName: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastName: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty({value: 'myFullName'})
+    @JsonProperty({value: 'myFullName'}) @JsonClassType({type: () => [String]})
     getFullName(): string {
       return this.firstName + ' ' + this.lastName;
     }

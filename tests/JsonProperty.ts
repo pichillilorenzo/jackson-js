@@ -2,12 +2,13 @@ import test from 'ava';
 import {JacksonError} from '../src/core/JacksonError';
 import {JsonProperty, JsonPropertyAccess} from '../src/decorators/JsonProperty';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonProperty with value', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty({value: 'empName'})
+    @JsonProperty({value: 'empName'}) @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(id: number, name: string) {
@@ -25,9 +26,9 @@ test('@JsonProperty with value', t => {
 
 test('Fail @JsonProperty with required at parameter level', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(id: number, @JsonProperty({required: true}) name: string) {
@@ -48,9 +49,9 @@ test('Fail @JsonProperty with required at parameter level', t => {
 
 test('Fail @JsonProperty with required at property level', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty({required: true})
+    @JsonProperty({required: true}) @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(id: number, name: string) {
@@ -71,16 +72,17 @@ test('Fail @JsonProperty with required at property level', t => {
 
 test('Fail @JsonProperty with required at method level', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
-    getName() {
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    getName(): string {
       return this.name;
     }
 
@@ -89,7 +91,6 @@ test('Fail @JsonProperty with required at method level', t => {
       this.name = name;
     }
   }
-
 
   const objectMapper = new ObjectMapper();
   const jsonData = '{"id":1}';
@@ -103,9 +104,10 @@ test('Fail @JsonProperty with required at method level', t => {
 
 test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty({value: 'empName', access: JsonPropertyAccess.WRITE_ONLY})
+    @JsonClassType({type: () => [String]})
     name: string;
   }
 
@@ -126,9 +128,10 @@ test('@JsonProperty with JsonPropertyAccess.WRITE_ONLY', t => {
 
 test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty({value: 'empName', access: JsonPropertyAccess.READ_ONLY})
+    @JsonClassType({type: () => [String]})
     name: string;
   }
 
@@ -150,16 +153,17 @@ test('@JsonProperty with JsonPropertyAccess.READ_ONLY', t => {
 
 test('Using @JsonProperty as getters and setters at method level', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
-    getName() {
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    getName(): string {
       return this.name;
     }
 
@@ -186,18 +190,18 @@ test('Using @JsonProperty as getters and setters at method level', t => {
 
 test('Using @JsonProperty with virtual property as getters and setters', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }
@@ -231,18 +235,18 @@ test('Using @JsonProperty with virtual property as getters and setters', t => {
 
 test('Using @JsonProperty as getters and setters with value', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number) {
       this.id = id;
     }
 
-    @JsonProperty({value: 'myFullname'})
+    @JsonProperty({value: 'myFullname'}) @JsonClassType({type: () => [String]})
     getFullname(): string {
       return this.firstname + ' ' + this.lastname;
     }

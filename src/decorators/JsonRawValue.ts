@@ -17,11 +17,11 @@ import {JsonRawValueDecorator, JsonRawValueOptions} from '../@types';
  * @example
  * ```typescript
  * class User {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   email: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   @JsonRawValue()
  *   otherInfo: string;
  *

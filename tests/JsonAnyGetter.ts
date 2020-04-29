@@ -3,18 +3,19 @@ import {JacksonError} from '../src/core/JacksonError';
 import {JsonAnyGetter} from '../src/decorators/JsonAnyGetter';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonAnyGetter', t => {
   class ScreenInfo {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     id: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     title: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     width: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     height: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
     otherInfo: Map<string, any> = new Map<string, any>();
 
     @JsonAnyGetter()
@@ -40,15 +41,15 @@ test('@JsonAnyGetter', t => {
 
 test('@JsonAnyGetter with value', t => {
   class ScreenInfo {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     id: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     title: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     width: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     height: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
     otherInfo: Map<string, any> = new Map<string, any>();
 
     @JsonAnyGetter({value: 'otherInfo'})
@@ -76,24 +77,24 @@ test('Fail multi @JsonAnyGetter decorators', t => {
 
   const err = t.throws<JacksonError>(() => {
     class ScreenInfoWithMultiJsonAnyGetter {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       id: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       title: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       width: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       height: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
       otherInfo: Map<string, any> = new Map<string, any>();
 
-      @JsonAnyGetter()
-      public getOtherInfo() {
+      @JsonAnyGetter() @JsonClassType({type: () => [Map, [String, Object]]})
+      public getOtherInfo(): Map<string, any> {
         return this.otherInfo;
       }
 
-      @JsonAnyGetter()
-      public getSomeOtherInfo() {
+      @JsonAnyGetter() @JsonClassType({type: () => [Map, [String, Object]]})
+      public getSomeOtherInfo(): Map<string, any> {
         return this.otherInfo;
       }
     }

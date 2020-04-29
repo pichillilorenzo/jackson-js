@@ -26,7 +26,7 @@ import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
  *   ]
  * })
  * class Animal {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  * }
  *

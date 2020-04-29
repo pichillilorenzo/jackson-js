@@ -27,19 +27,19 @@ import { JsonTypeIdDecorator } from '../@types';
  *   ]
  * })
  * class Animal {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  * }
  *
  * @JsonTypeName({value: 'dog'})
  * class Dog extends Animal {
- *   @JsonTypeId()
+ *   @JsonTypeId() @JsonClassType({type: () => [String]})
  *   typeId: string;
  * }
  *
  * @JsonTypeName({value: 'cat'})
  * class Cat extends Animal {
- *   @JsonTypeId()
+ *   @JsonTypeId() @JsonClassType({type: () => [String]})
  *   getTypeId(): string {
  *     return 'CatTypeId';
  *   }

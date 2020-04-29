@@ -5,13 +5,13 @@ import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 
 class User {
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [Number]})
   id: number;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   email: string;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   firstname: string;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   lastname: string;
 
   @JsonProperty()
@@ -28,11 +28,11 @@ class User {
 
 @JsonIgnoreType()
 class Item {
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [Number]})
   id: number;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   name: string;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   category: string;
   @JsonProperty()
   @JsonClassType({type: () => [User]})

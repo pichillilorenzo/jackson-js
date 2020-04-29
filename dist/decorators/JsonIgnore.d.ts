@@ -11,12 +11,12 @@ import { JsonIgnoreDecorator } from '../@types';
  * @example
  * ```typescript
  * class Item {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   @JsonIgnore()
  *   category: string;
  * }

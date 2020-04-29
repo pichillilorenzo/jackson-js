@@ -8,13 +8,13 @@ import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonIgnore at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -30,12 +30,12 @@ test('@JsonIgnore at property level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonIgnore()
     category: string;
 
@@ -85,13 +85,13 @@ test('@JsonIgnore at property level', t => {
 
 test('@JsonIgnore at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -107,12 +107,11 @@ test('@JsonIgnore at method level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()
@@ -127,7 +126,7 @@ test('@JsonIgnore at method level', t => {
     }
 
     @JsonGetter()
-    @JsonIgnore()
+    @JsonIgnore() @JsonClassType({type: () => [String]})
     getCategory(): string {
       return this.category;
     }
@@ -185,13 +184,13 @@ test('@JsonIgnore at method level', t => {
 
 test('@JsonIgnore at parameter level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -207,11 +206,11 @@ test('@JsonIgnore at parameter level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
 
     @JsonProperty()

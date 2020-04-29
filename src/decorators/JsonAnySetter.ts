@@ -20,15 +20,15 @@ import {JacksonError} from '../core/JacksonError';
  * @example
  * ```typescript
  * class ScreenInfo {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   id: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   title: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   width: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   height: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
  *   otherInfo: Map<string, any> = new Map<string, any>();
  *
  *   @JsonAnySetter()

@@ -8,7 +8,7 @@ import {JsonGetter} from '../src/decorators/JsonGetter';
 
 test('@JsonFormat at property level', t => {
   class Event {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -25,6 +25,7 @@ test('@JsonFormat at property level', t => {
       toFixed: 2
     })
     @JsonDeserialize({using: (value: string) => parseFloat(value)})
+    @JsonClassType({type: () => [Number]})
     price: number;
 
     @JsonProperty()
@@ -32,9 +33,10 @@ test('@JsonFormat at property level', t => {
       shape: JsonFormatShape.BOOLEAN
     })
     @JsonDeserialize({using: (value: boolean) => value ? 1 : 0})
+    @JsonClassType({type: () => [Number]})
     canceled: number;
 
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
     @JsonFormat({
       shape: JsonFormatShape.ARRAY
     })
@@ -74,16 +76,18 @@ test('@JsonFormat at property level', t => {
 
 test('@JsonFormat at method level', t => {
   class Event {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Date]})
     startDate: Date;
     @JsonProperty()
+    @JsonClassType({type: () => [Number]})
     price: number;
     @JsonProperty()
+    @JsonClassType({type: () => [Number]})
     canceled: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Object, [String, String]]})
     info: {
       address: string;
       phone: string;
@@ -112,7 +116,7 @@ test('@JsonFormat at method level', t => {
     @JsonFormat({
       shape: JsonFormatShape.STRING,
       toFixed: 2
-    })
+    }) @JsonClassType({type: () => [Number]})
     getPrice(): number {
       return this.price;
     }
@@ -120,7 +124,7 @@ test('@JsonFormat at method level', t => {
     @JsonGetter()
     @JsonFormat({
       shape: JsonFormatShape.ARRAY
-    })
+    }) @JsonClassType({type: () => [Object, [String, String]]})
     getInfo(): {address: string; phone: string} {
       return this.info;
     }
@@ -128,7 +132,7 @@ test('@JsonFormat at method level', t => {
     @JsonGetter()
     @JsonFormat({
       shape: JsonFormatShape.BOOLEAN
-    })
+    }) @JsonClassType({type: () => [Number]})
     getCanceled(): number {
       return this.canceled;
     }
@@ -150,7 +154,7 @@ test('@JsonFormat at method level', t => {
 
 test('@JsonFormat JsonFormatShape.OBJECT at property level', t => {
   class ArrayEx<T> extends Array<T> {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [Number]]})
     wrapper: number[] = [];
 
     constructor(...args) {
@@ -186,7 +190,7 @@ test('@JsonFormat JsonFormatShape.OBJECT at property level', t => {
 test('@JsonFormat JsonFormatShape.OBJECT at class level', t => {
   @JsonFormat({shape: JsonFormatShape.OBJECT})
   class ArrayEx<T> extends Array<T> {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [Number]]})
     wrapper: number[] = [];
 
     constructor(...args) {

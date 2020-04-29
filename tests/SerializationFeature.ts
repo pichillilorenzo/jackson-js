@@ -7,11 +7,11 @@ import {JsonIncludeType} from '../src/decorators/JsonInclude';
 
 test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string, category: string) {
@@ -25,9 +25,9 @@ test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
     @JsonProperty()
     @JsonClassType({type: () => [Map, [String, Book]]})
     bookMap: Map<string, Book> = new Map<string, Book>();
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string) {
@@ -52,11 +52,11 @@ test('SerializationFeature.SORT_PROPERTIES_ALPHABETICALLY set to true', t => {
 
 test('SerializationFeature.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS set to true', t => {
   class Book {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     category: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
 
     constructor(id: number, name: string, category: string) {
@@ -67,9 +67,9 @@ test('SerializationFeature.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS set to t
   }
 
   class Writer {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Map, [String, Book]]})
@@ -110,13 +110,13 @@ test('SerializationFeature.ORDER_MAP_AND_OBJECT_LITERAL_ENTRIES_BY_KEYS set to t
 test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
   const errFailOnSelfReferences = t.throws<JacksonError>(() => {
     class User {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       id: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       firstname: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       lastname: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [User]})
       userRef: User;
 
       constructor(id: number, firstname: string, lastname: string) {
@@ -136,13 +136,13 @@ test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
 
   // const errInfiniteRecursion = t.throws<Error>(() => {
   //   class User {
-  //     @JsonProperty()
+  //     @JsonProperty() @JsonClassType({type: () => [Number]})
   //     id: number;
-  //     @JsonProperty()
+  //     @JsonProperty() @JsonClassType({type: () => [String]})
   //     firstname: string;
-  //     @JsonProperty()
+  //     @JsonProperty() @JsonClassType({type: () => [String]})
   //     lastname: string;
-  //     @JsonProperty()
+  //     @JsonProperty() @JsonClassType({type: () => [User]})
   //     userRef: User;
   //
   //     constructor(id: number, firstname: string, lastname: string) {
@@ -164,7 +164,7 @@ test('SerializationFeature.FAIL_ON_SELF_REFERENCES set to false', t => {
 
 test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
   class Event {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
     @JsonProperty()
     @JsonClassType({type: () => [Map, [Date, String]]})
@@ -193,13 +193,13 @@ test('SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS set to true', t => {
 
 test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [User]})
     userRef: User;
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -222,17 +222,17 @@ test('SerializationFeature.WRITE_SELF_REFERENCES_AS_NULL set to true', t => {
 
 test('SerializationFeature.DEFAULT_PROPERTY_INCLUSION set to JsonIncludeType.NON_EMPTY', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     dept: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     address: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Array, [String]]})
     phones: string[];
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Map, [String, String]]})
     otherInfo: Map<string, string>;
 
     constructor(id: number, name: string, dept: string, address: string, phones: string[], otherInfo: Map<string, string>) {
@@ -257,11 +257,11 @@ test('SerializationFeature.DEFAULT_PROPERTY_INCLUSION set to JsonIncludeType.NON
 
 test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
     @JsonProperty()
     @JsonClassType({type: () => [Date]})
@@ -289,13 +289,13 @@ test('SerializationFeature.WRITE_DATES_AS_TIMESTAMPS set to false', t => {
 
 test('SerializationFeature.WRITE_NAN_AS_ZERO set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(id: number, firstname: string, lastname: string, age: number) {
@@ -316,13 +316,13 @@ test('SerializationFeature.WRITE_NAN_AS_ZERO set to true', t => {
 
 test('Positive Infinity as NUMBER_MAX_VALUE and NUMBER_MAX_SAFE_INTEGER', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(id: number, firstname: string, lastname: string, age: number) {
@@ -348,13 +348,13 @@ test('Positive Infinity as NUMBER_MAX_VALUE and NUMBER_MAX_SAFE_INTEGER', t => {
 
 test('Negative Infinity as NUMBER_MIN_VALUE and NUMBER_MIN_SAFE_INTEGER', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(id: number, firstname: string, lastname: string, age: number) {

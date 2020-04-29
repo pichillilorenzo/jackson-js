@@ -11,10 +11,10 @@ import { JsonAliasDecorator } from '../@types';
  * @example
  * ```typescript
  * class Book {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   @JsonAlias({values: ['bkcat', 'mybkcat']})
  *   category: string;
  *

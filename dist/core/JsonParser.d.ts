@@ -163,7 +163,6 @@ export declare class JsonParser<T> {
      *
      * @param mainCreator
      * @param context
-     * @private
      */
     private _addInternalDecoratorsFromJsonClass;
     /**

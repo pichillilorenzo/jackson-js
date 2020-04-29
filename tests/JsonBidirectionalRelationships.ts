@@ -12,13 +12,13 @@ import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('Fail Infinite recursion', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -34,9 +34,9 @@ test('Fail Infinite recursion', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -66,13 +66,13 @@ test('Fail Infinite recursion', t => {
 
 test('@JsonManagedReference And @JsonBackReference at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -89,9 +89,9 @@ test('@JsonManagedReference And @JsonBackReference at property level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -127,13 +127,13 @@ test('@JsonManagedReference And @JsonBackReference at property level', t => {
 
 test('@JsonManagedReference And @JsonBackReference at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -161,9 +161,9 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
   }
 
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -211,13 +211,13 @@ test('@JsonManagedReference And @JsonBackReference at method level', t => {
 test('Fail @JsonIdentityInfo id already seen without scope', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -234,9 +234,9 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -271,13 +271,13 @@ test('Fail @JsonIdentityInfo id already seen without scope', t => {
 test('@JsonIdentityInfo One To Many', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -294,9 +294,9 @@ test('@JsonIdentityInfo One To Many', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -331,13 +331,13 @@ test('@JsonIdentityInfo One To Many', t => {
 
 test('@JsonIdentityInfo One To Many at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -355,9 +355,9 @@ test('@JsonIdentityInfo One To Many at property level', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -397,13 +397,13 @@ test('@JsonIdentityInfo One To Many at property level', t => {
 
 test('@JsonIdentityInfo One To Many at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -421,9 +421,9 @@ test('@JsonIdentityInfo One To Many at method level', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -475,13 +475,13 @@ test('@JsonIdentityInfo One To Many at method level', t => {
 test('@JsonIdentityInfo Many To Many', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -498,9 +498,9 @@ test('@JsonIdentityInfo Many To Many', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -542,13 +542,13 @@ test('@JsonIdentityInfo Many To Many', t => {
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -566,9 +566,9 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   @JsonIdentityReference({alwaysAsId: true})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -598,13 +598,13 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference', t => {
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property level', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -622,9 +622,9 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -654,13 +654,13 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at property leve
 test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -684,9 +684,9 @@ test('@JsonIdentityInfo One To Many with @JsonIdentityReference at method level'
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()

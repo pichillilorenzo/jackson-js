@@ -8,7 +8,7 @@ import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonUnwrapped at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
     @JsonUnwrapped()
@@ -24,9 +24,9 @@ test('@JsonUnwrapped at property level', t => {
   }
 
   class Name {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     first: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     last: string;
 
     constructor(first: string, last: string) {
@@ -53,7 +53,7 @@ test('@JsonUnwrapped at property level', t => {
 
 test('@JsonUnwrapped at property level with prefix', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
     @JsonUnwrapped({prefix: 'parent-'})
@@ -69,9 +69,9 @@ test('@JsonUnwrapped at property level with prefix', t => {
   }
 
   class Name {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     first: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     last: string;
 
     constructor(first: string, last: string) {
@@ -98,7 +98,7 @@ test('@JsonUnwrapped at property level with prefix', t => {
 
 test('@JsonUnwrapped at property level with suffix', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
     @JsonUnwrapped({suffix: '-parent'})
@@ -114,9 +114,9 @@ test('@JsonUnwrapped at property level with suffix', t => {
   }
 
   class Name {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     first: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     last: string;
 
     constructor(first: string, last: string) {
@@ -143,7 +143,7 @@ test('@JsonUnwrapped at property level with suffix', t => {
 
 test('@JsonUnwrapped at property level with prefix and suffix', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
     @JsonUnwrapped({prefix: 'parentPrefix-', suffix: '-parentSuffix'})
@@ -159,9 +159,9 @@ test('@JsonUnwrapped at property level with prefix and suffix', t => {
   }
 
   class Name {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     first: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     last: string;
 
     constructor(first: string, last: string) {
@@ -189,7 +189,7 @@ test('@JsonUnwrapped at property level with prefix and suffix', t => {
 
 test('@JsonUnwrapped at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
     @JsonProperty()
     @JsonClassType({type: () => [Name]})
@@ -215,9 +215,9 @@ test('@JsonUnwrapped at method level', t => {
   }
 
   class Name {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     first: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     last: string;
 
     constructor(first: string, last: string) {

@@ -39,13 +39,13 @@ export enum JsonFilterType {
  * ```typescript
  * @JsonFilter({value: 'studentFilter'})
  * class Student {
- *   @JsonProperty({value: 'stdName'})
+ *   @JsonProperty({value: 'stdName'}) @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   age: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   college: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   city: string;
  *
  *   constructor(name: string, age: number, college: string, city: string) {

@@ -14,7 +14,7 @@ import { JsonValueDecorator } from '../@types';
  * @example
  * ```typescript
  * class Company {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  *   @JsonProperty()
  *   @JsonClassType({type: () => [Array, [Employee]]})
@@ -22,9 +22,9 @@ import { JsonValueDecorator } from '../@types';
  * }
  *
  * class Employee {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   age: number;
  *
  *   @JsonValue()

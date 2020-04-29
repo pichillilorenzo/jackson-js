@@ -36,7 +36,7 @@ import { JsonTypeIdResolverDecorator } from '../@types';
  * })
  * @JsonTypeIdResolver({resolver: new CustomTypeIdResolver()})
  * class Animal {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   name: string;
  * }
  *

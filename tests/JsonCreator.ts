@@ -3,15 +3,16 @@ import {JacksonError} from '../src/core/JacksonError';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonCreator, JsonCreatorMode} from '../src/decorators/JsonCreator';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonCreator on class', t => {
   @JsonCreator()
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     department: string;
 
     constructor(id: number,
@@ -40,11 +41,11 @@ test('@JsonCreator on class', t => {
 test('@JsonCreator on class using JsonCreatorMode.DELEGATING mode', t => {
   @JsonCreator({mode: JsonCreatorMode.DELEGATING})
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     department: string;
 
     constructor(obj: {id: number; empName: string; empDept: string}) {
@@ -70,11 +71,11 @@ test('@JsonCreator on class using JsonCreatorMode.DELEGATING mode', t => {
 
 test('@JsonCreator on static method with and without creator name', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     department: string;
 
     constructor(id: number, name: string, department: string) {
@@ -129,11 +130,11 @@ test('@JsonCreator on static method with and without creator name', t => {
 
 test('@JsonCreator on static method with and without creator name using JsonCreatorMode.DELEGATING mode', t => {
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     department: string;
 
     constructor(id: number, name: string, department: string) {
@@ -185,11 +186,11 @@ test('@JsonCreator on static method with and without creator name using JsonCrea
 test('Fail @JsonCreator with multiple creators with same name', t => {
   const err = t.throws<JacksonError>(() => {
     class Employee {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       id: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       name: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       department: string;
 
       constructor(id: number, name: string, department: string) {

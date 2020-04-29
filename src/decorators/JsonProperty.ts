@@ -49,14 +49,14 @@ export enum JsonPropertyAccess {
  * @example
  * ```typescript
  * class User {
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [Number]})
  *   id: number;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   firstname: string;
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   lastname: string;
  *
- *   @JsonProperty()
+ *   @JsonProperty() @JsonClassType({type: () => [String]})
  *   getFullname(): string {
  *     return this.firstname + ' ' + this.lastname;
  *   }

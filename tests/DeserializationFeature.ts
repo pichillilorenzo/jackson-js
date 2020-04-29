@@ -10,13 +10,13 @@ import {JsonIdentityInfo, ObjectIdGenerator} from '../src/decorators/JsonIdentit
 
 test('DeserializationFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(UserID: number) {
@@ -84,7 +84,7 @@ test('DeserializationFeature.FAIL_ON_INVALID_SUBTYPE set to false', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -135,7 +135,7 @@ test('DeserializationFeature.FAIL_ON_MISSING_TYPE_ID set to false', t => {
     ]
   })
   class Animal {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     constructor(name: string) {
@@ -177,11 +177,11 @@ test('DeserializationFeature.FAIL_ON_MISSING_TYPE_ID set to false', t => {
 
 test('DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
     @JsonProperty()
     @JsonClassType({type: () => [Array, [String]]})
@@ -203,11 +203,11 @@ test('DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT set to true', t =
 
 test('DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT set to true', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
     @JsonProperty()
     @JsonClassType({type: () => [Map, [String, String]]})
@@ -235,11 +235,11 @@ test('DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT set to true', t 
 
 test('DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES set to false', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
   }
 
@@ -283,11 +283,11 @@ test('DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES set to true', t => {
 test('DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES set to true', t => {
   @JsonCreator()
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -311,11 +311,11 @@ test('DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES set to true', t 
 test('DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES set to true', t => {
   @JsonCreator()
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     constructor(id: number, firstname: string, lastname: string) {
@@ -339,13 +339,13 @@ test('DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES set to true', t => 
 test('DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS set to false', t => {
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'User'})
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     firstname: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     lastname: string;
 
     @JsonProperty()
@@ -362,9 +362,9 @@ test('DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS set to false', t => {
 
   @JsonIdentityInfo({generator: ObjectIdGenerator.PropertyGenerator, property: 'id', scope: 'Item'})
   class Item {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()

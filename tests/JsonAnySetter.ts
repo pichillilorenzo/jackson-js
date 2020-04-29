@@ -3,17 +3,18 @@ import {JsonAnySetter} from '../src/decorators/JsonAnySetter';
 import {JacksonError} from '../src/core/JacksonError';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 class ScreenInfo {
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   id: string;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [String]})
   title: string;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [Number]})
   width: number;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [Number]})
   height: number;
-  @JsonProperty()
+  @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
   otherInfo: Map<string, any> = new Map<string, any>();
 
   @JsonAnySetter()
@@ -49,15 +50,15 @@ test('Fail multi @JsonAnySetter decorators', t => {
 
   const err = t.throws<JacksonError>(() => {
     class ScreenInfoWithMultiJsonAnySetter {
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       id: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [String]})
       title: string;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       width: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Number]})
       height: number;
-      @JsonProperty()
+      @JsonProperty() @JsonClassType({type: () => [Map, [String, Object]]})
       otherInfo: Map<string, any> = new Map<string, any>();
 
       @JsonAnySetter()

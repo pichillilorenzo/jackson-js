@@ -2,15 +2,16 @@ import test from 'ava';
 import {JsonRawValue} from '../src/decorators/JsonRawValue';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonGetter} from "../src/decorators/JsonGetter";
+import {JsonGetter} from '../src/decorators/JsonGetter';
+import {JsonClassType} from '../src/decorators/JsonClassType';
 
 test('@JsonRawValue at property level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     @JsonRawValue()
     otherInfo: string;
 
@@ -30,11 +31,11 @@ test('@JsonRawValue at property level', t => {
 
 test('@JsonRawValue at method level', t => {
   class User {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     id: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     email: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     otherInfo: string;
 
     constructor(id: number, email: string, otherInfo: string) {
@@ -43,7 +44,7 @@ test('@JsonRawValue at method level', t => {
       this.otherInfo = otherInfo;
     }
 
-    @JsonGetter()
+    @JsonGetter() @JsonClassType({type: () => [String]})
     @JsonRawValue()
     getOtherInfo(): string {
       return this.otherInfo;

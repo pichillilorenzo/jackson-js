@@ -1180,7 +1180,6 @@ export class JsonParser<T> {
    *
    * @param mainCreator
    * @param context
-   * @private
    */
   private _addInternalDecoratorsFromJsonClass(mainCreator: any[], context: JsonParserTransformerContext) {
     for (let i = 0; i < mainCreator.length; i++) {

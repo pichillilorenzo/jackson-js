@@ -9,13 +9,13 @@ test('@JsonFilter at class level', t => {
 
   @JsonFilter({value: 'studentFilter'})
   class Student {
-    @JsonProperty({value: 'stdName'})
+    @JsonProperty({value: 'stdName'}) @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [Number]})
     age: number;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     college: string;
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     city: string;
 
     constructor(name: string, age: number, college: string, city: string) {
@@ -61,7 +61,7 @@ test('@JsonFilter at class level', t => {
 
 test('@JsonFilter at property level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -77,9 +77,9 @@ test('@JsonFilter at property level', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty({value: 'empAge'})
+    @JsonProperty({value: 'empAge'}) @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(name: string, age: number) {
@@ -125,7 +125,7 @@ test('@JsonFilter at property level', t => {
 
 test('@JsonFilter at method level', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -147,9 +147,9 @@ test('@JsonFilter at method level', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty({value: 'empAge'})
+    @JsonProperty({value: 'empAge'}) @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(name: string, age: number) {
@@ -195,7 +195,7 @@ test('@JsonFilter at method level', t => {
 
 test('@JsonFilter at property level of type Array', t => {
   class Company {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
 
     @JsonProperty()
@@ -210,9 +210,9 @@ test('@JsonFilter at property level of type Array', t => {
   }
 
   class Employee {
-    @JsonProperty()
+    @JsonProperty() @JsonClassType({type: () => [String]})
     name: string;
-    @JsonProperty({value: 'empAge'})
+    @JsonProperty({value: 'empAge'}) @JsonClassType({type: () => [Number]})
     age: number;
 
     constructor(name: string, age: number) {
