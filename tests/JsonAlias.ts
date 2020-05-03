@@ -45,9 +45,11 @@ test('@JsonAlias at property level', t => {
   t.assert(writer instanceof Writer);
   t.not(writer.books, null);
   t.is(writer.books.length, 2);
+  t.assert(writer.books[0] instanceof Book);
   t.is(writer.books[0].category, 'Web Development');
   // @ts-ignore
   t.is(writer.books[0].bkcat, undefined);
+  t.assert(writer.books[1] instanceof Book);
   t.is(writer.books[1].category, 'Java');
   // @ts-ignore
   t.is(writer.books[1].mybkcat, undefined);
@@ -98,9 +100,11 @@ test('@JsonAlias at method level', t => {
   t.assert(writer instanceof Writer);
   t.not(writer.books, null);
   t.is(writer.books.length, 2);
+  t.assert(writer.books[0] instanceof Book);
   t.is(writer.books[0].category, 'Web Development');
   // @ts-ignore
   t.is(writer.books[0].bkcat, undefined);
+  t.assert(writer.books[1] instanceof Book);
   t.is(writer.books[1].category, 'Java');
   // @ts-ignore
   t.is(writer.books[1].mybkcat, undefined);
@@ -144,9 +148,11 @@ test('@JsonAlias at parameter level', t => {
   t.assert(writer instanceof Writer);
   t.not(writer.books, null);
   t.is(writer.books.length, 2);
+  t.assert(writer.books[0] instanceof Book);
   t.is(writer.books[0].category, 'Web Development');
   // @ts-ignore
   t.is(writer.books[0].bkcat, undefined);
+  t.assert(writer.books[1] instanceof Book);
   t.is(writer.books[1].category, 'Java');
   // @ts-ignore
   t.is(writer.books[1].mybkcat, undefined);

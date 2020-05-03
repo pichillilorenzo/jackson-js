@@ -32,7 +32,7 @@ import {
   JsonGetterOptions,
   JsonAnyGetterOptions,
   JsonTypeIdOptions,
-  JsonTypeNameOptions
+  JsonTypeNameOptions, ClassList
 } from '../@types';
 import {
   JsonPropertyAccess,
@@ -337,10 +337,6 @@ export class JsonStringifier<T> {
         value = this.stringifyMapAndObjLiteral(key, value, context, globalContext, new Map(valueAlreadySeen));
       } else if (typeof value === 'object' && !isIterableNoMapNoString(value)) {
 
-        if (this.stringifyJsonIgnoreType(context)) {
-          return null;
-        }
-
         // Infinite recursion is already handled by JSON.stringify();
         // if (valueAlreadySeen.has(value)) {
         //   throw new JacksonError(`Infinite recursion on key "${key}" of type "${currentMainCreator.name}"`);
@@ -419,6 +415,10 @@ export class JsonStringifier<T> {
               this.propagateDecorators(value, k, context);
 
               replacement[newKey] = this.stringifyJsonGetter(value, k, context);
+              if (this.stringifyHasJsonIgnoreTypeByKey(replacement, newKey, context)) {
+                delete replacement[newKey];
+                continue;
+              }
 
               if (!this.stringifyJsonInclude(replacement, newKey, context)) {
                 namingMap.delete(k);
@@ -925,10 +925,46 @@ export class JsonStringifier<T> {
 
   /**
    *
+   * @param replacement
+   * @param key
    * @param context
    */
-  private stringifyJsonIgnoreType(context: JsonStringifierTransformerContext): boolean {
-    return hasMetadata('JsonIgnoreType', context.mainCreator[0], null, context);
+  private stringifyHasJsonIgnoreTypeByKey(replacement: any, key: string, context: JsonStringifierTransformerContext): boolean {
+    const currentMainCreator = context.mainCreator[0];
+    let classType: ClassList<ClassType<any>>;
+
+    const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', currentMainCreator, key, context);
+    if (jsonClass && jsonClass.type) {
+      classType = jsonClass.type();
+    } else {
+      classType = [Object];
+    }
+    const value = replacement[key];
+    if (value != null && value.constructor !== Object) {
+      classType[0] = value.constructor;
+    }
+    return hasMetadata('JsonIgnoreType', classType[0], null, context);
+  }
+
+  /**
+   *
+   * @param value
+   * @param key
+   * @param context
+   */
+  private stringifyHasJsonIgnoreTypeByValue(value: any, key: string, context: JsonStringifierTransformerContext): boolean {
+    let classType: ClassList<ClassType<any>>;
+
+    const jsonClass: JsonClassTypeOptions = getMetadata('JsonClassType', context._propertyParentCreator, key, context);
+    if (jsonClass && jsonClass.type) {
+      classType = jsonClass.type();
+    } else {
+      classType = [Object];
+    }
+    if (value != null && value.constructor !== Object) {
+      classType[0] = value.constructor;
+    }
+    return hasMetadata('JsonIgnoreType', classType[0], null, context);
   }
 
   /**
@@ -1376,6 +1412,10 @@ export class JsonStringifier<T> {
 
       value = castObjLiteral(newContext.mainCreator[0], value);
 
+      if (this.stringifyHasJsonIgnoreTypeByValue(value, key, newContext)) {
+        continue;
+      }
+
       newIterable.push(this.deepTransform(key, value, newContext, globalContext, new Map(valueAlreadySeen)));
     }
     return newIterable;
@@ -1493,6 +1533,10 @@ export class JsonStringifier<T> {
       }
 
       mapValue = castObjLiteral(newContext.mainCreator[0], mapValue);
+
+      if (this.stringifyHasJsonIgnoreTypeByValue(mapValue, key, valueNewContext)) {
+        continue;
+      }
 
       const mapValueStringified = this.deepTransform(mapKey, mapValue, valueNewContext, globalContext, new Map(valueAlreadySeen));
       newValue[mapKey.toString()] = mapValueStringified;

@@ -4,49 +4,89 @@ import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 
-class User {
-  @JsonProperty() @JsonClassType({type: () => [Number]})
-  id: number;
-  @JsonProperty() @JsonClassType({type: () => [String]})
-  email: string;
-  @JsonProperty() @JsonClassType({type: () => [String]})
-  firstname: string;
-  @JsonProperty() @JsonClassType({type: () => [String]})
-  lastname: string;
+test('@JsonIgnoreType serialize and deserialize', t => {
+  @JsonIgnoreType()
+  class Address {
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    street: string;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    city: string;
 
-  @JsonProperty()
-  @JsonClassType({type: () => [Array, [Item]]})
-  items: Item[] = [];
-
-  constructor(id: number, email: string, firstname: string, lastname: string) {
-    this.id = id;
-    this.email = email;
-    this.firstname = firstname;
-    this.lastname = lastname;
+    constructor(street: string, city: string) {
+      this.street = street;
+      this.city = city;
+    }
   }
-}
 
-@JsonIgnoreType()
-class Item {
-  @JsonProperty() @JsonClassType({type: () => [Number]})
-  id: number;
-  @JsonProperty() @JsonClassType({type: () => [String]})
-  name: string;
-  @JsonProperty() @JsonClassType({type: () => [String]})
-  category: string;
-  @JsonProperty()
-  @JsonClassType({type: () => [User]})
-  owner: User;
+  class User {
+    @JsonProperty() @JsonClassType({type: () => [Number]})
+    id: number;
+    @JsonProperty() @JsonClassType({type: () => [Address]})
+    address: Address;
 
-  constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
-    this.id = id;
-    this.name = name;
-    this.category = category;
-    this.owner = owner;
+    // eslint-disable-next-line no-shadow
+    constructor(id: number, address: Address) {
+      this.id = id;
+      this.address = address;
+    }
   }
-}
 
-test('@JsonIgnoreType serialize', t => {
+  const address = new Address('421 Sun Ave', 'Yellow Town');
+  const user = new User(1, address);
+  const objectMapper = new ObjectMapper();
+  const jsonData = objectMapper.stringify<User>(user);
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1}'));
+
+  const userParsed = objectMapper.parse<User>('{"id":1,"address":{"street":"421 Sun Ave","city":"Yellow Town"}}',
+    {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.address, null);
+});
+
+test('@JsonIgnoreType serialize and deserialize on list', t => {
+  class User {
+    @JsonProperty() @JsonClassType({type: () => [Number]})
+    id: number;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    email: string;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    firstname: string;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    lastname: string;
+
+    @JsonProperty()
+    @JsonClassType({type: () => [Array, [Item]]})
+    items: Item[] = [];
+
+    constructor(id: number, email: string, firstname: string, lastname: string) {
+      this.id = id;
+      this.email = email;
+      this.firstname = firstname;
+      this.lastname = lastname;
+    }
+  }
+
+  @JsonIgnoreType()
+  class Item {
+    @JsonProperty() @JsonClassType({type: () => [Number]})
+    id: number;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    name: string;
+    @JsonProperty() @JsonClassType({type: () => [String]})
+    category: string;
+    @JsonProperty()
+    @JsonClassType({type: () => [User]})
+    owner: User;
+
+    constructor(id: number, name: string, category: string, @JsonClassType({type: () => [User]}) owner: User) {
+      this.id = id;
+      this.name = name;
+      this.category = category;
+      this.owner = owner;
+    }
+  }
+
   const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa');
   const item1 = new Item(1, 'Game Of Thrones', 'Book', user);
   const item2 = new Item(2, 'NVIDIA', 'Graphic Card', user);
@@ -56,20 +96,17 @@ test('@JsonIgnoreType serialize', t => {
 
   const jsonData = objectMapper.stringify<User>(user);
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[null,null],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
-});
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"items":[],"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa"}'));
 
-test('@JsonIgnoreType deserialize', t => {
   // eslint-disable-next-line max-len
-  const jsonData = '{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}';
-  const objectMapper = new ObjectMapper();
-
-  const user = objectMapper.parse<User>(jsonData, {mainCreator: () => [User]});
-  t.assert(user instanceof User);
-  t.is(user.id, 1);
-  t.is(user.email, 'john.alfa@gmail.com');
-  t.is(user.firstname, 'John');
-  t.is(user.lastname, 'Alfa');
-  t.deepEqual(user.items, [null, null]);
+  const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","items":[{"id":1,"name":"Game Of Thrones","category":"Book"},{"id":2,"name":"NVIDIA","category":"Graphic Card"}]}',
+    {mainCreator: () => [User]});
+  t.assert(userParsed instanceof User);
+  t.is(userParsed.id, 1);
+  t.is(userParsed.email, 'john.alfa@gmail.com');
+  t.is(userParsed.firstname, 'John');
+  t.is(userParsed.lastname, 'Alfa');
+  t.deepEqual(userParsed.items, []);
 });
+
 

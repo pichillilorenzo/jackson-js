@@ -11,7 +11,7 @@ import {
 
 /**
  * Decorator that can be used for customizing details of a reference to Objects for
- * which "Object Identity" is enabled (see JsonIdentityInfo).
+ * which "Object Identity" is enabled (see {@link JsonIdentityInfo}).
  * The main use case is that of enforcing use of Object Id even for the first time an Object is referenced,
  * instead of first instance being serialized as full Class.
  *

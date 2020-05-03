@@ -1661,6 +1661,10 @@ export class JsonParser<T> {
           value = jsonDeserialize.contentUsing(value, newContext);
         }
 
+        if (this.parseJsonIgnoreType(newContext)) {
+          continue;
+        }
+
         (newIterable as Set<any>).add(this.deepTransform(key, value, newContext, globalContext));
       }
     } else {
@@ -1672,6 +1676,10 @@ export class JsonParser<T> {
 
         if (jsonDeserialize && jsonDeserialize.contentUsing) {
           value = jsonDeserialize.contentUsing(value, newContext);
+        }
+
+        if (this.parseJsonIgnoreType(newContext)) {
+          continue;
         }
 
         (newIterable as Array<any>).push(this.deepTransform(key, value, newContext, globalContext));

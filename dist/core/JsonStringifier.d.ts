@@ -181,9 +181,18 @@ export declare class JsonStringifier<T> {
     private stringifyJsonInclude;
     /**
      *
+     * @param replacement
+     * @param key
      * @param context
      */
-    private stringifyJsonIgnoreType;
+    private stringifyHasJsonIgnoreTypeByKey;
+    /**
+     *
+     * @param value
+     * @param key
+     * @param context
+     */
+    private stringifyHasJsonIgnoreTypeByValue;
     /**
      *
      * @param key
