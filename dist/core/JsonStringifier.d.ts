@@ -250,7 +250,7 @@ export declare class JsonStringifier<T> {
     private hasJsonIdentityReferenceAlwaysAsId;
     /**
      *
-     * @param replacement
+     * @param obj
      * @param context
      */
     private stringifyJsonIdentityReference;

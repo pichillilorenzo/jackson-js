@@ -439,34 +439,24 @@ export class JsonStringifier<T> {
                 if (!isIterableNoMapNoString(replacement[newKey])) {
                   this.stringifyJsonUnwrapped(replacement, value, k, newKey, context, globalContext, new Map(valueAlreadySeen));
                 }
+              } else {
+                newKey = this.stringifyJsonVirtualProperty(replacement, k, newKey, context, namingMap);
               }
-            } else {
-              replacement[newKey] = this.stringifyJsonGetter(value, k, context);
-              if (!this.stringifyJsonInclude(replacement, newKey, context)) {
-                namingMap.delete(k);
-                delete replacement[newKey];
-                continue;
-              }
-
-              if (replacement[newKey] == null) {
-                this.stringifyJsonSerializePropertyNull(replacement, k, newKey, context);
-              }
-              this.stringifyJsonSerializeProperty(replacement, k, newKey, context);
             }
           }
         }
 
-        this.stringifyJsonAnyGetter(replacement, value, context);
-
-        if (!isPrepJsonAppend) {
-          this.stringifyJsonAppend(replacement, context);
-        }
-
-        this.stringifyJsonIdentityInfo(replacement, value, context, globalContext);
-
         if (this.hasJsonIdentityReferenceAlwaysAsId(context)) {
-          replacement = this.stringifyJsonIdentityReference(replacement, context);
+          replacement = this.stringifyJsonIdentityReference(value, context);
         } else {
+          this.stringifyJsonAnyGetter(replacement, value, context);
+
+          if (!isPrepJsonAppend) {
+            this.stringifyJsonAppend(replacement, context);
+          }
+
+          this.stringifyJsonIdentityInfo(replacement, value, context, globalContext);
+
           // eslint-disable-next-line guard-for-in
           for (const k in replacement) {
             const oldKey = namingMap.get(k);
@@ -1340,13 +1330,13 @@ export class JsonStringifier<T> {
 
   /**
    *
-   * @param replacement
+   * @param obj
    * @param context
    */
-  private stringifyJsonIdentityReference(replacement: any, context: JsonStringifierTransformerContext): any {
+  private stringifyJsonIdentityReference(obj: any, context: JsonStringifierTransformerContext): any {
     const jsonIdentityInfo: JsonIdentityInfoOptions =
       getMetadata('JsonIdentityInfo', context.mainCreator[0], null, context);
-    return replacement[jsonIdentityInfo.property];
+    return obj[jsonIdentityInfo.property];
   }
 
   /**
