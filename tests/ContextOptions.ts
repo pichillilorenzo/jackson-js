@@ -42,7 +42,7 @@ test('decoratorsEnabled context option', t => {
     }
   }
 
-  const birthday = new Date(1994, 11, 14);
+  const birthday = new Date(Date.UTC(1994, 11, 14));
   const user = new User(1, 'john.alfa@gmail.com', 'John', 'Alfa', birthday);
 
   const objectMapper = new ObjectMapper();
@@ -54,10 +54,10 @@ test('decoratorsEnabled context option', t => {
     }
   });
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","birthday":787359600000}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","birthday":787363200000}'));
 
   // eslint-disable-next-line max-len
-  const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","birthday":787359600000}', {
+  const userParsed = objectMapper.parse<User>('{"id":1,"email":"john.alfa@gmail.com","firstname":"John","lastname":"Alfa","birthday":787363200000}', {
     mainCreator: () => [User],
     decoratorsEnabled: {
       JsonIgnore: false
@@ -118,7 +118,7 @@ test('forType context option', t => {
     }
   }
 
-  const birthday = new Date(1994, 11, 14);
+  const birthday = new Date(Date.UTC(1994, 11, 14));
   const writer = new Writer(1, 'George R. R. Martin', birthday);
   const bookDate = new Date(2012, 11, 4);
   const book = new Book(1, 'Game Of Thrones', bookDate);
@@ -173,7 +173,7 @@ test('forType context option', t => {
   });
 
   // eslint-disable-next-line max-len
-  const writerParsed = objectMapper.parse<Writer>('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354575600000}}],"id":1,"name":"George R. R. Martin","birthday":787359600000}', {
+  const writerParsed = objectMapper.parse<Writer>('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354575600000}}],"id":1,"name":"George R. R. Martin","birthday":787363200000}', {
     mainCreator: () => [Writer],
     withViews: () => [Views.public],
     forType: parserForTypeContext,

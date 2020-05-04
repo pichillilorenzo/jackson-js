@@ -113,7 +113,7 @@ test('@JsonSerialize and @JsonDeserialize at property level', t => {
   }
 
   const writer = new Writer(1, 'George R. R. Martin');
-  const book = new Book(1, 'Game Of Thrones', new Date(2012, 11, 4), writer);
+  const book = new Book(1, 'Game Of Thrones', new Date(Date.UTC(2012, 11, 4)), writer);
   writer.books.push(book);
 
   const objectMapper = new ObjectMapper();
@@ -210,7 +210,7 @@ test('@JsonSerialize and @JsonDeserialize at method level', t => {
   const book = new Book();
   book.id = 1;
   book.name = 'Game Of Thrones';
-  book.date = new Date(2012, 11, 4);
+  book.date = new Date(Date.UTC(2012, 11, 4));
   book.writer = writer;
   writer.books.push(book);
 
@@ -329,7 +329,7 @@ test('Custom serializers and deserializers', t => {
   }
 
   const writer = new Writer(1, 'George R. R. Martin');
-  const book = new Book(1, 'Game Of Thrones', new Date(2012, 11, 4), writer);
+  const book = new Book(1, 'Game Of Thrones', new Date(Date.UTC(2012, 11, 4)), writer);
   writer.books.push(book);
   writer.books.push(null);
   writer.books.push(null);
@@ -465,13 +465,13 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
     phone: '+393333111999'
   };
 
-  const book = new Book(1, 'Game Of Thrones', new Date(2012, 11, 4), writer);
+  const book = new Book(1, 'Game Of Thrones', new Date(Date.UTC(2012, 11, 4)), writer);
   writer.books.push(book);
 
   const objectMapper = new ObjectMapper();
   const jsonData = objectMapper.stringify<Writer>(writer);
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":1354575600000,"writer":null,"writerName":"George R. R. Martin"}],"otherInfoMap":{"newMapKey-phone":"newMapValue: +393333111999","newMapKey-address":"newMapValue: 123 Main Street, New York, NY 10030"},"otherInfoObjLiteral":{"newObjKey-address":"newObjValue: 123 Main Street, New York, NY 10030","newObjKey-phone":"newObjValue: +393333111999"},"id":1,"name":"George R. R. Martin"}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":1354579200000,"writer":null,"writerName":"George R. R. Martin"}],"otherInfoMap":{"newMapKey-phone":"newMapValue: +393333111999","newMapKey-address":"newMapValue: 123 Main Street, New York, NY 10030"},"otherInfoObjLiteral":{"newObjKey-address":"newObjValue: 123 Main Street, New York, NY 10030","newObjKey-phone":"newObjValue: +393333111999"},"id":1,"name":"George R. R. Martin"}'));
 
   const writerParsed = objectMapper.parse<Writer>(jsonData, {mainCreator: () => [Writer]});
   t.assert(writerParsed instanceof Writer);
@@ -487,6 +487,6 @@ test('@JsonSerialize and @JsonDeserialize at property level with contentUsing an
   t.assert(writerParsed.books[0].date instanceof Date);
   t.is(writerParsed.books[0].id, 1);
   t.is(writerParsed.books[0].name, 'Game Of Thrones');
-  t.deepEqual(writerParsed.books[0].date, new Date(2012, 11, 4));
+  t.deepEqual(writerParsed.books[0].date, new Date(Date.UTC(2012, 11, 4)));
   t.is(writerParsed.books[0].writer, null);
 });
