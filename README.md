@@ -31,7 +31,7 @@ npm install --save jackson-js
 
 ## API
 
-
+API docs can be found [here](https://pichillilorenzo.github.io/jackson-js).
 
 ## Important note
 
