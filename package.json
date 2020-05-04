@@ -1,9 +1,22 @@
 {
   "name": "jackson-js",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "keywords": [],
+  "description": "JavaScript object serializion and deserializion library using decorators. It supports also advanced Object concepts such as polymorphism, Object identity and cyclic objects.",
+  "author": {
+    "name": "Lorenzo Pichilli",
+    "email": "pichillilorenzo@gmail.com",
+    "url": "https://github.com/pichillilorenzo"
+  },
+  "keywords": [
+    "jackson-json", "json", "jackson", "jackson-js", "json-serialization", "json-deserialization",
+    "json-stringifier", "json-parser", "jackson-javascript", "json-stringify", "json-parse",
+    "json-decoder", "json-encoder"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pichillilorenzo/jackson-js"
+  },
   "scripts": {
     "clean": "rimraf ./dist",
     "build:doc": "typedoc --out ./docs ./src --excludePrivate --exclude \"**/*+(util|private).ts\" --custom-tags-config typedoc-tags-config.json",
