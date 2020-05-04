@@ -67,6 +67,64 @@
 				<a href="#jackson-js" id="jackson-js" style="color: inherit; text-decoration: none;">
 					<h1>jackson-js</h1>
 				</a>
+				<p><a href="https://www.npmjs.com/package/jackson-js"><img src="https://img.shields.io/npm/dm/jackson-js.svg" alt="npm downloads"></a>
+					<a href="https://www.npmjs.com/package/jackson-js"><img src="https://img.shields.io/npm/v/jackson-js.svg" alt="jackson-js version"></a>
+					<a href="https://travis-ci.org/pichillilorenzo/jackson-js"><img src="https://img.shields.io/travis/pichillilorenzo/jackson-js.svg?branch=master" alt="Travis"></a>
+					<a href="https://coveralls.io/github/pichillilorenzo/jackson-js?branch=master"><img src="https://coveralls.io/repos/github/pichillilorenzo/jackson-js/badge.svg?branch=master" alt="Coverage Status"></a>
+					<a href="/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="license"></a>
+					<a href="https://www.paypal.me/LorenzoPichilli"><img src="https://img.shields.io/badge/paypal-donate-yellow.svg" alt="Donate to this project using Paypal"></a>
+				<a href="https://www.patreon.com/bePatron?u=9269604"><img src="https://img.shields.io/badge/patreon-donate-yellow.svg" alt="Donate to this project using Patreon"></a></p>
+				<p>As the name implies, <code>jackson-js</code> is heavily inspired by the famous Java <a href="https://github.com/FasterXML/jackson">FasterXML/jackson library</a>.</p>
+				<p>It can be used on both <strong>client</strong> (browser) and <strong>server</strong> (Node.js) side.</p>
+				<p>Why this library? What&#39;s the difference between using this library instead of <code>JSON.parse</code> and <code>JSON.stringify</code>?</p>
+				<p>With <code>jackson-js</code> , you can customize your JavaScript object serializion/deserializion using decorators such as <code>@JsonProperty()</code>, <code>@JsonFormat()</code>, <code>@JsonIgnore()</code>, etc. However, this library uses <code>JSON.parse</code> and <code>JSON.stringify</code> under the hood.</p>
+				<p>Furthermore: </p>
+				<ul>
+					<li>it not only deserialize JSON text into a JavaScript object, it also converts it into an instance of its class (instead, with <code>JSON.parse</code> you will get just a simple JavaScript object of type <code>Object</code>);</li>
+					<li>it supports more advanced Object concepts such as <strong>polymorphism</strong> and <strong>Object identity</strong>;</li>
+					<li>it supports <strong>cyclic object</strong> serialization/deserialization;</li>
+					<li>it supports serialization/deserialization of other native JavaScript types: <code>Map</code>, <code>Set</code>, <code>BigInt</code>, Typed Arrays (such as <code>Int8Array</code>);</li>
+				</ul>
+				<p>This library implements almost all of the Java jackson annotations.</p>
+				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+					<h2>Installation</h2>
+				</a>
+				<pre><code>npm <span class="hljs-keyword">install</span> <span class="hljs-comment">--save jackson-js</span></code></pre>
+				<a href="#api" id="api" style="color: inherit; text-decoration: none;">
+					<h2>API</h2>
+				</a>
+				<a href="#important-note" id="important-note" style="color: inherit; text-decoration: none;">
+					<h2>Important note</h2>
+				</a>
+				<p>The most important decorators are:</p>
+				<ul>
+					<li><code>@JsonProperty()</code>: Each class property (or its getter/setter) must be decorated with this decorator, otherwise deserialization and serialization will not work properly! That&#39;s because, for example, given a JavaScript class, there isn&#39;t any way or API (such as <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html">Reflection API for Java</a>) to get for sure all the class properties;</li>
+					<li><code>@JsonClassType()</code>: This decorator, instead, is used to define the type of a class property or method parameter. This information is used during serialization and, more important, during deserialization to know about <strong>the type of a property/parameter</strong>. This is necessary because JavaScript isn&#39;t a strong typed programming language, so, for example, during deserialization, without the usage of this decorator, there isn&#39;t any way to know the specific type of a class property, such as a <code>Date</code> or a custom Class type.</li>
+				</ul>
+				<p>Here is a quick example about this two decorators:</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">class</span> Book {
+  <span class="hljs-meta">@JsonProperty</span>() <span class="hljs-meta">@JsonClassType</span>({<span class="hljs-keyword">type</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-built_in">String</span>]})
+  name: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-meta">@JsonProperty</span>() <span class="hljs-meta">@JsonClassType</span>({<span class="hljs-keyword">type</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-built_in">String</span>]})
+  category: <span class="hljs-built_in">string</span>;
+}
+
+<span class="hljs-keyword">class</span> Writer {
+  <span class="hljs-meta">@JsonProperty</span>() <span class="hljs-meta">@JsonClassType</span>({<span class="hljs-keyword">type</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-built_in">Number</span>]})
+  id: <span class="hljs-built_in">number</span>;
+  <span class="hljs-meta">@JsonProperty</span>() <span class="hljs-meta">@JsonClassType</span>({<span class="hljs-keyword">type</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-built_in">String</span>]})
+  name: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-meta">@JsonProperty</span>() <span class="hljs-meta">@JsonClassType</span>({<span class="hljs-keyword">type</span>: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> [<span class="hljs-built_in">Array</span>, [Book]]})
+  books: Book[] = [];
+}</code></pre>
+				<a href="#tutorials" id="tutorials" style="color: inherit; text-decoration: none;">
+					<h2>Tutorials</h2>
+				</a>
+				<ul>
+					<li><a href="">Jackson-js: JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)</a></li>
+				</ul>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">

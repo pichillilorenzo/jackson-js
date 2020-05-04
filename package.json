@@ -12,7 +12,8 @@
     "start:node:dev": "node dist/lib.node",
     "test-es5": "TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=3m --verbose",
     "test-es6": "TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=3m --verbose",
-    "test": "npm run test-es5 && npm run test-es6"
+    "test": "nyc npm run test-es5 && nyc --no-clean npm run test-es6",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "main": "./dist/lib.node.js",
   "browser": "./dist/lib.js",
@@ -33,6 +34,8 @@
     "@typescript-eslint/eslint-plugin-tslint": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "ava": "^3.5.2",
+    "coveralls": "^3.1.0",
+    "nyc": "^15.0.1",
     "codelyzer": "^5.2.2",
     "cross-env": "^7.0.2",
     "eslint": "^6.8.0",

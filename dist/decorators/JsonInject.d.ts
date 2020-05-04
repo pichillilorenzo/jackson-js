@@ -5,7 +5,7 @@
 import { JsonInjectDecorator } from '../@types';
 /**
  * Decorator used for indicating that value of decorated property will be "injected" through
- * {@link JsonParserContext.injectableValues} value configured by {@link ObjectMapper}.
+ * {@link JsonParserContext.injectableValues} value.
  *
  * @example
  * ```typescript

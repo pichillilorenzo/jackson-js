@@ -49,7 +49,7 @@ test('@JsonTypeInfo and @JsonSubTypes at class level with JsonTypeInfoAs.PROPERT
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"Dog"},{"name":"Merlin","@type":"Cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -108,7 +108,7 @@ test('@JsonTypeInfo at class level with JsonTypeInfoAs.PROPERTY without subtypes
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"animalDogType"},{"name":"Merlin","@type":"animalCatType"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -779,7 +779,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with subtypes name', t => {
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","@type":"dog"},{"name":"Merlin","@type":"cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -819,7 +819,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
 
   @JsonTypeName({value: 'cat'})
   class Cat extends Animal {
-    @JsonTypeId() @JsonClassType({type: () => [String]})
+    @JsonTypeId()
     getTypeId(): string {
       return 'CatTypeId';
     }
@@ -831,7 +831,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY with @JsonTypeId', t => {
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"DogTypeId":{"name":"Arthur"}},{"CatTypeId":{"name":"Merlin"}}]'));
 
   const err1 = t.throws<JacksonError>(() => {
@@ -899,7 +899,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.PROPERTY and custom property value', t =
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"name":"Arthur","myType":"dog"},{"name":"Merlin","myType":"cat"}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -945,7 +945,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_OBJECT', t => {
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[{"dog":{"name":"Arthur"}},{"cat":{"name":"Merlin"}}]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});
@@ -991,7 +991,7 @@ test('@JsonTypeInfo with JsonTypeInfoAs.WRAPPER_ARRAY', t => {
   const cat = new Cat('Merlin');
 
   const objectMapper = new ObjectMapper();
-  const jsonData = objectMapper.stringify<Array<any>>([dog, cat]);
+  const jsonData = objectMapper.stringify<Array<Animal>>([dog, cat]);
   t.deepEqual(JSON.parse(jsonData), JSON.parse('[["dog",{"name":"Arthur"}],["cat",{"name":"Merlin"}]]'));
 
   const animals = objectMapper.parse<Array<Animal>>(jsonData, {mainCreator: () => [Array, [Animal]]});

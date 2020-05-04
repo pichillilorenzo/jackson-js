@@ -3,7 +3,7 @@ import {JsonInject} from '../src/decorators/JsonInject';
 import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
-import {JsonSetter} from "../src/decorators/JsonSetter";
+import {JsonSetter} from '../src/decorators/JsonSetter';
 
 test('@JsonInject at property level', t => {
   class CurrencyRate {
