@@ -120,7 +120,7 @@ test('forType context option', t => {
 
   const birthday = new Date(Date.UTC(1994, 11, 14));
   const writer = new Writer(1, 'George R. R. Martin', birthday);
-  const bookDate = new Date(2012, 11, 4);
+  const bookDate = new Date(Date.UTC(2012, 11, 4));
   const book = new Book(1, 'Game Of Thrones', bookDate);
   writer.books.push(book);
 
@@ -155,7 +155,7 @@ test('forType context option', t => {
     ]
   });
   // eslint-disable-next-line max-len
-  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354575600000}}],"name":"George R. R. Martin"}'));
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354579200000}}],"name":"George R. R. Martin"}'));
 
   const parserForTypeContext = new Map<ClassType<any>, JsonParserForTypeContext>();
   parserForTypeContext.set(Book, {
@@ -173,7 +173,7 @@ test('forType context option', t => {
   });
 
   // eslint-disable-next-line max-len
-  const writerParsed = objectMapper.parse<Writer>('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354575600000}}],"id":1,"name":"George R. R. Martin","birthday":787363200000}', {
+  const writerParsed = objectMapper.parse<Writer>('{"books":[{"id":1,"name":"Game Of Thrones","date":{"dateWrapper":1354579200000}}],"id":1,"name":"George R. R. Martin","birthday":787363200000}', {
     mainCreator: () => [Writer],
     withViews: () => [Views.public],
     forType: parserForTypeContext,
