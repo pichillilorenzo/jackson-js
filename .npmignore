@@ -1,3 +1,6 @@
 src
 tests
 docs
+.nyc_output
+.idea
+.github
