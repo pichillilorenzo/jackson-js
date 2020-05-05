@@ -45,7 +45,7 @@ The main classes that `jackson-js` offers to serialize and deserialize JavaScrip
 
 The most important decorators are:
 - `@JsonProperty()`: each class property (or its getter/setter) must be decorated with this decorator, otherwise deserialization and serialization will not work properly! That's because, for example, given a JavaScript class, there isn't any way or API (such as [Reflection API for Java](https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html)) to get for sure all the class properties;
-- `@JsonClassType()`: this decorator, instead, is used to define the type of a class property or method parameter. This information is used during serialization and, more important, during deserialization to know about **the type of a property/parameter**. This is necessary because JavaScript isn't a strong typed programming language, so, for example, during deserialization, without the usage of this decorator, there isn't any way to know the specific type of a class property, such as a `Date` or a custom Class type.
+- `@JsonClassType()`: this decorator, instead, is used to define the type of a class property or method parameter. This information is used during serialization and, more important, during deserialization to know about **the type of a property/parameter**. This is necessary because JavaScript isn't a strongly-typed programming language, so, for example, during deserialization, without the usage of this decorator, there isn't any way to know the specific type of a class property, such as a `Date` or a custom Class type.
 
 Here is a quick example about this two decorators:
 ```typescript
@@ -69,5 +69,9 @@ class Writer {
 ```
 
 ## Tutorials
-- [Jackson-js: JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)]()
-- [Jackson-js: (Part 2)]()
+- [Jackson-js: Powerful JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)]()
+- [Jackson-js: Examples for client and server side (Part 2)]()
+
+## Examples
+
+Code examples can be found inside the `tests` folder and in [this example repository](https://github.com/pichillilorenzo/jackson-js-examples). The example repository gives a simple example using the `jackson-js` library with Angular 9 for the client side and two examples for the server side: one using Node.js + Express + SQLite3 (with Sequelize 5) and another one using Node.js + LoopBack 4.
