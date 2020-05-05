@@ -70,7 +70,7 @@ class Writer {
 
 ## Tutorials
 - [Jackson-js: Powerful JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)](https://medium.com/@pichillilorenzo/df952454cf?source=friends_link&sk=a65bd247eca2f95fdfddda34447a6db6)
-- [Jackson-js: Examples for client and server side (Part 2)](https://medium.com/@pichillilorenzo/7e66df74c851?source=friends_link&sk=2636fca640284894c63cb3c689a0e822)
+- [Jackson-js: Examples for client (Angular) and server (Node.js) side (Part 2)](https://medium.com/@pichillilorenzo/7e66df74c851?source=friends_link&sk=2636fca640284894c63cb3c689a0e822)
 
 ## Examples
 
