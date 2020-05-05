@@ -35,6 +35,14 @@ API docs can be found [here](https://pichillilorenzo.github.io/jackson-js).
 
 ## Important note
 
+The main classes that `jackson-js` offers to serialize and deserialize JavaScript objects are: `ObjectMapper`, `JsonStringifier` and `JsonParser`.
+
+`ObjectMapper` provides functionality for both reading and writing JSON. It will use instances of `JsonParser` and `JsonStringifier` for implementing actual reading/writing of JSON.
+
+`JsonParser` provides functionality for writing JSON.
+
+`JsonStringifier` provides functionality for reading JSON.
+
 The most important decorators are:
 - `@JsonProperty()`: Each class property (or its getter/setter) must be decorated with this decorator, otherwise deserialization and serialization will not work properly! That's because, for example, given a JavaScript class, there isn't any way or API (such as [Reflection API for Java](https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/package-summary.html)) to get for sure all the class properties;
 - `@JsonClassType()`: This decorator, instead, is used to define the type of a class property or method parameter. This information is used during serialization and, more important, during deserialization to know about **the type of a property/parameter**. This is necessary because JavaScript isn't a strong typed programming language, so, for example, during deserialization, without the usage of this decorator, there isn't any way to know the specific type of a class property, such as a `Date` or a custom Class type.
@@ -62,3 +70,4 @@ class Writer {
 
 ## Tutorials
 - [Jackson-js: JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)]()
+- [Jackson-js: (Part 2)]()
