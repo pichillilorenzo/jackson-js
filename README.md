@@ -14,7 +14,7 @@ It can be used on both **client** (browser) and **server** (Node.js) side.
 
 Why this library? What's the difference between using this library instead of `JSON.parse` and `JSON.stringify`?
 
-With `jackson-js` , you can customize your JavaScript object serializion/deserializion using decorators such as `@JsonProperty()`, `@JsonFormat()`, `@JsonIgnore()`, etc. However, this library uses `JSON.parse` and `JSON.stringify` under the hood.
+With `jackson-js` , you can customize your JavaScript object serialization/deserialization using decorators such as `@JsonProperty()`, `@JsonFormat()`, `@JsonIgnore()`, etc. However, this library uses `JSON.parse` and `JSON.stringify` under the hood.
 
 Furthermore: 
 - it not only deserialize JSON text into a JavaScript object, it also converts it into an instance of its class (instead, with `JSON.parse` you will get just a simple JavaScript object of type `Object`);
