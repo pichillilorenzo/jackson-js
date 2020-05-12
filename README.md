@@ -26,7 +26,7 @@ Furthermore: 
 
 This library can be useful in more complex cases, for example when you want to:
 - manipulate JSON in depth;
-- restore a JavaScript type (a similar packages is [class-transformer](https://github.com/typestack/class-transformer)); 
+- restore a JavaScript type (a similar package is [class-transformer](https://github.com/typestack/class-transformer)); 
 - preserve type information (using polymorphic type handling decorators: `@JsonTypeInfo`, `@JsonSubTypes`, and `@JsonTypeName`. A similar package is [TypedJSON](https://github.com/JohnWeisz/TypedJSON));
 - hide some properties for certain HTTP endpoints or some other external service;
 - have different JSON response for some external application or manage different JSON data coming from other application (for example you need to communicate with a Spring Boot application that uses different JSON Schema for the same model or with other applications made with python, PHP, etc...);
