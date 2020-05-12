@@ -12,7 +12,7 @@ As the name implies, `jackson-js` is heavily inspired by the famous Java [Faster
 
 It can be used on both **client** (browser) and **server** (Node.js) side.
 
-### Why this library? What's the difference between using this library instead of `JSON.parse` and `JSON.stringify`?
+## Why this library? What's the difference between using this library instead of `JSON.parse` and `JSON.stringify`?
 
 For simple cases, you don't need this library of course, you can just use `JSON.parse` and `JSON.stringify` to serialize/deserialize JSON.
 
