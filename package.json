@@ -21,8 +21,8 @@
     "clean": "rimraf ./dist",
     "clean:doc": "rimraf ./docs/latest && rimraf ./docs/$npm_package_version",
     "build:doc": "npm run clean:doc && npm run build:doc:latest && npm run build:doc:current-version && node ./build-index-docs.js",
-    "build:doc:latest": "typedoc --out ./docs/latest ./src --readme none --excludePrivate --exclude \"**/*+(util|private|index).ts\" --custom-tags-config typedoc-tags-config.json",
-    "build:doc:current-version": "typedoc --out ./docs/$npm_package_version ./src --name \"jackson-js $npm_package_version\" --readme none --excludePrivate --exclude \"**/*+(util|private|index).ts\" --custom-tags-config typedoc-tags-config.json",
+    "build:doc:latest": "typedoc --out ./docs/latest ./src --readme none --excludePrivate --excludeExternals --exclude \"**/!(@types)/*+(util|index).ts\" --custom-tags-config typedoc-tags-config.json",
+    "build:doc:current-version": "typedoc --out ./docs/$npm_package_version ./src --name \"jackson-js $npm_package_version\" --readme none --excludePrivate --excludeExternals --exclude \"**/!(@types)/*+(util|index).ts\" --custom-tags-config typedoc-tags-config.json",
     "build:dev": "npm run clean && ./node_modules/.bin/webpack --config webpack.dev.js",
     "build:prod": "npm run clean && ./node_modules/.bin/webpack --config webpack.prod.js",
     "start:node:dev": "node dist/lib.node",
@@ -36,7 +36,6 @@
   "types": "./dist/index.d.ts",
   "dependencies": {
     "@babel/parser": "^7.9.4",
-    "@types/node": "^13.11.0",
     "dayjs": "^1.8.23",
     "lodash.clone": "^4.5.0",
     "lodash.clonedeep": "^4.5.0",
@@ -46,6 +45,7 @@
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
     "@babel/types": "^7.8.7",
+    "@types/node": "^13.11.0",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",

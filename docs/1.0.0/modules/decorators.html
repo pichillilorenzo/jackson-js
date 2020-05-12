@@ -136,7 +136,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Alias<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonAliasDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonAliasOptions): JsonAliasOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonAliasOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonAlias&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonAlias&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonAliasParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonAlias.ts#L31">src/decorators/JsonAlias.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonAlias.ts#L31">src/decorators/JsonAlias.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -168,7 +168,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Any<wbr>Getter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonAnyGetterDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonAnyGetterOptions): JsonAnyGetterOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonAnyGetterOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (hasMetadata(&#x27;JsonAnyGetter&#x27;, target.constructor, null, {withContextGroups: options.contextGroups})) {throw new JacksonError(&#x60;Multiple &#x27;any-getters&#x27; defined for &quot;${target.constructor.name}&quot;.&#x60;);}if (!options.value) {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();if (methodName.startsWith(&#x27;get&#x27;)) {options.value &#x3D; methodName.substring(3);if (options.value.length &gt; 0) {options.value &#x3D; options.value.charAt(0).toLowerCase() + options.value.substring(1);}}if (!options.value) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Invalid usage of @JsonAnyGetter() on ${target.constructor.name}.${propertyKey.toString()}. You must either define a non-empty @JsonAnyGetter() option value or change the method name starting with &quot;get&quot;.&#x60;);}} else {options.value &#x3D; propertyKey.toString();}}defineMetadata(&#x27;JsonAnyGetter&#x27;, options, target.constructor);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonAnyGetter.ts#L42">src/decorators/JsonAnyGetter.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonAnyGetter.ts#L42">src/decorators/JsonAnyGetter.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -210,7 +210,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Any<wbr>Setter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonAnySetterDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonAnySetterOptions): JsonAnySetterOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonAnySetterOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (hasMetadata(&#x27;JsonAnySetter&#x27;, target.constructor, null, {withContextGroups: options.contextGroups})) {throw new JacksonError(&#x60;Multiple &#x27;any-setters&#x27; defined for &quot;${target.constructor.name}&quot;.&#x60;);}defineMetadata(&#x27;JsonAnySetter&#x27;, options, target.constructor);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonAnySetter.ts#L41">src/decorators/JsonAnySetter.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonAnySetter.ts#L41">src/decorators/JsonAnySetter.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -250,7 +250,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Append<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonAppendDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonAppendOptions): JsonAppendOptions &#x3D;&gt; ({enabled: true,prepend: false,attrs: [],...o}),(options: JsonAppendOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonAppend&#x27;, options, target);return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonAppend.ts#L45">src/decorators/JsonAppend.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonAppend.ts#L45">src/decorators/JsonAppend.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -292,7 +292,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Back<wbr>Reference<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonBackReferenceDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonBackReferenceOptions &#x3D; {}): JsonBackReferenceOptions &#x3D;&gt; ({enabled: true,value: &#x27;defaultReference&#x27;,...o}),(options: JsonBackReferenceOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (hasMetadata(&#x27;JsonBackReference:&#x27; + options.value, target.constructor, null, {withContextGroups: options.contextGroups})) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Multiple back-reference properties with name &quot;${options.value}&quot; at ${target.constructor}[&quot;${propertyKey.toString()}&quot;].&#x27;&#x60;);}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();const prefix &#x3D; methodName.startsWith(&#x27;get&#x27;) ? &#x27;set&#x27; : &#x27;get&#x27;;const oppositePropertyKey &#x3D; prefix + methodName.substring(3);const oppositeOptions: JsonBackReferenceOptions &#x3D; {...options,_propertyKey: oppositePropertyKey};defineMetadata(&#x27;JsonBackReference&#x27;, oppositeOptions, target.constructor, oppositePropertyKey);if (prefix &#x3D;&#x3D;&#x3D; &#x27;set&#x27;) {defineMetadata(&#x27;JsonBackReference&#x27;, oppositeOptions,target.constructor, null, {suffix: oppositeOptions.value});}} else {defineMetadata(&#x27;JsonBackReference&#x27;, options, target.constructor, null, {suffix: options.value});}defineMetadata(&#x27;JsonBackReference&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonBackReference.ts#L55">src/decorators/JsonBackReference.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonBackReference.ts#L55">src/decorators/JsonBackReference.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -347,7 +347,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Class<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonClassTypeDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonClassTypeOptions): JsonClassTypeOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonClassTypeOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonClassTypeParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonClassType&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonClassType&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonClassType.ts#L43">src/decorators/JsonClassType.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonClassType.ts#L43">src/decorators/JsonClassType.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -391,7 +391,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonCreatorDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonCreatorOptions &#x3D; {}): JsonCreatorOptions &#x3D;&gt; ({enabled: true,name: defaultCreatorName,mode: JsonCreatorMode.PROPERTIES,...o}),(options: JsonCreatorOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {options._propertyKey &#x3D; (options._propertyKey !&#x3D; null) ? options._propertyKey : &#x27;constructor&#x27;;if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex !&#x3D;&#x3D; &#x27;number&#x27; &amp;&amp;typeof descriptorOrParamIndex.value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {options._method &#x3D; descriptorOrParamIndex.value;if (options.name &amp;&amp;hasMetadata(&#x27;JsonCreator:&#x27; + options.name, target, null, {withContextGroups: options.contextGroups})) {throw new JacksonError(&#x60;Already had a @JsonCreator() with name &quot;${options.name}&quot; for Class &quot;${target.name}&quot;.&#x60;);}defineMetadata(&#x27;JsonCreator&#x27;, options, target, null, {suffix: options.name});} else if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {options._ctor &#x3D; target;// get original constructorwhile (options._ctor.toString().trim().startsWith(&#x27;class extends target {&#x27;)) {options._ctor &#x3D; Object.getPrototypeOf(options._ctor);}defineMetadata(&#x27;JsonCreator&#x27;, options, target, null, {suffix: options.name});return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonCreator.ts#L92">src/decorators/JsonCreator.ts:92</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonCreator.ts#L92">src/decorators/JsonCreator.ts:92</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -460,7 +460,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Deserialize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonDeserializeDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonDeserializeOptions): JsonDeserializeOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonDeserializeOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonDeserialize&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonDeserializeParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonDeserialize&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonDeserialize.ts#L42">src/decorators/JsonDeserialize.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonDeserialize.ts#L42">src/decorators/JsonDeserialize.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -503,7 +503,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Filter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonFilterDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonFilterOptions): JsonFilterOptions &#x3D;&gt; ({enabled: true, ...o }),(options: JsonFilterOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonFilter&#x27;, options, target);return target;}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonFilter&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonFilter.ts#L72">src/decorators/JsonFilter.ts:72</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonFilter.ts#L72">src/decorators/JsonFilter.ts:72</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -555,7 +555,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonFormatDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonFormatOptions): JsonFormatOptions &#x3D;&gt; ({enabled: true,shape: JsonFormatShape.ANY,// @ts-ignorelocale: &#x27;en&#x27;,...o}),(options: JsonFormatOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonFormat&#x27;, options, target);return target;}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonFormat&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonFormat.ts#L99">src/decorators/JsonFormat.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonFormat.ts#L99">src/decorators/JsonFormat.ts:99</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -617,7 +617,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Getter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonGetterDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonGetterOptions): JsonGetterOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonGetterOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (!options.value) {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();if (methodName.startsWith(&#x27;get&#x27;)) {options.value &#x3D; methodName.substring(3);if (options.value.length &gt; 0) {options.value &#x3D; options.value.charAt(0).toLowerCase() + options.value.substring(1);}}if (!options.value) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Invalid usage of @JsonGetter() on ${target.constructor.name}.${propertyKey.toString()}. You must either define a non-empty @JsonGetter() option value or change the method name starting with &quot;get&quot;.&#x60;);}} else {options.value &#x3D; propertyKey.toString();}}defineMetadata(&#x27;JsonGetter&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonVirtualProperty&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonGetter.ts#L44">src/decorators/JsonGetter.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonGetter.ts#L44">src/decorators/JsonGetter.ts:44</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -661,7 +661,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Identity<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIdentityInfoDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIdentityInfoOptions): JsonIdentityInfoOptions &#x3D;&gt; ({enabled: true,property: &#x27;@id&#x27;,uuidv5: {},uuidv4: {},uuidv3: {},uuidv1: {},...o}),(options: JsonIdentityInfoOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonIdentityInfo&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonIdentityInfoParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonIdentityInfo&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonIdentityInfo.ts#L89">src/decorators/JsonIdentityInfo.ts:89</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L89">src/decorators/JsonIdentityInfo.ts:89</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -708,7 +708,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Identity<wbr>Reference<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIdentityReferenceDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIdentityReferenceOptions): JsonIdentityReferenceOptions &#x3D;&gt; ({enabled: true,...o}),(options: JsonIdentityReferenceOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonIdentityReference&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonIdentityReferenceParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonIdentityReference&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonIdentityReference.ts#L50">src/decorators/JsonIdentityReference.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityReference.ts#L50">src/decorators/JsonIdentityReference.ts:50</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -755,7 +755,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIgnoreDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIgnoreOptions): JsonIgnoreOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonIgnoreOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonIgnore&#x27;, options, target.constructor, propertyKey);}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonIgnoreParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonIgnore.ts#L28">src/decorators/JsonIgnore.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIgnore.ts#L28">src/decorators/JsonIgnore.ts:28</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -785,7 +785,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIgnorePropertiesDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIgnorePropertiesOptions): JsonIgnorePropertiesOptions &#x3D;&gt; ({enabled: true,allowGetters: false,allowSetters: false,ignoreUnknown: false,value: [],...o}),(options: JsonIgnorePropertiesOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonIgnoreProperties&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonIgnorePropertiesParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonIgnoreProperties&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonIgnoreProperties.ts#L33">src/decorators/JsonIgnoreProperties.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIgnoreProperties.ts#L33">src/decorators/JsonIgnoreProperties.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -819,7 +819,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Ignore<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIgnoreTypeDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIgnoreTypeOptions): JsonIgnoreTypeOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonIgnoreTypeOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonIgnoreType&#x27;, options, target);return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonIgnoreType.ts#L45">src/decorators/JsonIgnoreType.ts:45</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIgnoreType.ts#L45">src/decorators/JsonIgnoreType.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -864,7 +864,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Include<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonIncludeDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonIncludeOptions): JsonIncludeOptions &#x3D;&gt; ({enabled: true,value: JsonIncludeType.ALWAYS,...o}),(options: JsonIncludeOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonInclude&#x27;, options, target);return target;}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonInclude&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonInclude.ts#L80">src/decorators/JsonInclude.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonInclude.ts#L80">src/decorators/JsonInclude.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -904,7 +904,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Inject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonInjectDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonInjectOptions &#x3D; {}): JsonInjectOptions &#x3D;&gt; ({enabled: true,useInput: true,...o}),(options: JsonInjectOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (!options.value &amp;&amp; propertyKey !&#x3D; null) {options.value &#x3D; propertyKey.toString();}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {if (!options.value || (propertyKey !&#x3D; null &amp;&amp; options.value &#x3D;&#x3D;&#x3D; propertyKey.toString())) {const method &#x3D; (propertyKey) ? target[propertyKey.toString()] : target;const argNames &#x3D; getArgumentNames(method);options.value &#x3D; argNames[descriptorOrParamIndex];}defineMetadata(&#x27;JsonInjectParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();if (methodName.startsWith(&#x27;get&#x27;) || methodName.startsWith(&#x27;set&#x27;)) {options.value &#x3D; methodName.substring(3);if (options.value.length &gt; 0) {options.value &#x3D; options.value.charAt(0).toLowerCase() + options.value.substring(1);}}if (!options.value) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Invalid usage of @JsonInject() on ${((target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonInject() option value or change the method name starting with &quot;get&quot; for Getters or &quot;set&quot; for Setters.&#x60;);}}defineMetadata(&#x27;JsonInject&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonInject.ts#L40">src/decorators/JsonInject.ts:40</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonInject.ts#L40">src/decorators/JsonInject.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -943,7 +943,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Managed<wbr>Reference<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonManagedReferenceDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonManagedReferenceOptions &#x3D; {}): JsonManagedReferenceOptions &#x3D;&gt; ({enabled: true,value: &#x27;defaultReference&#x27;,...o}),(options: JsonManagedReferenceOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (hasMetadata(&#x27;JsonManagedReference:&#x27; + options.value, target.constructor, null, {withContextGroups: options.contextGroups})) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Multiple managed-reference properties with name &quot;${options.value}&quot; at ${target.constructor}[&quot;${propertyKey.toString()}&quot;].&#x27;&#x60;);}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();const prefix &#x3D; methodName.startsWith(&#x27;get&#x27;) ? &#x27;set&#x27; : &#x27;get&#x27;;const oppositePropertyKey &#x3D; prefix + methodName.substring(3);const oppositeOptions: JsonManagedReferenceOptions &#x3D; {...options,_propertyKey: oppositePropertyKey};defineMetadata(&#x27;JsonManagedReference&#x27;, oppositeOptions, target.constructor, oppositePropertyKey);}defineMetadata(&#x27;JsonManagedReference&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonManagedReference.ts#L54">src/decorators/JsonManagedReference.ts:54</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonManagedReference.ts#L54">src/decorators/JsonManagedReference.ts:54</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -997,7 +997,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Naming<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonNamingDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonNamingOptions): JsonNamingOptions &#x3D;&gt; ({enabled: true,...o}),(options: JsonNamingOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonNaming&#x27;, options, target);return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonNaming.ts#L65">src/decorators/JsonNaming.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonNaming.ts#L65">src/decorators/JsonNaming.ts:65</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1030,7 +1030,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Property<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonPropertyDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonPropertyOptions &#x3D; {}): JsonPropertyOptions &#x3D;&gt; ({enabled: true,required: false,access: JsonPropertyAccess.READ_WRITE,...o}),(options: JsonPropertyOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null &amp;&amp; !options.value) {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();if (methodName.startsWith(&#x27;get&#x27;) || methodName.startsWith(&#x27;set&#x27;)) {options.value &#x3D; methodName.substring(3);if (options.value.length &gt; 0) {options.value &#x3D; options.value.charAt(0).toLowerCase() + options.value.substring(1);}}if (!options.value) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Invalid usage of @JsonProperty() on ${((target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonProperty() option value or change the method name starting with &quot;get&quot; for Getters or &quot;set&quot; for Setters.&#x60;);}} else {options.value &#x3D; propertyKey.toString();}}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {if (!options.value || (propertyKey !&#x3D; null &amp;&amp; options.value &#x3D;&#x3D;&#x3D; propertyKey.toString())) {const method &#x3D; (propertyKey) ? target[propertyKey.toString()] : target;const argNames &#x3D; getArgumentNames(method);options.value &#x3D; argNames[descriptorOrParamIndex];}defineMetadata(&#x27;JsonPropertyParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonProperty&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonProperty&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});defineMetadata(&#x27;JsonVirtualProperty&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonProperty.ts#L73">src/decorators/JsonProperty.ts:73</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonProperty.ts#L73">src/decorators/JsonProperty.ts:73</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1078,7 +1078,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Property<wbr>Order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonPropertyOrderDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonPropertyOrderOptions): JsonPropertyOrderOptions &#x3D;&gt; ({enabled: true,alphabetic: false,value: [],...o}),(options: JsonPropertyOrderOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonPropertyOrder&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonPropertyOrderParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonPropertyOrder&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonPropertyOrder.ts#L33">src/decorators/JsonPropertyOrder.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonPropertyOrder.ts#L33">src/decorators/JsonPropertyOrder.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1112,7 +1112,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Raw<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonRawValueDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonRawValueOptions): JsonRawValueOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonRawValueOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonRawValue&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonRawValue.ts#L41">src/decorators/JsonRawValue.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonRawValue.ts#L41">src/decorators/JsonRawValue.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1154,7 +1154,7 @@
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Root<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonRootNameDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonRootNameOptions &#x3D; {}): JsonRootNameOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonRootNameOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {options.value &#x3D; (options.value &#x3D;&#x3D; null) ? (target as ObjectConstructor).name : options.value;defineMetadata(&#x27;JsonRootName&#x27;, options, target);return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonRootName.ts#L41">src/decorators/JsonRootName.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonRootName.ts#L41">src/decorators/JsonRootName.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1193,7 +1193,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Serialize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonSerializeDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonSerializeOptions): JsonSerializeOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonSerializeOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonSerialize&#x27;, options, target);return target;}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonSerialize&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonSerialize.ts#L42">src/decorators/JsonSerialize.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonSerialize.ts#L42">src/decorators/JsonSerialize.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1236,7 +1236,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Setter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonSetterDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonSetterOptions): JsonSetterOptions &#x3D;&gt; ({enabled: true,nulls: JsonSetterNulls.SET,contentNulls: JsonSetterNulls.SET,...o}),(options: JsonSetterOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (!options.value) {if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof (descriptorOrParamIndex as TypedPropertyDescriptor&lt;any&gt;).value &#x3D;&#x3D;&#x3D; &#x27;function&#x27;) {const methodName &#x3D; propertyKey.toString();if (methodName.startsWith(&#x27;set&#x27;)) {options.value &#x3D; methodName.substring(3);if (options.value.length &gt; 0) {options.value &#x3D; options.value.charAt(0).toLowerCase() + options.value.substring(1);}}if (!options.value) {// eslint-disable-next-line max-lenthrow new JacksonError(&#x60;Invalid usage of @JsonSetter() on ${target.constructor.name}.${propertyKey.toString()}. You must either define a non-empty @JsonSetter() option value or change the method name starting with &quot;set&quot;.&#x60;);}} else {options.value &#x3D; propertyKey.toString();}}defineMetadata(&#x27;JsonSetter&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonVirtualProperty&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonSetter.ts#L62">src/decorators/JsonSetter.ts:62</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonSetter.ts#L62">src/decorators/JsonSetter.ts:62</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1277,7 +1277,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Sub<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonSubTypesDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonSubTypesOptions): JsonSubTypesOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonSubTypesOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonSubTypes&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonSubTypesParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonSubTypes&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonSubTypes.ts#L44">src/decorators/JsonSubTypes.ts:44</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonSubTypes.ts#L44">src/decorators/JsonSubTypes.ts:44</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1322,7 +1322,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonTypeIdDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonTypeIdOptions &#x3D; {}): JsonTypeIdOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonTypeIdOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonTypeId&#x27;, options, target.constructor);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonTypeId.ts#L52">src/decorators/JsonTypeId.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonTypeId.ts#L52">src/decorators/JsonTypeId.ts:52</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1374,7 +1374,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>IdResolver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonTypeIdResolverDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonTypeIdResolverOptions): JsonTypeIdResolverOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonTypeIdResolverOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonTypeIdResolver&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonTypeIdResolverParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonTypeIdResolver&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonTypeIdResolver.ts#L55">src/decorators/JsonTypeIdResolver.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonTypeIdResolver.ts#L55">src/decorators/JsonTypeIdResolver.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1427,7 +1427,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonTypeInfoDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonTypeInfoOptions): JsonTypeInfoOptions &#x3D;&gt; ({enabled: true,use: JsonTypeInfoId.NAME,include: JsonTypeInfoAs.PROPERTY,property: &#x27;@type&#x27;,...o}),(options: JsonTypeInfoOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonTypeInfo&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonTypeInfoParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonTypeInfo&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonTypeInfo.ts#L80">src/decorators/JsonTypeInfo.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonTypeInfo.ts#L80">src/decorators/JsonTypeInfo.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1474,7 +1474,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Type<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonTypeNameDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonTypeNameOptions): JsonTypeNameOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonTypeNameOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {options._ctor &#x3D; target;if (!options.value) {options.value &#x3D; (target as ObjectConstructor).name;}defineMetadata(&#x27;JsonTypeName&#x27;, options, target);defineMetadata(&#x27;JsonTypeName&#x27;, options, target, null, {suffix: options.value});defineMetadata(&#x27;JsonTypeName&#x27;, options, target, null, {suffix: (target as ObjectConstructor).name});return target;}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonTypeName.ts#L41">src/decorators/JsonTypeName.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonTypeName.ts#L41">src/decorators/JsonTypeName.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1514,7 +1514,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Unwrapped<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonUnwrappedDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonUnwrappedOptions &#x3D; {}): JsonUnwrappedOptions &#x3D;&gt; ({enabled: true,prefix: &#x27;&#x27;,suffix: &#x27;&#x27;,...o}),(options: JsonUnwrappedOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonUnwrapped&#x27;, options, target.constructor, propertyKey);defineMetadata(&#x27;JsonUnwrapped&#x27;, options, target.constructor, null, {suffix: propertyKey.toString()});}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonUnwrapped.ts#L35">src/decorators/JsonUnwrapped.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonUnwrapped.ts#L35">src/decorators/JsonUnwrapped.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1550,7 +1550,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonValueDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonValueOptions): JsonValueOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonValueOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (propertyKey !&#x3D; null) {if (hasMetadata(&#x27;JsonValue&#x27;, target.constructor, null, {withContextGroups: options.contextGroups})) {throw new JacksonError(&#x60;Multiple @JsonValue() decorators for ${target.constructor}.&#x27;&#x60;);}defineMetadata(&#x27;JsonValue&#x27;, options, target.constructor);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonValue.ts#L41">src/decorators/JsonValue.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonValue.ts#L41">src/decorators/JsonValue.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1591,7 +1591,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">Json<wbr>View<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">JsonViewDecorator</span><span class="tsd-signature-symbol"> = makeJacksonDecorator((o: JsonViewOptions): JsonViewOptions &#x3D;&gt; ({enabled: true, ...o}),(options: JsonViewOptions, target, propertyKey, descriptorOrParamIndex) &#x3D;&gt; {if (descriptorOrParamIndex &#x3D;&#x3D; null &amp;&amp; propertyKey &#x3D;&#x3D; null) {defineMetadata(&#x27;JsonView&#x27;, options, target);return target;}if (descriptorOrParamIndex !&#x3D; null &amp;&amp; typeof descriptorOrParamIndex &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {defineMetadata(&#x27;JsonViewParam&#x27;,options, (target.constructor.toString().endsWith(&#x27;{ [native code] }&#x27;)) ? target : target.constructor,(propertyKey) ? propertyKey : &#x27;constructor&#x27;, {suffix: descriptorOrParamIndex.toString()});}if (propertyKey !&#x3D; null) {defineMetadata(&#x27;JsonView&#x27;, options, target.constructor, propertyKey);}})</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonView.ts#L58">src/decorators/JsonView.ts:58</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonView.ts#L58">src/decorators/JsonView.ts:58</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1650,7 +1650,7 @@ objectMapper.features.deserialization.UNWRAP_ROOT_VALUE = <span class="hljs-lite
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Creator<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"defaultCreatorName"</span><span class="tsd-signature-symbol"> = &quot;defaultCreatorName&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/91afea4/src/decorators/JsonCreator.ts#L13">src/decorators/JsonCreator.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonCreator.ts#L13">src/decorators/JsonCreator.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
