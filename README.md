@@ -131,8 +131,8 @@ class Writer {
 ```
 
 ## Tutorials
-- [Jackson-js: Powerful JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)](https://itnext.io/jackson-js-powerful-javascript-decorators-to-serialize-deserialize-objects-into-json-and-vice-df952454cf?source=friends_link&sk=a65bd247eca2f95fdfddda34447a6db6)
-- [Jackson-js: Examples for client (Angular) and server (Node.js) side (Part 2)](https://medium.com/@pichillilorenzo/jackson-js-examples-for-client-and-server-side-part-2-7e66df74c851?source=friends_link&sk=2636fca640284894c63cb3c689a0e822)
+- [Jackson-js: Powerful JavaScript decorators to serialize/deserialize objects into JSON and vice versa (Part 1)](https://itnext.io/jackson-js-powerful-javascript-decorators-to-serialize-deserialize-objects-into-json-and-vice-df952454cf?source=friends_link&sk=a65bd247eca2f95fdfddda34447a6db6) - Article available at [[itnext.io](https://itnext.io/jackson-js-powerful-javascript-decorators-to-serialize-deserialize-objects-into-json-and-vice-df952454cf?source=friends_link&sk=a65bd247eca2f95fdfddda34447a6db6) | [dev.to](https://dev.to/pichillilorenzo/jackson-js-powerful-javascript-decorators-to-serialize-deserialize-objects-into-json-and-vice-versa-part-1-5484)].
+- [Jackson-js: Examples for client (Angular) and server (Node.js) side (Part 2)](https://medium.com/@pichillilorenzo/jackson-js-examples-for-client-and-server-side-part-2-7e66df74c851?source=friends_link&sk=2636fca640284894c63cb3c689a0e822) - Article available at [[medium.com](https://medium.com/@pichillilorenzo/jackson-js-examples-for-client-and-server-side-part-2-7e66df74c851?source=friends_link&sk=2636fca640284894c63cb3c689a0e822) | [dev.to](https://dev.to/pichillilorenzo/jackson-js-examples-for-client-angular-and-server-node-js-side-part-2-128n)]
 
 ## Examples
 
