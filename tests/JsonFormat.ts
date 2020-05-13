@@ -5,6 +5,7 @@ import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
 import {JsonGetter} from '../src/decorators/JsonGetter';
+const moment = require('moment');
 
 test('@JsonFormat at property level', t => {
   class Event {
@@ -65,7 +66,9 @@ test('@JsonFormat at property level', t => {
 
   const objectMapper = new ObjectMapper();
 
-  const jsonData = objectMapper.stringify<Event>(event);
+  const jsonData = objectMapper.stringify<Event>(event, {
+    dateLibrary: moment
+  });
   // eslint-disable-next-line max-len
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Event 1","startDate":"2020-03-24 10:00:00","price":"14.50","canceled":false,"info":["123 Main Street, New York, NY 10030","+393333111999"]}'));
 
@@ -147,7 +150,9 @@ test('@JsonFormat at method level', t => {
 
   const objectMapper = new ObjectMapper();
 
-  const jsonData = objectMapper.stringify<Event>(event);
+  const jsonData = objectMapper.stringify<Event>(event, {
+    dateLibrary: moment
+  });
   // eslint-disable-next-line max-len
   t.deepEqual(JSON.parse(jsonData), JSON.parse('{"name":"Event 1","startDate":"2020-03-24 10:00:00","price":"14.50","canceled":false,"info":["123 Main Street, New York, NY 10030","+393333111999"]}'));
 });

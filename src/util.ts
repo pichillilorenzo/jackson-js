@@ -1,11 +1,12 @@
-import {parse} from '@babel/parser';
+import { parseScript } from 'meriyah';
 import {
   ClassDeclaration,
-  ClassMethod,
-  ExpressionStatement, FunctionDeclaration,
+  MethodDefinition,
+  ExpressionStatement,
+  FunctionDeclaration,
   FunctionExpression,
   Node
-} from '@babel/types';
+} from 'estree';
 import {
   ClassType, CustomMapper, JsonAliasOptions,
   JsonDecorator,
@@ -507,19 +508,20 @@ export const getArgumentNames = (method): string[] => {
     code = 'function ' + code;
   }
 
-  const ast = parse(code, {
-    plugins: ['typescript']
+  const ast = parseScript(code, {
+    next: true,
+    webcompat: true,
+    directives: true
   });
-
-  const { body } = ast.program;
+  const body = ast.body;
 
   let nodes: Node[] = [];
   if (code.startsWith('class ')) {
     const classDeclarationNodes = (body[0] as ClassDeclaration).body.body;
     // find constructor
     for (const propertyOrMethod of classDeclarationNodes) {
-      if ((propertyOrMethod as ClassMethod).kind === 'constructor') {
-        nodes = [propertyOrMethod as ClassMethod];
+      if (propertyOrMethod.kind === 'constructor') {
+        nodes = [propertyOrMethod];
         break;
       }
     }
@@ -528,10 +530,13 @@ export const getArgumentNames = (method): string[] => {
   }
 
   return nodes.reduce((args, exp) => {
-    if ((exp as ClassMethod | FunctionDeclaration).params) {
-      return args.concat((exp as ClassMethod).params);
+    if ((exp as FunctionDeclaration).params) {
+      return args.concat((exp as FunctionDeclaration).params);
     }
-    if (((exp as ExpressionStatement).expression as FunctionExpression).params) {
+    if ('value' in exp && exp.value != null && ((exp as MethodDefinition).value).params) {
+      return args.concat((exp as MethodDefinition).value.params);
+    }
+    if ('expression' in exp && exp.expression != null && ((exp as ExpressionStatement).expression as FunctionExpression).params) {
       return args.concat(((exp as ExpressionStatement).expression as FunctionExpression).params);
     }
     return args;

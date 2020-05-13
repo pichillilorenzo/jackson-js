@@ -1,6 +1,6 @@
 {
   "name": "jackson-js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "JavaScript object serializion and deserializion library using decorators. It supports also advanced Object concepts such as polymorphism, Object identity and cyclic objects.",
   "author": {
     "name": "Lorenzo Pichilli",
@@ -8,9 +8,19 @@
     "url": "https://github.com/pichillilorenzo"
   },
   "keywords": [
-    "jackson-json", "json", "jackson", "jackson-js", "json-serialization", "json-deserialization",
-    "json-stringifier", "json-parser", "jackson-javascript", "json-stringify", "json-parse",
-    "json-decoder", "json-encoder"
+    "jackson-json",
+    "json",
+    "jackson",
+    "jackson-js",
+    "json-serialization",
+    "json-deserialization",
+    "json-stringifier",
+    "json-parser",
+    "jackson-javascript",
+    "json-stringify",
+    "json-parse",
+    "json-decoder",
+    "json-encoder"
   ],
   "license": "MIT",
   "repository": {
@@ -35,30 +45,32 @@
   "browser": "./dist/lib.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@babel/parser": "^7.9.4",
-    "dayjs": "^1.8.23",
     "lodash.clone": "^4.5.0",
     "lodash.clonedeep": "^4.5.0",
-    "reflect-metadata": "^0.1.13",
-    "uuid": "^7.0.3"
+    "meriyah": "^1.9.12",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@ava/typescript": "^1.1.1",
     "@babel/types": "^7.8.7",
+    "@types/estree": "0.0.44",
     "@types/node": "^13.11.0",
+    "@types/uuid": "^7.0.3",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/eslint-plugin-tslint": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
     "ava": "^3.5.2",
-    "coveralls": "^3.1.0",
-    "nyc": "^15.0.1",
     "codelyzer": "^5.2.2",
+    "coveralls": "^3.1.0",
     "cross-env": "^7.0.2",
+    "dayjs": "^1.8.26",
     "eslint": "^6.8.0",
     "eslint-loader": "^3.0.4",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsdoc": "^22.1.0",
     "eslint-plugin-prefer-arrow": "^1.1.7",
+    "moment": "^2.25.3",
+    "nyc": "^15.0.1",
     "rimraf": "^3.0.2",
     "ts-loader": "^6.2.2",
     "ts-node": "^8.8.1",
@@ -67,6 +79,7 @@
     "typedoc-plugin-custom-tags": "^1.0.2",
     "typedoc-plugin-external-module-name": "^3.0.0",
     "typescript": "^3.8.3",
+    "uuid": "^8.0.0",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11"
   },

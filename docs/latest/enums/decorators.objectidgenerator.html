@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>ObjectIdGenerator | jackson-js</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for jackson-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -38,8 +38,6 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -72,7 +70,9 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>Generator to use for producing Object Identifier for objects</p>
+						<p>Generator to use for producing Object Identifier for objects.
+							To be able to use <a href="../modules/decorators.html#jsonidentityinfo">JsonIdentityInfo</a> with any UUID <a href="decorators.objectidgenerator.html">ObjectIdGenerator</a>, an UUID library needs to be set.
+						UUID library supported: <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a>.</p>
 					</div>
 				</div>
 			</section>
@@ -103,7 +103,7 @@
 					<div class="tsd-signature tsd-kind-icon">Int<wbr>Sequence<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L19">src/decorators/JsonIdentityInfo.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L21">src/decorators/JsonIdentityInfo.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -118,7 +118,7 @@
 					<div class="tsd-signature tsd-kind-icon">None<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L23">src/decorators/JsonIdentityInfo.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L25">src/decorators/JsonIdentityInfo.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -133,7 +133,7 @@
 					<div class="tsd-signature tsd-kind-icon">Property<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L28">src/decorators/JsonIdentityInfo.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L30">src/decorators/JsonIdentityInfo.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -149,13 +149,12 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv1<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L48">src/decorators/JsonIdentityInfo.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L46">src/decorators/JsonIdentityInfo.ts:46</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Implementation that just uses version 1 UUIDs as reliably unique identifiers.
-							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+							<p>Implementation that just uses version 1 UUIDs as reliably unique identifiers.</p>
 						</div>
 					</div>
 				</section>
@@ -165,13 +164,12 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv3<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L43">src/decorators/JsonIdentityInfo.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L42">src/decorators/JsonIdentityInfo.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Implementation that just uses version 3 UUIDs as reliably unique identifiers.
-							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+							<p>Implementation that just uses version 3 UUIDs as reliably unique identifiers.</p>
 						</div>
 					</div>
 				</section>
@@ -181,13 +179,12 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv4<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L38">src/decorators/JsonIdentityInfo.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L38">src/decorators/JsonIdentityInfo.ts:38</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Implementation that just uses version 4 UUIDs as reliably unique identifiers.
-							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+							<p>Implementation that just uses version 4 UUIDs as reliably unique identifiers.</p>
 						</div>
 					</div>
 				</section>
@@ -197,13 +194,12 @@
 					<div class="tsd-signature tsd-kind-icon">UUIDv5<wbr>Generator<span class="tsd-signature-symbol">:</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/decorators/JsonIdentityInfo.ts#L33">src/decorators/JsonIdentityInfo.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/decorators/JsonIdentityInfo.ts#L34">src/decorators/JsonIdentityInfo.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Implementation that just uses version 5 UUIDs as reliably unique identifiers.
-							UUIDs are generated using the <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a> library.</p>
+							<p>Implementation that just uses version 5 UUIDs as reliably unique identifiers.</p>
 						</div>
 					</div>
 				</section>

@@ -50,6 +50,10 @@ export enum JsonFormatShape {
  *
  * Iterables, such as `Array` and `Set`, can be serialized as JSON Objects if {@link JsonFormatShape.OBJECT} is used.
  *
+ * **IMPORTANT NOTE**: To be able to use {@link JsonFormat} on class properties of type `Date`
+ * with {@link JsonFormatShape.STRING}, a date library needs to be set.
+ * Date libraries supported: {@link https://github.com/moment/moment}, {@link https://github.com/iamkun/dayjs/}.
+ *
  * @example
  * ```typescript
  * class Event {

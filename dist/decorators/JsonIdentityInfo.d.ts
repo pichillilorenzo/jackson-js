@@ -4,7 +4,9 @@
  */
 import { JsonIdentityInfoDecorator } from '../@types';
 /**
- * Generator to use for producing Object Identifier for objects
+ * Generator to use for producing Object Identifier for objects.
+ * To be able to use {@link JsonIdentityInfo} with any UUID {@link ObjectIdGenerator}, an UUID library needs to be set.
+ * UUID library supported: {@link https://github.com/uuidjs/uuid}.
  */
 export declare enum ObjectIdGenerator {
     /**
@@ -22,22 +24,18 @@ export declare enum ObjectIdGenerator {
     PropertyGenerator = 2,
     /**
      * Implementation that just uses version 5 UUIDs as reliably unique identifiers.
-     * UUIDs are generated using the {@link https://github.com/uuidjs/uuid} library.
      */
     UUIDv5Generator = 3,
     /**
      * Implementation that just uses version 4 UUIDs as reliably unique identifiers.
-     * UUIDs are generated using the {@link https://github.com/uuidjs/uuid} library.
      */
     UUIDv4Generator = 4,
     /**
      * Implementation that just uses version 3 UUIDs as reliably unique identifiers.
-     * UUIDs are generated using the {@link https://github.com/uuidjs/uuid} library.
      */
     UUIDv3Generator = 5,
     /**
      * Implementation that just uses version 1 UUIDs as reliably unique identifiers.
-     * UUIDs are generated using the {@link https://github.com/uuidjs/uuid} library.
      */
     UUIDv1Generator = 6
 }
@@ -47,6 +45,9 @@ export declare enum ObjectIdGenerator {
  * or as a reference that consists of an object id that refers to a full serialization.
  * In practice this is done by serializing the first instance as full object and object identity,
  * and other references to the object as reference values.
+ *
+ * **IMPORTANT NOTE**: To be able to use {@link JsonIdentityInfo} with any UUID {@link ObjectIdGenerator}, an UUID library needs to be set.
+ * UUID libraries supported: {@link https://github.com/uuidjs/uuid}.
  *
  * @example
  * ```typescript

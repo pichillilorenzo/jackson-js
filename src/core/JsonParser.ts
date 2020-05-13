@@ -301,6 +301,7 @@ export class JsonParser<T> {
         } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
           value = BigInt(+value);
         } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, String)) {
+          // @ts-ignore
           value += '';
         }
       } else if (value.constructor === Boolean) {
@@ -309,6 +310,7 @@ export class JsonParser<T> {
         } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
           value = BigInt(value ? 1 : 0);
         } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, String)) {
+          // @ts-ignore
           value += '';
         }
       }
@@ -773,7 +775,8 @@ export class JsonParser<T> {
             getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
           if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null) {
-            if (typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.set != null) {
+            if (typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.set != null ||
+              jsonVirtualProperty._descriptor.get == null) {
               this.parseJsonSetter(instance, obj, key, context, globalContext);
             } else {
               // if property has a descriptor but is not a function and doesn't have a setter,
@@ -1425,7 +1428,7 @@ export class JsonParser<T> {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Expected "String", got "${newObj[0] ? newObj[0].constructor.name : newObj[0]}": need JSON String that contains type id (for subtype of "${currentMainCreator.name}") at [Source '${JSON.stringify(newObj)}']`);
         }
-        jsonTypeInfoProperty = newObj[0];
+        jsonTypeInfoProperty = newObj[0] as string;
         newObj = newObj[1];
         break;
       }

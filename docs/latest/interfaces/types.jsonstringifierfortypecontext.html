@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>JsonStringifierForTypeContext | jackson-js</title>
-	<meta name="description" content="">
+	<meta name="description" content="Documentation for jackson-js">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -38,8 +38,6 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -102,12 +100,14 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#attributes" class="tsd-kind-icon">attributes</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#datelibrary" class="tsd-kind-icon">date<wbr>Library</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifierfortypecontext.html#decoratorsenabled" class="tsd-kind-icon">decorators<wbr>Enabled</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite"><a href="types.jsonstringifierfortypecontext.html#features" class="tsd-kind-icon">features</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#filters" class="tsd-kind-icon">filters</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifierfortypecontext.html#fortype" class="tsd-kind-icon">for<wbr>Type</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#format" class="tsd-kind-icon">format</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#serializers" class="tsd-kind-icon">serializers</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="types.jsonstringifierfortypecontext.html#uuidlibrary" class="tsd-kind-icon">uuid<wbr>Library</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifierfortypecontext.html#withcontextgroups" class="tsd-kind-icon">with<wbr>Context<wbr>Groups</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="types.jsonstringifierfortypecontext.html#withviews" class="tsd-kind-icon">with<wbr>Views</a></li>
 							</ul>
@@ -123,7 +123,7 @@
 					<div class="tsd-signature tsd-kind-icon">attributes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L290">src/@types/index.ts:290</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L290">src/@types/index.ts:290</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -140,6 +140,23 @@
 						</ul>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="datelibrary" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> date<wbr>Library</h3>
+					<div class="tsd-signature tsd-kind-icon">date<wbr>Library<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L329">src/@types/index.ts:329</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>To be able to use <a href="../modules/decorators.html#jsonformat">JsonFormat</a> on class properties of type <code>Date</code>
+								with <a href="../enums/decorators.jsonformatshape.html#string">JsonFormatShape.STRING</a>, a date library needs to be set.
+							Date libraries supported: <a href="https://github.com/moment/moment" class="external">https://github.com/moment/moment</a>, <a href="https://github.com/iamkun/dayjs/" class="external">https://github.com/iamkun/dayjs/</a>.</p>
+						</div>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="decoratorsenabled" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> decorators<wbr>Enabled</h3>
@@ -147,7 +164,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#decoratorsenabled">decoratorsEnabled</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L245">src/@types/index.ts:245</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L245">src/@types/index.ts:245</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -171,7 +188,7 @@
 					<aside class="tsd-sources">
 						<p>Overrides <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#features">features</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L296">src/@types/index.ts:296</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L296">src/@types/index.ts:296</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -199,7 +216,7 @@
 					<div class="tsd-signature tsd-kind-icon">filters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L306">src/@types/index.ts:306</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L306">src/@types/index.ts:306</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -224,7 +241,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#fortype">forType</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L254">src/@types/index.ts:254</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L254">src/@types/index.ts:254</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -241,7 +258,7 @@
 					<div class="tsd-signature tsd-kind-icon">format<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L319">src/@types/index.ts:319</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L319">src/@types/index.ts:319</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -261,12 +278,28 @@
 					<div class="tsd-signature tsd-kind-icon">serializers<span class="tsd-signature-symbol">:</span> <a href="types.custommapper.html" class="tsd-signature-type">CustomMapper</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/types.html#serializer" class="tsd-signature-type">Serializer</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L323">src/@types/index.ts:323</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L323">src/@types/index.ts:323</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>Array of custom user-defined serializers.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="uuidlibrary" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> uuid<wbr>Library</h3>
+					<div class="tsd-signature tsd-kind-icon">uuid<wbr>Library<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L334">src/@types/index.ts:334</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>To be able to use <a href="../modules/decorators.html#jsonidentityinfo">JsonIdentityInfo</a> with any UUID <a href="../enums/decorators.objectidgenerator.html">ObjectIdGenerator</a>, an UUID library needs to be set.
+							UUID libraries supported: <a href="https://github.com/uuidjs/uuid" class="external">https://github.com/uuidjs/uuid</a>.</p>
 						</div>
 					</div>
 				</section>
@@ -277,7 +310,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#withcontextgroups">withContextGroups</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L237">src/@types/index.ts:237</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L237">src/@types/index.ts:237</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -293,7 +326,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="types.jsonstringifierparsercommoncontext.html">JsonStringifierParserCommonContext</a>.<a href="types.jsonstringifierparsercommoncontext.html#withviews">withViews</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/21732f5/src/@types/index.ts#L233">src/@types/index.ts:233</a></li>
+							<li>Defined in <a href="https://github.com/pichillilorenzo/jackson-js/blob/0619b64/src/@types/index.ts#L233">src/@types/index.ts:233</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -349,6 +382,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="types.jsonstringifierfortypecontext.html#attributes" class="tsd-kind-icon">attributes</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types.jsonstringifierfortypecontext.html#datelibrary" class="tsd-kind-icon">date<wbr>Library</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="types.jsonstringifierfortypecontext.html#decoratorsenabled" class="tsd-kind-icon">decorators<wbr>Enabled</a>
 							</li>
@@ -366,6 +402,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="types.jsonstringifierfortypecontext.html#serializers" class="tsd-kind-icon">serializers</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="types.jsonstringifierfortypecontext.html#uuidlibrary" class="tsd-kind-icon">uuid<wbr>Library</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="types.jsonstringifierfortypecontext.html#withcontextgroups" class="tsd-kind-icon">with<wbr>Context<wbr>Groups</a>

@@ -46,30 +46,33 @@ import {
 } from '../decorators';
 import {
   castObjLiteral,
-  classHasOwnProperty, classPropertiesToVirtualPropertiesMapping,
+  classHasOwnProperty,
+  classPropertiesToVirtualPropertiesMapping,
   getClassProperties,
   getDeepestClass,
   getDefaultPrimitiveTypeValue,
   getDefaultValue,
-  getMetadata, getObjectKeysWithPropertyDescriptorNames,
+  getMetadata,
+  getObjectKeysWithPropertyDescriptorNames,
   hasMetadata,
   isConstructorPrimitiveType,
   isIterableNoMapNoString,
   isObjLiteral,
   isSameConstructor,
-  isSameConstructorOrExtensionOf, isSameConstructorOrExtensionOfNoObject,
+  isSameConstructorOrExtensionOf,
+  isSameConstructorOrExtensionOfNoObject,
   isValueEmpty,
-  isVariablePrimitiveType, makeMetadataKeysWithContext, mapVirtualPropertiesToClassProperties, sortMappersByOrder
+  isVariablePrimitiveType,
+  makeMetadataKeysWithContext,
+  mapVirtualPropertiesToClassProperties,
+  sortMappersByOrder
 } from '../util';
-import * as dayjs from 'dayjs';
-import * as customParseFormat from 'dayjs/plugin/customParseFormat';
-import {v1 as uuidv1, v3 as uuidv3, v4 as uuidv4, v5 as uuidv5} from 'uuid';
+// import * as moment from 'moment';
+// import {v1 as uuidv1, v3 as uuidv3, v4 as uuidv4, v5 as uuidv5} from 'uuid';
 import {JacksonError} from './JacksonError';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as clone from 'lodash.clone';
 import {DefaultSerializationFeatureValues} from '../databind';
-
-dayjs.extend(customParseFormat);
 
 /**
  * Json Stringifier Global Context used by {@link JsonStringifier.transform} to store global information.
@@ -124,7 +127,9 @@ export class JsonStringifier<T> {
       _propertyParentCreator: null,
       attributes: {},
       filters: {},
-      format: null
+      format: null,
+      dateLibrary: null,
+      uuidLibrary: null
     };
   }
 
@@ -185,6 +190,12 @@ export class JsonStringifier<T> {
           ...finalContext.forType,
           ...context.forType]
         );
+      }
+      if (context.dateLibrary != null) {
+        finalContext.dateLibrary = context.dateLibrary;
+      }
+      if (context.uuidLibrary != null) {
+        finalContext.uuidLibrary = context.uuidLibrary;
       }
       if (context._internalDecorators != null) {
         finalContext._internalDecorators = new Map([
@@ -298,7 +309,7 @@ export class JsonStringifier<T> {
       value = this.getDefaultValue(context);
     }
 
-    if (value != null && value.constructor === Number && isNaN(value) && context.features.serialization.WRITE_NAN_AS_ZERO) {
+    if (value != null && value.constructor === Number && isNaN(value as number) && context.features.serialization.WRITE_NAN_AS_ZERO) {
       value = 0;
     } else if (value === Infinity) {
       if (context.features.serialization.WRITE_POSITIVE_INFINITY_AS_NUMBER_MAX_SAFE_INTEGER) {
@@ -411,7 +422,6 @@ export class JsonStringifier<T> {
                   value[k] = null;
                 }
               }
-
               this.propagateDecorators(value, k, context);
 
               replacement[newKey] = this.stringifyJsonGetter(value, k, context);
@@ -630,7 +640,8 @@ export class JsonStringifier<T> {
       getMetadata('JsonVirtualProperty:' + key, currentMainCreator, null, context);
 
     if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null) {
-      return typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.get != null;
+      return typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.get != null ||
+        jsonVirtualProperty._descriptor.set == null;
     }
     return true;
   }
@@ -1144,9 +1155,14 @@ export class JsonStringifier<T> {
     case JsonFormatShape.STRING:
       if (replacement instanceof Date) {
         const locale = jsonFormat.locale;
-        require('dayjs/locale/' + locale);
         const timezone = (jsonFormat.timezone) ? { timeZone: jsonFormat.timezone } : {};
-        formattedValue = dayjs(replacement.toLocaleString('en-US', timezone)).locale(locale).format(jsonFormat.pattern);
+        const dateLibrary = jsonFormat.dateLibrary != null ? jsonFormat.dateLibrary : context.dateLibrary;
+        if (dateLibrary == null) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError('No date library has been set. To be able to use @JsonFormat() on class properties of type "Date" with JsonFormatShape.STRING, a date library needs to be set. Date libraries supported: "https://github.com/moment/moment", "https://github.com/iamkun/dayjs/".');
+        }
+        formattedValue = dateLibrary(
+          new Date(replacement.toLocaleString('en-US', timezone))).locale(locale).format(jsonFormat.pattern);
       } else {
         if (replacement != null && replacement.constructor === Number) {
           if (jsonFormat.radix != null && jsonFormat.radix.constructor === Number) {
@@ -1279,6 +1295,19 @@ export class JsonStringifier<T> {
         if (typeof jsonIdentityInfo.generator === 'function') {
           replacement[jsonIdentityInfo.property] = jsonIdentityInfo.generator(obj);
         } else {
+
+          let uuidLibrary;
+          if (jsonIdentityInfo.generator === ObjectIdGenerator.UUIDv5Generator ||
+            jsonIdentityInfo.generator === ObjectIdGenerator.UUIDv4Generator ||
+            jsonIdentityInfo.generator === ObjectIdGenerator.UUIDv3Generator ||
+            jsonIdentityInfo.generator === ObjectIdGenerator.UUIDv1Generator) {
+            uuidLibrary = jsonIdentityInfo.uuidLibrary != null ? jsonIdentityInfo.uuidLibrary : context.uuidLibrary;
+            if (uuidLibrary == null) {
+              // eslint-disable-next-line max-len
+              throw new JacksonError('No UUID library has been set. To be able to use @JsonIdentityInfo() with any UUID ObjectIdGenerator, an UUID library needs to be set. UUID library supported: "https://github.com/uuidjs/uuid".');
+            }
+          }
+
           switch (jsonIdentityInfo.generator) {
           case ObjectIdGenerator.IntSequenceGenerator:
             globalContext.intSequenceGenerator++;
@@ -1302,7 +1331,8 @@ export class JsonStringifier<T> {
                 uuidv5Args.push(uuidv5Options.offset);
               }
             }
-            replacement[jsonIdentityInfo.property] = uuidv5(...uuidv5Args);
+
+            replacement[jsonIdentityInfo.property] = uuidLibrary.v5(...uuidv5Args);
             break;
           case ObjectIdGenerator.UUIDv4Generator:
             const uuidv4Options = jsonIdentityInfo.uuidv4;
@@ -1313,7 +1343,8 @@ export class JsonStringifier<T> {
                 uuidv4Args.push(uuidv4Options.offset);
               }
             }
-            replacement[jsonIdentityInfo.property] = uuidv4(...uuidv4Args);
+
+            replacement[jsonIdentityInfo.property] = uuidLibrary.v4(...uuidv4Args);
             break;
           case ObjectIdGenerator.UUIDv3Generator:
             const uuidv3Options = jsonIdentityInfo.uuidv3;
@@ -1324,7 +1355,8 @@ export class JsonStringifier<T> {
                 uuidv3Args.push(uuidv3Options.offset);
               }
             }
-            replacement[jsonIdentityInfo.property] = uuidv3(...uuidv3Args);
+
+            replacement[jsonIdentityInfo.property] = uuidLibrary.v3(...uuidv3Args);
             break;
           case ObjectIdGenerator.UUIDv1Generator:
             const uuidv1Options = jsonIdentityInfo.uuidv1;
@@ -1335,7 +1367,8 @@ export class JsonStringifier<T> {
                 uuidv1Args.push(uuidv1Options.offset);
               }
             }
-            replacement[jsonIdentityInfo.property] = uuidv1(...uuidv1Args);
+
+            replacement[jsonIdentityInfo.property] = uuidLibrary.v1(...uuidv1Args);
             break;
           }
         }

@@ -258,6 +258,17 @@ export interface JsonStringifierForTypeContext extends JsonStringifierParserComm
      * Array of custom user-defined serializers.
      */
     serializers?: CustomMapper<Serializer>[];
+    /**
+     * To be able to use {@link JsonFormat} on class properties of type `Date`
+     * with {@link JsonFormatShape.STRING}, a date library needs to be set.
+     * Date libraries supported: {@link https://github.com/moment/moment}, {@link https://github.com/iamkun/dayjs/}.
+     */
+    dateLibrary?: any;
+    /**
+     * To be able to use {@link JsonIdentityInfo} with any UUID {@link ObjectIdGenerator}, an UUID library needs to be set.
+     * UUID libraries supported: {@link https://github.com/uuidjs/uuid}.
+     */
+    uuidLibrary?: any;
 }
 /**
  * Context properties used by {@link JsonStringifier.stringify} during serialization.
@@ -523,7 +534,8 @@ export interface JsonFormatScalar extends JsonFormatBaseOptions {
 /**
  * Decorator specific options for {@link JsonFormat} with {@link JsonFormatBaseOptions.shape} value {@link JsonFormatShape.STRING}.
  *
- * When formatting a `Date`, the {@link https://github.com/iamkun/dayjs} date library is used.
+ * **IMPORTANT NOTE**: When formatting a `Date`, a date library needs to be set using the {@link dateLibrary} option.
+ * Date libraries supported: {@link https://github.com/moment/moment}, {@link https://github.com/iamkun/dayjs/}.
  */
 export interface JsonFormatString extends JsonFormatBaseOptions {
     /**
@@ -544,6 +556,12 @@ export interface JsonFormatString extends JsonFormatBaseOptions {
      * Timezone to be used to format a `Date` during serialization.
      */
     timezone?: string;
+    /**
+     * To be able to use {@link JsonFormat} on class properties of type `Date`
+     * with {@link JsonFormatShape.STRING}, a date library needs to be set.
+     * Date libraries supported: {@link https://github.com/moment/moment}, {@link https://github.com/iamkun/dayjs/}.
+     */
+    dateLibrary?: any;
     /**
      * Radix to be used to format an integer `Number` during serialization and using `parseInt()`.
      */
@@ -942,6 +960,11 @@ export interface JsonIdentityInfoOptions extends JsonDecoratorOptions {
      * Options for version 1 UUID Generator (see {@link https://github.com/uuidjs/uuid#version-1-timestamp})
      */
     uuidv1?: UUIDv1GeneratorOptions;
+    /**
+     * To be able to use {@link JsonIdentityInfo} with any UUID {@link ObjectIdGenerator}, an UUID library needs to be set.
+     * UUID libraries supported: {@link https://github.com/uuidjs/uuid}.
+     */
+    uuidLibrary?: any;
 }
 /**
  * Decorator options for {@link JsonIdentityReference}.
