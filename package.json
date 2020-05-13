@@ -1,7 +1,7 @@
 {
   "name": "jackson-js",
   "version": "1.1.0",
-  "description": "JavaScript object serializion and deserializion library using decorators. It supports also advanced Object concepts such as polymorphism, Object identity and cyclic objects.",
+  "description": "JavaScript object serialization and deserialization library using decorators. It supports also advanced Object concepts such as polymorphism, Object identity and cyclic objects.",
   "author": {
     "name": "Lorenzo Pichilli",
     "email": "pichillilorenzo@gmail.com",

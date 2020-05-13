@@ -49,21 +49,21 @@ The main classes that `jackson-js` offers to serialize and deserialize JavaScrip
 
 ### ObjectMapper
 
-`ObjectMapper` provides functionality for both reading and writing JSON and apply `jackson-js` **decorators**. It will use instances of `JsonParser` and `JsonStringifier` for implementing actual reading/writing of JSON. It has two methods:
+`ObjectMapper` provides functionality for both reading and writing JSON and applies `jackson-js` **decorators**. It will use instances of `JsonParser` and `JsonStringifier` for implementing actual reading/writing of JSON. It has two methods:
 - `stringify(obj: T, context?: JsonStringifierContext): string`: a method for serializing a JavaScript object or a value to a JSON string with **decorators** applied;
 - `parse(text: string, context?: JsonParserContext): T`: a method for deserializing a JSON string into a JavaScript object/value (of type `T`, based on the context given) with **decorators** applied.
 
 ### JsonParser
 
-`JsonParser` provides functionality for writing JSON. The main methods are:
+`JsonParser` provides functionality for writing JSON and applies `jackson-js` **decorators**. The main methods are:
 - `parse(text: string, context?: JsonParserContext): T` : a method for deserializing a JSON string into a JavaScript object/value (of type `T`, based on the context given) with **decorators** applied;
-- `transform(value: any, context?: JsonParserContext): any` : a method for applying JSON decorators to a JavaScript object/value parsed. It returns a JavaScript object/value with JSON decorators applied.
+- `transform(value: any, context?: JsonParserContext): any` : a method for applying `jackson-js` **decorators** to a JavaScript object/value parsed. It returns a JavaScript object/value with JSON decorators applied.
 
 ### JsonStringifier
 
-`JsonStringifier` provides functionality for reading JSON. The main methods are:
+`JsonStringifier` provides functionality for reading JSON and applies `jackson-js` **decorators**. The main methods are:
 - `stringify(obj: T, context?: JsonStringifierContext): string`: a method for serializing a JavaScript object or a value to a JSON string with **decorators** applied;
-- `transform(value: any, context?: JsonStringifierContext): any`: a method for applying JSON decorators to a JavaScript object/value. It returns a JavaScript object/value with JSON decorators applied and ready to be JSON serialized.
+- `transform(value: any, context?: JsonStringifierContext): any`: a method for applying `jackson-js` **decorators** to a JavaScript object/value. It returns a JavaScript object/value with JSON decorators applied and ready to be JSON serialized.
 
 ### Decorators
 
