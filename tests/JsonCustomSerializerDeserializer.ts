@@ -4,6 +4,7 @@ import {JsonDeserialize} from '../src/decorators/JsonDeserialize';
 import {JsonClassType} from '../src/decorators/JsonClassType';
 import {ObjectMapper} from '../src/databind/ObjectMapper';
 import {JsonProperty} from '../src/decorators/JsonProperty';
+import { URL } from 'url';
 
 test('@JsonSerialize and @JsonDeserialize at class level', t => {
   // eslint-disable-next-line no-shadow
@@ -376,6 +377,61 @@ test('Custom serializers and deserializers', t => {
   t.assert(writerParsed.books[0].date instanceof Date);
   t.assert(writerParsed.books[1] === null);
   t.assert(writerParsed.books[2] === null);
+});
+
+test('Custom serializers and deserializers for types that are not default constructable', t => {
+  class Book {
+    @JsonProperty() @JsonClassType({ type: () => [Number] })
+    id: number;
+    @JsonProperty() @JsonClassType({ type: () => [String] })
+    name: string;
+    @JsonProperty()
+    @JsonClassType({ type: () => [URL] })
+    website: URL;
+    @JsonProperty()
+    @JsonClassType({ type: () => [Date] })
+    date: Date;
+
+    // eslint-disable-next-line no-shadow
+    constructor(id: number, name: string, date: Date, website: URL) {
+      this.id = id;
+      this.name = name;
+      this.date = date;
+      this.website = website;
+    }
+  }
+
+  const book = new Book(1, 'Game Of Thrones', new Date(1593392338765), new URL('http://example.com'));
+
+  const objectMapper = new ObjectMapper();
+  objectMapper.defaultStringifierContext.serializers.push({
+    mapper: (key, value: string, context) => {
+      if (value != null) {
+        return value.toString();
+      }
+      return value;
+    },
+    type: () => URL
+  });
+
+  objectMapper.defaultParserContext.deserializers.push({
+    mapper: (key, value: any, context) => {
+      if (value != null) {
+        return new URL(value);
+      }
+      return value;
+    },
+    type: () => URL
+  });
+
+  const jsonData = objectMapper.stringify<Book>(book);
+  // eslint-disable-next-line max-len
+  t.deepEqual(JSON.parse(jsonData), JSON.parse('{"id":1,"name":"Game Of Thrones","website":"http://example.com/","date":1593392338765}'));
+
+  const bookParsed = objectMapper.parse<Book>(jsonData, { mainCreator: () => [Book] });
+  t.assert(bookParsed instanceof Book);
+  t.assert(bookParsed.website instanceof URL);
+  t.assert(bookParsed.website.toString() === 'http://example.com/');
 });
 
 test('@JsonSerialize and @JsonDeserialize at property level with contentUsing and keyUsing option values', t => {
