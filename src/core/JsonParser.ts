@@ -277,7 +277,11 @@ export class JsonParser<T> {
 
     const currentMainCreator = context.mainCreator[0];
 
-    value = this.invokeCustomDeserializers(key, value, context);
+    const { found: customDeserialized, value: customValue } = this.invokeCustomDeserializers(key, value, context);
+    if (customDeserialized) {
+      return customValue;
+    }
+
     value = this.parseJsonDeserializeClass(value, context);
 
     if (value != null && context.features.deserialization.ALLOW_COERCION_OF_SCALARS) {
@@ -620,7 +624,7 @@ export class JsonParser<T> {
    * @param value
    * @param context
    */
-  private invokeCustomDeserializers(key: string, value: any, context: JsonParserTransformerContext): any {
+  private invokeCustomDeserializers(key: string, value: any, context: JsonParserTransformerContext): { value: any; found: boolean } {
     if (context.deserializers) {
       const currentMainCreator = context.mainCreator[0];
       for (const deserializer of context.deserializers) {
@@ -635,10 +639,13 @@ export class JsonParser<T> {
           }
         }
         const virtualProperty = mapClassPropertyToVirtualProperty(currentMainCreator, key, context);
-        value = deserializer.mapper(virtualProperty, value, context);
+        return {
+          found: true,
+          value: deserializer.mapper(virtualProperty, value, context),
+        };
       }
     }
-    return value;
+    return { value: undefined, found: false };
   }
 
   /**

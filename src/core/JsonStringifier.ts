@@ -302,7 +302,11 @@ export class JsonStringifier<T> {
 
     const currentMainCreator = context.mainCreator[0];
 
-    value = this.invokeCustomSerializers(key, value, context);
+    const { found: customSerialized, value: customValue } = this.invokeCustomSerializers(key, value, context);
+    if (customSerialized) {
+      return customValue;
+    }
+
     value = this.stringifyJsonSerializeClass(value, context);
 
     if (value == null && isConstructorPrimitiveType(context.mainCreator[0])) {
@@ -526,7 +530,7 @@ export class JsonStringifier<T> {
    * @param value
    * @param context
    */
-  private invokeCustomSerializers(key: string, value: any, context: JsonStringifierTransformerContext): any {
+  private invokeCustomSerializers(key: string, value: any, context: JsonStringifierTransformerContext): { value: any; found: boolean } {
     if (context.serializers) {
       const currentMainCreator = context.mainCreator[0];
       for (const serializer of context.serializers) {
@@ -540,10 +544,13 @@ export class JsonStringifier<T> {
             continue;
           }
         }
-        value = serializer.mapper(key, value, context);
+        return {
+          found: true,
+          value: serializer.mapper(key, value, context),
+        };
       }
     }
-    return value;
+    return { value: undefined, found: false };
   }
 
   /**
