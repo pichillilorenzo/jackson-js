@@ -247,7 +247,7 @@ export class JsonStringifier<T> {
     const currentMainCreator = newContext.mainCreator[0];
     value = castObjLiteral(currentMainCreator, value);
 
-    const preProcessedObj = this.deepTransform('', value, newContext, globalContext, new Map<any, any>());
+    const preProcessedObj = this.deepTransform('', value, undefined, newContext, globalContext, new Map<any, any>());
     return preProcessedObj;
   }
 
@@ -256,11 +256,12 @@ export class JsonStringifier<T> {
    *
    * @param key - key name representing the object property being preprocessed.
    * @param value - the JavaScript object or value to preprocessed.
+   * @param parent - the parent object of value (if available).
    * @param context - the context to be used during serialization preprocessing.
    * @param globalContext - the global context to be used during serialization preprocessing.
    * @param valueAlreadySeen - Map used to manage object circular references.
    */
-  private deepTransform(key: string, value: any,
+  private deepTransform(key: string, value: any, parent: any,
                         context: JsonStringifierTransformerContext, globalContext: JsonStringifierGlobalContext,
                         valueAlreadySeen: Map<any, any>): any {
     context = {
@@ -378,7 +379,7 @@ export class JsonStringifier<T> {
 
           jsonValue = castObjLiteral(newContext.mainCreator[0], jsonValue);
 
-          replacement = this.deepTransform(key, jsonValue, newContext, globalContext, new Map(valueAlreadySeen));
+          replacement = this.deepTransform(key, jsonValue, parent, newContext, globalContext, new Map(valueAlreadySeen));
           return replacement;
         }
 
@@ -447,7 +448,7 @@ export class JsonStringifier<T> {
                 this.stringifyJsonFilter(replacement, value, k, newKey, context);
                 newKey = this.stringifyJsonVirtualProperty(replacement, k, newKey, context, namingMap);
                 if (!isIterableNoMapNoString(replacement[newKey])) {
-                  this.stringifyJsonUnwrapped(replacement, value, k, newKey, context, globalContext, new Map(valueAlreadySeen));
+                  this.stringifyJsonUnwrapped(replacement, value, parent, k, newKey, context, globalContext, new Map(valueAlreadySeen));
                 }
               } else {
                 newKey = this.stringifyJsonVirtualProperty(replacement, k, newKey, context, namingMap);
@@ -487,11 +488,11 @@ export class JsonStringifier<T> {
 
             replacement[k] = castObjLiteral(newContext.mainCreator[0], replacement[k]);
 
-            replacement[k] = this.deepTransform(oldKey, replacement[k], newContext, globalContext, new Map(valueAlreadySeen));
+            replacement[k] = this.deepTransform(oldKey, replacement[k], replacement, newContext, globalContext, new Map(valueAlreadySeen));
           }
 
           replacement = this.stringifyJsonRootName(replacement, context);
-          replacement = this.stringifyJsonTypeInfo(replacement, value, context);
+          replacement = this.stringifyJsonTypeInfo(replacement, value, parent, context);
         }
 
         return replacement;
@@ -991,9 +992,10 @@ export class JsonStringifier<T> {
    *
    * @param replacement
    * @param obj
+   * @param parent
    * @param context
    */
-  private stringifyJsonTypeInfo(replacement: any, obj: any, context: JsonStringifierTransformerContext): any {
+  private stringifyJsonTypeInfo(replacement: any, obj: any, parent: any, context: JsonStringifierTransformerContext): any {
     const currentMainCreator = context.mainCreator[0];
 
     const jsonTypeInfo: JsonTypeInfoOptions = getMetadata('JsonTypeInfo', currentMainCreator, null, context);
@@ -1062,6 +1064,9 @@ export class JsonStringifier<T> {
         newReplacement = [jsonTypeName, replacement];
         replacement = newReplacement;
         break;
+      case JsonTypeInfoAs.EXTERNAL_PROPERTY:
+        const parentReplacement = parent ?? replacement;
+        parentReplacement[jsonTypeInfo.property] = jsonTypeName;
       }
 
     }
@@ -1222,13 +1227,14 @@ export class JsonStringifier<T> {
    *
    * @param replacement
    * @param obj
+   * @param parent
    * @param oldKey
    * @param newKey
    * @param context
    * @param globalContext
    * @param valueAlreadySeen
    */
-  private stringifyJsonUnwrapped(replacement: any, obj: any, oldKey: string, newKey: string,
+  private stringifyJsonUnwrapped(replacement: any, obj: any, parent: any, oldKey: string, newKey: string,
                                  context: JsonStringifierTransformerContext, globalContext: JsonStringifierGlobalContext,
                                  valueAlreadySeen: Map<any, any>): void {
     const currentMainCreator = context.mainCreator[0];
@@ -1261,7 +1267,7 @@ export class JsonStringifier<T> {
 
       objValue = castObjLiteral(newContext.mainCreator[0], objValue);
 
-      const objTransformed = this.deepTransform(oldKey, objValue, newContext, globalContext, new Map(valueAlreadySeen));
+      const objTransformed = this.deepTransform(oldKey, objValue, parent, newContext, globalContext, new Map(valueAlreadySeen));
       const keys = Object.keys(objTransformed);
 
       for (const objKey of keys) {
@@ -1449,7 +1455,7 @@ export class JsonStringifier<T> {
         continue;
       }
 
-      newIterable.push(this.deepTransform(key, value, newContext, globalContext, new Map(valueAlreadySeen)));
+      newIterable.push(this.deepTransform(key, value, undefined, newContext, globalContext, new Map(valueAlreadySeen)));
     }
     return newIterable;
   }
@@ -1571,7 +1577,7 @@ export class JsonStringifier<T> {
         continue;
       }
 
-      const mapValueStringified = this.deepTransform(mapKey, mapValue, valueNewContext, globalContext, new Map(valueAlreadySeen));
+      const mapValueStringified = this.deepTransform(mapKey, mapValue, map, valueNewContext, globalContext, new Map(valueAlreadySeen));
       newValue[mapKey.toString()] = mapValueStringified;
     }
     return newValue;

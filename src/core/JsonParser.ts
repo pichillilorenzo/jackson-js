@@ -221,7 +221,7 @@ export class JsonParser<T> {
     newContext._internalDecorators = new Map();
     newContext = cloneDeep(newContext);
 
-    const postProcessedObj = this.deepTransform('', value, newContext, globalContext);
+    const postProcessedObj = this.deepTransform('', value, undefined, newContext, globalContext);
     if (globalContext.globalUnresolvedObjectIdentities.size > 0 &&
       newContext.features.deserialization.FAIL_ON_UNRESOLVED_OBJECT_IDS) {
       throw new JacksonError(`Found unresolved Object Ids: ${[...globalContext.globalUnresolvedObjectIdentities].join(', ')}`);
@@ -234,10 +234,12 @@ export class JsonParser<T> {
    *
    * @param key - key name representing the object property being postprocessed.
    * @param value - the JavaScript object or value to postprocessed.
+   * @param parent - the parent object of value (if available)
    * @param context - the context to be used during deserialization postprocessing.
    * @param globalContext - the global context to be used during deserialization postprocessing.
    */
-  private deepTransform(key: string, value: any, context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext): any {
+  private deepTransform(key: string, value: any, parent: any,
+                        context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext): any {
     context = {
       withContextGroups: [],
       features: {
@@ -348,7 +350,7 @@ export class JsonParser<T> {
         return instance;
       }
 
-      value = this.parseJsonTypeInfo(value, context);
+      value = this.parseJsonTypeInfo(value, parent, context);
 
       if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Map) ||
           (typeof value === 'object' && !isIterableNoMapNoString(value) && currentMainCreator === Object)) {
@@ -409,7 +411,7 @@ export class JsonParser<T> {
             }
           }
         }
-        instance = this.parseJsonCreator(context, globalContext, replacement, classPropertiesToBeExcluded);
+        instance = this.parseJsonCreator(context, globalContext, replacement, parent, classPropertiesToBeExcluded);
         if (instance) {
           replacement = instance;
         }
@@ -684,10 +686,11 @@ export class JsonParser<T> {
    * @param context
    * @param globalContext
    * @param obj
+   * @param parent
    * @param classPropertiesToBeExcluded
    */
   private parseJsonCreator(context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext,
-                           obj: any, classPropertiesToBeExcluded: string[]): any {
+                           obj: any, parent: any, classPropertiesToBeExcluded: string[]): any {
     if (obj != null) {
 
       const currentMainCreator = context.mainCreator[0];
@@ -721,7 +724,7 @@ export class JsonParser<T> {
 
       if (('mode' in jsonCreator && jsonCreator.mode === JsonCreatorMode.PROPERTIES) || !('mode' in jsonCreator)) {
         const methodName = ('_propertyKey' in jsonCreator && jsonCreator._propertyKey) ? jsonCreator._propertyKey : 'constructor';
-        const result = this.parseMethodArguments(methodName, method, obj, context, globalContext, null, true);
+        const result = this.parseMethodArguments(methodName, method, obj, parent, context, globalContext, null, true);
         args = result.args != null && result.args.length > 0 ? result.args : [obj];
         argNames = result.argNames;
         argNamesAliasToBeExcluded = result.argNamesAliasToBeExcluded;
@@ -766,6 +769,7 @@ export class JsonParser<T> {
         });
 
         const remainingKeys = classKeys.filter(k => Object.hasOwnProperty.call(obj, k) && !keysToBeExcluded.includes(k));
+        let unknownKeys = [];
 
         const hasJsonAnySetter =
           hasMetadata('JsonAnySetter', currentMainCreator, null, context);
@@ -777,7 +781,7 @@ export class JsonParser<T> {
           if (jsonVirtualProperty && jsonVirtualProperty._descriptor != null) {
             if (typeof jsonVirtualProperty._descriptor.value === 'function' || jsonVirtualProperty._descriptor.set != null ||
               jsonVirtualProperty._descriptor.get == null) {
-              this.parseJsonSetter(instance, obj, key, context, globalContext);
+              this.parseJsonSetter(instance, obj, key, parent, context, globalContext);
             } else {
               // if property has a descriptor but is not a function and doesn't have a setter,
               // then this property has only getter, so we can skip it.
@@ -785,16 +789,23 @@ export class JsonParser<T> {
             }
           } else if ((Object.hasOwnProperty.call(obj, key) && classHasOwnProperty(currentMainCreator, key, null, context)) ||
             currentMainCreator.name === 'Object') {
-            instance[key] = this.parseJsonClassType(context, globalContext, obj, key);
+            instance[key] = this.parseJsonClassType(context, globalContext, obj, key, parent);
           } else if (hasJsonAnySetter && Object.hasOwnProperty.call(obj, key)) {
             // for any other unrecognized properties found
             this.parseJsonAnySetter(instance, obj, key, context);
           } else if (!classHasOwnProperty(currentMainCreator, key, null, context) &&
             ( (jsonIgnoreProperties == null && context.features.deserialization.FAIL_ON_UNKNOWN_PROPERTIES) ||
               (jsonIgnoreProperties != null && !jsonIgnoreProperties.ignoreUnknown)) ) {
-            // eslint-disable-next-line max-len
-            throw new JacksonError(`Unknown property "${key}" for ${currentMainCreator.name} at [Source '${JSON.stringify(obj)}']`);
+            unknownKeys.push(key);
           }
+        }
+        // ignore keys removed from parent (e.g. synthetic keys for polymorphism)
+        const removedKeys = remainingKeys.filter(k => !Object.hasOwnProperty.call(obj, k));
+        unknownKeys = unknownKeys.filter(k => !removedKeys.includes(k));
+
+        if (unknownKeys.length) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError(`Unknown properties [${unknownKeys}] for ${currentMainCreator.name} at [Source '${JSON.stringify(obj)}']`);
         }
       }
 
@@ -852,10 +863,11 @@ export class JsonParser<T> {
    * @param replacement
    * @param obj
    * @param key
+   * @param parent
    * @param context
    * @param globalContext
    */
-  private parseJsonSetter(replacement: any, obj: any, key: string, context: JsonParserTransformerContext,
+  private parseJsonSetter(replacement: any, obj: any, key: string, parent: any, context: JsonParserTransformerContext,
                           globalContext: JsonParserGlobalContext) {
     const currentMainCreator = context.mainCreator[0];
 
@@ -873,10 +885,10 @@ export class JsonParser<T> {
 
       let parsedValue;
       if (typeof jsonVirtualProperty._descriptor.value === 'function') {
-        parsedValue = this.parseMethodArguments(key, null, obj, context, globalContext, [jsonVirtualProperty.value], false)
+        parsedValue = this.parseMethodArguments(key, null, obj, parent, context, globalContext, [jsonVirtualProperty.value], false)
           .args[0];
       } else {
-        parsedValue = this.parseJsonClassType(context, globalContext, obj, key);
+        parsedValue = this.parseJsonClassType(context, globalContext, obj, key, parent);
       }
 
       if ('nulls' in jsonVirtualProperty || 'contentNulls' in jsonVirtualProperty) {
@@ -946,6 +958,7 @@ export class JsonParser<T> {
    * @param methodName
    * @param method
    * @param obj
+   * @param parent
    * @param context
    * @param globalContext
    * @param argNames
@@ -954,6 +967,7 @@ export class JsonParser<T> {
   private parseMethodArguments(methodName: string,
                                method: any,
                                obj: any,
+                               parent: any,
                                context: JsonParserTransformerContext,
                                globalContext: JsonParserGlobalContext,
                                argNames: string[],
@@ -1013,13 +1027,13 @@ export class JsonParser<T> {
         }
 
         if (mappedKey && Object.hasOwnProperty.call(obj, mappedKey)) {
-          args.push(this.parseJsonClassType(context, globalContext, obj, mappedKey, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, globalContext, obj, mappedKey, parent, methodName, argIndex));
           argNamesAliasToBeExcluded.push(mappedKey);
         } else if (mappedKey && jsonProperty.required) {
           // eslint-disable-next-line max-len
           throw new JacksonError(`Required property "${mappedKey}" not found on parameter at index ${argIndex} of ${currentMainCreator.name}.${methodName} at [Source '${JSON.stringify(obj)}']`);
         } else if (Object.hasOwnProperty.call(obj, key)) {
-          args.push(this.parseJsonClassType(context, globalContext, obj, key, methodName, argIndex));
+          args.push(this.parseJsonClassType(context, globalContext, obj, key, parent, methodName, argIndex));
         } else {
           if (isJsonCreator && context.features.deserialization.FAIL_ON_MISSING_CREATOR_PROPERTIES &&
             (!jsonInject || (jsonInject && !(jsonInject.value in context.injectableValues)))) {
@@ -1151,11 +1165,12 @@ export class JsonParser<T> {
    * @param globalContext
    * @param obj
    * @param key
+   * @param parent
    * @param methodName
    * @param argumentIndex
    */
   private parseJsonClassType(context: JsonParserTransformerContext, globalContext: JsonParserGlobalContext, obj: any, key: string,
-                             methodName?: string, argumentIndex?: number): any {
+                             parent: any, methodName?: string, argumentIndex?: number): any {
     let jsonClass: JsonClassTypeOptions;
     if (methodName != null && argumentIndex != null) {
       jsonClass =
@@ -1176,7 +1191,7 @@ export class JsonParser<T> {
       const newCreator = (obj[key] != null) ? obj[key].constructor : Object;
       newContext.mainCreator = [newCreator];
     }
-    return this.deepTransform(key, obj[key], newContext, globalContext);
+    return this.deepTransform(key, obj[key], obj, newContext, globalContext);
   }
 
   /**
@@ -1386,9 +1401,10 @@ export class JsonParser<T> {
   /**
    *
    * @param obj
+   * @param parent
    * @param context
    */
-  private parseJsonTypeInfo(obj: any, context: JsonParserTransformerContext): any {
+  private parseJsonTypeInfo(obj: any, parent: any, context: JsonParserTransformerContext): any {
     const currentMainCreator = context.mainCreator[0];
     const jsonTypeInfo: JsonTypeInfoOptions =
       getMetadata('JsonTypeInfo', currentMainCreator, null, context);
@@ -1430,6 +1446,17 @@ export class JsonParser<T> {
         }
         jsonTypeInfoProperty = newObj[0] as string;
         newObj = newObj[1];
+        break;
+      case JsonTypeInfoAs.EXTERNAL_PROPERTY:
+        const srcObj = parent ?? newObj;
+        jsonTypeInfoProperty = srcObj[jsonTypeInfo.property];
+        if (jsonTypeInfoProperty == null &&
+          context.features.deserialization.FAIL_ON_MISSING_TYPE_ID && context.features.deserialization.FAIL_ON_INVALID_SUBTYPE) {
+          // eslint-disable-next-line max-len
+          throw new JacksonError(`Missing type id when trying to resolve type or subtype of class ${currentMainCreator.name}: missing type id property '${jsonTypeInfo.property}' at [Source '${JSON.stringify(newObj)}']`);
+        } else {
+          delete srcObj[jsonTypeInfo.property];
+        }
         break;
       }
 
@@ -1668,7 +1695,7 @@ export class JsonParser<T> {
           continue;
         }
 
-        (newIterable as Set<any>).add(this.deepTransform(key, value, newContext, globalContext));
+        (newIterable as Set<any>).add(this.deepTransform(key, value, iterable, newContext, globalContext));
       }
     } else {
       newIterable = [];
@@ -1685,7 +1712,7 @@ export class JsonParser<T> {
           continue;
         }
 
-        (newIterable as Array<any>).push(this.deepTransform(key, value, newContext, globalContext));
+        (newIterable as Array<any>).push(this.deepTransform(key, value, undefined, newContext, globalContext));
       }
       if (!isSameConstructor(currentCreator, Array)) {
         // @ts-ignore
@@ -1770,8 +1797,8 @@ export class JsonParser<T> {
         }
       }
 
-      const mapKeyParsed = this.deepTransform('', mapKey, keyNewContext, globalContext);
-      const mapValueParsed = this.deepTransform(mapKey, mapValue, valueNewContext, globalContext);
+      const mapKeyParsed = this.deepTransform('', mapKey, undefined, keyNewContext, globalContext);
+      const mapValueParsed = this.deepTransform(mapKey, mapValue, map, valueNewContext, globalContext);
       if (map instanceof Map) {
         map.set(mapKeyParsed, mapValueParsed);
       } else {
