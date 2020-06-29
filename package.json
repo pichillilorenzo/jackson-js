@@ -36,8 +36,8 @@
     "build:dev": "npm run clean && ./node_modules/.bin/webpack --config webpack.dev.js",
     "build:prod": "npm run clean && ./node_modules/.bin/webpack --config webpack.prod.js",
     "start:node:dev": "node dist/lib.node",
-    "test-es5": "TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=3m --verbose",
-    "test-es6": "TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=3m --verbose",
+    "test-es5": "TZ=UTC TS_NODE_PROJECT=tsconfig.json ava --concurrency=8 --timeout=3m --verbose",
+    "test-es6": "TZ=UTC TS_NODE_PROJECT=tsconfig.es6.json ava --concurrency=8 --timeout=3m --verbose",
     "test": "nyc npm run test-es5 && nyc --no-clean npm run test-es6",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
