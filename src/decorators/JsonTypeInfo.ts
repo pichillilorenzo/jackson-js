@@ -37,7 +37,16 @@ export enum JsonTypeInfoAs {
    * in a 2-element JSON array: first element is the serialized type identifier,
    * and second element the serialized Class as JSON Object.
    */
-  WRAPPER_ARRAY
+  WRAPPER_ARRAY,
+  /**
+   * Inclusion mechanism similar to `PROPERTY`, except that
+   * property is included one-level higher in hierarchy, i.e. as sibling
+   * property at same level as JSON Object to type.
+   * Note that this choice **can only be used for properties**, not
+   * for types (classes). Trying to use it for classes will result in
+   * inclusion strategy of basic `PROPERTY` instead.
+   */
+  EXTERNAL_PROPERTY
 }
 
 /**
