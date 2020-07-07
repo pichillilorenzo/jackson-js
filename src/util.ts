@@ -500,11 +500,11 @@ export const getArgumentNames = (method): string[] => {
     return [];
   }
 
-  if (code.startsWith('class extends')) {
-    code = 'class JacksonClass ' + code.substring(6);
-  } else if (code.startsWith('function (')) {
+  if (/^class({| extends)/.test(code)) {
+    code = 'class JacksonClass ' + code.substring(5);
+  } else if (/^function\s?\(/.test(code)) {
     code = 'function JacksonFunction ' + code.substring(9);
-  } else if (!code.startsWith('class ') && !code.startsWith('function ')) {
+  } else if (!/^class\s?/.test(code) && !/^function\s?/.test(code)) {
     code = 'function ' + code;
   }
 
