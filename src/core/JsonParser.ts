@@ -11,6 +11,7 @@ import {
   getDefaultPrimitiveTypeValue,
   getMetadata,
   getMetadataKeys,
+  hasBigInt,
   hasMetadata,
   isClassIterable,
   isConstructorPrimitiveType,
@@ -284,7 +285,7 @@ export class JsonParser<T> {
       if (value.constructor === String) {
         if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Number)) {
           value = +value;
-        } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
+        } else if (hasBigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
           value = BigInt(+value);
         } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Boolean)) {
           if (value.toLowerCase() === 'true' || value === '1') {
@@ -298,7 +299,7 @@ export class JsonParser<T> {
       } else if (value.constructor === Number) {
         if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Boolean)) {
           value = !!value;
-        } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
+        } else if (hasBigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
           value = BigInt(+value);
         } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, String)) {
           // @ts-ignore
@@ -307,7 +308,7 @@ export class JsonParser<T> {
       } else if (value.constructor === Boolean) {
         if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Number)) {
           value = value ? 1 : 0;
-        } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
+        } else if (hasBigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
           value = BigInt(value ? 1 : 0);
         } else if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, String)) {
           // @ts-ignore
@@ -353,7 +354,7 @@ export class JsonParser<T> {
       if (isSameConstructorOrExtensionOfNoObject(currentMainCreator, Map) ||
           (typeof value === 'object' && !isIterableNoMapNoString(value) && currentMainCreator === Object)) {
         return this.parseMapAndObjLiteral(key, value, context, globalContext);
-      } else if (BigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
+      } else if (hasBigInt && isSameConstructorOrExtensionOfNoObject(currentMainCreator, BigInt)) {
         return (value != null && value.constructor === String && value.endsWith('n')) ?
           // @ts-ignore
           currentMainCreator(value.substring(0, value.length - 1)) :
@@ -459,7 +460,7 @@ export class JsonParser<T> {
       (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
         context.features.deserialization.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Boolean);
-    } else if (BigInt && currentMainCreator === BigInt &&
+    } else if (hasBigInt && currentMainCreator === BigInt &&
       (context.features.deserialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
         context.features.deserialization.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);
