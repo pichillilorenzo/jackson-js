@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, makeJacksonDecorator} from '../util';
+import {defineMetadata, isNativeCode, makeJacksonDecorator} from '../util';
 import {JsonTypeIdResolverDecorator, JsonTypeIdResolverOptions} from '../@types';
 
 /**
@@ -62,7 +62,7 @@ export const JsonTypeIdResolver: JsonTypeIdResolverDecorator = makeJacksonDecora
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       defineMetadata(
         'JsonTypeIdResolverParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (isNativeCode(target.constructor)) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });

@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, makeJacksonDecorator} from '../util';
+import {defineMetadata, isNativeCode, makeJacksonDecorator} from '../util';
 import {JsonClassTypeDecorator, JsonClassTypeOptions} from '../@types';
 
 /**
@@ -46,7 +46,7 @@ export const JsonClassType: JsonClassTypeDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       defineMetadata(
         'JsonClassTypeParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (isNativeCode(target.constructor)) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });

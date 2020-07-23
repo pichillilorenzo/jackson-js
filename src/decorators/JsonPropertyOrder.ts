@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata, isNativeCode} from '../util';
 import {JsonPropertyOrderDecorator, JsonPropertyOrderOptions} from '../@types';
 
 /**
@@ -45,7 +45,7 @@ export const JsonPropertyOrder: JsonPropertyOrderDecorator = makeJacksonDecorato
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       defineMetadata(
         'JsonPropertyOrderParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (isNativeCode(target.constructor)) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });

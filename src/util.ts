@@ -187,6 +187,16 @@ const pluckParamName = (param): string => {
   return;
 };
 
+const nativeCodeRegex = /{\s*\[native code]\s*}$/;
+
+/**
+ * Determines if the provided function is implemented in native code.
+ *
+ * @param value
+ * @internal
+ */
+export const isNativeCode = (value: Function | string): boolean => !!nativeCodeRegex.exec(value.toString());
+
 /**
  * @internal
  */
@@ -238,8 +248,8 @@ export const getClassProperties = (target: Record<string, any>, obj: any = null,
     objKeys = Object.keys(obj);
     if (objKeys.includes('constructor') &&
       typeof obj.constructor === 'function' &&
-      !obj.constructor.toString().endsWith('{ [native code] }') &&
-      obj.constructor.constructor.toString().endsWith('{ [native code] }')) {
+      !isNativeCode(obj.constructor) &&
+      isNativeCode(obj.constructor.constructor)) {
       objKeys.splice(objKeys.indexOf('constructor'), 1);
     }
   }
@@ -496,7 +506,7 @@ export const mapClassPropertyToVirtualProperty =
 export const getArgumentNames = (method): string[] => {
   let code = method.toString().trim();
 
-  if (code.endsWith(' { [native code] }')) {
+  if (isNativeCode(code)) {
     return [];
   }
 
@@ -891,8 +901,8 @@ export const getObjectKeysWithPropertyDescriptorNames = (obj: any, ctor: any,
 
   if (keys.includes('constructor') &&
     typeof obj.constructor === 'function' &&
-    !obj.constructor.toString().endsWith('{ [native code] }') &&
-    obj.constructor.constructor.toString().endsWith('{ [native code] }')) {
+    !isNativeCode(obj.constructor) &&
+    isNativeCode(obj.constructor.constructor)) {
     keys.splice(keys.indexOf('constructor'), 1);
   }
 

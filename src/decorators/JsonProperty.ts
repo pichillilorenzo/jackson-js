@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, getArgumentNames, makeJacksonDecorator} from '../util';
+import {defineMetadata, getArgumentNames, isNativeCode, makeJacksonDecorator} from '../util';
 import {JsonPropertyDecorator, JsonPropertyOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 
@@ -90,7 +90,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
         }
         if (!options.value) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Invalid usage of @JsonProperty() on ${((target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonProperty() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
+          throw new JacksonError(`Invalid usage of @JsonProperty() on ${(isNativeCode(target.constructor) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonProperty() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
         }
       } else {
         options.value = propertyKey.toString();
@@ -106,7 +106,7 @@ export const JsonProperty: JsonPropertyDecorator = makeJacksonDecorator(
 
       defineMetadata(
         'JsonPropertyParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, isNativeCode(target.constructor) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });
