@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {defineMetadata, getArgumentNames, makeJacksonDecorator} from '../util';
+import {defineMetadata, getArgumentNames, isNativeCode, makeJacksonDecorator} from '../util';
 import {JsonInjectDecorator, JsonInjectOptions} from '../@types';
 import {JacksonError} from '../core/JacksonError';
 
@@ -56,7 +56,7 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
       }
 
       defineMetadata('JsonInjectParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (isNativeCode(target.constructor)) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });
@@ -73,7 +73,7 @@ export const JsonInject: JsonInjectDecorator = makeJacksonDecorator(
         }
         if (!options.value) {
           // eslint-disable-next-line max-len
-          throw new JacksonError(`Invalid usage of @JsonInject() on ${((target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonInject() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
+          throw new JacksonError(`Invalid usage of @JsonInject() on ${((isNativeCode(target.constructor)) ? target : target.constructor).name}.${propertyKey.toString()}. You must either define a non-empty @JsonInject() option value or change the method name starting with "get" for Getters or "set" for Setters.`);
         }
       }
       defineMetadata('JsonInject', options, target.constructor, propertyKey);

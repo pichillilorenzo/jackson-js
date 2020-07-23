@@ -3,7 +3,7 @@
  * @module Decorators
  */
 
-import {makeJacksonDecorator, defineMetadata} from '../util';
+import {makeJacksonDecorator, defineMetadata, isNativeCode} from '../util';
 import {JsonSubTypesDecorator, JsonSubTypesOptions} from '../@types';
 
 /**
@@ -51,7 +51,7 @@ export const JsonSubTypes: JsonSubTypesDecorator = makeJacksonDecorator(
     if (descriptorOrParamIndex != null && typeof descriptorOrParamIndex === 'number') {
       defineMetadata(
         'JsonSubTypesParam',
-        options, (target.constructor.toString().endsWith('{ [native code] }')) ? target : target.constructor,
+        options, (isNativeCode(target.constructor)) ? target : target.constructor,
         (propertyKey) ? propertyKey : 'constructor', {
           suffix: descriptorOrParamIndex.toString()
         });
