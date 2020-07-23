@@ -54,6 +54,7 @@ import {
   getDefaultValue,
   getMetadata,
   getObjectKeysWithPropertyDescriptorNames,
+  hasBigInt,
   hasMetadata,
   isConstructorPrimitiveType,
   isIterableNoMapNoString,
@@ -337,7 +338,7 @@ export class JsonStringifier<T> {
 
       value = this.stringifyJsonFormatClass(value, context);
 
-      if (BigInt && isSameConstructorOrExtensionOfNoObject(value.constructor, BigInt)) {
+      if (hasBigInt && isSameConstructorOrExtensionOfNoObject(value.constructor, BigInt)) {
         return value.toString() + 'n';
       } else if (value instanceof RegExp) {
         const replacement = value.toString();
@@ -565,7 +566,7 @@ export class JsonStringifier<T> {
       (context.features.serialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
         context.features.serialization.SET_DEFAULT_VALUE_FOR_BOOLEAN_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(Boolean);
-    } else if (BigInt && currentMainCreator === BigInt &&
+    } else if (hasBigInt && currentMainCreator === BigInt &&
       (context.features.serialization.SET_DEFAULT_VALUE_FOR_PRIMITIVES_ON_NULL ||
         context.features.serialization.SET_DEFAULT_VALUE_FOR_BIGINT_ON_NULL) ) {
       defaultValue = getDefaultPrimitiveTypeValue(BigInt);

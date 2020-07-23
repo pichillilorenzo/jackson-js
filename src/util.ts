@@ -22,6 +22,11 @@ import {
 } from './core/DefaultContextGroup';
 
 /**
+ * Flag for testing if BigInt is supported
+ */
+export const hasBigInt = typeof BigInt !== 'undefined';
+
+/**
  * @internal
  */
 export interface MakeMetadataKeyWithContextOptions {
@@ -824,7 +829,7 @@ export const isVariablePrimitiveType = (value: any): boolean => value != null &&
  * @internal
  */
 export const isConstructorPrimitiveType = (ctor: any): boolean => ctor === Number ||
-  (BigInt && ctor === BigInt) || ctor === String ||
+  (hasBigInt && ctor === BigInt) || ctor === String ||
   ctor === Boolean || (Symbol && ctor === Symbol);
 
 /**
@@ -839,7 +844,7 @@ export const getDefaultPrimitiveTypeValue = (ctor: ClassType<any>): any | null =
   case String:
     return '';
   default:
-    if (BigInt && ctor === BigInt) {
+    if (hasBigInt && ctor === BigInt) {
       return BigInt(0);
     }
   }
