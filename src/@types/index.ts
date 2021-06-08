@@ -756,7 +756,7 @@ export interface JsonIncludeBaseOptions {
    * @param value - value to be filtered.
    * @returns boolean
    */
-  valueFilter?: (value: any) => boolean;
+  valueFilter?: (value: any, context?: JsonStringifierTransformerContext) => boolean;
   /**
    * Inclusion rule to use for entries ("content") of decorated `Map` or "Object Literal" properties.
    *

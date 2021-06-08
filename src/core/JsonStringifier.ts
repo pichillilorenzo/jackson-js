@@ -927,7 +927,7 @@ export class JsonStringifier<T> {
       case JsonIncludeType.NON_DEFAULT:
         return value !== getDefaultValue(value) && !isValueEmpty(value);
       case JsonIncludeType.CUSTOM:
-        return !jsonInclude.valueFilter(value);
+        return !jsonInclude.valueFilter(value, context);
       }
     }
 
