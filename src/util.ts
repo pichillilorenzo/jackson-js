@@ -861,7 +861,7 @@ export const getDefaultValue = (value: any): any | null => {
  */
 export const isValueEmpty = (value: any): boolean => value == null ||
   ( (value instanceof Set || value instanceof Map) && value.size === 0 ) ||
-  ( !(value instanceof Set || value instanceof Map) &&
+  ( !(value instanceof Set || value instanceof Map || value instanceof Date) &&
     (typeof value === 'object' || typeof value === 'string') && Object.keys(value).length === 0 );
 
 /**
